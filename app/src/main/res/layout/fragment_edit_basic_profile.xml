@@ -1,0 +1,129 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/display_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/ic_perm_identity_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_perm_identity_grey"
+        android:hint="Name"
+        android:inputType="textCapWords"
+        android:padding="16dp"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+
+    <TextView
+        android:id="@+id/gender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_people_outline_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_people_outline_grey"
+        android:gravity="start|center"
+        android:padding="16dp"
+        android:text="Gender"
+        android:textColor="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+
+    <TextView
+        android:id="@+id/date_of_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_event_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_event_grey"
+        android:padding="16dp"
+        android:text="Date of Birth"
+        android:textColor="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+
+    <TextView
+        android:id="@+id/time_of_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_time_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_time_grey"
+        android:padding="16dp"
+        android:text="Time of Birth"
+        android:textColor="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+
+    <TextView
+        android:id="@+id/place_of_birth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_home_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_home_grey"
+        android:imeOptions="actionNext"
+        android:padding="16dp"
+        android:text="Place of birth"
+        android:textColor="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+
+    <TextView
+        android:id="@+id/current_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:clickable="true"
+        android:drawableLeft="@drawable/ic_location_grey"
+        android:drawablePadding="16dp"
+        android:drawableStart="@drawable/ic_location_grey"
+        android:imeOptions="actionNext"
+        android:padding="16dp"
+        android:text="Current Location"
+        android:textColor="@color/black_light"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:background="@color/black_light"
+        android:contentDescription="@string/divider"/>
+</LinearLayout>

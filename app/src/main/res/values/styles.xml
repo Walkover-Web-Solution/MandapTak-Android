@@ -7,7 +7,7 @@
         <item name="android:textColor">@color/black_dark</item>
         <item name="actionButtonStyle">@style/Widget.AppCompat.ActionButton</item>
         <item name="colorAccent">@color/white</item>
-        <item name="colorControlNormal">@color/red_500</item>
+        <item name="colorControlNormal">@color/black_light</item>
     </style>
     <!-- Base application theme. -->
     <style name="MainActivityTheme" parent="Theme.AppCompat.Light">

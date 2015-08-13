@@ -64,6 +64,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                              Bundle savedInstanceState) {
         init(inflater, container);
         getParseData();
+
         displayName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -261,8 +262,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private void getParseData() {
         MandapTakApplication.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
+        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
@@ -290,7 +290,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                             datePicker.setTextColor(context.getResources().getColor(R.color.black_dark));
                         }
                         if (newTOB != null) {
-                            DateFormat df = new SimpleDateFormat("hh:mm z", Locale.getDefault());
+                            DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
                             df.setTimeZone(TimeZone.getTimeZone("UTC"));
                             String subdateStr = df.format(newTOB.getTime());
                             timepicker.setText(subdateStr);
@@ -363,8 +363,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     void saveInfo() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
-        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        parseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (newGender != null)
@@ -406,7 +405,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.minute = minute;
         newTOB.set(92, 0, 1, hourOfDay, minute);
         timepicker.setTextColor(context.getResources().getColor(R.color.black_dark));
-        SimpleDateFormat df = new SimpleDateFormat("hh:mm z", Locale.getDefault());
+        SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newTOB.getTime());
         timepicker.setText(subdateStr);

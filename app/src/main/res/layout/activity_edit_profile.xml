@@ -13,10 +13,10 @@
 
     <ImageView
         android:id="@+id/skip_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="?android:attr/listPreferredItemHeight"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:layout_gravity="bottom|end"
+        android:layout_margin="8dp"
         android:clickable="true"
-        android:padding="16dp"
-        android:src="@drawable/ic_navigate_next_red"/>
+        android:src="@drawable/ic_skip_button"/>
 </FrameLayout>

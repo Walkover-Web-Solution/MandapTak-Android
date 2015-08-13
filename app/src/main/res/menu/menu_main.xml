@@ -10,7 +10,7 @@
         app:showAsAction="always"/>
     <item
         android:id="@+id/action_matches"
-        android:icon="@drawable/ic_favorite_outline_red_700_24dp"
+        android:icon="@drawable/ic_favorite_red"
         android:orderInCategory="100"
         android:title="Matches"
         app:showAsAction="always"/>

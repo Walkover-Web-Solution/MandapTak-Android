@@ -51,13 +51,22 @@ public class EditProfileActivity extends ActionBarActivity implements ActionBar.
                 }
             }
         });
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setIcon(R.drawable.ic_pin_icon)
-                            .setTabListener(this));
-        }
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setIcon(R.drawable.ic_tab1)
+                        .setTabListener(this));
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setIcon(R.drawable.ic_tab2)
+                        .setTabListener(this));
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setIcon(R.drawable.ic_tab3)
+                        .setTabListener(this));
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setIcon(R.drawable.ic_tab4)
+                        .setTabListener(this));
 
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,8 +125,11 @@ public class EditProfileActivity extends ActionBarActivity implements ActionBar.
                     return new BasicProfileFragment();
                 case 1:
                     return new DetailsProfileFragment();
+                case 2:
+                    return new QualificationEditProfileFragment();
+                default:
+                    return new BasicProfileFragment();
             }
-            return new BasicProfileFragment();
         }
 
         @Override

@@ -55,7 +55,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/ic_perm_identity_red"/>
+                android:src="@drawable/ic_identity_red"/>
 
             <com.mandaptak.android.Views.TypefaceTextView
                 android:layout_width="wrap_content"

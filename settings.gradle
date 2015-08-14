@@ -1,2 +1,2 @@
-include ':app', ':slidingMenu'
+include ':app', ':slidingMenu', ':niceSpinner'
 include ':viewPagerIndicator'

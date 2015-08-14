@@ -26,30 +26,56 @@
             android:orientation="vertical"
             android:padding="8dp">
 
+            <EditText
+                android:id="@+id/industry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Industry"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"/>
+
+            <EditText
+                android:id="@+id/designation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Designation"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"/>
+
+            <EditText
+                android:id="@+id/company"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Company"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"/>
+
+            <EditText
+                android:id="@+id/current_income"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:digits="1234567890"
+                android:hint="Current Income"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"/>
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/work_more_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|end"
-            android:clickable="true"
-            android:padding="16dp"
-            android:text="+more"
-            android:textColor="@color/red_700"
-            android:textSize="@dimen/abc_text_size_button_material"/>
-
-        <EditText
-            android:id="@+id/current_income"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="1234567890"
-            android:hint="Current Income"
-            android:imeOptions="actionNext"
-            android:inputType="number"
-            android:padding="16dp"
-            android:textColor="@color/black_dark"
-            android:textColorHint="@color/black_light"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,13 +105,23 @@
             android:textColor="@color/red_700"
             android:textSize="@dimen/abc_text_size_button_material"/>
 
-        <TextView
-            android:id="@+id/work_after_marriage"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:padding="16dp"
-            android:text="Want to work after marriage?"
-            android:textColor="@color/black_light"/>
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="16dp"
+                android:text="Want to work after marriage?"
+                android:textColor="@color/black_light"/>
+
+            <org.angmarch.views.NiceSpinner
+                android:id="@+id/work_after_marriage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

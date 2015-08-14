@@ -32,6 +32,11 @@
         <item>Spiritual - not religious</item>
         <item>Other</item>
     </string-array>
+    <string-array name="wam_array">
+        <item>No</item>
+        <item>Yes</item>
+        <item>Maybe</item>
+    </string-array>
     <string-array name="height">
         <item>4ft 5in - 134cm</item>
         <item>4ft 6in - 137cm</item>

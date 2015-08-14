@@ -37,11 +37,14 @@
         android:layout_below="@+id/label_number"
         android:layout_centerHorizontal="true"
         android:layout_margin="16dp"
+        android:digits="0123456789"
         android:drawableLeft="@drawable/ic_call_white"
         android:drawablePadding="8dp"
         android:hint="XXX-XXX-XXX "
+        android:inputType="number"
         android:textColor="@color/white"
-        android:textColorHint="@color/white_alpha"/>
+        android:textColorHint="@color/white_alpha"
+        android:textCursorDrawable="@drawable/color_cursor"/>
 
     <Button
         android:id="@+id/login_button"

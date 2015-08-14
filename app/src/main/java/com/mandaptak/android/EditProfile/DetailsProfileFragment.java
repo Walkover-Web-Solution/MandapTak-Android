@@ -15,7 +15,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.github.pierry.simpletoast.SimpleToast;
@@ -29,6 +28,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,7 +94,6 @@ public class DetailsProfileFragment extends Fragment {
                 final TextView empty = (TextView) locationDialog.findViewById(R.id.empty);
                 EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
                 final ListView listView = (ListView) locationDialog.findViewById(R.id.list);
-                final ProgressBar progressBar = (ProgressBar) locationDialog.findViewById(R.id.progress);
                 title.setText("Select Religion");
                 empty.setText("Search");
                 locationDialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
@@ -102,7 +102,24 @@ public class DetailsProfileFragment extends Fragment {
                         alertDialog.dismiss();
                     }
                 });
-
+                if (MandapTakApplication.isNetworkAvailable(context)) {
+                    final ArrayList<ParseNameModel> list = getReligionList(null);
+                    listView.setVisibility(View.VISIBLE);
+                    listView.setAdapter(new DataAdapter(context, list));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            newReligion = list.get(i);
+                            newCaste = null;
+                            newGotra = null;
+                            caste.setText("");
+                            gotra.setText("");
+                            religion.setText(list.get(i).getName());
+                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
                 searchBar.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -116,15 +133,11 @@ public class DetailsProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (editable.length() == 0) {
-                            progressBar.setVisibility(View.GONE);
-                            empty.setVisibility(View.VISIBLE);
-                            listView.setVisibility(View.GONE);
-                        } else if (MandapTakApplication.isNetworkAvailable(context)) {
-                            empty.setVisibility(View.GONE);
+                        if (MandapTakApplication.isNetworkAvailable(context)) {
                             final ArrayList<ParseNameModel> list = getReligionList(editable.toString());
                             listView.setVisibility(View.VISIBLE);
                             listView.setAdapter(new DataAdapter(context, list));
+                            listView.notify();
                             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -157,7 +170,6 @@ public class DetailsProfileFragment extends Fragment {
                     final TextView empty = (TextView) locationDialog.findViewById(R.id.empty);
                     EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
                     final ListView listView = (ListView) locationDialog.findViewById(R.id.list);
-                    final ProgressBar progressBar = (ProgressBar) locationDialog.findViewById(R.id.progress);
                     title.setText("Select Caste");
                     empty.setText("Search");
                     locationDialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
@@ -166,7 +178,22 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
-
+                    if (MandapTakApplication.isNetworkAvailable(context)) {
+                        final ArrayList<ParseNameModel> list = getCasteList(null);
+                        listView.setVisibility(View.VISIBLE);
+                        listView.setAdapter(new DataAdapter(context, list));
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                newCaste = list.get(i);
+                                newGotra = null;
+                                gotra.setText("");
+                                caste.setText(list.get(i).getName());
+                                caste.setTextColor(context.getResources().getColor(R.color.black_dark));
+                                alertDialog.dismiss();
+                            }
+                        });
+                    }
                     searchBar.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -180,12 +207,7 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (editable.length() == 0) {
-                                progressBar.setVisibility(View.GONE);
-                                empty.setVisibility(View.VISIBLE);
-                                listView.setVisibility(View.GONE);
-                            } else if (MandapTakApplication.isNetworkAvailable(context)) {
-                                empty.setVisibility(View.GONE);
+                            if (MandapTakApplication.isNetworkAvailable(context)) {
                                 final ArrayList<ParseNameModel> list = getCasteList(editable.toString());
                                 listView.setVisibility(View.VISIBLE);
                                 listView.setAdapter(new DataAdapter(context, list));
@@ -222,7 +244,6 @@ public class DetailsProfileFragment extends Fragment {
                     final TextView empty = (TextView) locationDialog.findViewById(R.id.empty);
                     EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
                     final ListView listView = (ListView) locationDialog.findViewById(R.id.list);
-                    final ProgressBar progressBar = (ProgressBar) locationDialog.findViewById(R.id.progress);
                     title.setText("Select Gotra");
                     empty.setText("Search");
                     locationDialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
@@ -231,7 +252,20 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
-
+                    if (MandapTakApplication.isNetworkAvailable(context)) {
+                        final ArrayList<ParseNameModel> list = getGotraList(null);
+                        listView.setVisibility(View.VISIBLE);
+                        listView.setAdapter(new DataAdapter(context, list));
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                newGotra = list.get(i);
+                                gotra.setText(list.get(i).getName());
+                                gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
+                                alertDialog.dismiss();
+                            }
+                        });
+                    }
                     searchBar.addTextChangedListener(new TextWatcher() {
                         @Override
                         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -245,11 +279,7 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (editable.length() == 0) {
-                                progressBar.setVisibility(View.GONE);
-                                empty.setVisibility(View.VISIBLE);
-                                listView.setVisibility(View.GONE);
-                            } else if (MandapTakApplication.isNetworkAvailable(context)) {
+                            if (MandapTakApplication.isNetworkAvailable(context)) {
                                 empty.setVisibility(View.GONE);
                                 final ArrayList<ParseNameModel> list = getGotraList(editable.toString());
                                 listView.setVisibility(View.VISIBLE);
@@ -268,7 +298,7 @@ public class DetailsProfileFragment extends Fragment {
                     });
                     alertDialog.show();
                 } else {
-                    SimpleToast.error(context, "Select a religion first.");
+                    SimpleToast.error(context, "Select a caste first.");
                 }
             }
         });
@@ -310,7 +340,8 @@ public class DetailsProfileFragment extends Fragment {
     private ArrayList<ParseNameModel> getReligionList(String query) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Religion");
-        parseQuery.whereMatches("name", "(?i)^" + query);
+        if (query != null)
+            parseQuery.whereMatches("name", "(?i)^" + query);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -327,7 +358,8 @@ public class DetailsProfileFragment extends Fragment {
     private ArrayList<ParseNameModel> getCasteList(String query) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Caste");
-        parseQuery.whereMatches("name", "(?i)^" + query);
+        if (query != null)
+            parseQuery.whereMatches("name", "(?i)^" + query);
         parseQuery.whereEqualTo("religionId", newReligion.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -345,7 +377,8 @@ public class DetailsProfileFragment extends Fragment {
     private ArrayList<ParseNameModel> getGotraList(String query) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Gotra");
-        parseQuery.whereMatches("name", "(?i)^" + query);
+        if (query != null)
+            parseQuery.whereMatches("name", "(?i)^" + query);
         parseQuery.whereEqualTo("casteId", newCaste.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -446,8 +479,12 @@ public class DetailsProfileFragment extends Fragment {
                     parseObject.put("religionId", newReligion.getParseObject());
                 if (newCaste != null)
                     parseObject.put("casteId", newCaste.getParseObject());
+                else
+                    parseObject.put("casteId", JSONObject.NULL);
                 if (newGotra != null)
                     parseObject.put("gotraId", newGotra.getParseObject());
+                else
+                    parseObject.put("gotraId", JSONObject.NULL);
                 if (newWeight != 0)
                     parseObject.put("weight", newWeight);
                 parseObject.saveInBackground();

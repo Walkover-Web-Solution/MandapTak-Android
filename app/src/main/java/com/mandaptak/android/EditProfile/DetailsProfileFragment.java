@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,7 +136,6 @@ public class DetailsProfileFragment extends Fragment {
                             final ArrayList<ParseNameModel> list = getReligionList(editable.toString());
                             listView.setVisibility(View.VISIBLE);
                             listView.setAdapter(new DataAdapter(context, list));
-                            listView.notify();
                             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -418,53 +416,44 @@ public class DetailsProfileFragment extends Fragment {
     }
 
     private void getParseData() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newHeight = parseObject.getInt("height");
-                        newWeight = parseObject.getInt("weight");
-                        ParseObject tmpCaste, tmpReligion, tmpGotra;
-                        tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-                        tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-                        tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-                        if (newHeight != 0) {
-                            int[] bases = getResources().getIntArray(R.array.heightCM);
-                            String[] values = getResources().getStringArray(R.array.height);
-                            Arrays.sort(bases);
-                            int index = Arrays.binarySearch(bases, newHeight);
-                            height.setText(values[index]);
-                            height.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (newWeight != 0) {
-                            weight.setText(String.valueOf(newWeight));
-                            weight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpReligion != null) {
-                            newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
-                            religion.setText(newReligion.getName());
-                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpCaste != null) {
-                            newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
-                            caste.setText(newCaste.getName());
-                            caste.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpGotra != null) {
-                            newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
-                            gotra.setText(newGotra.getName());
-                            gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    Log.d("Data", "Error: " + e.getMessage());
-                }
+        try {
+            ParseObject parseObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
+            newHeight = parseObject.getInt("height");
+            newWeight = parseObject.getInt("weight");
+            ParseObject tmpCaste, tmpReligion, tmpGotra;
+            tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
+            tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
+            tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+            if (newHeight != 0) {
+                int[] bases = getResources().getIntArray(R.array.heightCM);
+                String[] values = getResources().getStringArray(R.array.height);
+                Arrays.sort(bases);
+                int index = Arrays.binarySearch(bases, newHeight);
+                height.setText(values[index]);
+                height.setTextColor(context.getResources().getColor(R.color.black_dark));
             }
-        });
+            if (newWeight != 0) {
+                weight.setText(String.valueOf(newWeight));
+                weight.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (tmpReligion != null) {
+                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
+                religion.setText(newReligion.getName());
+                religion.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (tmpCaste != null) {
+                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
+                caste.setText(newCaste.getName());
+                caste.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (tmpGotra != null) {
+                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
+                gotra.setText(newGotra.getName());
+                gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
     }
 
     void saveInfo() {

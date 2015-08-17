@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -260,61 +259,50 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     private void getParseData() {
-        MandapTakApplication.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newName = parseObject.getString("name");
-                        newGender = parseObject.getString("gender");
-                        newDOB.setTime(parseObject.getDate("dob"));
-                        newTOB.setTime(parseObject.getDate("tob"));
-                        newCurrentLocation = parseObject.getParseObject("currentLocation");
-                        newPOB = parseObject.getParseObject("placeOfBirth");
+        try {
+            ParseObject parseObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
+            newName = parseObject.getString("name");
+            newGender = parseObject.getString("gender");
+            newDOB.setTime(parseObject.getDate("dob"));
+            newTOB.setTime(parseObject.getDate("tob"));
+            newCurrentLocation = parseObject.getParseObject("currentLocation");
+            newPOB = parseObject.getParseObject("placeOfBirth");
 
-                        if (newName != null) {
-                            displayName.setText(newName);
-                            displayName.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (newGender != null) {
-                            gender.setText(newGender);
-                            gender.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (newDOB != null) {
-                            DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newDOB.getTime());
-                            datePicker.setText(subdateStr);
-                            datePicker.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (newTOB != null) {
-                            DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newTOB.getTime());
-                            timepicker.setText(subdateStr);
-                            timepicker.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (newPOB != null) {
-                            placeOfBirth.setTextColor(context.getResources().getColor(R.color.black_dark));
-                            placeOfBirth.setText(newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name")
-                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.fetchIfNeeded().getString("name"));
-                        }
-                        if (newCurrentLocation != null) {
-                            currentLocation.setTextColor(context.getResources().getColor(R.color.black_dark));
-                            currentLocation.setText(newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name")
-                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getString("name"));
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    Log.d("Data", "Error: " + e.getMessage());
-                }
-                MandapTakApplication.dialog.dismiss();
+            if (newName != null) {
+                displayName.setText(newName);
+                displayName.setTextColor(context.getResources().getColor(R.color.black_dark));
             }
-        });
+            if (newGender != null) {
+                gender.setText(newGender);
+                gender.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (newDOB != null) {
+                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String subdateStr = df.format(newDOB.getTime());
+                datePicker.setText(subdateStr);
+                datePicker.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (newTOB != null) {
+                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String subdateStr = df.format(newTOB.getTime());
+                timepicker.setText(subdateStr);
+                timepicker.setTextColor(context.getResources().getColor(R.color.black_dark));
+            }
+            if (newPOB != null) {
+                placeOfBirth.setTextColor(context.getResources().getColor(R.color.black_dark));
+                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
+                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+            }
+            if (newCurrentLocation != null) {
+                currentLocation.setTextColor(context.getResources().getColor(R.color.black_dark));
+                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
+                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+            }
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
     }
 
     private ArrayList<Location> getCityList(String query) {

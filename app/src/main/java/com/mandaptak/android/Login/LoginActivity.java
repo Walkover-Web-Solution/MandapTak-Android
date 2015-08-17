@@ -1,8 +1,8 @@
 package com.mandaptak.android.Login;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -13,19 +13,12 @@ import android.view.View;
 import android.widget.Button;
 
 import com.github.pierry.simpletoast.SimpleToast;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
-import com.mandaptak.android.Utils.CSVFile;
-import com.parse.GetCallback;
 import com.parse.LogInCallback;
-import com.parse.ParseACL;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
-
-import java.io.InputStream;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     Button loginButton;
@@ -38,8 +31,7 @@ public class LoginActivity extends AppCompatActivity {
         context = this;
         try {
             getSupportActionBar().hide();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
         }
 
         loginButton = (Button) findViewById(R.id.login_button);
@@ -51,8 +43,8 @@ public class LoginActivity extends AppCompatActivity {
         titleIndicator.setViewPager(pager);
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-//            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-//            this.finish();
+            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            this.finish();
         }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,8 +52,8 @@ public class LoginActivity extends AppCompatActivity {
                 ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
                     public void done(ParseUser user, ParseException e) {
                         if (user != null) {
-//                            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-//                            LoginActivity.this.finish();
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                            LoginActivity.this.finish();
                             SimpleToast.ok(context, "Welcome");
                         } else {
                             Log.e("Login", "" + e);
@@ -71,80 +63,80 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-        importLocation();
+//        importLocation();
     }
 
-    void importLocation() {
-        InputStream inputStream = getResources().openRawResource(R.raw.location);
-        CSVFile csvFile = new CSVFile(inputStream);
-        final List<String[]> scoreList = csvFile.read();
-        final int[] i = {scoreList.size()};
-
-        final Handler handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (i[0] != 0) {
-                    i[0]--;
-                    String[] location = scoreList.get(i[0]);
-                    final ParseACL groupACL = new ParseACL();
-                    groupACL.setPublicReadAccess(true);
-                    groupACL.setPublicWriteAccess(false);
-                    final String city = location[2].replace("�", "").trim(), state = location[1].trim(), country = location[0].trim();
-                    final ParseQuery<ParseObject> parseQueryCountry = new ParseQuery<>("Country");
-                    parseQueryCountry.whereEqualTo("name", country);
-                    parseQueryCountry.getFirstInBackground(new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(final ParseObject parseObject1, ParseException e) {
-                            if (parseObject1 != null) {
-                                ParseQuery<ParseObject> parseQueryState = new ParseQuery<>("State");
-                                parseQueryState.whereEqualTo("name", state);
-                                parseQueryState.getFirstInBackground(new GetCallback<ParseObject>() {
-                                    @Override
-                                    public void done(final ParseObject parseObject, ParseException e) {
-                                        if (parseObject != null) {
-                                            ParseObject parseObjectCity = new ParseObject("City");
-                                            parseObjectCity.put("name", city);
-                                            parseObjectCity.put("Parent", parseObject);
-                                            parseObjectCity.setACL(groupACL);
-                                            parseObjectCity.saveInBackground();
-                                        } else {
-                                            ParseObject parseObjectState = new ParseObject("State");
-                                            parseObjectState.put("name", state);
-                                            parseObjectState.put("Parent", parseObject1);
-                                            parseObjectState.setACL(groupACL);
-                                            parseObjectState.saveInBackground();
-                                            ParseObject parseObjectCity = new ParseObject("City");
-                                            parseObjectCity.put("name", city);
-                                            parseObjectCity.put("Parent", parseObjectState);
-                                            parseObjectCity.setACL(groupACL);
-                                            parseObjectCity.saveInBackground();
-                                        }
-                                    }
-                                });
-                            } else {
-                                ParseObject parseObjectCountry = new ParseObject("Country");
-                                parseObjectCountry.put("name", country);
-                                parseObjectCountry.saveInBackground();
-                                parseObjectCountry.setACL(groupACL);
-                                ParseObject parseObjectState = new ParseObject("State");
-                                parseObjectState.put("name", state);
-                                parseObjectState.put("Parent", parseObjectCountry);
-                                parseObjectState.setACL(groupACL);
-                                parseObjectState.saveInBackground();
-                                ParseObject parseObjectCity = new ParseObject("City");
-                                parseObjectCity.put("name", city);
-                                parseObjectCity.put("Parent", parseObjectState);
-                                parseObjectCity.setACL(groupACL);
-                                parseObjectCity.saveInBackground();
-                            }
-                        }
-                    });
-                    handler.postDelayed(this, 2000);
-                }
-            }
-        });
-    }
+//    void importLocation() {
+//        InputStream inputStream = getResources().openRawResource(R.raw.location);
+//        CSVFile csvFile = new CSVFile(inputStream);
+//        final List<String[]> scoreList = csvFile.read();
+//        final int[] i = {scoreList.size()};
+//
+//        final Handler handler = new Handler();
+//        handler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (i[0] != 0) {
+//                    i[0]--;
+//                    String[] location = scoreList.get(i[0]);
+//                    final ParseACL groupACL = new ParseACL();
+//                    groupACL.setPublicReadAccess(true);
+//                    groupACL.setPublicWriteAccess(false);
+//                    final String city = location[2].replace("�", "").trim(), state = location[1].trim(), country = location[0].trim();
+//                    final ParseQuery<ParseObject> parseQueryCountry = new ParseQuery<>("Country");
+//                    parseQueryCountry.whereEqualTo("name", country);
+//                    parseQueryCountry.getFirstInBackground(new GetCallback<ParseObject>() {
+//                        @Override
+//                        public void done(final ParseObject parseObject1, ParseException e) {
+//                            if (parseObject1 != null) {
+//                                ParseQuery<ParseObject> parseQueryState = new ParseQuery<>("State");
+//                                parseQueryState.whereEqualTo("name", state);
+//                                parseQueryState.getFirstInBackground(new GetCallback<ParseObject>() {
+//                                    @Override
+//                                    public void done(final ParseObject parseObject, ParseException e) {
+//                                        if (parseObject != null) {
+//                                            ParseObject parseObjectCity = new ParseObject("City");
+//                                            parseObjectCity.put("name", city);
+//                                            parseObjectCity.put("Parent", parseObject);
+//                                            parseObjectCity.setACL(groupACL);
+//                                            parseObjectCity.saveInBackground();
+//                                        } else {
+//                                            ParseObject parseObjectState = new ParseObject("State");
+//                                            parseObjectState.put("name", state);
+//                                            parseObjectState.put("Parent", parseObject1);
+//                                            parseObjectState.setACL(groupACL);
+//                                            parseObjectState.saveInBackground();
+//                                            ParseObject parseObjectCity = new ParseObject("City");
+//                                            parseObjectCity.put("name", city);
+//                                            parseObjectCity.put("Parent", parseObjectState);
+//                                            parseObjectCity.setACL(groupACL);
+//                                            parseObjectCity.saveInBackground();
+//                                        }
+//                                    }
+//                                });
+//                            } else {
+//                                ParseObject parseObjectCountry = new ParseObject("Country");
+//                                parseObjectCountry.put("name", country);
+//                                parseObjectCountry.saveInBackground();
+//                                parseObjectCountry.setACL(groupACL);
+//                                ParseObject parseObjectState = new ParseObject("State");
+//                                parseObjectState.put("name", state);
+//                                parseObjectState.put("Parent", parseObjectCountry);
+//                                parseObjectState.setACL(groupACL);
+//                                parseObjectState.saveInBackground();
+//                                ParseObject parseObjectCity = new ParseObject("City");
+//                                parseObjectCity.put("name", city);
+//                                parseObjectCity.put("Parent", parseObjectState);
+//                                parseObjectCity.setACL(groupACL);
+//                                parseObjectCity.saveInBackground();
+//                            }
+//                        }
+//                    });
+//                    handler.postDelayed(this, 2000);
+//                }
+//            }
+//        });
+//    }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
 

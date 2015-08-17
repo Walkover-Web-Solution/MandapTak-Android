@@ -17,6 +17,10 @@ import android.widget.LinearLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Views.TypefaceTextView;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -41,20 +45,49 @@ public class MainActivity extends AppCompatActivity {
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+
             }
         });
 
+        View navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
+        TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
+        TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
+        TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
+        TypefaceTextView prefsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.pref_button);
+        try {
+            ParseObject profileObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
+            if (profileObject != null)
+                profileName.setText(profileObject.fetchIfNeeded().getString("name"));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+            }
+        });
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        prefsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         // configure the SlidingMenu
         menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        menu.setMenu(R.layout.fragment_menu);
+        menu.setMenu(navigationMenu);
         menu.setSlidingEnabled(true);
         menu.setBehindOffset(124);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
@@ -90,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+//        menu.showMenu(true);
     }
 
     @Override

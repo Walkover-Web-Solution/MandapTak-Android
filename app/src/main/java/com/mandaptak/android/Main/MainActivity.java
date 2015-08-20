@@ -18,8 +18,10 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.TypefaceTextView;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout slidingLayout, bottomLayout;
     SlidingUpPanelLayout slidingPanel;
     ImageView pinButton;
+    View navigationMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +38,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Mandap Tak");
+        try {
+            getSupportActionBar().setTitle("Mandap Tak");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         slidingLayout = (LinearLayout) findViewById(R.id.sliding_layout);
@@ -48,37 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-        View navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
-        TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
-        TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
-        TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
-        TypefaceTextView prefsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.pref_button);
-        try {
-            ParseObject profileObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
-            if (profileObject != null)
-                profileName.setText(profileObject.fetchIfNeeded().getString("name"));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
-            }
-        });
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        prefsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        getParseData();
         // configure the SlidingMenu
         menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
@@ -88,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         menu.setMenu(navigationMenu);
         menu.setSlidingEnabled(true);
         menu.setBehindOffset(124);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
+
         slidingPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View view, float v) {
@@ -124,6 +102,48 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 //        menu.showMenu(true);
+    }
+
+    void getParseData() {
+        navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
+        final TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
+        final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
+        final TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
+        final TypefaceTextView prefsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.pref_button);
+
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+            }
+        });
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        prefsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    try {
+                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

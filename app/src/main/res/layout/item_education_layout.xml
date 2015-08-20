@@ -8,30 +8,54 @@
     android:background="@drawable/border_black_light"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/degree"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:padding="16dp"
-        android:text="Degree"
-        android:textColor="@color/black_light"/>
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0.05dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@color/black_light"/>
 
-    <TextView
-        android:id="@+id/degree_branch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:padding="16dp"
-        android:text="Specialization"
-        android:textColor="@color/black_light"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/degree"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="16dp"
+                android:text="Degree"
+                android:textColor="@color/black_light"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="0.05dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:background="@color/black_light"/>
+
+            <TextView
+                android:id="@+id/degree_branch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:padding="16dp"
+                android:text="Specialization"
+                android:textColor="@color/black_light"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/remove_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:padding="8dp"
+            android:src="@drawable/ic_close_grey"/>
+    </RelativeLayout>
 </LinearLayout>

@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DetailsProfileFragment extends Fragment {
+    MandapTakApplication mApp;
     private TextView religion, height, caste, gotra;
     private ExtendedEditText weight;
     private Context context;
@@ -56,6 +57,7 @@ public class DetailsProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         context = getActivity();
+        mApp = (MandapTakApplication) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.fragment_details_profile, container, false);
         init();
 
@@ -101,7 +103,7 @@ public class DetailsProfileFragment extends Fragment {
                         alertDialog.dismiss();
                     }
                 });
-                if (MandapTakApplication.isNetworkAvailable(context)) {
+                if (mApp.isNetworkAvailable(context)) {
                     final ArrayList<ParseNameModel> list = getReligionList(null);
                     listView.setVisibility(View.VISIBLE);
                     listView.setAdapter(new DataAdapter(context, list));
@@ -132,7 +134,7 @@ public class DetailsProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (MandapTakApplication.isNetworkAvailable(context)) {
+                        if (mApp.isNetworkAvailable(context)) {
                             final ArrayList<ParseNameModel> list = getReligionList(editable.toString());
                             listView.setVisibility(View.VISIBLE);
                             listView.setAdapter(new DataAdapter(context, list));
@@ -176,7 +178,7 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
-                    if (MandapTakApplication.isNetworkAvailable(context)) {
+                    if (mApp.isNetworkAvailable(context)) {
                         final ArrayList<ParseNameModel> list = getCasteList(null);
                         listView.setVisibility(View.VISIBLE);
                         listView.setAdapter(new DataAdapter(context, list));
@@ -205,7 +207,7 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (MandapTakApplication.isNetworkAvailable(context)) {
+                            if (mApp.isNetworkAvailable(context)) {
                                 final ArrayList<ParseNameModel> list = getCasteList(editable.toString());
                                 listView.setVisibility(View.VISIBLE);
                                 listView.setAdapter(new DataAdapter(context, list));
@@ -250,7 +252,7 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
-                    if (MandapTakApplication.isNetworkAvailable(context)) {
+                    if (mApp.isNetworkAvailable(context)) {
                         final ArrayList<ParseNameModel> list = getGotraList(null);
                         listView.setVisibility(View.VISIBLE);
                         listView.setAdapter(new DataAdapter(context, list));
@@ -277,7 +279,7 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (MandapTakApplication.isNetworkAvailable(context)) {
+                            if (mApp.isNetworkAvailable(context)) {
                                 empty.setVisibility(View.GONE);
                                 final ArrayList<ParseNameModel> list = getGotraList(editable.toString());
                                 listView.setVisibility(View.VISIBLE);
@@ -416,44 +418,55 @@ public class DetailsProfileFragment extends Fragment {
     }
 
     private void getParseData() {
-        try {
-            ParseObject parseObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
-            newHeight = parseObject.getInt("height");
-            newWeight = parseObject.getInt("weight");
-            ParseObject tmpCaste, tmpReligion, tmpGotra;
-            tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-            tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-            tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-            if (newHeight != 0) {
-                int[] bases = getResources().getIntArray(R.array.heightCM);
-                String[] values = getResources().getStringArray(R.array.height);
-                Arrays.sort(bases);
-                int index = Arrays.binarySearch(bases, newHeight);
-                height.setText(values[index]);
-                height.setTextColor(context.getResources().getColor(R.color.black_dark));
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    try {
+                        newHeight = parseObject.getInt("height");
+                        newWeight = parseObject.getInt("weight");
+                        ParseObject tmpCaste, tmpReligion, tmpGotra;
+                        tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
+                        tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
+                        tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+                        if (newHeight != 0) {
+                            if (isAdded()) {
+                                int[] bases = getResources().getIntArray(R.array.heightCM);
+                                String[] values = getResources().getStringArray(R.array.height);
+                                Arrays.sort(bases);
+                                int index = Arrays.binarySearch(bases, newHeight);
+                                height.setText(values[index]);
+                                height.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            }
+                        }
+                        if (newWeight != 0) {
+                            weight.setText(String.valueOf(newWeight));
+                            weight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                        }
+                        if (tmpReligion != null) {
+                            newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
+                            religion.setText(newReligion.getName());
+                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
+                        }
+                        if (tmpCaste != null) {
+                            newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
+                            caste.setText(newCaste.getName());
+                            caste.setTextColor(context.getResources().getColor(R.color.black_dark));
+                        }
+                        if (tmpGotra != null) {
+                            newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
+                            gotra.setText(newGotra.getName());
+                            gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
+                        }
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    e.printStackTrace();
+                }
             }
-            if (newWeight != 0) {
-                weight.setText(String.valueOf(newWeight));
-                weight.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (tmpReligion != null) {
-                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
-                religion.setText(newReligion.getName());
-                religion.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (tmpCaste != null) {
-                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
-                caste.setText(newCaste.getName());
-                caste.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (tmpGotra != null) {
-                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
-                gotra.setText(newGotra.getName());
-                gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
+        });
     }
 
     void saveInfo() {

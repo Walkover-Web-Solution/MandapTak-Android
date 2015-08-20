@@ -1,2 +1,2 @@
-include ':app', ':slidingMenu', ':niceSpinner'
+include ':app', ':slidingMenu', ':niceSpinner', ':photoPick', ':twoWayViewCore', ':twoWayViewLayouts'
 include ':viewPagerIndicator'

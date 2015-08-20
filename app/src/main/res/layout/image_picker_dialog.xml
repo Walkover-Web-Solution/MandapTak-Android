@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/take_camera_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="center|start"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/camera_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_camera_indigo"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp"
+            android:layout_toRightOf="@+id/camera_icon"
+            android:text="Take a picture"
+            android:textColor="@color/indigo_500"
+            android:textSize="14dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/gallery_import_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="center|start"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/gallery_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_device_teal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp"
+            android:layout_toRightOf="@+id/gallery_icon"
+            android:text="Import from Gallery"
+            android:textColor="@color/teal_500"
+            android:textSize="14dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/fb_import_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:gravity="center|start"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/fb_icon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/com_facebook_blue"
+            android:src="@drawable/com_facebook_button_icon"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="32dp"
+            android:layout_toRightOf="@+id/fb_icon"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fb_blue_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Import Photos from Facebook"
+                android:textColor="@color/com_facebook_blue"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/fb_blue_label"
+                android:text="This doesn't post anything on your profile"
+                android:textColor="@color/black_light"
+                android:textSize="10dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+</LinearLayout>

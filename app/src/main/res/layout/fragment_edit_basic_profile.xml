@@ -1,6 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:background="@color/white"
               android:orientation="vertical">
 
     <EditText
@@ -35,9 +36,10 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_gender"
         android:gravity="start|center"
+        android:hint="Gender"
         android:padding="8dp"
-        android:text="Gender"
-        android:textColor="@color/black_light"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView
@@ -56,9 +58,10 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_calender"
         android:gravity="center|start"
+        android:hint="Date of Birth"
         android:padding="8dp"
-        android:text="Date of Birth"
-        android:textColor="@color/black_light"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView
@@ -77,9 +80,10 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_clock"
         android:gravity="center|start"
+        android:hint="Time of Birth"
         android:padding="8dp"
-        android:text="Time of Birth"
-        android:textColor="@color/black_light"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView
@@ -98,10 +102,11 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_home"
         android:gravity="center|start"
+        android:hint="Place of birth"
         android:imeOptions="actionNext"
         android:padding="8dp"
-        android:text="Place of birth"
-        android:textColor="@color/black_light"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView
@@ -120,10 +125,11 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_pin"
         android:gravity="center|start"
+        android:hint="Current Location"
         android:imeOptions="actionNext"
         android:padding="8dp"
-        android:text="Current Location"
-        android:textColor="@color/black_light"
+        android:textColor="@color/black_dark"
+        android:textColorHint="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView

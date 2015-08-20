@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class BasicProfileFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+    MandapTakApplication mApp;
     private TextView gender, datePicker, timepicker;
     private TextView placeOfBirth, currentLocation;
     private EditText displayName;
@@ -117,7 +118,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                             progressBar.setVisibility(View.GONE);
                             empty.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.GONE);
-                        } else if (MandapTakApplication.isNetworkAvailable(context)) {
+                        } else if (mApp.isNetworkAvailable(context)) {
                             empty.setVisibility(View.GONE);
                             final ArrayList<Location> list = getCityList(editable.toString());
                             listView.setVisibility(View.VISIBLE);
@@ -127,7 +128,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                     newPOB = list.get(i).getCityObject();
                                     placeOfBirth.setText(list.get(i).getCity() + ", " + list.get(i).getState() + ", " + list.get(i).getCountry());
-                                    placeOfBirth.setTextColor(context.getResources().getColor(R.color.black_dark));
                                     alertDialog.dismiss();
                                 }
                             });
@@ -173,10 +173,10 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                         if (editable.length() == 0) {
                             empty.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.GONE);
-                        } else if (MandapTakApplication.isNetworkAvailable(context)) {
-                            MandapTakApplication.show_PDialog(context, "Loading..");
+                        } else if (mApp.isNetworkAvailable(context)) {
+                            mApp.show_PDialog(context, "Loading..");
                             final ArrayList<Location> list = getCityList(editable.toString());
-                            MandapTakApplication.dialog.dismiss();
+                            mApp.dialog.dismiss();
                             empty.setVisibility(View.GONE);
                             listView.setVisibility(View.VISIBLE);
                             listView.setAdapter(new LocationAdapter(context, list));
@@ -185,7 +185,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                                     currentLocation.setText(list.get(i).getCity() + ", " + list.get(i).getState() + ", " + list.get(i).getCountry());
                                     newCurrentLocation = list.get(i).getCityObject();
-                                    currentLocation.setTextColor(context.getResources().getColor(R.color.black_dark));
                                     alertDialog.dismiss();
                                 }
                             });
@@ -203,20 +202,15 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 AlertDialog.Builder conductor = new AlertDialog.Builder(
                         context);
                 conductor.setTitle("Select Gender");
-
-                int resId = getResources().getIdentifier("gender_array",
+                final int resId = getResources().getIdentifier("gender_array",
                         "array", context.getPackageName());
                 conductor.setItems(resId,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int index) {
-                                int resId1 = getResources().getIdentifier(
-                                        "gender_array", "array",
-                                        context.getPackageName());
                                 newGender = getResources()
-                                        .getStringArray(resId1)[index];
+                                        .getStringArray(resId)[index];
                                 gender.setText(newGender);
-                                gender.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                         });
                 AlertDialog alert = conductor.create();
@@ -244,6 +238,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
+        mApp = (MandapTakApplication) context.getApplicationContext();
         newDOB = Calendar.getInstance();
         newTOB = Calendar.getInstance();
         newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -259,50 +254,55 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     private void getParseData() {
-        try {
-            ParseObject parseObject = ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId");
-            newName = parseObject.getString("name");
-            newGender = parseObject.getString("gender");
-            newDOB.setTime(parseObject.getDate("dob"));
-            newTOB.setTime(parseObject.getDate("tob"));
-            newCurrentLocation = parseObject.getParseObject("currentLocation");
-            newPOB = parseObject.getParseObject("placeOfBirth");
+        mApp.show_PDialog(context, "Loading..");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    try {
+                        newName = parseObject.getString("name");
+                        newGender = parseObject.getString("gender");
+                        newDOB.setTime(parseObject.getDate("dob"));
+                        newTOB.setTime(parseObject.getDate("tob"));
+                        newCurrentLocation = parseObject.getParseObject("currentLocation");
+                        newPOB = parseObject.getParseObject("placeOfBirth");
 
-            if (newName != null) {
-                displayName.setText(newName);
-                displayName.setTextColor(context.getResources().getColor(R.color.black_dark));
+                        if (newName != null) {
+                            displayName.setText(newName);
+                        }
+                        if (newGender != null) {
+                            gender.setText(newGender);
+                        }
+                        if (newDOB != null) {
+                            DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            String subdateStr = df.format(newDOB.getTime());
+                            datePicker.setText(subdateStr);
+                        }
+                        if (newTOB != null) {
+                            DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            String subdateStr = df.format(newTOB.getTime());
+                            timepicker.setText(subdateStr);
+                        }
+                        if (newPOB != null) {
+                            placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
+                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                        }
+                        if (newCurrentLocation != null) {
+                            currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
+                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                        }
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                } else {
+                    e.printStackTrace();
+                }
+                mApp.dialog.dismiss();
             }
-            if (newGender != null) {
-                gender.setText(newGender);
-                gender.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (newDOB != null) {
-                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String subdateStr = df.format(newDOB.getTime());
-                datePicker.setText(subdateStr);
-                datePicker.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (newTOB != null) {
-                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String subdateStr = df.format(newTOB.getTime());
-                timepicker.setText(subdateStr);
-                timepicker.setTextColor(context.getResources().getColor(R.color.black_dark));
-            }
-            if (newPOB != null) {
-                placeOfBirth.setTextColor(context.getResources().getColor(R.color.black_dark));
-                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
-                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-            }
-            if (newCurrentLocation != null) {
-                currentLocation.setTextColor(context.getResources().getColor(R.color.black_dark));
-                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
-                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-            }
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
+        });
     }
 
     private ArrayList<Location> getCityList(String query) {
@@ -380,7 +380,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.day = selectedDay;
 
         newDOB.set(year, month, day, 0, 0);
-        datePicker.setTextColor(context.getResources().getColor(R.color.black_dark));
         SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newDOB.getTime());
@@ -392,7 +391,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.hourofDay = hourOfDay;
         this.minute = minute;
         newTOB.set(92, 0, 1, hourOfDay, minute);
-        timepicker.setTextColor(context.getResources().getColor(R.color.black_dark));
         SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newTOB.getTime());

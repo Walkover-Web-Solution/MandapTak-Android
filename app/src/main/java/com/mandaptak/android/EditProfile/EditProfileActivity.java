@@ -8,11 +8,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.R;
 
 import java.util.Locale;
@@ -21,7 +20,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
-    ImageView skipButton;
+    FloatingActionButton skipButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +35,8 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        skipButton = (ImageView) findViewById(R.id.skip_next);
+        skipButton = (FloatingActionButton) findViewById(R.id.skip_next);
+        skipButton.setSize(FloatingActionButton.SIZE_MINI);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
 
@@ -79,19 +79,9 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_edit_profile, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if (id == android.R.id.home) {
+        if (id == android.R.id.home) {
             onBackPressed();
         }
         return super.onOptionsItemSelected(item);
@@ -127,6 +117,8 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                     return new DetailsProfileFragment();
                 case 2:
                     return new QualificationEditProfileFragment();
+                case 3:
+                    return new FinalEditProfileFragment();
                 default:
                     return new BasicProfileFragment();
             }

@@ -50,7 +50,6 @@ public class ItemSelectionSupport {
     public static void removeFrom(RecyclerView recyclerView) {
         final ItemSelectionSupport itemSelection = from(recyclerView);
         if (itemSelection == null) {
-            // TODO: Log warning
             return;
         }
 
@@ -355,11 +354,9 @@ public class ItemSelectionSupport {
         mCheckedStates = state.getParcelable(STATE_KEY_CHECKED_STATES);
         mCheckedIdStates = state.getParcelable(STATE_KEY_CHECKED_ID_STATES);
         mCheckedCount = state.getInt(STATE_KEY_CHECKED_COUNT);
-
-        // TODO confirm ids here
     }
 
-    public static enum ChoiceMode {
+    public enum ChoiceMode {
         NONE,
         SINGLE,
         MULTIPLE

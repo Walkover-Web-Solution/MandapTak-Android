@@ -17,7 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.github.pierry.simpletoast.SimpleToast;
-import com.mandaptak.android.MandapTakApplication;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.ExtendedEditText;
@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DetailsProfileFragment extends Fragment {
-    MandapTakApplication mApp;
+    Common mApp;
     private TextView religion, height, caste, gotra;
     private ExtendedEditText weight;
     private Context context;
@@ -57,7 +57,7 @@ public class DetailsProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         context = getActivity();
-        mApp = (MandapTakApplication) context.getApplicationContext();
+        mApp = (Common) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.fragment_details_profile, container, false);
         init();
 

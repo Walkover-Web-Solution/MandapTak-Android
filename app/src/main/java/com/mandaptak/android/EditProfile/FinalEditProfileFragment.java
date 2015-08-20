@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mandaptak.android.Adapter.LayoutAdapter;
-import com.mandaptak.android.MandapTakApplication;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.R;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -49,7 +49,7 @@ public class FinalEditProfileFragment extends Fragment {
     TextView importPhotosButton, uploadBiodata;
     Context context;
     LayoutAdapter photoAdapter;
-    MandapTakApplication mApp;
+    Common mApp;
     ArrayList<String> selectedPhotos = new ArrayList<>();
 
     public FinalEditProfileFragment() {
@@ -61,7 +61,7 @@ public class FinalEditProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_final_edit_profile, container, false);
         context = getActivity();
-        mApp = (MandapTakApplication) context.getApplicationContext();
+        mApp = (Common) context.getApplicationContext();
         imageList = (TwoWayView) rootView.findViewById(R.id.list);
         importPhotosButton = (TextView) rootView.findViewById(R.id.import_photos);
         uploadBiodata = (TextView) rootView.findViewById(R.id.upload_biodata);

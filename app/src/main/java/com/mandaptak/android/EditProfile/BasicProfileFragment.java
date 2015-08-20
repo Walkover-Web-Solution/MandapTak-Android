@@ -21,7 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
-import com.mandaptak.android.MandapTakApplication;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Models.Location;
 import com.mandaptak.android.R;
 import com.parse.FindCallback;
@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class BasicProfileFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
-    MandapTakApplication mApp;
+    Common mApp;
     private TextView gender, datePicker, timepicker;
     private TextView placeOfBirth, currentLocation;
     private EditText displayName;
@@ -238,7 +238,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
-        mApp = (MandapTakApplication) context.getApplicationContext();
+        mApp = (Common) context.getApplicationContext();
         newDOB = Calendar.getInstance();
         newTOB = Calendar.getInstance();
         newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));

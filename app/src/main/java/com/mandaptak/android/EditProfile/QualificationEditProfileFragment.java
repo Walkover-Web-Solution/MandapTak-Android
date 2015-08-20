@@ -20,7 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.pierry.simpletoast.SimpleToast;
-import com.mandaptak.android.MandapTakApplication;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.ExtendedEditText;
@@ -55,14 +55,14 @@ public class QualificationEditProfileFragment extends Fragment {
     private ParseNameModel newEducationDetail1, newEducationDetail2, newEducationDetail3;
     private TextView eduChildDegree1, eduChildDegree2, eduChildDegree3;
     private TextView eduChildDegreeBranch1, eduChildDegreeBranch2, eduChildDegreeBranch3;
-    private MandapTakApplication mApp;
+    private Common mApp;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_qualification_edit_profile, container, false);
         context = getActivity();
-        mApp = (MandapTakApplication) context.getApplicationContext();
+        mApp = (Common) context.getApplicationContext();
         init();
 
         workAfterMarriage.setAdapter(ArrayAdapter.createFromResource(getActivity(),

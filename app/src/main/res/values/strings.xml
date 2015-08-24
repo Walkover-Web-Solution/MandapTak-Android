@@ -1,0 +1,109 @@
+<resources>
+    <string name="app_name">MandapTak</string>
+    <string name="title_activity_main">Main Activity</string>
+    <string name="title_activity_edit_profile">Complete Profile</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="parse_app_id">6VKC4u0ysZmMG3YiOml8Otcygm75P0IUg11sqosQ</string>
+    <string name="parse_client_key">79eXBP3GueXojoG1uHIuUzl4OBJ6cuLB5vIpw6Tl</string>
+    <string name="title_section3">Section 3</string>
+    <string name="title_section4">Section 4</string>
+    <string name="facebook_app_id">371102383093522</string>
+    <string name="divider">divider</string>
+    <string name="user_preferences">Preferences</string>
+    <string-array name="gender_array">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="religion_array">
+        <item>Hindu</item>
+        <item>Muslim</item>
+        <item>Christian</item>
+        <item>Sikh</item>
+        <item>Parsi</item>
+        <item>Jain</item>
+        <item>Buddhist</item>
+        <item>Jewish</item>
+        <item>No Religion</item>
+        <item>Spiritual - not religious</item>
+        <item>Other</item>
+    </string-array>
+    <string-array name="wam_array">
+        <item>No</item>
+        <item>Yes</item>
+        <item>Maybe</item>
+    </string-array>
+    <string-array name="mangalik_array">
+        <item>No</item>
+        <item>Yes</item>
+        <item>Aanshik</item>
+    </string-array>
+    <string-array name="height">
+        <item>4ft 5in - 134cm</item>
+        <item>4ft 6in - 137cm</item>
+        <item>4ft 7in - 139cm</item>
+        <item>4ft 8in - 142cm</item>
+        <item>4ft 9in - 144cm</item>
+        <item>4ft 10in - 147cm</item>
+        <item>4ft 11in - 149cm</item>
+        <item>5ft - 152cm</item>
+        <item>5ft 1in - 154cm</item>
+        <item>5ft 2in - 157cm</item>
+        <item>5ft 3in - 160cm</item>
+        <item>5ft 4in - 162cm</item>
+        <item>5ft 5in - 165cm</item>
+        <item>5ft 6in - 167cm</item>
+        <item>5ft 7in - 170cm</item>
+        <item>5ft 8in - 172cm</item>
+        <item>5ft 9in - 175cm</item>
+        <item>5ft 10in - 177cm</item>
+        <item>5ft 11in - 180cm</item>
+        <item>6ft - 182cm</item>
+        <item>6ft 1in - 185cm</item>
+        <item>6ft 2in - 187cm</item>
+        <item>6ft 3in - 190cm</item>
+        <item>6ft 4in - 193cm</item>
+        <item>6ft 5in - 195cm</item>
+        <item>6ft 6in - 198cm</item>
+        <item>6ft 7in - 200cm</item>
+        <item>6ft 8in - 203cm</item>
+        <item>6ft 9in - 205cm</item>
+        <item>6ft 10in - 208cm</item>
+        <item>6ft 11in - 210cm</item>
+        <item>7ft - 213cm</item>
+    </string-array>
+    <integer-array name="heightCM">
+        <item>134</item>
+        <item>137</item>
+        <item>139</item>
+        <item>142</item>
+        <item>144</item>
+        <item>147</item>
+        <item>149</item>
+        <item>152</item>
+        <item>154</item>
+        <item>157</item>
+        <item>160</item>
+        <item>162</item>
+        <item>165</item>
+        <item>167</item>
+        <item>170</item>
+        <item>172</item>
+        <item>175</item>
+        <item>177</item>
+        <item>180</item>
+        <item>182</item>
+        <item>185</item>
+        <item>187</item>
+        <item>190</item>
+        <item>193</item>
+        <item>195</item>
+        <item>198</item>
+        <item>200</item>
+        <item>203</item>
+        <item>205</item>
+        <item>208</item>
+        <item>210</item>
+        <item>213</item>
+    </integer-array>
+</resources>

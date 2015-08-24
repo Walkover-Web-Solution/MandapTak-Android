@@ -1,2 +1,2 @@
-include ':app', ':slidingMenu', ':photoPick', ':twoWayViewCore', ':twoWayViewLayouts', ':supertoasts', ':cropImage'
+include ':app', ':slidingMenu', ':photoPick', ':twoWayViewCore', ':twoWayViewLayouts', ':cropImage'
 include ':viewPagerIndicator'

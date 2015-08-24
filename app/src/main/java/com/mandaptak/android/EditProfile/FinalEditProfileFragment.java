@@ -149,7 +149,7 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         if (e == null) {
-
+                            checkFieldsTab1();
                         } else {
                             e.printStackTrace();
                             mApp.dialog.dismiss();
@@ -162,6 +162,10 @@ public class FinalEditProfileFragment extends Fragment {
 
         getParseData();
         return rootView;
+    }
+
+    private boolean checkFieldsTab1() {
+        return false;
     }
 
     private void showFileChooser() {

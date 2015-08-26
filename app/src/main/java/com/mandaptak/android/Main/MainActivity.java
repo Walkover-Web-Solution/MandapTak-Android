@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -20,8 +21,9 @@ import android.widget.RelativeLayout;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
-import com.mandaptak.android.Login.LoginActivityFb;
+import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -48,17 +50,21 @@ public class MainActivity extends AppCompatActivity {
     SlidingUpPanelLayout slidingPanel;
     ImageView pinButton;
     View navigationMenu;
+    Common mApp;
     Context context;
     ArrayList<ImageModel> userProfileImages = new ArrayList<>();
     TwoWayView twoWayView;
     UserImagesAdapter userImagesAdapter;
     public final static int REQUEST_CODE = 11;
+    ImageButton mLikeUser;
+    Boolean liked = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context = MainActivity.this;
+        mApp = (Common) context.getApplicationContext();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         try {
@@ -75,11 +81,26 @@ public class MainActivity extends AppCompatActivity {
         bottomLayout = (LinearLayout) findViewById(R.id.bottom_panel);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
         pinButton = (ImageView) findViewById(R.id.pin_button);
+        mLikeUser = (ImageButton) findViewById(R.id.like_user);
         twoWayView = (TwoWayView) findViewById(R.id.list);
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+            }
+        });
+        mLikeUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (liked) {
+                    mLikeUser.setBackgroundResource(R.drawable.unlike);
+                    liked = false;
+                    mApp.showToast(context,"Liked");
+
+                } else {
+                    mLikeUser.setBackgroundResource(R.drawable.like);
+                    liked = true;
+                }
             }
         });
         getParseData();
@@ -153,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
         prefsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, LoginActivityFb.class));
+                startActivity(new Intent(MainActivity.this, UserPreferences.class));
             }
         });
 //        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");

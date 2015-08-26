@@ -1,8 +1,7 @@
 package com.mandaptak.android.Adapter;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +11,17 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.mandaptak.android.Models.LocationPreference;
+import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 
 public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
 
-    private final List<LocationPreference> list;
-    private final Activity context;
+    private final ArrayList<LocationPreference> list;
+    private final UserPreferences userPreferences;
 
-    public LocationDataAdapter(Activity context, List<LocationPreference> list) {
-        super(context, R.layout.location_list_row, list);
-        this.context = context;
+    public LocationDataAdapter(UserPreferences userPreferences, ArrayList<LocationPreference> list) {
+        super(userPreferences, R.layout.location_list_row, list);
+        this.userPreferences = userPreferences;
         this.list = list;
     }
 
@@ -31,35 +31,32 @@ public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = null;
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            LayoutInflater inflator = context.getLayoutInflater();
-            view = inflator.inflate(R.layout.location_list_row, null);
+            LayoutInflater inflator = userPreferences.getLayoutInflater();
+            convertView = inflator.inflate(R.layout.location_list_row, parent, false);
             final ViewHolder viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) view.findViewById(R.id.label);
-            viewHolder.checkbox = (CheckBox) view.findViewById(R.id.check);
-            viewHolder.checkbox
-                    .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                        @Override
-                        public void onCheckedChanged(CompoundButton buttonView,
-                                                     boolean isChecked) {
-                            LocationPreference element = (LocationPreference) viewHolder.checkbox
-                                    .getTag();
-                            element.setSelected(buttonView.isChecked());
-
-                        }
-                    });
-            view.setTag(viewHolder);
+            viewHolder.text = (TextView) convertView.findViewById(R.id.label);
+            viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.check);
+            convertView.setTag(viewHolder);
+            viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    list.get(position).setIsSelected(isChecked);
+                    if (isChecked)
+                        userPreferences.addLocation((LocationPreference) viewHolder.checkbox.getTag());
+                    else
+                        userPreferences.removeLocation((LocationPreference) viewHolder.checkbox.getTag());
+                }
+            });
             viewHolder.checkbox.setTag(list.get(position));
         } else {
-            view = convertView;
-            ((ViewHolder) view.getTag()).checkbox.setTag(list.get(position));
+            ((ViewHolder) convertView.getTag()).checkbox.setTag(list.get(position));
         }
-        ViewHolder holder = (ViewHolder) view.getTag();
+        ViewHolder holder = (ViewHolder) convertView.getTag();
         holder.text.setText(list.get(position).getLocationName());
-        holder.checkbox.setChecked(list.get(position).getSelected());
-        return view;
+        holder.checkbox.setChecked(list.get(position).isSelected());
+
+        return convertView;
     }
 }

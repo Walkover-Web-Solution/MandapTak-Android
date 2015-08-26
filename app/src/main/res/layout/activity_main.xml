@@ -201,6 +201,7 @@
                     android:layout_height="100dp"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
+                    android:orientation="horizontal"
                     app:twowayview_layoutManager="ListLayoutManager"/>
                 <LinearLayout
                     android:layout_width="match_parent"

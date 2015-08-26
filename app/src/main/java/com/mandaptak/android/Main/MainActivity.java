@@ -1,5 +1,7 @@
 package com.mandaptak.android.Main;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,30 +18,47 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.Login.LoginActivityFb;
-import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.TypefaceTextView;
-import com.parse.GetCallback;
+import com.parse.FindCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.lucasr.twowayview.widget.TwoWayView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import me.iwf.photopicker.utils.ImageModel;
+
 public class MainActivity extends AppCompatActivity {
     SlidingMenu menu;
-    RelativeLayout slidingLayout ;
+    RelativeLayout slidingLayout;
     LinearLayout bottomLayout;
     SlidingUpPanelLayout slidingPanel;
     ImageView pinButton;
     View navigationMenu;
+    Context context;
+    ArrayList<ImageModel> userProfileImages = new ArrayList<>();
+    TwoWayView twoWayView;
+    UserImagesAdapter userImagesAdapter;
+    public final static int REQUEST_CODE = 11;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context = MainActivity.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         try {
@@ -56,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
         bottomLayout = (LinearLayout) findViewById(R.id.bottom_panel);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
         pinButton = (ImageView) findViewById(R.id.pin_button);
+        twoWayView = (TwoWayView) findViewById(R.id.list);
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                 slidingLayout.setVisibility(View.VISIBLE);
                 slidingLayout.setAlpha(v);
                 bottomLayout.setAlpha(1 - v);
+
             }
 
             @Override
@@ -106,7 +127,9 @@ public class MainActivity extends AppCompatActivity {
         });
 //        menu.showMenu(true);
 
+
     }
+
 
     void getParseData() {
         navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
@@ -152,6 +175,49 @@ public class MainActivity extends AppCompatActivity {
 //        } catch (ParseException e) {
 //            e.printStackTrace();
 //        }
+        getMatchesFromFunction();
+
+        getUserPhotos();
+
+    }
+
+    private void getMatchesFromFunction() {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("oid", ParseUser.getCurrentUser().getParseObject("profileId").getObjectId());
+        ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object o, ParseException e) {
+                if (e == null) {
+                    // ratings is 4.5
+                }
+            }
+        });
+
+    }
+
+    private void getUserPhotos() {
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
+        parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (list != null && list.size() > 0) {
+                    for (ParseObject model : list) {
+                        try {
+                            ImageModel imageModel = new ImageModel();
+                            ParseFile file = model.fetchIfNeeded().getParseFile("file");
+                            imageModel.setLink(file.getUrl());
+                            imageModel.setIsPrimary(true);
+                            userProfileImages.add(imageModel);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+                    }
+                    userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+                    twoWayView.setAdapter(userImagesAdapter);
+                }
+            }
+        });
     }
 
     @Override
@@ -186,6 +252,20 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int pos) {
             return MainFragment.newInstance(pos);
+        }
+    }
+
+    public void previewPhoto(Intent intent) {
+        startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+
+
         }
     }
 }

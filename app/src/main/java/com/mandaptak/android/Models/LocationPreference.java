@@ -1,18 +1,44 @@
 package com.mandaptak.android.Models;
 
 
+import com.parse.ParseObject;
+
 public class LocationPreference {
 
-    String locationName;
-    int locationType;
-    String locatinoId;
-    Boolean selected=false;
+    private String locationName;
+    private int locationType;
+    private Boolean selected = false;
+    private ParseObject parseObject;
+    private ParseObject country;
+    private ParseObject state;
+    private ParseObject city;
 
-    public Boolean getSelected() {
+    public LocationPreference(String locationName, int locationType, Boolean selected, ParseObject parseObject, ParseObject country, ParseObject state, ParseObject city) {
+        this.locationName = locationName;
+        this.locationType = locationType;
+        this.selected = selected;
+        this.parseObject = parseObject;
+        this.country = country;
+        this.state = state;
+        this.city = city;
+    }
+
+    public LocationPreference() {
+    }
+
+    public ParseObject getCountry() {
+        return country;
+    }
+
+    public void setCountry(ParseObject country) {
+        this.country = country;
+    }
+
+    public Boolean isSelected() {
         return selected;
     }
 
-    public void setSelected(Boolean selected) {
+    public void setIsSelected(Boolean selected) {
         this.selected = selected;
     }
 
@@ -32,11 +58,27 @@ public class LocationPreference {
         this.locationType = locationType;
     }
 
-    public String getLocatinoId() {
-        return locatinoId;
+    public ParseObject getParseObject() {
+        return parseObject;
     }
 
-    public void setLocatinoId(String locatinoId) {
-        this.locatinoId = locatinoId;
+    public void setParseObject(ParseObject parseObject) {
+        this.parseObject = parseObject;
+    }
+
+    public ParseObject getState() {
+        return state;
+    }
+
+    public void setState(ParseObject state) {
+        this.state = state;
+    }
+
+    public ParseObject getCity() {
+        return city;
+    }
+
+    public void setCity(ParseObject city) {
+        this.city = city;
     }
 }

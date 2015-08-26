@@ -10,7 +10,7 @@
     <string name="title_section4">Section 4</string>
     <string name="facebook_app_id">1660728884139967</string>
     <string name="divider">divider</string>
-    <string name="user_preferences">Preferences</string>
+    <string name="user_preferences">Your Preferences</string>
     <string-array name="gender_array">
         <item>Male</item>
         <item>Female</item>
@@ -32,6 +32,11 @@
         <item>No</item>
         <item>Yes</item>
         <item>Maybe</item>
+    </string-array>
+    <string-array name="manglik_status_array">
+        <item>No</item>
+        <item>Yes</item>
+        <item>Any</item>
     </string-array>
     <string-array name="mangalik_array">
         <item>No</item>

@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -13,7 +14,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
@@ -175,7 +175,6 @@ public class Common extends Application {
     public void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
-
 
     @Override
     public void onCreate() {

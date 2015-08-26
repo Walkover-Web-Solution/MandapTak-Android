@@ -14,7 +14,6 @@ import me.iwf.photopicker.utils.ImageModel;
 public class Prefs {
 
     public static String USER_NAME = "user_name";
-    public static String PASSWORD = "password";
     public static String IMAGE_LIST = "image_list";
 
     private static SharedPreferences getPrefs(Context context) {

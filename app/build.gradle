@@ -8,6 +8,9 @@ android {
         applicationId "com.mandaptak.android"
         minSdkVersion 14
         targetSdkVersion 22
+
+        renderscriptTargetApi 22
+        renderscriptSupportModeEnabled true
     }
 
     buildTypes {

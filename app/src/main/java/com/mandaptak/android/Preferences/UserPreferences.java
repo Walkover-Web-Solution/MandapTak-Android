@@ -34,7 +34,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -403,9 +402,7 @@ public class UserPreferences extends AppCompatActivity {
                         parseObject.put("minGunMatch", 0);
                         parseObject.saveInBackground();
                         saveLocationData(parseObject);
-
-
-                    } else {
+                    } else if (e.getCode() == 101) {
                         ParseObject parseObjectNew = new ParseObject("Preference");
                         parseObjectNew.put("minHeight", minHeight);
                         parseObjectNew.put("maxHeight", maxHeight);
@@ -419,16 +416,10 @@ public class UserPreferences extends AppCompatActivity {
                             parseObject.put("minIncome", minIncome);
                         parseObjectNew.put("minGunMatch", 0);
                         parseObjectNew.put("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                        parseObjectNew.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-
-                                if (e != null) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                        parseObjectNew.saveInBackground();
                         saveLocationData(parseObject);
+                    } else {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -472,7 +463,6 @@ public class UserPreferences extends AppCompatActivity {
                     }
             }
         });
-
 
     }
 

@@ -1,16 +1,22 @@
 package com.mandaptak.android.Login;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.facebook.login.widget.ProfilePictureView;
 import com.mandaptak.android.R;
 import com.parse.ParseUser;
@@ -18,6 +24,9 @@ import com.parse.ParseUser;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class UserDetailsActivity extends Activity {
 
@@ -27,39 +36,43 @@ public class UserDetailsActivity extends Activity {
     private TextView userEmailView;
     private Long FbUserId;
     private String albumId;
+    private Dialog progressDialog;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.userdetails);
-
+        context = this;
         userProfilePictureView = (ProfilePictureView) findViewById(R.id.userProfilePicture);
         userNameView = (TextView) findViewById(R.id.userName);
         userGenderView = (TextView) findViewById(R.id.userGender);
         userEmailView = (TextView) findViewById(R.id.userEmail);
-
-        //Fetch Facebook user info if it is logged
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if ((currentUser != null) && currentUser.isAuthenticated()) {
-            makeMeRequest();
-        }
+        authenticateUser();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void authenticateUser() {
+        progressDialog = ProgressDialog.show(context, "", "Logging in...", true);
+        List<String> permissions = Arrays.asList("public_profile", "email", "user_photos");
+        LoginManager loginManager = LoginManager.getInstance();
+        loginManager.registerCallback(CallbackManager.Factory.create(), new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                progressDialog.dismiss();
+                makeMeRequest();
+            }
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            // Check if the user is currently logged
-            // and show any cached content
-            updateViewsWithProfileInfo();
-        } else {
-            // If the user is not logged in, go to the
-            // activity showing the login view.
-            startLoginActivity();
-        }
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+
+            }
+        });
+        loginManager.logInWithReadPermissions(this, permissions);
     }
 
     private void makeMeRequest() {
@@ -204,24 +217,5 @@ public class UserDetailsActivity extends Activity {
                 Log.d("Facebook", "Error parsing saved user data.");
             }
         }
-    }
-
-    public void onLogoutClick(View v) {
-        logout();
-    }
-
-    private void logout() {
-        // Log the user out
-        ParseUser.logOut();
-
-        // Go to the login view
-        startLoginActivity();
-    }
-
-    private void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 }

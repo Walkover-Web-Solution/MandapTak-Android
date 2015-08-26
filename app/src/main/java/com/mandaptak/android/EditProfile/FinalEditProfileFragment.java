@@ -2,8 +2,6 @@ package com.mandaptak.android.EditProfile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -25,15 +23,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.mandaptak.android.Adapter.LayoutAdapter;
-import com.mandaptak.android.Login.LoginActivity;
-import com.mandaptak.android.Login.LoginActivityFb;
+import com.mandaptak.android.Login.UserDetailsActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -41,6 +36,7 @@ import com.parse.ParseUser;
 import com.parse.ProgressCallback;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.lucasr.twowayview.TwoWayLayoutManager;
@@ -53,7 +49,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPickerActivity;
@@ -75,8 +70,8 @@ public class FinalEditProfileFragment extends Fragment {
     EditText minBudget, maxBudget;
     long newMinBudget = 0, newMaxBudget = 0;
     private LinearLayout saveProfile;
-    private Dialog progressDialog;
-    private Long FbUserId;
+    private Long fbUserId;
+    private String albumId;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -143,7 +138,7 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         alertDialog.dismiss();
-                        authenticateUser();
+                        startActivity(new Intent(getActivity(), UserDetailsActivity.class));
                     }
                 });
                 alertDialog.show();
@@ -488,76 +483,66 @@ public class FinalEditProfileFragment extends Fragment {
         return ous.toByteArray();
     }
 
-
-    private void authenticateUser(){
-        // Check if there is a currently logged in user
-        // and it's linked to a Facebook account.
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-            // Go to the user info activity
-            getUserDetails();
-        }
-        else {
-            progressDialog = ProgressDialog.show(context, "", "Logging in...", true);
-            List<String> permissions = Arrays.asList("public_profile", "email", "user_photos");
-            // NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
-            // (https://developers.facebook.com/docs/facebook-login/permissions/)
-
-            ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
-                @Override
-                public void done(ParseUser user, ParseException err) {
-                    progressDialog.dismiss();
-                    if (user == null) {
-                        Log.d("Facebook", "Uh oh. The user cancelled the Facebook login.");
-                    } else if (user.isNew()) {
-                        Log.d("Facebook", "User signed up and logged in through Facebook!");
-                        getUserDetails();
-                    } else {
-                        Log.d("Facebook", "User logged in through Facebook!");
-                        getUserDetails();
+    public void getUserPhotos() {
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + fbUserId + "/albums",
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        if (response != null) {
+                            Log.e("album_response", response.toString());
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.toString());
+                                JSONObject graphObject = jsonObject.getJSONObject("graphObject");
+                                JSONArray albumsArr = graphObject.getJSONArray("data");
+                                for (int i = 0; i < albumsArr.length(); i++) {
+                                    jsonObject = albumsArr.getJSONObject(i);
+                                    if (jsonObject.getString("type").equalsIgnoreCase("profile")) {
+                                        albumId = jsonObject.getString("id");
+                                        Log.e("Link", "" + jsonObject.getString("link"));
+                                    }
+                                }
+                                getImageUrls();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
-            });
-        }
+        ).executeAsync();
     }
 
+    private void getImageUrls() {
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + albumId,
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        if (response != null) {
+                            Log.e("", "" + response.toString());
+                        }
+                    }
+                }
+        ).executeAsync();
 
-
-    private void getUserDetails(){
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if ((currentUser != null) && currentUser.isAuthenticated()) {
-            makeMeRequest();
-        }
     }
+
     private void makeMeRequest() {
+        Log.e("makeMeRequest", "Start");
         GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
                         if (jsonObject != null) {
-                            JSONObject userProfile = new JSONObject();
-
                             try {
-                                FbUserId = jsonObject.getLong("id");
-                                userProfile.put("facebookId", jsonObject.getLong("id"));
-                                userProfile.put("name", jsonObject.getString("name"));
-
-                                if (jsonObject.getString("gender") != null)
-                                    userProfile.put("gender", jsonObject.getString("gender"));
-
-                                if (jsonObject.getString("email") != null)
-                                    userProfile.put("email", jsonObject.getString("email"));
-
-                                // Save the user profile info in a user property
-                                ParseUser currentUser = ParseUser.getCurrentUser();
-                                currentUser.put("profile", userProfile);
-                                currentUser.saveInBackground();
-
-                                // Show the user info
-                             //   updateViewsWithProfileInfo();
+                                fbUserId = jsonObject.getLong("id");
+                                Log.e("fbUserId", "" + fbUserId);
                             } catch (JSONException e) {
-                                Log.d("facebook",
-                                        "Error parsing returned user data. " + e);
+                                e.printStackTrace();
                             }
                             getUserPhotos();
                         } else if (graphResponse.getError() != null) {
@@ -584,42 +569,6 @@ public class FinalEditProfileFragment extends Fragment {
         parameters.putString("fields", "id,email,gender,name");
         request.setParameters(parameters);
         request.executeAsync();
-
-    }
-
-    public void getUserPhotos() {
-
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/" + FbUserId + "/albums",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-            /* handle the result */
-                        if (response!=null){
-
-
-
-
-                        }
-                    }
-                }
-        ).executeAsync();
-        new GraphRequest(
-                AccessToken.getCurrentAccessToken(),
-                "me/albums",
-                null,
-                HttpMethod.GET,
-                new GraphRequest.Callback() {
-                    public void onCompleted(GraphResponse response) {
-            /* handle the result */
-                        if (response!=null){
-
-                        }
-                    }
-                }
-        ).executeAsync();
-
+        Log.e("makeMeRequest", "End");
     }
 }

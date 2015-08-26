@@ -1,5 +1,6 @@
 package com.mandaptak.android.Login;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,10 +9,18 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.mandaptak.android.Adapter.LocationDataAdapter;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -24,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     Context context;
     Common mApp;
+    EditText etNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         loginButton = (Button) findViewById(R.id.login_button);
+        etNumber = (EditText) findViewById(R.id.number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
 
@@ -51,18 +62,12 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
-                    public void done(ParseUser user, ParseException e) {
-                        if (user != null) {
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                            LoginActivity.this.finish();
-                            mApp.showToast(context, "Welcome");
-                        } else {
-                            Log.e("Login", "" + e);
-                            mApp.showToast(context, "Invalid ID/Password");
-                        }
-                    }
-                });
+                if (!etNumber.getText().toString().equals("") && etNumber.getText().toString() != null) {
+                    showDialogVerifyNumber();
+                } else
+                    mApp.showToast(context, "Invalid Number");
+
+
             }
         });
 //        importLocation();
@@ -169,4 +174,42 @@ public class LoginActivity extends AppCompatActivity {
             return 5;
         }
     }
+
+    private void showDialogVerifyNumber() {
+        final View locationDialog = View.inflate(context, R.layout.verify_otp_dialog, null);
+        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+        alertDialog.setView(locationDialog);
+        TextView title = (TextView) locationDialog.findViewById(R.id.title);
+        final EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
+        title.setText("Verify Otp");
+        final Button done = (Button) locationDialog.findViewById(R.id.cancel_button);
+        done.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                mApp.show_PDialog(context, "Verifying");
+                if (!searchBar.getText().toString().equals("") && searchBar.getText().toString() != null) {
+                    ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
+                        public void done(ParseUser user, ParseException e) {
+                            if (user != null) {
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                mApp.dialog.dismiss();
+                                LoginActivity.this.finish();
+                                mApp.showToast(context, "Welcome");
+                            } else {
+                                Log.e("Login", "" + e);
+                                mApp.showToast(context, "Invalid ID/Password");
+                            }
+                        }
+                    });
+                }
+
+            }
+        });
+
+
+        alertDialog.show();
+    }
+
+
 }

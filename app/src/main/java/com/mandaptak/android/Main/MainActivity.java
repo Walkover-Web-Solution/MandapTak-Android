@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -64,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ImageModel> userProfileImages = new ArrayList<>();
     TwoWayView profileImages;
     UserImagesAdapter userImagesAdapter;
+    public final static int REQUEST_CODE = 11;
+    ImageButton mLikeUser;
+    Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
     TextView frontProfileName, frontHeight, frontDesignation, frontImage, frontReligion;
     CircleImageView frontPhoto;
@@ -72,8 +76,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = this;
-        mApp = (Common) context.getApplicationContext();
+        context = MainActivity.this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         try {
@@ -90,10 +93,26 @@ public class MainActivity extends AppCompatActivity {
         pinButton = (ImageView) findViewById(R.id.pin_button);
         profileImages = (TwoWayView) findViewById(R.id.list);
         backgroundPhoto = (ImageView) findViewById(R.id.background_photo);
+        mLikeUser = (ImageButton) findViewById(R.id.like_user);
+        twoWayView = (TwoWayView) findViewById(R.id.list);
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+            }
+        });
+        mLikeUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (liked) {
+                    mLikeUser.setBackgroundResource(R.drawable.unlike);
+                    liked = false;
+                    mApp.showToast(context,"Liked");
+
+                } else {
+                    mLikeUser.setBackgroundResource(R.drawable.like);
+                    liked = true;
+                }
             }
         });
         getParseData();

@@ -5,4 +5,9 @@
         <attr name="border_color" format="color"/>
         <attr name="border_overlay" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="PxBlurringView">
+        <attr name="blurRadius" format="integer"/>
+        <attr name="downsampleFactor" format="integer"/>
+        <attr name="overlayColor" format="color"/>
+    </declare-styleable>
 </resources>

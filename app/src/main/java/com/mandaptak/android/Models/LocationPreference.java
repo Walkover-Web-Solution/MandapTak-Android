@@ -1,6 +1,5 @@
 package com.mandaptak.android.Models;
 
-
 import com.parse.ParseObject;
 
 public class LocationPreference {

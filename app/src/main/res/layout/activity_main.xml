@@ -21,7 +21,30 @@
             android:id="@+id/background_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"/>
+            android:clipChildren="false"
+            android:scaleType="fitXY"
+            android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>
+
+        <com.mandaptak.android.Views.BlurringView
+            android:id="@+id/blurring_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            app:blurRadius="12"
+            app:downsampleFactor="4"
+            app:overlayColor="#22000000"/>
+
+        <com.mandaptak.android.Views.CircleImageView
+            android:id="@+id/front_photo"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_below="@+id/toolbar"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="48dp"
+            android:src="@drawable/kriti_sanon"
+            app:border_color="#FF000000"
+            app:border_width="2dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,15 +55,6 @@
             android:orientation="vertical"
             android:paddingBottom="102dp">
 
-            <com.mandaptak.android.Views.CircleImageView
-                android:id="@+id/front_photo"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="52dp"
-                android:src="@drawable/kriti_sanon"
-                app:border_color="#FF000000"
-                app:border_width="2dp"/>
 
             <TextView
                 android:id="@+id/front_name"
@@ -238,6 +252,7 @@
                 </LinearLayout>
 
                 <ImageButton
+                    android:id="@+id/like_user"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

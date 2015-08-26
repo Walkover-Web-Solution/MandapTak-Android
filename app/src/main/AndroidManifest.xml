@@ -29,12 +29,10 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         //-------------------Facebook INIT ---------------------------
         <activity
             android:name=".Preferences.UserPreferences"
-            android:label="@string/user_preferences"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
@@ -57,14 +55,9 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
-        <activity
-            android:name="me.iwf.photopicker.FacebookProfilePhotoPickerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
 
         <activity
             android:name=".Login.LoginActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -76,17 +69,14 @@
 
         <activity
             android:name=".Login.UserDetailsActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"/>
 
         <activity
             android:name=".Main.MainActivity"
-            android:label="@string/title_activity_main"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityTheme"/>
         <activity
             android:name=".EditProfile.EditProfileActivity"
-            android:label="@string/title_activity_edit_profile"
             android:screenOrientation="portrait"/>
     </application>
 

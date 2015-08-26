@@ -7,111 +7,117 @@
                 android:orientation="vertical"
                 tools:context="com.mandaptak.android.EditProfile.FinalEditProfileFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/upload_biodata"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center|start"
-            android:padding="16dp"
-            android:text="+ UPLOAD BIODATA"
-            android:textColor="@color/red_500"
-            android:textSize="@dimen/abc_text_size_button_material"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="0.05dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@color/black_light"/>
-
+        android:layout_alignParentTop="true">
 
         <LinearLayout
-            android:id="@+id/budget_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:paddingTop="16dp"
-                android:text="Estimated Budget for Marriage"
-                android:textColor="@color/black_light"
-                android:textSize="@dimen/abc_text_size_medium_material"/>
-
-            <LinearLayout
+                android:id="@+id/upload_biodata"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="16dp">
-
-                <EditText
-                    android:id="@+id/budget_from"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:digits="0123456789"
-                    android:gravity="center|start"
-                    android:hint="\u20B9 Min"
-                    android:inputType="number"
-                    android:padding="16dp"
-                    android:textColor="@color/black_dark"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
-
-                <EditText
-                    android:id="@+id/budget_to"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="16dp"
-                    android:digits="0123456789"
-                    android:gravity="center|start"
-                    android:hint="\u20B9 Max"
-                    android:inputType="number"
-                    android:padding="16dp"
-                    android:textColor="@color/black_dark"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
-            </LinearLayout>
+                android:gravity="center|start"
+                android:padding="16dp"
+                android:text="+ UPLOAD BIODATA"
+                android:textColor="@color/red_500"
+                android:textSize="@dimen/abc_text_size_button_material"/>
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="0.05dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:layout_marginTop="8dp"
                 android:background="@color/black_light"/>
+
+
+            <LinearLayout
+                android:id="@+id/budget_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="16dp"
+                    android:text="Estimated Budget for Marriage"
+                    android:textColor="@color/black_light"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp">
+
+                    <EditText
+                        android:id="@+id/budget_from"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:digits="0123456789"
+                        android:gravity="center|start"
+                        android:hint="\u20B9 Min"
+                        android:inputType="number"
+                        android:padding="16dp"
+                        android:textColor="@color/black_dark"
+                        android:textSize="@dimen/abc_text_size_medium_material"/>
+
+                    <EditText
+                        android:id="@+id/budget_to"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="16dp"
+                        android:digits="0123456789"
+                        android:gravity="center|start"
+                        android:hint="\u20B9 Max"
+                        android:inputType="number"
+                        android:padding="16dp"
+                        android:textColor="@color/black_dark"
+                        android:textSize="@dimen/abc_text_size_medium_material"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="0.05dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/black_light"/>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/import_photos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:gravity="center|start"
+                android:padding="16dp"
+                android:text="+ IMPORT PHOTOS"
+                android:textColor="@color/red_400"
+                android:textSize="@dimen/abc_text_size_button_material"
+                android:textStyle="bold"/>
+
+            <org.lucasr.twowayview.widget.TwoWayView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginBottom="20dp"
+                android:focusableInTouchMode="true"
+                android:paddingBottom="24dp"
+                android:scrollbarAlwaysDrawHorizontalTrack="true"
+                android:scrollbarSize="2dp"
+                android:scrollbarThumbHorizontal="@color/blue_400"
+                android:scrollbars="horizontal"
+                app:twowayview_layoutManager="ListLayoutManager"/>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/import_photos"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:gravity="center|start"
-            android:padding="16dp"
-            android:text="+ IMPORT PHOTOS"
-            android:textColor="@color/red_400"
-            android:textSize="@dimen/abc_text_size_button_material"
-            android:textStyle="bold"/>
-
-        <org.lucasr.twowayview.widget.TwoWayView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="140dp"
-            android:focusableInTouchMode="true"
-            android:paddingBottom="20dp"
-            android:scrollbarAlwaysDrawHorizontalTrack="true"
-            android:scrollbarSize="2dp"
-            android:scrollbarThumbHorizontal="@color/blue_400"
-            android:scrollbars="horizontal"
-            app:twowayview_layoutManager="ListLayoutManager"/>
-    </LinearLayout>
+    </ScrollView>
 
     <LinearLayout
         android:id="@+id/save_profile"
@@ -135,6 +141,7 @@
             android:padding="8dp"
             android:text="SAVE PROFILE"
             android:textColor="@color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:visibility="gone"/>
     </LinearLayout>
 </RelativeLayout>

@@ -23,13 +23,10 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: 'Parse-*.jar')
-    compile fileTree(dir: 'libs', include: 'ParseFacebookUtilsV4-*.jar')
     compile project(":viewPagerIndicator")
     compile project(":slidingMenu")
     compile project(":photoPick")
     compile project(":twoWayViewLayouts")
-    compile 'com.facebook.android:facebook-android-sdk:4.1.0'
     compile 'com.parse.bolts:bolts-android:1.2.0'
     compile 'com.google.code.gson:gson:2.3'
     compile 'com.getbase:floatingactionbutton:1.10.0'

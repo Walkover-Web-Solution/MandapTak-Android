@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
+import com.mandaptak.android.Login.LoginActivityFb;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.TypefaceTextView;
@@ -129,24 +130,28 @@ public class MainActivity extends AppCompatActivity {
         prefsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, UserPreferences.class));
+                startActivity(new Intent(MainActivity.this, LoginActivityFb.class));
             }
         });
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+//        try {
+//            query.getInBackground(ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getObjectId(), new GetCallback<ParseObject>() {
+//                @Override
+//                public void done(ParseObject parseObject, ParseException e) {
+//                    if (e == null) {
+//                        try {
+//                            profileName.setText(parseObject.fetchIfNeeded().getString("name"));
+//                        } catch (ParseException e1) {
+//                            e1.printStackTrace();
+//                        }
+//                    } else {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override

@@ -12,7 +12,6 @@ import me.iwf.photopicker.event.Selectable;
 public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> implements Selectable {
 
-    private static final String TAG = SelectableAdapter.class.getSimpleName();
     public int currentDirectoryIndex = 0;
     protected List<PhotoDirectory> photoDirectories;
     protected List<Photo> selectedPhotos;

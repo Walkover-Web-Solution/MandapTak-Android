@@ -115,7 +115,7 @@ public class PhotoPickerFragment extends Fragment {
                 List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
                 ArrayList<ImageModel> pics = new ArrayList<>();
                 for (String pic : photos) {
-                    pics.add(new ImageModel(pic, false));
+                    pics.add(new ImageModel(pic, false, null));
                 }
                 int[] screenLocation = new int[2];
                 v.getLocationOnScreen(screenLocation);

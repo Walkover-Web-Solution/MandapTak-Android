@@ -3,14 +3,17 @@ package me.iwf.photopicker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.parse.ParseException;
@@ -27,25 +30,23 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.iwf.photopicker.entity.Photo;
-import me.iwf.photopicker.event.OnItemCheckListener;
+import me.iwf.photopicker.adapter.FacebookPhotoGridAdapter;
+import me.iwf.photopicker.event.OnPhotoClickListener;
 import me.iwf.photopicker.fragment.ImagePagerFragment;
-import me.iwf.photopicker.fragment.PhotoPickerFragment;
+import me.iwf.photopicker.utils.ImageModel;
 
-import static android.widget.Toast.LENGTH_LONG;
-
-public class PhotoPickerActivity extends AppCompatActivity {
+public class FacebookProfilePhotoPickerActivity extends AppCompatActivity {
 
     public final static String EXTRA_MAX_COUNT = "MAX_COUNT";
-    public final static String EXTRA_SHOW_CAMERA = "SHOW_CAMERA";
     public final static String KEY_SELECTED_PHOTOS = "SELECTED_PHOTOS";
     public final static int DEFAULT_MAX_COUNT = 9;
     public static ProgressDialog dialog;
-    private PhotoPickerFragment pickerFragment;
-    private ImagePagerFragment imagePagerFragment;
     private MenuItem menuDoneItem;
     private int maxCount = DEFAULT_MAX_COUNT;
     private Context context;
+    private FacebookPhotoGridAdapter photoGridAdapter;
+    private ImagePagerFragment imagePagerFragment;
+
     /**
      * to prevent multiple calls to inflate menu
      */
@@ -90,61 +91,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
         return ous.toByteArray();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_photo_picker);
-        context = this;
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(R.string.images);
-        setSupportActionBar(mToolbar);
-
-        ActionBar actionBar = getSupportActionBar();
-
-        actionBar.setDisplayHomeAsUpEnabled(true);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            actionBar.setElevation(25);
-        }
-
-        maxCount = getIntent().getIntExtra(EXTRA_MAX_COUNT, DEFAULT_MAX_COUNT);
-        boolean showCamera = getIntent().getBooleanExtra(EXTRA_SHOW_CAMERA, true);
-
-        pickerFragment =
-                (PhotoPickerFragment) getSupportFragmentManager().findFragmentById(R.id.photoPickerFragment);
-
-        pickerFragment.getPhotoGridAdapter().setShowCamera(showCamera);
-
-        pickerFragment.getPhotoGridAdapter().setOnItemCheckListener(new OnItemCheckListener() {
-            @Override
-            public boolean OnItemCheck(int position, Photo photo, final boolean isCheck, int selectedItemCount) {
-
-                int total = selectedItemCount + (isCheck ? -1 : 1);
-
-                menuDoneItem.setEnabled(total > 0);
-
-                if (maxCount <= 1) {
-                    List<Photo> photos = pickerFragment.getPhotoGridAdapter().getSelectedPhotos();
-                    if (!photos.contains(photo)) {
-                        photos.clear();
-                        pickerFragment.getPhotoGridAdapter().notifyDataSetChanged();
-                    }
-                    return true;
-                }
-
-                if (total > maxCount) {
-                    Toast.makeText(getActivity(), getString(R.string.over_max_count_tips, maxCount),
-                            LENGTH_LONG).show();
-                    return false;
-                }
-                menuDoneItem.setTitle(getString(R.string.done_with_count, total, maxCount));
-                return true;
-            }
-        });
-
-    }
-
     /**
      * Overriding this method allows us to run our exit animation first, then exiting
      * the activity when it complete.
@@ -174,6 +120,47 @@ public class PhotoPickerActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fb_photo_picker);
+        context = this;
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Profile Photos");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        maxCount = getIntent().getIntExtra(EXTRA_MAX_COUNT, DEFAULT_MAX_COUNT);
+       // photoGridAdapter = new FacebookPhotoGridAdapter(this, directories);
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_photos);
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(3, OrientationHelper.VERTICAL);
+        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(photoGridAdapter);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
+            @Override
+            public void onClick(View v, int position, boolean showCamera) {
+                final int index = showCamera ? position - 1 : position;
+
+                List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
+                ArrayList<ImageModel> pics = new ArrayList<>();
+                for (String pic : photos) {
+                    pics.add(new ImageModel(pic, false, null));
+                }
+                int[] screenLocation = new int[2];
+                v.getLocationOnScreen(screenLocation);
+                ImagePagerFragment imagePagerFragment =
+                        ImagePagerFragment.newInstance(pics, index, screenLocation,
+                                v.getWidth(), v.getHeight());
+
+                addImagePagerFragment(imagePagerFragment);
+            }
+        });
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if (!menuIsInflated) {
             getMenuInflater().inflate(R.menu.menu_picker, menu);
@@ -193,7 +180,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
         }
 
         if (item.getItemId() == R.id.done) {
-            final ArrayList<String> photoPaths = pickerFragment.getPhotoGridAdapter().getSelectedPhotoPaths();
+            final ArrayList<String> photoPaths = getFacebookPhotoGridAdapter().getSelectedPhotoPaths();
             show_PDialog(context, "Uploading Image");
             final int[] i = {1};
             final Handler handler = new Handler();
@@ -245,7 +232,13 @@ public class PhotoPickerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public PhotoPickerActivity getActivity() {
-        return this;
+    public FacebookPhotoGridAdapter getFacebookPhotoGridAdapter() {
+        return photoGridAdapter;
+    }
+
+    private ArrayList<String> getFacebookProfilePhotos() {
+        ArrayList<String> list = new ArrayList<>();
+
+        return list;
     }
 }

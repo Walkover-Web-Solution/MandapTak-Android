@@ -83,7 +83,7 @@ public class ImagePagerFragment extends Fragment {
             paths.clear();
             if (pathArr != null) {
                 for (int i = 0; i < pathArr.length; i++) {
-                    paths.add(new ImageModel(pathArr[i], false));
+                    paths.add(new ImageModel(pathArr[i], false, null));
                 }
             }
             hasAnim = bundle.getBoolean(ARG_HAS_ANIM);

@@ -66,7 +66,6 @@ public class LayoutAdapter extends RecyclerView.Adapter<LayoutAdapter.SimpleView
                 fragment.previewPhoto(intent);
             }
         });
-
     }
 
     @Override

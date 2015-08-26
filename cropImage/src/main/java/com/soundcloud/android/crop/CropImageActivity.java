@@ -16,6 +16,8 @@
 
 package com.soundcloud.android.crop;
 
+import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,11 +28,13 @@ import android.graphics.RectF;
 import android.net.Uri;
 import android.opengl.GLES10;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.Window;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -128,16 +132,18 @@ public class CropImageActivity extends MonitoredActivity {
                 option.inSampleSize = sampleSize;
                 rotateBitmap = new RotateBitmap(BitmapFactory.decodeStream(is, null, option), exifRotation);
             } catch (IOException e) {
-                Log.e("Error reading image: " + e.getMessage(), e);
+                e.printStackTrace();
                 setResultException(e);
             } catch (OutOfMemoryError e) {
-                Log.e("OOM reading image: " + e.getMessage(), e);
+                e.printStackTrace();
                 setResultException(e);
             } finally {
                 CropUtil.closeSilently(is);
             }
         }
     }
+
+
 
     private int calculateBitmapSampleSize(Uri bitmapUri) throws IOException {
         InputStream is = null;
@@ -296,10 +302,10 @@ public class CropImageActivity extends MonitoredActivity {
             }
 
         } catch (IOException e) {
-            Log.e("Error cropping image: " + e.getMessage(), e);
+            e.printStackTrace();
             finish();
         } catch (OutOfMemoryError e) {
-            Log.e("OOM cropping image: " + e.getMessage(), e);
+            e.printStackTrace();
             setResultException(e);
         } finally {
             CropUtil.closeSilently(is);
@@ -325,7 +331,6 @@ public class CropImageActivity extends MonitoredActivity {
                 }
             } catch (IOException e) {
                 setResultException(e);
-                Log.e("Cannot open file: " + saveUri, e);
             } finally {
                 CropUtil.closeSilently(outputStream);
             }

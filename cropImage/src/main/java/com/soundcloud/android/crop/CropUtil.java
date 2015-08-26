@@ -68,7 +68,7 @@ class CropUtil {
                     return ExifInterface.ORIENTATION_UNDEFINED;
             }
         } catch (IOException e) {
-            Log.e("Error getting Exif data", e);
+            e.printStackTrace();
             return 0;
         }
     }
@@ -82,7 +82,7 @@ class CropUtil {
             exifDest.saveAttributes();
             return true;
         } catch (IOException e) {
-            Log.e("Error copying Exif data", e);
+            e.printStackTrace();
             return false;
         }
     }

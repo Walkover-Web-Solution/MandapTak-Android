@@ -2,11 +2,15 @@ package com.mandaptak.android.EditProfile;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +20,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.mandaptak.android.Adapter.LayoutAdapter;
+import com.mandaptak.android.Login.LoginActivity;
+import com.mandaptak.android.Login.LoginActivityFb;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Utils.Prefs;
+import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -29,6 +41,8 @@ import com.parse.ParseUser;
 import com.parse.ProgressCallback;
 import com.parse.SaveCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.lucasr.twowayview.TwoWayLayoutManager;
 import org.lucasr.twowayview.widget.DividerItemDecoration;
 import org.lucasr.twowayview.widget.TwoWayView;
@@ -39,6 +53,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.utils.ImageModel;
@@ -54,11 +70,13 @@ public class FinalEditProfileFragment extends Fragment {
     Context context;
     LayoutAdapter photoAdapter;
     Common mApp;
-    ArrayList<ImageModel> selectedPhotos = new ArrayList<>();
+    ArrayList<ImageModel> parsePhotos = new ArrayList<>();
     LinearLayout budgetMainLayout;
     EditText minBudget, maxBudget;
     long newMinBudget = 0, newMaxBudget = 0;
     private LinearLayout saveProfile;
+    private Dialog progressDialog;
+    private Long FbUserId;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -78,14 +96,11 @@ public class FinalEditProfileFragment extends Fragment {
         minBudget = (EditText) rootView.findViewById(R.id.budget_from);
         maxBudget = (EditText) rootView.findViewById(R.id.budget_to);
         saveProfile = (LinearLayout) rootView.findViewById(R.id.save_profile);
-        if (Prefs.getImageList(context) != null) {
-            selectedPhotos = Prefs.getImageList(context);
-        }
-        photoAdapter = new LayoutAdapter(getActivity(), this, selectedPhotos);
         imageList.setOrientation(TwoWayLayoutManager.Orientation.HORIZONTAL);
         imageList.setHasFixedSize(true);
         imageList.setLongClickable(true);
-        imageList.addItemDecoration(new DividerItemDecoration(getResources().getDrawable(R.drawable.divider)));
+        imageList.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(context, R.drawable.divider)));
+        photoAdapter = new LayoutAdapter(context, FinalEditProfileFragment.this, parsePhotos);
         imageList.setAdapter(photoAdapter);
     }
 
@@ -109,7 +124,7 @@ public class FinalEditProfileFragment extends Fragment {
                     public void onClick(View view) {
                         alertDialog.dismiss();
                         PhotoPickerIntent intent = new PhotoPickerIntent(context);
-                        intent.setPhotoCount(10 - selectedPhotos.size());
+                        intent.setPhotoCount(8 - parsePhotos.size());
                         intent.setShowCamera(true);
                         startActivityForResult(intent, REQUEST_CODE);
                     }
@@ -119,7 +134,7 @@ public class FinalEditProfileFragment extends Fragment {
                     public void onClick(View view) {
                         alertDialog.dismiss();
                         PhotoPickerIntent intent = new PhotoPickerIntent(context);
-                        intent.setPhotoCount(10 - selectedPhotos.size());
+                        intent.setPhotoCount(8 - parsePhotos.size());
                         intent.setShowCamera(false);
                         startActivityForResult(intent, REQUEST_CODE);
                     }
@@ -128,18 +143,20 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         alertDialog.dismiss();
-
+                        authenticateUser();
                     }
                 });
                 alertDialog.show();
             }
         });
+
         uploadBiodata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showFileChooser();
             }
         });
+
         saveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -149,7 +166,7 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         if (e == null) {
-                            checkFieldsTab1();
+                            validateProfile(parseObject);
                         } else {
                             e.printStackTrace();
                             mApp.dialog.dismiss();
@@ -159,13 +176,95 @@ public class FinalEditProfileFragment extends Fragment {
                 });
             }
         });
-
         getParseData();
         return rootView;
     }
 
-    private boolean checkFieldsTab1() {
-        return false;
+    private void validateProfile(final ParseObject parseObject) {
+        if (checkFieldsTab1(parseObject)) {
+            if (checkFieldsTab2(parseObject)) {
+                if (checkFieldsTab3(parseObject)) {
+                    if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
+                        mApp.dialog.dismiss();
+                        Toast.makeText(context, "Please update primary profile photo", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mApp.dialog.dismiss();
+                        Toast.makeText(context, "Profile Update", Toast.LENGTH_SHORT).show();
+                        try {
+                            getActivity().finish();
+                        } catch (Exception e2) {
+                            e2.printStackTrace();
+                        }
+                    }
+                } else {
+                    mApp.dialog.dismiss();
+                    mApp.showToast(context, "Please fill all details");
+                    ((EditProfileActivity) getActivity()).mViewPager.setCurrentItem(2);
+                }
+            } else {
+                mApp.dialog.dismiss();
+                mApp.showToast(context, "Please fill all details");
+                ((EditProfileActivity) getActivity()).mViewPager.setCurrentItem(1);
+            }
+        } else {
+            mApp.dialog.dismiss();
+            mApp.showToast(context, "Please fill all details");
+            ((EditProfileActivity) getActivity()).mViewPager.setCurrentItem(0);
+        }
+    }
+
+    private boolean checkFieldsTab1(ParseObject parseObject) {
+        if (!parseObject.containsKey("name") || parseObject.get("name").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("gender") || parseObject.get("gender").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("dob") || parseObject.get("dob").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("tob") || parseObject.get("tob").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("currentLocation") || parseObject.get("currentLocation").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("placeOfBirth") || parseObject.get("placeOfBirth").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkFieldsTab2(ParseObject parseObject) {
+        if (!parseObject.containsKey("height") || parseObject.get("height").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("weight") || parseObject.get("weight").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("religionId") || parseObject.get("religionId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("gotraId") || parseObject.get("gotraId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("mangalik") || parseObject.get("mangalik").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkFieldsTab3(ParseObject parseObject) {
+        if (!parseObject.containsKey("workAfterMarriage") || parseObject.get("workAfterMarriage").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("package") || parseObject.get("package").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("designation") || parseObject.get("designation").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("placeOfWork") || parseObject.get("placeOfWork").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("industryId") || parseObject.get("industryId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("education1") || parseObject.get("education1").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void showFileChooser() {
@@ -208,6 +307,20 @@ public class FinalEditProfileFragment extends Fragment {
                     }
                 } else {
                     e.printStackTrace();
+                }
+            }
+        });
+
+        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+        queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (list != null) {
+                    for (ParseObject item : list) {
+                        parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                    }
+                    photoAdapter.notifyDataSetChanged();
                 }
             }
         });
@@ -321,31 +434,25 @@ public class FinalEditProfileFragment extends Fragment {
                         Toast.makeText(context, "Error: File not found", Toast.LENGTH_SHORT).show();
                     }
                     break;
+
                 case REQUEST_CODE:
                     if (data != null) {
-                        selectedPhotos.clear();
-                        if (data.hasExtra(PhotoPickerActivity.PRIMARY_PHOTO_INDEX)) {
-                            ArrayList<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS);
-                            int p = data.getIntExtra(PhotoPickerActivity.PRIMARY_PHOTO_INDEX, 0);
-                            if (photos != null) {
-                                for (int i = 0; i < photos.size(); i++) {
-                                    if (i == p)
-                                        selectedPhotos.add(new ImageModel(photos.get(i), true));
-                                    else
-                                        selectedPhotos.add(new ImageModel(photos.get(i), false));
-                                }
-                                photoAdapter.notifyDataSetChanged();
-                                Prefs.setImageList(context, selectedPhotos);
-
-                            }
-                        } else {
-                            ArrayList<String> photos = data.getStringArrayListExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS);
-                            if (photos != null) {
-                                for (String photo : photos) {
-                                    selectedPhotos.add(new ImageModel(photo, false));
-                                }
-                                photoAdapter.notifyDataSetChanged();
-                                Prefs.setImageList(context, selectedPhotos);
+                        if (data.hasExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS)) {
+                            if (data.getBooleanExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, false)) {
+                                ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                                queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+                                queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> list, ParseException e) {
+                                        parsePhotos.clear();
+                                        if (list != null) {
+                                            for (ParseObject item : list) {
+                                                parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                                            }
+                                            photoAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
                             }
                         }
                     }
@@ -379,5 +486,140 @@ public class FinalEditProfileFragment extends Fragment {
             }
         }
         return ous.toByteArray();
+    }
+
+
+    private void authenticateUser(){
+        // Check if there is a currently logged in user
+        // and it's linked to a Facebook account.
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
+            // Go to the user info activity
+            getUserDetails();
+        }
+        else {
+            progressDialog = ProgressDialog.show(context, "", "Logging in...", true);
+            List<String> permissions = Arrays.asList("public_profile", "email", "user_photos");
+            // NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
+            // (https://developers.facebook.com/docs/facebook-login/permissions/)
+
+            ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException err) {
+                    progressDialog.dismiss();
+                    if (user == null) {
+                        Log.d("Facebook", "Uh oh. The user cancelled the Facebook login.");
+                    } else if (user.isNew()) {
+                        Log.d("Facebook", "User signed up and logged in through Facebook!");
+                        getUserDetails();
+                    } else {
+                        Log.d("Facebook", "User logged in through Facebook!");
+                        getUserDetails();
+                    }
+                }
+            });
+        }
+    }
+
+
+
+    private void getUserDetails(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if ((currentUser != null) && currentUser.isAuthenticated()) {
+            makeMeRequest();
+        }
+    }
+    private void makeMeRequest() {
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                        if (jsonObject != null) {
+                            JSONObject userProfile = new JSONObject();
+
+                            try {
+                                FbUserId = jsonObject.getLong("id");
+                                userProfile.put("facebookId", jsonObject.getLong("id"));
+                                userProfile.put("name", jsonObject.getString("name"));
+
+                                if (jsonObject.getString("gender") != null)
+                                    userProfile.put("gender", jsonObject.getString("gender"));
+
+                                if (jsonObject.getString("email") != null)
+                                    userProfile.put("email", jsonObject.getString("email"));
+
+                                // Save the user profile info in a user property
+                                ParseUser currentUser = ParseUser.getCurrentUser();
+                                currentUser.put("profile", userProfile);
+                                currentUser.saveInBackground();
+
+                                // Show the user info
+                             //   updateViewsWithProfileInfo();
+                            } catch (JSONException e) {
+                                Log.d("facebook",
+                                        "Error parsing returned user data. " + e);
+                            }
+                            getUserPhotos();
+                        } else if (graphResponse.getError() != null) {
+                            switch (graphResponse.getError().getCategory()) {
+                                case LOGIN_RECOVERABLE:
+                                    Log.d("facebook",
+                                            "Authentication error: " + graphResponse.getError());
+                                    break;
+
+                                case TRANSIENT:
+                                    Log.d("facebook",
+                                            "Transient error. Try again. " + graphResponse.getError());
+                                    break;
+
+                                case OTHER:
+                                    Log.d("facebook",
+                                            "Some other error: " + graphResponse.getError());
+                                    break;
+                            }
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,email,gender,name");
+        request.setParameters(parameters);
+        request.executeAsync();
+
+    }
+
+    public void getUserPhotos() {
+
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + FbUserId + "/albums",
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+            /* handle the result */
+                        if (response!=null){
+
+
+
+
+                        }
+                    }
+                }
+        ).executeAsync();
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "me/albums",
+                null,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+            /* handle the result */
+                        if (response!=null){
+
+                        }
+                    }
+                }
+        ).executeAsync();
+
     }
 }

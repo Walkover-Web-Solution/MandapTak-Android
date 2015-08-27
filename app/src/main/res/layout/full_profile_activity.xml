@@ -1,5 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,20 +13,48 @@
         android:layout_height="match_parent"
         android:layout_weight="6">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager_images"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:descendantFocusability="afterDescendants"
-            tools:context="com.mandaptak.android.EditProfile.EditProfileActivity" />
+            android:layout_height="match_parent">
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/pager_images"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:descendantFocusability="afterDescendants"
+                tools:context="com.mandaptak.android.FullProfile.FullProfileActivity" />
+
+            <com.viewpagerindicator.CirclePageIndicator
+                android:id="@+id/circles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="16dp"
+                app:fillColor="@color/red_400"
+                app:pageColor="@color/white_alpha"
+                app:strokeColor="@color/transparent" />
+        </FrameLayout>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4">
+        android:layout_weight="4"
+        android:orientation="vertical">
+
+        <com.viewpagerindicator.TabPageIndicator
+            android:id="@+id/icons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_selector"
+            android:gravity="center"
+            android:paddingBottom="14dp"
+            android:paddingTop="14dp"
+            app:fillColor="@color/white"
+            android:paddingLeft="22dp" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager_menu"
@@ -32,7 +62,7 @@
             android:layout_height="match_parent"
             android:background="@color/white"
             android:descendantFocusability="afterDescendants"
-            tools:context="com.mandaptak.android.EditProfile.EditProfileActivity" />
+            tools:context="com.mandaptak.android.FullProfile.FullProfileActivity" />
 
 
     </LinearLayout>

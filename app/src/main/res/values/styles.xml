@@ -48,4 +48,7 @@
         <item name="actionBarTheme">@style/myTheme.actionBar</item>
         <item name="colorPrimary">#00FF00</item>
     </style>
+
+
+
 </resources>

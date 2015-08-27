@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         etNumber = (EditText) findViewById(R.id.number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-
         //Bind the title indicator to the adapter
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         titleIndicator.setViewPager(pager);

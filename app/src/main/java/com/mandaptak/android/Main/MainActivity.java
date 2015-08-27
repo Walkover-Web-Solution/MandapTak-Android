@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
+import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
     ImageButton mLikeUser;
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
-    TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
+    TextView frontProfileName, frontHeight, frontDesignation, frontImage, frontReligion, viewFullProfile;
     CircleImageView frontPhoto;
     BlurringView blurringView;
     TextView salary, designation, company, education, weight, currentLocation;
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         slideName = (TextView) findViewById(R.id.slide_name);
         slideReligion = (TextView) findViewById(R.id.slide_religion);
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
+        viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
 
@@ -123,6 +125,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+            }
+        });
+        viewFullProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(context, FullProfileActivity.class));
             }
         });
         mLikeUser.setOnClickListener(new View.OnClickListener() {

@@ -1,0 +1,143 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context="com.mandaptak.android.EditProfile.QualificationEditProfileFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="Work"
+            android:textColor="@color/red_200"
+            android:textSize="@dimen/abc_text_size_small_material" />
+
+        <LinearLayout
+            android:id="@+id/work_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp">
+
+                <TextView
+                    android:id="@+id/industry"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:hint="Industry"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:paddingBottom="12dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="8dp"
+                    android:textColor="@color/black_dark"
+                    android:textColorHint="@color/black_light"
+                    android:textCursorDrawable="@drawable/color_cursor"
+                    android:textSize="@dimen/abc_text_size_small_material" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/designation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Designation"
+                android:imeOptions="actionNext"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textSize="@dimen/abc_text_size_small_material" />
+
+            <TextView
+                android:id="@+id/company"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Company"
+                android:imeOptions="actionNext"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textSize="@dimen/abc_text_size_small_material" />
+
+            <TextView
+                android:id="@+id/current_income"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Current Income (per annum)"
+                android:padding="16dp"
+                android:textColor="@color/black_dark"
+                android:textColorHint="@color/black_light"
+                android:textCursorDrawable="@drawable/color_cursor"
+                android:textSize="@dimen/abc_text_size_small_material" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:text="Education"
+            android:textColor="@color/red_200"
+            android:textSize="@dimen/abc_text_size_small_material" />
+
+        <LinearLayout
+            android:id="@+id/education_layout_primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/degree"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="Degree"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:textColor="@color/black_light" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:gravity="center|start"
+                android:padding="16dp"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:text="Want to work after marriage?"
+                android:textColor="@color/black_light" />
+
+            <TextView
+                android:id="@+id/work_after_marriage"
+                android:layout_width="wrap_content"
+                android:textSize="@dimen/abc_text_size_small_material"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

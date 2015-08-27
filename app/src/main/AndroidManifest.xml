@@ -78,6 +78,9 @@
         <activity
             android:name=".EditProfile.EditProfileActivity"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".FullProfile.FullProfileActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

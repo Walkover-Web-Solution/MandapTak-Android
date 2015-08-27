@@ -58,8 +58,8 @@ public class PhotoPickerActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    public static void updateDialogProgress(int progress, String message) {
-        dialog.setProgress(progress);
+    public static void updateDialogProgress(int[] progress, String message) {
+        dialog.setProgress(progress[0]);
         dialog.setMessage(message);
     }
 
@@ -201,7 +201,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     if (i[0] != (photoPaths.size() + 1)) {
-                        updateDialogProgress(100, "Uploading Image: " + i[0]);
+                        updateDialogProgress(new int[]{100}, "Uploading Image: " + i[0]);
                         final File file = new File(photoPaths.get(i[0] - 1));
                         final ParseObject image = new ParseObject("Photo");
                         try {

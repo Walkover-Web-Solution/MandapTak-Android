@@ -35,6 +35,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -263,8 +264,12 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                     try {
                         newName = parseObject.getString("name");
                         newGender = parseObject.getString("gender");
-                        newDOB.setTime(parseObject.getDate("dob"));
-                        newTOB.setTime(parseObject.getDate("tob"));
+                        Date tmpDOB = parseObject.getDate("dob");
+                        Date tmpTOB = parseObject.getDate("tob");
+                        if (tmpDOB != null)
+                            newDOB.setTime(tmpDOB);
+                        if (tmpTOB != null)
+                            newTOB.setTime(tmpTOB);
                         newCurrentLocation = parseObject.getParseObject("currentLocation");
                         newPOB = parseObject.getParseObject("placeOfBirth");
 

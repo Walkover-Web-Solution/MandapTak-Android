@@ -30,7 +30,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             app:blurRadius="12"
-            app:downsampleFactor="4"
+            app:downsampleFactor="2"
             app:overlayColor="#22000000"/>
 
 

@@ -445,37 +445,22 @@ public class UserPreferences extends AppCompatActivity {
                     } else if (e.getCode() == 101) {
                         ParseObject parseObjectNew = new ParseObject("Preference");
                         if (minHeight != 0)
-                            parseObject.put("minHeight", minHeight);
-                        else
-                            parseObject.put("minHeight", JSONObject.NULL);
+                            parseObjectNew.put("minHeight", minHeight);
                         if (maxHeight != 0)
-                            parseObject.put("maxHeight", maxHeight);
-                        else
-                            parseObject.put("maxHeight", JSONObject.NULL);
+                            parseObjectNew.put("maxHeight", maxHeight);
                         if (minAge != 0)
-                            parseObject.put("ageFrom", minAge);
-                        else
-                            parseObject.put("ageFrom", JSONObject.NULL);
+                            parseObjectNew.put("ageFrom", minAge);
                         if (maxAge != 0)
-                            parseObject.put("ageTo", maxAge);
-                        else
-                            parseObject.put("ageTo", JSONObject.NULL);
+                            parseObjectNew.put("ageTo", maxAge);
                         if (minBudget != 0)
-                            parseObject.put("minBudget", minBudget);
-                        else
-                            parseObject.put("minBudget", minBudget);
+                            parseObjectNew.put("minBudget", minBudget);
                         if (maxBudget != 0)
-                            parseObject.put("maxBudget", maxBudget);
-                        else
-                            parseObject.put("maxBudget", JSONObject.NULL);
+                            parseObjectNew.put("maxBudget", maxBudget);
                         if (minIncome != 0)
-                            parseObject.put("minIncome", minIncome);
-                        else
-                            parseObject.put("minIncome", JSONObject.NULL);
-
-                        parseObject.put("working", newWorkAfterMarriage);
-                        parseObject.put("manglik", manglik);
-                        parseObject.put("minGunMatch", 0);
+                            parseObjectNew.put("minIncome", minIncome);
+                        parseObjectNew.put("working", newWorkAfterMarriage);
+                        parseObjectNew.put("manglik", manglik);
+                        parseObjectNew.put("minGunMatch", 0);
                         parseObjectNew.put("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
                         parseObjectNew.saveInBackground();
                         saveLocationData(parseObject);
@@ -631,18 +616,28 @@ public class UserPreferences extends AppCompatActivity {
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
                     try {
-                        maxHeight = parseObject.getInt("maxHeight");
-                        minHeight = parseObject.getInt("minHeight");
-                        minAge = parseObject.getInt("ageFrom");
-                        maxAge = parseObject.getInt("ageTo");
-                        minBudget = parseObject.getInt("minBudget");
-                        maxBudget = parseObject.getInt("maxBudget");
-                        manglik = parseObject.getInt("manglik");
-                        minIncome = parseObject.getInt("minIncome");
-                        newWorkAfterMarriage = parseObject.getInt("working");
-                        manglik = parseObject.getInt("manglik");
-                        workingPartner.setSelection(newWorkAfterMarriage);
-                        manglikStatus.setSelection(manglik);
+                        if (parseObject.containsKey("maxHeight") && parseObject.get("maxHeight") != JSONObject.NULL)
+                            maxHeight = parseObject.getInt("maxHeight");
+                        if (parseObject.containsKey("minHeight") && parseObject.get("minHeight") != JSONObject.NULL)
+                            minHeight = parseObject.getInt("minHeight");
+                        if (parseObject.containsKey("ageFrom") && parseObject.get("ageFrom") != JSONObject.NULL)
+                            minAge = parseObject.getInt("ageFrom");
+                        if (parseObject.containsKey("ageTo") && parseObject.get("ageTo") != JSONObject.NULL)
+                            maxAge = parseObject.getInt("ageTo");
+                        if (parseObject.containsKey("minBudget") && parseObject.get("minBudget") != JSONObject.NULL)
+                            minBudget = parseObject.getInt("minBudget");
+                        if (parseObject.containsKey("maxBudget") && parseObject.get("maxBudget") != JSONObject.NULL)
+                            maxBudget = parseObject.getInt("maxBudget");
+                        if (parseObject.containsKey("manglik") && parseObject.get("manglik") != JSONObject.NULL) {
+                            manglik = parseObject.getInt("manglik");
+                            manglikStatus.setSelection(manglik);
+                        }
+                        if (parseObject.containsKey("minIncome") && parseObject.get("minIncome") != JSONObject.NULL)
+                            minIncome = parseObject.getInt("minIncome");
+                        if (parseObject.containsKey("working") && parseObject.get("working") != JSONObject.NULL) {
+                            newWorkAfterMarriage = parseObject.getInt("working");
+                            workingPartner.setSelection(newWorkAfterMarriage);
+                        }
                         getLocationData(parseObject);
                         if (minIncome != 0)
                             etIncome.setText("" + minIncome);

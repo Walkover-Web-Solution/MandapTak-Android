@@ -7,7 +7,6 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,12 +67,13 @@ public class MainActivity extends AppCompatActivity {
     ImageButton mLikeUser;
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
-    TextView frontProfileName, frontHeight, frontDesignation, frontImage, frontReligion, viewFullProfile;
+    TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
     CircleImageView frontPhoto;
     BlurringView blurringView;
     TextView salary, designation, company, education, weight, currentLocation;
     TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
     RippleBackground rippleBackground;
+    TextView loadingLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         slideName = (TextView) findViewById(R.id.slide_name);
         slideReligion = (TextView) findViewById(R.id.slide_religion);
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
-        viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
+        loadingLabel = (TextView) findViewById(R.id.search_label);
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
 
@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
         viewFullProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,55 +141,14 @@ public class MainActivity extends AppCompatActivity {
                     mLikeUser.setBackgroundResource(R.drawable.unlike);
                     liked = false;
                     mApp.showToast(context, "Liked");
-
                 } else {
                     mLikeUser.setBackgroundResource(R.drawable.like);
                     liked = true;
                 }
             }
         });
-        getParseData();
-        menu = new SlidingMenu(this);
-        menu.setMode(SlidingMenu.LEFT);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
-        menu.setFadeDegree(0.35f);
-        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
-        menu.setMenu(navigationMenu);
-        menu.setSlidingEnabled(true);
-        menu.setBehindOffset(124);
-        slidingPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
-            @Override
-            public void onPanelSlide(View view, float v) {
-                slidingLayout.setVisibility(View.VISIBLE);
-                slidingLayout.setAlpha(v);
-                bottomLayout.setAlpha(1 - v);
-
-            }
-
-            @Override
-            public void onPanelCollapsed(View view) {
-                slidingLayout.setVisibility(View.GONE);
-                bottomLayout.setVisibility(View.VISIBLE);
-                menu.setSlidingEnabled(true);
-            }
-
-            @Override
-            public void onPanelExpanded(View view) {
-                slidingLayout.setVisibility(View.VISIBLE);
-                bottomLayout.setVisibility(View.GONE);
-                menu.setSlidingEnabled(false);
-            }
-
-            @Override
-            public void onPanelAnchored(View view) {
-
-            }
-
-            @Override
-            public void onPanelHidden(View view) {
-
-            }
-        });
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
     }
 
     void getParseData() {
@@ -242,6 +202,47 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+        menu = new SlidingMenu(this);
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
+        menu.setFadeDegree(0.35f);
+        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        menu.setMenu(navigationMenu);
+        menu.setSlidingEnabled(true);
+        menu.setBehindOffset(124);
+        slidingPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View view, float v) {
+                slidingLayout.setVisibility(View.VISIBLE);
+                slidingLayout.setAlpha(v);
+                bottomLayout.setAlpha(1 - v);
+
+            }
+
+            @Override
+            public void onPanelCollapsed(View view) {
+                slidingLayout.setVisibility(View.GONE);
+                bottomLayout.setVisibility(View.VISIBLE);
+                menu.setSlidingEnabled(true);
+            }
+
+            @Override
+            public void onPanelExpanded(View view) {
+                slidingLayout.setVisibility(View.VISIBLE);
+                bottomLayout.setVisibility(View.GONE);
+                menu.setSlidingEnabled(false);
+            }
+
+            @Override
+            public void onPanelAnchored(View view) {
+
+            }
+
+            @Override
+            public void onPanelHidden(View view) {
+
+            }
+        });
         getMatchesFromFunction();
     }
 
@@ -253,14 +254,23 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void done(Object o, ParseException e) {
                     if (e == null) {
-                        Log.e("", "" + o);
-                        if (o != null)
+                        if (o != null) {
                             profileList = (ArrayList<ParseObject>) o;
-                        if (profileList.size() > 0) {
-                            setProfileDetails();
+                            if (profileList.size() > 0) {
+                                setProfileDetails();
+                            } else {
+                                loadingLabel.setText("Matching profile not found");
+                                rippleBackground.stopRippleAnimation();
+                            }
+                        } else {
+                            loadingLabel.setText("Matching profile not found");
+                            rippleBackground.stopRippleAnimation();
                         }
-                    } else
+                    } else {
                         e.printStackTrace();
+                        loadingLabel.setText("Matching profile not found");
+                        rippleBackground.stopRippleAnimation();
+                    }
                 }
             });
         } catch (ParseException e) {
@@ -276,10 +286,18 @@ public class MainActivity extends AppCompatActivity {
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != JSONObject.NULL) {
                 frontProfileName.setText(profileList.get(0).getString("name"));
                 slideName.setText(profileList.get(0).getString("name"));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != JSONObject.NULL) {
                 int[] bases = getResources().getIntArray(R.array.heightCM);
                 String[] values = getResources().getStringArray(R.array.height);
@@ -288,18 +306,34 @@ public class MainActivity extends AppCompatActivity {
                 frontHeight.setText(values[index]);
                 slideHeight.setText(values[index]);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != JSONObject.NULL) {
                 frontReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
                 slideReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != JSONObject.NULL) {
                 slideReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
                 frontReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != JSONObject.NULL) {
                 frontDesignation.setText(profileList.get(0).getString("designation"));
                 slideDesignation.setText(profileList.get(0).getString("designation"));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != JSONObject.NULL) {
                 ParseObject city = profileList.get(0).getParseObject("currentLocation");
                 ParseObject state = profileList.get(0).getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent");
@@ -308,26 +342,46 @@ public class MainActivity extends AppCompatActivity {
                 currentLocation.append(", " + state.fetchIfNeeded().getString("name"));
                 currentLocation.append(", " + country.fetchIfNeeded().getString("name"));
             }
-            if (profileList.get(0).containsKey("weight") && profileList.get(0).getInt("weight") != 0) {
-                weight.setText(": " + profileList.get(0).getInt("weight") + " KG");
-            }
-            if (profileList.get(0).containsKey("package") && profileList.get(0).getLong("package") != 0) {
-                salary.setText("Rs. " + mApp.numberToWords(profileList.get(0).getInt("package")));
-            }
-            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != JSONObject.NULL) {
-                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name"));
-            }
-            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != JSONObject.NULL) {
-                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name"));
-            }
-            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != JSONObject.NULL) {
-                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name"));
-            }
-            rippleBackground.stopRippleAnimation();
-            rippleBackground.setVisibility(View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        try {
+            if (profileList.get(0).containsKey("weight") && profileList.get(0).getInt("weight") != 0) {
+                weight.setText(": " + profileList.get(0).getInt("weight") + " KG");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (profileList.get(0).containsKey("package") && profileList.get(0).getLong("package") != 0) {
+                salary.setText("Rs. " + mApp.numberToWords(profileList.get(0).getInt("package")));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != JSONObject.NULL) {
+                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name").replace("null", ""));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != JSONObject.NULL) {
+                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name").replace("null", ""));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != JSONObject.NULL) {
+                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name").replace("null", ""));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        rippleBackground.stopRippleAnimation();
+        rippleBackground.setVisibility(View.GONE);
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
@@ -373,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     @Override

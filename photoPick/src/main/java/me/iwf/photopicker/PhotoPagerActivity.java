@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -172,61 +173,47 @@ public class PhotoPagerActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.profile) {
-            PhotoPickerActivity.show_PDialog(context, "Setting profile picture..");
+            PhotoPickerActivity.show_PDialog(context, "Loading Photo..");
             final int index = pagerFragment.getCurrentItem();
-            ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-            deleteObjectParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-            deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> list, ParseException e) {
-                    if (e == null) {
-                        for (int i = 0; i < list.size(); i++) {
-                            ParseObject parseObject = list.get(i);
-                            if (i == index) {
-                                pagerFragment.getPaths().get(i).setIsPrimary(true);
-                                parseObject.put("isPrimary", true);
-                                parseObject.saveInBackground();
-                            } else {
-                                pagerFragment.getPaths().get(i).setIsPrimary(false);
-                                parseObject.put("isPrimary", false);
-                                parseObject.saveInBackground();
-                            }
-                        }
-                        pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                        pagerFragment.getViewPager().setCurrentItem(index, true);
-                        downloadFile(pagerFragment.getPaths().get(index).getLink());
-                    }
-                }
-            });
+            downloadFile(pagerFragment.getPaths().get(index).getLink());
+
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void downloadFile(final String link) {
         final File file = new File(Environment.getExternalStorageDirectory() + "/pics/");
-        new AsyncTask<Void, Void, Void>() {
+        new AsyncTask<Void, int[], Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 int count;
                 try {
                     URL url = new URL(link);
-                    URLConnection conexion = url.openConnection();
-                    conexion.connect();
-                    if (!file.exists()) {
-                        file.mkdir();//If there is no folder it will be created.
-                    }
-                    InputStream input = new BufferedInputStream(url.openStream());
-                    OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/pics/" + "pic.jpg");
+                    URLConnection conection = url.openConnection();
+                    conection.connect();
+                    int lenghtOfFile = conection.getContentLength();
+                    InputStream input = new BufferedInputStream(url.openStream(), 8192);
+                    OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/pics/pic.jpg");
                     byte data[] = new byte[1024];
+                    long total = 0;
                     while ((count = input.read(data)) != -1) {
+                        total += count;
+                        publishProgress(new int[]{(int) ((total * 100) / lenghtOfFile)});
                         output.write(data, 0, count);
                     }
                     output.flush();
                     output.close();
                     input.close();
                 } catch (Exception e) {
+                    Log.e("Error: ", e.getMessage());
                 }
                 return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(int[]... values) {
+                super.onProgressUpdate(values);
+                PhotoPickerActivity.updateDialogProgress(values[0], "Loading Photo..");
             }
 
             @Override
@@ -234,6 +221,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
                 super.onPostExecute(aVoid);
                 PhotoPickerActivity.dialog.dismiss();
                 Crop.of(Uri.fromFile(new File(file.getPath() + "/" + "pic.jpg")), Uri.fromFile(new File(file.getPath() + "/" + "cropped.jpg"))).asSquare().start(PhotoPagerActivity.this, Crop.REQUEST_CROP);
+
             }
         }.execute();
     }
@@ -271,6 +259,30 @@ public class PhotoPagerActivity extends AppCompatActivity {
                                                             if (e == null) {
                                                                 file.delete();
                                                                 Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
+                                                                final int index = pagerFragment.getCurrentItem();
+                                                                ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
+                                                                deleteObjectParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+                                                                deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                                    @Override
+                                                                    public void done(List<ParseObject> list, ParseException e) {
+                                                                        if (e == null) {
+                                                                            for (int i = 0; i < list.size(); i++) {
+                                                                                ParseObject parseObject = list.get(i);
+                                                                                if (i == index) {
+                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(true);
+                                                                                    parseObject.put("isPrimary", true);
+                                                                                    parseObject.saveInBackground();
+                                                                                } else {
+                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(false);
+                                                                                    parseObject.put("isPrimary", false);
+                                                                                    parseObject.saveInBackground();
+                                                                                }
+                                                                            }
+                                                                            pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                                                                            pagerFragment.getViewPager().setCurrentItem(index, true);
+                                                                        }
+                                                                    }
+                                                                });
                                                             } else {
                                                                 Toast.makeText(context, "Failed to save profile photo.", Toast.LENGTH_SHORT).show();
                                                                 e.printStackTrace();

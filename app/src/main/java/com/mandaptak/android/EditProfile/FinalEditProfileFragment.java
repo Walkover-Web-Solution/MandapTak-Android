@@ -235,8 +235,6 @@ public class FinalEditProfileFragment extends Fragment {
             return false;
         } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
             return false;
-        } else if (!parseObject.has("gotraId") || parseObject.get("gotraId").equals(JSONObject.NULL)) {
-            return false;
         } else if (!parseObject.containsKey("mangalik") || parseObject.get("mangalik").equals(JSONObject.NULL)) {
             return false;
         } else {
@@ -282,7 +280,8 @@ public class FinalEditProfileFragment extends Fragment {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    newBiodataFileName = parseObject.getParseFile("bioData").getName();
+                    if (parseObject.containsKey("bioData") && parseObject.getParseFile("bioData") != null)
+                        newBiodataFileName = parseObject.getParseFile("bioData").getName();
 
                     if (!parseObject.containsKey("minMarriageBudget")) {
                         budgetMainLayout.setVisibility(View.GONE);

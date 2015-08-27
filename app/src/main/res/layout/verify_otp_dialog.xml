@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    android:showDividers="middle">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:orientation="vertical"
+              android:showDividers="middle">
 
     <TextView
         android:id="@+id/title"
@@ -15,7 +15,7 @@
         android:text="Place of Birth"
         android:textColor="@color/black_dark"
         android:textSize="@dimen/abc_text_size_title_material"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginStart="4dp"
         android:background="@color/red_400"
-        android:contentDescription="@string/divider" />
+        android:contentDescription="@string/divider"/>
 
     <EditText
         android:id="@+id/search"
@@ -34,12 +34,12 @@
         android:background="@color/white"
         android:drawablePadding="8dp"
         android:hint="Enter Otp "
-        android:inputType="numberPassword"
         android:imeOptions="actionSearch"
+        android:inputType="numberPassword"
         android:maxLines="1"
         android:padding="12dp"
         android:singleLine="true"
-        android:textColor="@color/black_dark" />
+        android:textColor="@color/black_dark"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -49,7 +49,7 @@
         android:layout_marginRight="4dp"
         android:layout_marginStart="4dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider" />
+        android:contentDescription="@string/divider"/>
 
 
     <Button
@@ -59,6 +59,6 @@
         android:layout_marginTop="16dp"
         android:background="@color/red_200"
         android:text="DONE"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"/>
 
 </LinearLayout>

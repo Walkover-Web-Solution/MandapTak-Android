@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,14 +21,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Utils.GaussianBlur;
+import com.mandaptak.android.Views.BlurringView;
 import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FindCallback;
@@ -39,8 +40,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import org.lucasr.twowayview.widget.TwoWayView;
 
@@ -65,18 +66,19 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ImageModel> userProfileImages = new ArrayList<>();
     TwoWayView profileImages;
     UserImagesAdapter userImagesAdapter;
-    public final static int REQUEST_CODE = 11;
     ImageButton mLikeUser;
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
     TextView frontProfileName, frontHeight, frontDesignation, frontImage, frontReligion;
     CircleImageView frontPhoto;
+    BlurringView blurringView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        context = MainActivity.this;
+        context = this;
+        mApp = (Common) context.getApplicationContext();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         try {
@@ -94,7 +96,10 @@ public class MainActivity extends AppCompatActivity {
         profileImages = (TwoWayView) findViewById(R.id.list);
         backgroundPhoto = (ImageView) findViewById(R.id.background_photo);
         mLikeUser = (ImageButton) findViewById(R.id.like_user);
-        twoWayView = (TwoWayView) findViewById(R.id.list);
+        profileImages = (TwoWayView) findViewById(R.id.list);
+        blurringView = (BlurringView) findViewById(R.id.blurring_view);
+        blurringView.setBlurredView(backgroundPhoto);
+
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -107,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 if (liked) {
                     mLikeUser.setBackgroundResource(R.drawable.unlike);
                     liked = false;
-                    mApp.showToast(context,"Liked");
+                    mApp.showToast(context, "Liked");
 
                 } else {
                     mLikeUser.setBackgroundResource(R.drawable.like);
@@ -165,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
         final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
         final TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
         final TypefaceTextView prefsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.pref_button);
+        final CircleImageView profilePicture = (CircleImageView) navigationMenu.findViewById(R.id.profile_image);
 
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,7 +197,13 @@ public class MainActivity extends AppCompatActivity {
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
                         try {
+                            ParseFile file = parseObject.getParseFile("profilePic");
                             profileName.setText(parseObject.fetchIfNeeded().getString("name"));
+                            Picasso.with(context)
+                                    .load(file.getUrl())
+                                    .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                    .into(profilePicture);
                         } catch (ParseException e1) {
                             e1.printStackTrace();
                         }
@@ -208,12 +220,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void getMatchesFromFunction() {
         try {
-            HashMap<String, Object> params = new HashMap<String, Object>();
+            HashMap<String, Object> params = new HashMap<>();
             params.put("oid", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getObjectId());
             ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
                 @Override
                 public void done(Object o, ParseException e) {
                     if (e == null) {
+                        Log.e("", "" + o);
                         if (o != null)
                             profileList = (ArrayList<ParseObject>) o;
                         if (profileList.size() > 0) {
@@ -232,35 +245,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
-        new AsyncTask<Void, Void, Void>() {
-            Bitmap bitmap = null;
-
-            @Override
-            protected Void doInBackground(Void... voids) {
-                try {
-                    Bitmap theBitmap = Glide.with(context)
-                            .load("http://files.parsetfss.com/bf1cef06-c333-4108-a908-b6a35d80542a/tfss-404d1145-72a3-4793-8ea2-46aba821cd03-IMG_1440170537690.jpeg")
-                            .asBitmap()
-                            .into(500, 500)
-                            .get();
-                    if (theBitmap != null)
-                        bitmap = GaussianBlur.fastblur(context, theBitmap, 4);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                if (bitmap != null) {
-                    backgroundPhoto.setImageBitmap(bitmap);
-                }
-            }
-        }.execute();
+        ParseQuery<ParseObject> parseProfileQuery = new ParseQuery<>("Profile");
+        parseProfileQuery.whereEqualTo("profileId", profileList.get(0));
+        parseProfileQuery.findInBackground();
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
@@ -275,31 +262,27 @@ public class MainActivity extends AppCompatActivity {
                             imageModel.setLink(file.getUrl());
                             imageModel.setIsPrimary(true);
                             userProfileImages.add(imageModel);
-
                             if (model.getBoolean("isPrimary")) {
-                                Target target = new Target() {
-                                    @Override
-                                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                        backgroundPhoto.setImageBitmap(bitmap);
-                                    }
+                                Picasso.with(context)
+                                        .load(file.getUrl())
+                                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                                        .into(backgroundPhoto, new Callback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                new Handler().postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        blurringView.invalidate();
+                                                    }
+                                                }, 800);
+                                            }
 
-                                    @Override
-                                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                                    }
-
-                                    @Override
-                                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                                    }
-                                };
-                                Picasso.with(context).load(file.getUrl()).into(target);
-
-//                                Picasso.with(context)
-//                                        .load(Uri.parse(file.getUrl()))
-//                                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-//                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-//                                        .into(backgroundPhoto);
+                                            @Override
+                                            public void onError() {
+                                                blurringView.invalidate();
+                                            }
+                                        });
                             }
                         } catch (ParseException e1) {
                             e1.printStackTrace();

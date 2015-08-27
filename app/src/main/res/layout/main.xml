@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical" >
+              android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
@@ -10,7 +10,7 @@
         android:layout_marginTop="100dp"
         android:gravity="center"
         android:text="Login intro"
-        android:textSize="18sp" />
+        android:textSize="18sp"/>
 
     <Button
         android:layout_width="wrap_content"

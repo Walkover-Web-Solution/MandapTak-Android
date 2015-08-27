@@ -110,6 +110,8 @@ public class UserPreferences extends AppCompatActivity {
                         alertDialog.dismiss();
                     }
                 });
+                locationDataAdapter = new LocationDataAdapter(UserPreferences.this, parseSavedLocationList);
+                listView.setAdapter(locationDataAdapter);
                 searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                     @Override
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -137,9 +139,14 @@ public class UserPreferences extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(final Editable editable) {
                         String query = editable.toString();
-                        locationList = getCityList(query);
-                        locationDataAdapter = new LocationDataAdapter(UserPreferences.this, locationList);
-                        listView.setAdapter(locationDataAdapter);
+                        if (query == null || query.length() == 0) {
+                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, parseSavedLocationList);
+                            listView.setAdapter(locationDataAdapter);
+                        } else {
+                            locationList = getCityList(query);
+                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, locationList);
+                            listView.setAdapter(locationDataAdapter);
+                        }
                     }
                 });
                 alertDialog.show();
@@ -313,7 +320,6 @@ public class UserPreferences extends AppCompatActivity {
                                                                                 int index) {
                                                                 newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
                                                                 etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
-                                                                //      eduChildDegreeBranch1.setText(newEducationDetail1.getName());
                                                             }
                                                         });
                                                 AlertDialog alert = conductor.create();
@@ -427,7 +433,7 @@ public class UserPreferences extends AppCompatActivity {
     }
 
     private void saveLocationData(ParseObject object) {
-        deleteAllLocations(object);
+        deleteAllLocations();
         if (parseSavedLocationList.size() > 0)
             for (LocationPreference preference : parseSavedLocationList) {
                 ParseObject parseObjectLocation = new ParseObject("LocationPreferences");
@@ -445,9 +451,9 @@ public class UserPreferences extends AppCompatActivity {
         UserPreferences.this.finish();
     }
 
-    private void deleteAllLocations(ParseObject object) {
+    private void deleteAllLocations() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LocationPreferences");
-        parseQuery.whereEqualTo("preferenceId", object);
+        parseQuery.whereEqualTo("preferenceId", ParseUser.getCurrentUser().getParseObject("profileId"));
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -579,7 +585,6 @@ public class UserPreferences extends AppCompatActivity {
                         manglik = parseObject.getInt("manglik");
                         minIncome = parseObject.getInt("minIncome");
                         newWorkAfterMarriage = parseObject.getInt("working");
-                        minIncome = parseObject.getInt("minIncome");
                         manglik = parseObject.getInt("manglik");
                         workingPartner.setSelection(newWorkAfterMarriage);
                         manglikStatus.setSelection(manglik);
@@ -626,28 +631,29 @@ public class UserPreferences extends AppCompatActivity {
                     try {
                         StringBuilder responseText = new StringBuilder();
                         if (list.size() > 0)
-                            for (ParseObject parseObject : list) {
-                                city = parseObject.fetchIfNeeded().getParseObject("cityId");
-                                state = parseObject.fetchIfNeeded().getParseObject("stateId");
-                                //     country = parseObject.fetchIfNeeded().getParseObject("countryId");
-                                LocationPreference locationPreference = new LocationPreference();
-                                if (city != null) {
-                                    locationPreference.setParseObject(city);
-                                    locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(city.getString("name") + ", "
-                                            + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
-                                    locationPreference.setLocationType(0);
-                                    responseText.append(locationPreference.getLocationName());
+                            parseSavedLocationList.clear();
+                        for (ParseObject parseObject : list) {
+                            city = parseObject.fetchIfNeeded().getParseObject("cityId");
+                            state = parseObject.fetchIfNeeded().getParseObject("stateId");
+                            //     country = parseObject.fetchIfNeeded().getParseObject("countryId");
+                            LocationPreference locationPreference = new LocationPreference();
+                            if (city != null) {
+                                locationPreference.setParseObject(city);
+                                locationPreference.setIsSelected(true);
+                                locationPreference.setLocationName(city.getString("name") + ", "
+                                        + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
+                                locationPreference.setLocationType(0);
+                                responseText.append(locationPreference.getLocationName());
 
-                                } else {
-                                    locationPreference.setParseObject(state);
-                                    locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
-                                    locationPreference.setLocationType(1);
-                                    responseText.append(locationPreference.getLocationName()).append(" ");
-                                }
-                                parseSavedLocationList.add(locationPreference);
+                            } else {
+                                locationPreference.setParseObject(state);
+                                locationPreference.setIsSelected(true);
+                                locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
+                                locationPreference.setLocationType(1);
+                                responseText.append(locationPreference.getLocationName()).append(" ");
                             }
+                            parseSavedLocationList.add(locationPreference);
+                        }
                         etLocation.setText(responseText.toString());
                     } catch (ParseException e1) {
                         e1.printStackTrace();

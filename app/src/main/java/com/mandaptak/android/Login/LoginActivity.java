@@ -9,18 +9,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
-import com.mandaptak.android.Adapter.LocationDataAdapter;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -66,7 +60,6 @@ public class LoginActivity extends AppCompatActivity {
                     showDialogVerifyNumber();
                 } else
                     mApp.showToast(context, "Invalid Number");
-
 
             }
         });
@@ -145,36 +138,6 @@ public class LoginActivity extends AppCompatActivity {
 //        });
 //    }
 
-    private class MyPagerAdapter extends FragmentPagerAdapter {
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int pos) {
-            switch (pos) {
-                case 0:
-                    return WelcomeScreen1.newInstance();
-                case 1:
-                    return WelcomeScreen2.newInstance();
-                case 2:
-                    return WelcomeScreen3.newInstance();
-                case 3:
-                    return WelcomeScreen4.newInstance();
-                case 4:
-                    return WelcomeScreen5.newInstance();
-                default:
-                    return WelcomeScreen1.newInstance();
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 5;
-        }
-    }
-
     private void showDialogVerifyNumber() {
         final View locationDialog = View.inflate(context, R.layout.verify_otp_dialog, null);
         final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
@@ -207,9 +170,37 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
         alertDialog.show();
     }
 
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            switch (pos) {
+                case 0:
+                    return WelcomeScreen1.newInstance();
+                case 1:
+                    return WelcomeScreen2.newInstance();
+                case 2:
+                    return WelcomeScreen3.newInstance();
+                case 3:
+                    return WelcomeScreen4.newInstance();
+                case 4:
+                    return WelcomeScreen5.newInstance();
+                default:
+                    return WelcomeScreen1.newInstance();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 5;
+        }
+    }
 
 }

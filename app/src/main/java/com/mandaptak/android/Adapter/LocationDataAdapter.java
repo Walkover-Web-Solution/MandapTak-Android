@@ -1,7 +1,5 @@
 package com.mandaptak.android.Adapter;
 
-import java.util.ArrayList;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,8 @@ import com.mandaptak.android.Models.LocationPreference;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 
+import java.util.ArrayList;
+
 public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
 
     private final ArrayList<LocationPreference> list;
@@ -23,11 +23,6 @@ public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
         super(userPreferences, R.layout.location_list_row, list);
         this.userPreferences = userPreferences;
         this.list = list;
-    }
-
-    static class ViewHolder {
-        protected TextView text;
-        protected CheckBox checkbox;
     }
 
     @Override
@@ -58,5 +53,10 @@ public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
         holder.checkbox.setChecked(list.get(position).isSelected());
 
         return convertView;
+    }
+
+    static class ViewHolder {
+        protected TextView text;
+        protected CheckBox checkbox;
     }
 }

@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
     CircleImageView frontPhoto;
     BlurringView blurringView;
-    TextView salary, designation, company, education, weight, currentLocation;
+    TextView salary, designation, company, education, weight, currentLocation, viewFullProfile;
     TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
     RippleBackground rippleBackground;
     TextView loadingLabel;
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         slideReligion = (TextView) findViewById(R.id.slide_religion);
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
         loadingLabel = (TextView) findViewById(R.id.search_label);
+        viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
 
@@ -134,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(context, FullProfileActivity.class));
             }
         });
+
         mLikeUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     mLikeUser.setBackgroundResource(R.drawable.unlike);
                     liked = false;
                     mApp.showToast(context, "Liked");
+
                 } else {
                     mLikeUser.setBackgroundResource(R.drawable.like);
                     liked = true;

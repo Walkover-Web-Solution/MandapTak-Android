@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
-import com.mandaptak.android.Views.CircularImageView;
+import com.mandaptak.android.Views.CircleImageView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,11 +71,11 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     }
 
     public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-        public final CircularImageView image;
+        public final CircleImageView image;
 
         public SimpleViewHolder(View view) {
             super(view);
-            image = (CircularImageView) view.findViewById(R.id.profile_image);
+            image = (CircleImageView) view.findViewById(R.id.profile_image);
         }
     }
 }

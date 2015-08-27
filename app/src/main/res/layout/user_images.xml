@@ -4,7 +4,7 @@
              android:layout_height="wrap_content"
              android:orientation="vertical">
 
-    <com.mandaptak.android.Views.CircularImageView
+    <com.mandaptak.android.Views.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="78dp"
         android:layout_height="78dp"

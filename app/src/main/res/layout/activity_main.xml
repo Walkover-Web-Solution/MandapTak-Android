@@ -22,8 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false"
-            android:scaleType="fitXY"
-            android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>
+            android:scaleType="fitXY"/>
 
         <com.mandaptak.android.Views.BlurringView
             android:id="@+id/blurring_view"
@@ -34,6 +33,7 @@
             app:downsampleFactor="4"
             app:overlayColor="#22000000"/>
 
+
         <com.mandaptak.android.Views.CircleImageView
             android:id="@+id/front_photo"
             android:layout_width="150dp"
@@ -42,8 +42,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
             android:layout_marginTop="48dp"
-            android:src="@drawable/kriti_sanon"
-            app:border_color="#FF000000"
+            app:border_color="@color/white"
             app:border_width="2dp"/>
 
         <LinearLayout
@@ -55,7 +54,6 @@
             android:orientation="vertical"
             android:paddingBottom="102dp">
 
-
             <TextView
                 android:id="@+id/front_name"
                 android:layout_width="wrap_content"
@@ -63,7 +61,6 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
                 android:paddingTop="4dp"
-                android:text="Kriti Sanon"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="bold"/>
@@ -74,7 +71,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
-                android:text="21, 5'5''"
                 android:textColor="@color/white"
                 android:textSize="18sp"/>
 
@@ -84,7 +80,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
-                android:text="Hindu, Punjabi"
                 android:textColor="@color/white"
                 android:textSize="18sp"/>
 
@@ -94,7 +89,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
-                android:text="Assistant Art Director"
                 android:textColor="@color/white"
                 android:textSize="18sp"/>
 
@@ -146,6 +140,32 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_icon_pin"/>
         </LinearLayout>
+
+        <com.skyfishjy.library.RippleBackground
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            app:rb_color="@color/red_200"
+            app:rb_duration="2500"
+            app:rb_radius="80dp"
+            app:rb_rippleAmount="3"
+            app:rb_scale="6">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/search_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="Finding people..."
+                    android:textColor="@color/red_700"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
+            </RelativeLayout>
+        </com.skyfishjy.library.RippleBackground>
     </RelativeLayout>
 
     <RelativeLayout
@@ -172,62 +192,62 @@
                     android:paddingBottom="10dp">
 
                     <TextView
+                        android:id="@+id/slide_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|left"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginTop="16dp"
-                        android:paddingTop="4dp"
-                        android:text="Kriti Sanon"
+                        android:paddingTop="8dp"
                         android:textColor="@color/white"
-                        android:textSize="24sp"
+                        android:textSize="@dimen/abc_text_size_title_material"
                         android:textStyle="bold"/>
 
                     <TextView
+                        android:id="@+id/slide_height"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|left"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:text="21, 5'5''"
                         android:textColor="@color/white"
                         android:textSize="18sp"/>
 
                     <TextView
+                        android:id="@+id/slide_religion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|left"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:text="Hindu, Punjabi"
                         android:textColor="@color/white"
                         android:textSize="18sp"/>
 
                     <TextView
+                        android:id="@+id/slide_designation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|left"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:text="Assistant Art Director"
                         android:textColor="@color/white"
                         android:textSize="18sp"/>
 
                     <TextView
+                        android:id="@+id/slide_traits_match"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|left"
-                        android:layout_marginBottom="4dp"
+                        android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
-                        android:text="21 Traits Matching"
                         android:textColor="@color/teal_600"
                         android:textSize="18sp"/>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="?actionBarSize"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
@@ -240,14 +260,15 @@
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="16dp"
-                        android:background="@drawable/ic_share_red"/>
+                        android:background="@drawable/ic_share_red"
+                        android:padding="8dp"/>
 
                     <ImageButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerVertical="true"
-                        android:layout_marginRight="16dp"
-                        android:background="@drawable/heart_icon_dual"/>
+                        android:background="@drawable/heart_icon_dual"
+                        android:padding="12dp"/>
 
                 </LinearLayout>
 
@@ -257,7 +278,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="80dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/unlike"/>
             </RelativeLayout>
 
@@ -289,21 +311,19 @@
                         android:paddingTop="16dp"
                         android:text="Current Location"
                         android:textColor="@color/black_dark"
-                        android:textSize="@dimen/abc_text_size_small_material"/>
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:textStyle="bold"/>
 
                     <TextView
-                        android:id="@+id/min_height"
+                        android:id="@+id/current_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="right"
                         android:gravity="center|right"
                         android:paddingTop="16dp"
                         android:singleLine="true"
-                        android:text=": Indore, mp"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"/>
-
-
                 </LinearLayout>
 
                 <LinearLayout
@@ -320,7 +340,8 @@
                         android:paddingTop="4dp"
                         android:text="Weight"
                         android:textColor="@color/black_dark"
-                        android:textSize="@dimen/abc_text_size_small_material"/>
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/weight"
@@ -330,10 +351,8 @@
                         android:paddingLeft="45dp"
                         android:paddingTop="4dp"
                         android:singleLine="true"
-                        android:text=": 456"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"/>
-
 
                 </LinearLayout>
 
@@ -348,12 +367,12 @@
                     android:textSize="@dimen/abc_text_size_small_material"/>
 
                 <TextView
+                    android:id="@+id/designation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center|start"
                     android:paddingLeft="16dp"
                     android:paddingTop="4dp"
-                    android:text="Software development"
                     android:textColor="@color/black_dark"
                     android:textSize="@dimen/abc_text_size_small_material"/>
 
@@ -364,31 +383,25 @@
                     android:weightSum="10">
 
                     <TextView
-                        android:id="@+id/company_name"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
                         android:gravity="center|start"
                         android:paddingLeft="16dp"
                         android:paddingTop="4dp"
-                        android:text="Walkover web solutions"
                         android:textColor="@color/black_light"
                         android:textSize="@dimen/abc_text_size_small_material"/>
 
                     <TextView
-                        android:id="@+id/package_value"
+                        android:id="@+id/salary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
                         android:gravity="center|start"
-
                         android:paddingTop="4dp"
                         android:singleLine="true"
-                        android:text="20000,3541"
                         android:textColor="@color/black_light"
                         android:textSize="@dimen/abc_text_size_small_material"/>
-
-
                 </LinearLayout>
 
                 <TextView
@@ -402,48 +415,15 @@
                     android:textSize="@dimen/abc_text_size_small_material"/>
 
                 <TextView
+                    android:id="@+id/education"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center|start"
                     android:paddingLeft="16dp"
                     android:paddingTop="4dp"
-                    android:text="M.Tech"
                     android:textColor="@color/black_dark"
                     android:textSize="@dimen/abc_text_size_small_material"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:weightSum="10">
-
-                    <TextView
-                        android:id="@+id/institute"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="5"
-                        android:gravity="center|start"
-                        android:paddingLeft="16dp"
-                        android:paddingTop="4dp"
-                        android:text="IIT"
-                        android:textColor="@color/black_light"
-                        android:textSize="@dimen/abc_text_size_small_material"/>
-
-                    <TextView
-                        android:id="@+id/year_passing"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="5"
-                        android:gravity="center|start"
-                        android:paddingTop="4dp"
-                        android:singleLine="true"
-                        android:text="2015-2016"
-                        android:textColor="@color/black_light"
-                        android:textSize="@dimen/abc_text_size_small_material"/>
-
-
-                </LinearLayout>
             </LinearLayout>
 
             <TextView
@@ -458,7 +438,7 @@
                 android:paddingTop="16dp"
                 android:text="View Full Profile"
                 android:textColor="@color/red_400"
-                android:textSize="18sp"/>
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
         </RelativeLayout>
 

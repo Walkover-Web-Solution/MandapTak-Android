@@ -29,6 +29,7 @@ dependencies {
     compile project(":viewPagerIndicator")
     compile project(":slidingMenu")
     compile project(":photoPick")
+    compile project(":rippleBack")
     compile project(":twoWayViewLayouts")
     compile 'com.parse.bolts:bolts-android:1.2.0'
     compile 'com.google.code.gson:gson:2.3'

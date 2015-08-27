@@ -1,6 +1,5 @@
 package com.mandaptak.android.Main;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,13 +35,16 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
 import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,9 +67,12 @@ public class MainActivity extends AppCompatActivity {
     ImageButton mLikeUser;
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
-    TextView frontProfileName, frontHeight, frontDesignation, frontImage, frontReligion;
+    TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
     CircleImageView frontPhoto;
     BlurringView blurringView;
+    TextView salary, designation, company, education, weight, currentLocation;
+    TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
+    RippleBackground rippleBackground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+        rippleBackground = (RippleBackground) findViewById(R.id.content);
         slidingLayout = (RelativeLayout) findViewById(R.id.sliding_layout);
         bottomLayout = (LinearLayout) findViewById(R.id.bottom_panel);
         slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
@@ -94,7 +100,24 @@ public class MainActivity extends AppCompatActivity {
         mLikeUser = (ImageButton) findViewById(R.id.like_user);
         profileImages = (TwoWayView) findViewById(R.id.list);
         blurringView = (BlurringView) findViewById(R.id.blurring_view);
+        frontProfileName = (TextView) findViewById(R.id.front_name);
+        frontPhoto = (CircleImageView) findViewById(R.id.front_photo);
+        frontDesignation = (TextView) findViewById(R.id.front_designation);
+        frontHeight = (TextView) findViewById(R.id.front_height);
+        frontReligion = (TextView) findViewById(R.id.front_religion);
+        salary = (TextView) findViewById(R.id.salary);
+        designation = (TextView) findViewById(R.id.designation);
+        company = (TextView) findViewById(R.id.company);
+        education = (TextView) findViewById(R.id.education);
+        weight = (TextView) findViewById(R.id.weight);
+        currentLocation = (TextView) findViewById(R.id.current_location);
+        slideDesignation = (TextView) findViewById(R.id.slide_designation);
+        slideHeight = (TextView) findViewById(R.id.slide_height);
+        slideName = (TextView) findViewById(R.id.slide_name);
+        slideReligion = (TextView) findViewById(R.id.slide_religion);
+        slideTraits = (TextView) findViewById(R.id.slide_traits_match);
         blurringView.setBlurredView(backgroundPhoto);
+        rippleBackground.startRippleAnimation();
 
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,14 +249,10 @@ public class MainActivity extends AppCompatActivity {
                         if (o != null)
                             profileList = (ArrayList<ParseObject>) o;
                         if (profileList.size() > 0) {
-                            for (ParseObject profile : profileList) {
-                                Log.e("Profile", "" + profile.getObjectId());
-                            }
                             setProfileDetails();
                         }
                     } else
                         e.printStackTrace();
-
                 }
             });
         } catch (ParseException e) {
@@ -242,9 +261,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
-        ParseQuery<ParseObject> parseProfileQuery = new ParseQuery<>("Profile");
-        parseProfileQuery.whereEqualTo("profileId", profileList.get(0));
-        parseProfileQuery.findInBackground();
+        try {
+            if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != JSONObject.NULL)
+                Picasso.with(context)
+                        .load(profileList.get(0).getParseFile("profilePic").getUrl())
+                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                        .into(frontPhoto);
+            if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != JSONObject.NULL) {
+                frontProfileName.setText(profileList.get(0).getString("name"));
+                slideName.setText(profileList.get(0).getString("name"));
+            }
+            if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != JSONObject.NULL) {
+                int[] bases = getResources().getIntArray(R.array.heightCM);
+                String[] values = getResources().getStringArray(R.array.height);
+                Arrays.sort(bases);
+                int index = Arrays.binarySearch(bases, profileList.get(0).getInt("height"));
+                frontHeight.setText(values[index]);
+                slideHeight.setText(values[index]);
+            }
+            if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != JSONObject.NULL) {
+                frontReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
+                slideReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
+            }
+            if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != JSONObject.NULL) {
+                slideReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
+                frontReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
+            }
+            if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != JSONObject.NULL) {
+                frontDesignation.setText(profileList.get(0).getString("designation"));
+                slideDesignation.setText(profileList.get(0).getString("designation"));
+            }
+            if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != JSONObject.NULL) {
+                ParseObject city = profileList.get(0).getParseObject("currentLocation");
+                ParseObject state = profileList.get(0).getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent");
+                ParseObject country = profileList.get(0).getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
+                currentLocation.setText(": " + city.fetchIfNeeded().getString("name"));
+                currentLocation.append(", " + state.fetchIfNeeded().getString("name"));
+                currentLocation.append(", " + country.fetchIfNeeded().getString("name"));
+            }
+            if (profileList.get(0).containsKey("weight") && profileList.get(0).getInt("weight") != 0) {
+                weight.setText(": " + profileList.get(0).getInt("weight") + " KG");
+            }
+            if (profileList.get(0).containsKey("package") && profileList.get(0).getLong("package") != 0) {
+                salary.setText("Rs. " + mApp.numberToWords(profileList.get(0).getInt("package")));
+            }
+            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != JSONObject.NULL) {
+                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name"));
+            }
+            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != JSONObject.NULL) {
+                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name"));
+            }
+            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != JSONObject.NULL) {
+                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name"));
+            }
+            rippleBackground.stopRippleAnimation();
+            rippleBackground.setVisibility(View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
@@ -290,7 +365,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override
@@ -313,14 +387,5 @@ public class MainActivity extends AppCompatActivity {
 
     public void previewPhoto(Intent intent) {
         startActivityForResult(intent, REQUEST_CODE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-
-        }
     }
 }

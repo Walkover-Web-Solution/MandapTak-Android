@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         titleIndicator.setViewPager(pager);
         ParseUser currentUser = ParseUser.getCurrentUser();
+
         if (currentUser != null) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             this.finish();

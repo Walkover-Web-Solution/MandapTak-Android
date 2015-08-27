@@ -35,6 +35,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -378,14 +380,24 @@ public class UserPreferences extends AppCompatActivity {
         try {
             if (!etBudgetMin.getText().toString().equals(""))
                 minBudget = Integer.valueOf(etBudgetMin.getText().toString());
+            else
+                minBudget = 0;
             if (!etBudgetMax.getText().toString().equals(""))
                 maxBudget = Integer.valueOf(etBudgetMax.getText().toString());
+            else
+                maxBudget = 0;
             if (!etMinAge.getText().toString().equals(""))
                 minAge = Integer.valueOf(etMinAge.getText().toString());
+            else
+                minAge = 0;
             if (!etMaxAge.getText().toString().equals(""))
                 maxAge = Integer.valueOf(etMaxAge.getText().toString());
+            else
+                maxAge = 0;
             if (!etIncome.getText().toString().equals(""))
                 minIncome = Integer.valueOf(etIncome.getText().toString());
+            else
+                minIncome = 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -396,31 +408,74 @@ public class UserPreferences extends AppCompatActivity {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
-                        parseObject.put("minHeight", minHeight);
-                        parseObject.put("maxHeight", maxHeight);
-                        parseObject.put("ageFrom", minAge);
-                        parseObject.put("ageTo", maxAge);
-                        parseObject.put("minBudget", minBudget);
-                        parseObject.put("maxBudget", maxBudget);
+                        if (minHeight != 0)
+                            parseObject.put("minHeight", minHeight);
+                        else
+                            parseObject.put("minHeight", JSONObject.NULL);
+                        if (maxHeight != 0)
+                            parseObject.put("maxHeight", maxHeight);
+                        else
+                            parseObject.put("maxHeight", JSONObject.NULL);
+                        if (minAge != 0)
+                            parseObject.put("ageFrom", minAge);
+                        else
+                            parseObject.put("ageFrom", JSONObject.NULL);
+                        if (maxAge != 0)
+                            parseObject.put("ageTo", maxAge);
+                        else
+                            parseObject.put("ageTo", JSONObject.NULL);
+                        if (minBudget != 0)
+                            parseObject.put("minBudget", minBudget);
+                        else
+                            parseObject.put("minBudget", minBudget);
+                        if (maxBudget != 0)
+                            parseObject.put("maxBudget", maxBudget);
+                        else
+                            parseObject.put("maxBudget", JSONObject.NULL);
+                        if (minIncome != 0)
+                            parseObject.put("minIncome", minIncome);
+                        else
+                            parseObject.put("minIncome", JSONObject.NULL);
+
                         parseObject.put("working", newWorkAfterMarriage);
                         parseObject.put("manglik", manglik);
-                        parseObject.put("minIncome", minIncome);
                         parseObject.put("minGunMatch", 0);
                         parseObject.saveInBackground();
                         saveLocationData(parseObject);
                     } else if (e.getCode() == 101) {
                         ParseObject parseObjectNew = new ParseObject("Preference");
-                        parseObjectNew.put("minHeight", minHeight);
-                        parseObjectNew.put("maxHeight", maxHeight);
-                        parseObjectNew.put("ageFrom", minAge);
-                        parseObjectNew.put("ageTo", maxAge);
-                        parseObjectNew.put("minBudget", minBudget);
-                        parseObjectNew.put("maxBudget", maxBudget);
-                        parseObjectNew.put("working", newWorkAfterMarriage);
-                        parseObjectNew.put("manglik", manglik);
+                        if (minHeight != 0)
+                            parseObject.put("minHeight", minHeight);
+                        else
+                            parseObject.put("minHeight", JSONObject.NULL);
+                        if (maxHeight != 0)
+                            parseObject.put("maxHeight", maxHeight);
+                        else
+                            parseObject.put("maxHeight", JSONObject.NULL);
+                        if (minAge != 0)
+                            parseObject.put("ageFrom", minAge);
+                        else
+                            parseObject.put("ageFrom", JSONObject.NULL);
+                        if (maxAge != 0)
+                            parseObject.put("ageTo", maxAge);
+                        else
+                            parseObject.put("ageTo", JSONObject.NULL);
+                        if (minBudget != 0)
+                            parseObject.put("minBudget", minBudget);
+                        else
+                            parseObject.put("minBudget", minBudget);
+                        if (maxBudget != 0)
+                            parseObject.put("maxBudget", maxBudget);
+                        else
+                            parseObject.put("maxBudget", JSONObject.NULL);
                         if (minIncome != 0)
                             parseObject.put("minIncome", minIncome);
-                        parseObjectNew.put("minGunMatch", 0);
+                        else
+                            parseObject.put("minIncome", JSONObject.NULL);
+
+                        parseObject.put("working", newWorkAfterMarriage);
+                        parseObject.put("manglik", manglik);
+                        parseObject.put("minGunMatch", 0);
                         parseObjectNew.put("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
                         parseObjectNew.saveInBackground();
                         saveLocationData(parseObject);
@@ -591,9 +646,21 @@ public class UserPreferences extends AppCompatActivity {
                         getLocationData(parseObject);
                         if (minIncome != 0)
                             etIncome.setText("" + minIncome);
-                        if (maxHeight != 0 && minHeight != 0) {
-                            etMinHeight.setText("" + minHeight);
-                            etMaxHeight.setText("" + maxHeight);
+                        if (maxHeight != 0) {
+                            int[] bases = getResources().getIntArray(R.array.heightCM);
+                            String[] values = getResources().getStringArray(R.array.height);
+                            Arrays.sort(bases);
+                            int index = Arrays.binarySearch(bases, maxHeight);
+                            etMaxHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            etMaxHeight.setText(values[index]);
+                        }
+                        if (minHeight != 0) {
+                            int[] bases = getResources().getIntArray(R.array.heightCM);
+                            String[] values = getResources().getStringArray(R.array.height);
+                            Arrays.sort(bases);
+                            int index = Arrays.binarySearch(bases, minHeight);
+                            etMinHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            etMinHeight.setText(values[index]);
                         }
                         if (minAge != 0 && maxAge != 0) {
                             etMinAge.setText("" + minAge);

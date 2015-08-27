@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
-
+        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(context, FullProfileActivity.class));
+                MainActivity.this.finish();
             }
         });
 
@@ -155,6 +156,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void getParseData() {
+        setNavigationMenu();
+        getMatchesFromFunction();
+    }
+
+    void setNavigationMenu() {
         navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
         final TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
         final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
@@ -166,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+                MainActivity.this.finish();
             }
         });
         settingsButton.setOnClickListener(new View.OnClickListener() {
@@ -178,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, UserPreferences.class));
+                MainActivity.this.finish();
             }
         });
         try {
@@ -211,8 +219,8 @@ public class MainActivity extends AppCompatActivity {
         menu.setFadeDegree(0.35f);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(navigationMenu);
-        menu.setSlidingEnabled(true);
         menu.setBehindOffset(124);
+        menu.setSlidingEnabled(false);
         slidingPanel.setPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             @Override
             public void onPanelSlide(View view, float v) {
@@ -246,7 +254,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        getMatchesFromFunction();
     }
 
     private void getMatchesFromFunction() {
@@ -264,14 +271,17 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 loadingLabel.setText("Matching profile not found");
                                 rippleBackground.stopRippleAnimation();
+                                menu.setSlidingEnabled(true);
                             }
                         } else {
                             loadingLabel.setText("Matching profile not found");
+                            menu.setSlidingEnabled(true);
                             rippleBackground.stopRippleAnimation();
                         }
                     } else {
                         e.printStackTrace();
                         loadingLabel.setText("Matching profile not found");
+                        menu.setSlidingEnabled(true);
                         rippleBackground.stopRippleAnimation();
                     }
                 }
@@ -279,6 +289,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setNavigationMenu();
     }
 
     private void setProfileDetails() {
@@ -385,6 +401,8 @@ public class MainActivity extends AppCompatActivity {
         }
         rippleBackground.stopRippleAnimation();
         rippleBackground.setVisibility(View.GONE);
+        menu.setSlidingEnabled(true);
+        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
@@ -435,7 +453,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

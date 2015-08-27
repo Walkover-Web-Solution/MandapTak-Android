@@ -1,6 +1,7 @@
 package com.mandaptak.android.FullProfile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,11 +21,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.EditProfile.BasicProfileFragment;
-import com.mandaptak.android.EditProfile.DetailsProfileFragment;
-import com.mandaptak.android.EditProfile.FinalEditProfileFragment;
-import com.mandaptak.android.EditProfile.QualificationEditProfileFragment;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -32,15 +30,12 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
-import com.viewpagerindicator.TitlePageIndicator;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import me.iwf.photopicker.utils.ImageModel;
 
@@ -51,6 +46,12 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     ViewPager mMenuPager, mImagesPager;
     CirclePageIndicator circlePageIndicator;
     ArrayList<ImageModel> parsePhotos = new ArrayList<>();
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(FullProfileActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        FullProfileActivity.this.finish();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +107,24 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    private void getImages() {
+        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+        queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (list != null) {
+                    for (ParseObject item : list) {
+                        parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                    }
+                    imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
+                    mImagesPager.setAdapter(imagePagerAdapter);
+                    circlePageIndicator.setViewPager(mImagesPager);
+                }
+            }
+        });
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter implements IconPagerAdapter {
@@ -191,23 +210,5 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((LinearLayout) object);
         }
-    }
-
-    private void getImages() {
-        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-        queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null) {
-                    for (ParseObject item : list) {
-                        parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
-                    }
-                    imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
-                    mImagesPager.setAdapter(imagePagerAdapter);
-                    circlePageIndicator.setViewPager(mImagesPager);
-                }
-            }
-        });
     }
 }

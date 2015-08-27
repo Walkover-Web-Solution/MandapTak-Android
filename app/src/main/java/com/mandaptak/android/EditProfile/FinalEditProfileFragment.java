@@ -23,7 +23,6 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.mandaptak.android.Adapter.LayoutAdapter;
-import com.mandaptak.android.Login.UserDetailsActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
@@ -138,7 +137,7 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         alertDialog.dismiss();
-                        startActivity(new Intent(getActivity(), UserDetailsActivity.class));
+                        startActivity(new Intent(getActivity(), ImportFacebookActivity.class));
                     }
                 });
                 alertDialog.show();

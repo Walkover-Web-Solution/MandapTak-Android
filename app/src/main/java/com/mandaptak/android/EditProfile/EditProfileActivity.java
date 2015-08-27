@@ -1,5 +1,6 @@
 package com.mandaptak.android.EditProfile;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 
 import java.util.Locale;
@@ -85,6 +87,12 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     }
 
     @Override
+    public void onBackPressed() {
+        startActivity(new Intent(EditProfileActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        EditProfileActivity.this.finish();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
@@ -95,8 +103,6 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
     }
 

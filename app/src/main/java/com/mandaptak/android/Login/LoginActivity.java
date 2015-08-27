@@ -62,21 +62,21 @@ public class LoginActivity extends AppCompatActivity {
                     showDialogVerifyNumber();
                 } else
                     mApp.showToast(context, "Invalid Number");
-               // loginWithFacebook();
+                // loginWithFacebook();
             }
         });
 //        importLocation();
     }
 
-    private void loginWithFacebook(){
+    private void loginWithFacebook() {
 
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
-
 
 //    void importLocation() {
 //        InputStream inputStream = getResources().openRawResource(R.raw.location);
@@ -149,6 +149,10 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
+
+    @Override
+    public void onBackPressed() {
+    }
 
     private void showDialogVerifyNumber() {
         final View locationDialog = View.inflate(context, R.layout.verify_otp_dialog, null);

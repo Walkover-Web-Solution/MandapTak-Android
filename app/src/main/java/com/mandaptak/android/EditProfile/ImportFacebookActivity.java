@@ -1,4 +1,4 @@
-package com.mandaptak.android.Login;
+package com.mandaptak.android.EditProfile;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-public class UserDetailsActivity extends Activity {
+public class ImportFacebookActivity extends Activity {
 
     private ProfilePictureView userProfilePictureView;
     private TextView userNameView;

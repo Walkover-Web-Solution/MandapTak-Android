@@ -36,16 +36,18 @@
 
         <com.mandaptak.android.Views.CircleImageView
             android:id="@+id/front_photo"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_below="@+id/toolbar"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_above="@+id/bottom_layout"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="48dp"
+            android:layout_marginBottom="28dp"
             app:border_color="@color/white"
+            app:border_overlay="true"
             app:border_width="2dp"/>
 
         <LinearLayout
+            android:id="@+id/bottom_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"

@@ -68,7 +68,7 @@
 
 
         <activity
-            android:name=".Login.UserDetailsActivity"
+            android:name=".EditProfile.ImportFacebookActivity"
             android:screenOrientation="portrait"/>
 
         <activity

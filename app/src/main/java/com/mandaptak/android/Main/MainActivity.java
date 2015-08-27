@@ -3,9 +3,6 @@ package com.mandaptak.android.Main;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
@@ -48,7 +45,6 @@ import org.lucasr.twowayview.widget.TwoWayView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import me.iwf.photopicker.utils.ImageModel;
 
@@ -237,6 +233,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else
                         e.printStackTrace();
+
                 }
             });
         } catch (ParseException e) {

@@ -68,10 +68,6 @@
 
 
         <activity
-            android:name=".EditProfile.ImportFacebookActivity"
-            android:screenOrientation="portrait"/>
-
-        <activity
             android:name=".Main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityTheme"/>

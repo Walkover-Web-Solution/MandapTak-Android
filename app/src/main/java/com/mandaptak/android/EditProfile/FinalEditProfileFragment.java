@@ -138,7 +138,6 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         alertDialog.dismiss();
-                        startActivity(new Intent(getActivity(), ImportFacebookActivity.class));
                     }
                 });
                 alertDialog.show();

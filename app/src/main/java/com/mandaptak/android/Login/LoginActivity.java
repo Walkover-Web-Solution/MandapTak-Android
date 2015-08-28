@@ -42,17 +42,16 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         loginButton = (Button) findViewById(R.id.login_button);
-        loginButton.setText("LOGIN WITH FB");
+        loginButton.setText("LOGIN");
         etNumber = (EditText) findViewById(R.id.number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-        //Bind the title indicator to the adapter
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         titleIndicator.setViewPager(pager);
         ParseUser currentUser = ParseUser.getCurrentUser();
 
         if (currentUser != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
             this.finish();
         }
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -62,96 +61,14 @@ public class LoginActivity extends AppCompatActivity {
                     showDialogVerifyNumber();
                 } else
                     mApp.showToast(context, "Invalid Number");
-                // loginWithFacebook();
             }
         });
-//        importLocation();
-    }
-
-    private void loginWithFacebook() {
-
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-    }
-
-//    void importLocation() {
-//        InputStream inputStream = getResources().openRawResource(R.raw.location);
-//        CSVFile csvFile = new CSVFile(inputStream);
-//        final List<String[]> scoreList = csvFile.read();
-//        final int[] i = {scoreList.size()};
-//
-//        final Handler handler = new Handler();
-//        handler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (i[0] != 0) {
-//                    i[0]--;
-//                    String[] location = scoreList.get(i[0]);
-//                    final ParseACL groupACL = new ParseACL();
-//                    groupACL.setPublicReadAccess(true);
-//                    groupACL.setPublicWriteAccess(false);
-//                    final String city = location[2].replace("�", "").trim(), state = location[1].trim(), country = location[0].trim();
-//                    final ParseQuery<ParseObject> parseQueryCountry = new ParseQuery<>("Country");
-//                    parseQueryCountry.whereEqualTo("name", country);
-//                    parseQueryCountry.getFirstInBackground(new GetCallback<ParseObject>() {
-//                        @Override
-//                        public void done(final ParseObject parseObject1, ParseException e) {
-//                            if (parseObject1 != null) {
-//                                ParseQuery<ParseObject> parseQueryState = new ParseQuery<>("State");
-//                                parseQueryState.whereEqualTo("name", state);
-//                                parseQueryState.getFirstInBackground(new GetCallback<ParseObject>() {
-//                                    @Override
-//                                    public void done(final ParseObject parseObject, ParseException e) {
-//                                        if (parseObject != null) {
-//                                            ParseObject parseObjectCity = new ParseObject("City");
-//                                            parseObjectCity.put("name", city);
-//                                            parseObjectCity.put("Parent", parseObject);
-//                                            parseObjectCity.setACL(groupACL);
-//                                            parseObjectCity.saveInBackground();
-//                                        } else {
-//                                            ParseObject parseObjectState = new ParseObject("State");
-//                                            parseObjectState.put("name", state);
-//                                            parseObjectState.put("Parent", parseObject1);
-//                                            parseObjectState.setACL(groupACL);
-//                                            parseObjectState.saveInBackground();
-//                                            ParseObject parseObjectCity = new ParseObject("City");
-//                                            parseObjectCity.put("name", city);
-//                                            parseObjectCity.put("Parent", parseObjectState);
-//                                            parseObjectCity.setACL(groupACL);
-//                                            parseObjectCity.saveInBackground();
-//                                        }
-//                                    }
-//                                });
-//                            } else {
-//                                ParseObject parseObjectCountry = new ParseObject("Country");
-//                                parseObjectCountry.put("name", country);
-//                                parseObjectCountry.saveInBackground();
-//                                parseObjectCountry.setACL(groupACL);
-//                                ParseObject parseObjectState = new ParseObject("State");
-//                                parseObjectState.put("name", state);
-//                                parseObjectState.put("Parent", parseObjectCountry);
-//                                parseObjectState.setACL(groupACL);
-//                                parseObjectState.saveInBackground();
-//                                ParseObject parseObjectCity = new ParseObject("City");
-//                                parseObjectCity.put("name", city);
-//                                parseObjectCity.put("Parent", parseObjectState);
-//                                parseObjectCity.setACL(groupACL);
-//                                parseObjectCity.saveInBackground();
-//                            }
-//                        }
-//                    });
-//                    handler.postDelayed(this, 2000);
-//                }
-//            }
-//        });
-//    }
-
-    @Override
-    public void onBackPressed() {
     }
 
     private void showDialogVerifyNumber() {
@@ -171,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
                     ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                 mApp.dialog.dismiss();
                                 LoginActivity.this.finish();
                             } else {

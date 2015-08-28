@@ -1,6 +1,5 @@
 package com.mandaptak.android.Adapter;
 
-
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -17,11 +16,9 @@ import com.mandaptak.android.Views.CircleImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-
 public class MatchesAdapter extends BaseAdapter {
     Context ctx;
     ArrayList<MatchesModel> list;
-
 
     public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
         this.list = paramArrayList;
@@ -71,7 +68,6 @@ public class MatchesAdapter extends BaseAdapter {
                 .into(viewholder.profilePic);
         return paramView;
     }
-
 
     static class ViewHolder {
         public TextView tvName;

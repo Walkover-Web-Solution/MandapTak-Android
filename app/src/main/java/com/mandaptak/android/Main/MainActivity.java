@@ -74,12 +74,12 @@ public class MainActivity extends AppCompatActivity {
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
     TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
-    CircleImageView frontPhoto;
+    CircleImageView frontPhoto, loadingProfile;
     BlurringView blurringView;
     TextView salary, designation, company, education, weight, currentLocation, viewFullProfile;
     TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
     RippleBackground rippleBackground;
-    TextView loadingLabel;
+    ImageButton matches;
     Toolbar toolbar;
     ImageView mainLikeButton, mainSkipButton, mainUndoButton;
     UndoModel undoModel;
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         blurringView = (BlurringView) findViewById(R.id.blurring_view);
         frontProfileName = (TextView) findViewById(R.id.front_name);
         frontPhoto = (CircleImageView) findViewById(R.id.front_photo);
+        loadingProfile = (CircleImageView) findViewById(R.id.loading_profile);
         frontDesignation = (TextView) findViewById(R.id.front_designation);
         frontHeight = (TextView) findViewById(R.id.front_height);
         frontReligion = (TextView) findViewById(R.id.front_religion);
@@ -112,11 +113,11 @@ public class MainActivity extends AppCompatActivity {
         slideName = (TextView) findViewById(R.id.slide_name);
         slideReligion = (TextView) findViewById(R.id.slide_religion);
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
-        loadingLabel = (TextView) findViewById(R.id.search_label);
         viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
         mainLikeButton = (ImageView) findViewById(R.id.like_button);
         mainSkipButton = (ImageView) findViewById(R.id.skip_button);
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
+        matches = (ImageButton) findViewById(R.id.matches_icon);
     }
 
     void clickListeners() {
@@ -139,10 +140,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (profileList.size() > 0) {
                                     setProfileDetails();
                                 } else {
-                                    loadingLabel.setText("No more Matching profiles present.");
                                     rippleBackground.setVisibility(View.VISIBLE);
-                                    rippleBackground.stopRippleAnimation();
-                                    toolbar.setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 e.printStackTrace();
@@ -281,10 +279,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (profileList.size() > 0) {
                                     setProfileDetails();
                                 } else {
-                                    loadingLabel.setText("No more Matching profiles present.");
                                     rippleBackground.setVisibility(View.VISIBLE);
-                                    rippleBackground.stopRippleAnimation();
-                                    toolbar.setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 e.printStackTrace();
@@ -318,10 +313,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (profileList.size() > 0) {
                                     setProfileDetails();
                                 } else {
-                                    loadingLabel.setText("No more Matching profiles present.");
                                     rippleBackground.setVisibility(View.VISIBLE);
-                                    rippleBackground.stopRippleAnimation();
-                                    toolbar.setVisibility(View.VISIBLE);
                                 }
                             } else {
                                 e.printStackTrace();
@@ -359,6 +351,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        matches.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                MainActivity.this.finish();
+            }
+        });
     }
 
     @Override
@@ -377,7 +376,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-        toolbar.setVisibility(View.GONE);
 
         init();
 
@@ -452,6 +450,11 @@ public class MainActivity extends AppCompatActivity {
                                     .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                                     .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                                     .into(profilePicture);
+                            Picasso.with(context)
+                                    .load(file.getUrl())
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                    .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                    .into(loadingProfile);
                         } catch (ParseException e1) {
                             e1.printStackTrace();
                         }
@@ -518,21 +521,10 @@ public class MainActivity extends AppCompatActivity {
                             profileList = (ArrayList<ParseObject>) o;
                             if (profileList.size() > 0) {
                                 setProfileDetails();
-                            } else {
-                                loadingLabel.setText("Matching profile not found");
-                                rippleBackground.stopRippleAnimation();
-                                toolbar.setVisibility(View.VISIBLE);
                             }
-                        } else {
-                            loadingLabel.setText("Matching profile not found");
-                            toolbar.setVisibility(View.VISIBLE);
-                            rippleBackground.stopRippleAnimation();
                         }
                     } else {
                         e.printStackTrace();
-                        loadingLabel.setText("Matching profile not found");
-                        toolbar.setVisibility(View.VISIBLE);
-                        rippleBackground.stopRippleAnimation();
                     }
                 }
             });
@@ -549,13 +541,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void setProfileDetails() {
         try {
-            if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != null)
+            if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != null) {
                 Picasso.with(context)
                         .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
-            else {
+
+            } else {
                 Picasso.with(context)
                         .load(Uri.EMPTY)
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
@@ -656,9 +649,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        rippleBackground.stopRippleAnimation();
         rippleBackground.setVisibility(View.GONE);
-        toolbar.setVisibility(View.VISIBLE);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
@@ -712,7 +703,7 @@ public class MainActivity extends AppCompatActivity {
                                 .load(Uri.EMPTY)
                                 .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                                 .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .into(frontPhoto);
+                                .into(backgroundPhoto);
                         blurringView.invalidate();
                     }
                 } else {
@@ -720,7 +711,7 @@ public class MainActivity extends AppCompatActivity {
                             .load(Uri.EMPTY)
                             .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                             .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .into(frontPhoto);
+                            .into(backgroundPhoto);
                     blurringView.invalidate();
                 }
             }
@@ -740,7 +731,7 @@ public class MainActivity extends AppCompatActivity {
                 menu.toggle();
                 return true;
             case R.id.action_matches:
-                startActivity(new Intent(context, MatchesActivity.class));
+                startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 MainActivity.this.finish();
                 return true;
         }
@@ -752,7 +743,7 @@ public class MainActivity extends AppCompatActivity {
             if (checkFieldsTab2(parseObject)) {
                 if (checkFieldsTab3(parseObject)) {
                     if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
-                        startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                        startActivity(new Intent(MainActivity.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK));
                         mApp.dialog.dismiss();
                         MainActivity.this.finish();
                     } else {
@@ -760,17 +751,17 @@ public class MainActivity extends AppCompatActivity {
                         getParseData();
                     }
                 } else {
-                    startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(MainActivity.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK));
                     mApp.dialog.dismiss();
                     MainActivity.this.finish();
                 }
             } else {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK));
                 mApp.dialog.dismiss();
                 MainActivity.this.finish();
             }
         } else {
-            startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(MainActivity.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK));
             mApp.dialog.dismiss();
             MainActivity.this.finish();
         }

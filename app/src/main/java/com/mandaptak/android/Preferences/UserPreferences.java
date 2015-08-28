@@ -65,6 +65,7 @@ public class UserPreferences extends AppCompatActivity {
         init();
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Preferences");
         btnSavePreferences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -349,7 +350,7 @@ public class UserPreferences extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(UserPreferences.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        startActivity(new Intent(UserPreferences.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
         UserPreferences.this.finish();
     }
 
@@ -503,7 +504,7 @@ public class UserPreferences extends AppCompatActivity {
             }
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         UserPreferences.this.finish();
     }
@@ -526,7 +527,6 @@ public class UserPreferences extends AppCompatActivity {
                     }
             }
         });
-
     }
 
     private ArrayList<ParseNameModel> getDegreeList(String query) {

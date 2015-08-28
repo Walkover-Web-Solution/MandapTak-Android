@@ -183,9 +183,9 @@ public class FinalEditProfileFragment extends Fragment {
                         Toast.makeText(context, "Please update primary profile photo", Toast.LENGTH_SHORT).show();
                     } else {
                         mApp.dialog.dismiss();
-                        Toast.makeText(context, "Profile Update", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show();
                         try {
-                            startActivity(new Intent(getActivity(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             getActivity().finish();
                         } catch (Exception e2) {
                             e2.printStackTrace();

@@ -1,6 +1,5 @@
 package com.mandaptak.android.FullProfile;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,14 +14,12 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
-
 
 public class BasicProfileInfo extends Fragment {
     Common mApp;
@@ -33,6 +30,7 @@ public class BasicProfileInfo extends Fragment {
     private Calendar newTOB, newDOB;
     private ParseObject newPOB, newCurrentLocation;
     private Context context;
+    private String parseObjectId;
 
     public BasicProfileInfo() {
         // Required empty public constructor
@@ -43,8 +41,16 @@ public class BasicProfileInfo extends Fragment {
                              Bundle savedInstanceState) {
         init(inflater, container);
         getParseData();
-
         return rootView;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getActivity().getIntent() != null)
+            parseObjectId = getActivity().getIntent().getStringExtra("parseObjectId");
+        else
+            getActivity().finish();
     }
 
     private void init(LayoutInflater inflater, ViewGroup container) {
@@ -65,56 +71,58 @@ public class BasicProfileInfo extends Fragment {
     }
 
     private void getParseData() {
-        mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newName = parseObject.getString("name");
-                        newGender = parseObject.getString("gender");
-                        newDOB.setTime(parseObject.getDate("dob"));
-                        newTOB.setTime(parseObject.getDate("tob"));
-                        newCurrentLocation = parseObject.getParseObject("currentLocation");
-                        newPOB = parseObject.getParseObject("placeOfBirth");
+        if (parseObjectId != null) {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Profile");
+            parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        try {
+                            newName = parseObject.getString("name");
+                            newGender = parseObject.getString("gender");
+                            newDOB.setTime(parseObject.getDate("dob"));
+                            newTOB.setTime(parseObject.getDate("tob"));
+                            newCurrentLocation = parseObject.getParseObject("currentLocation");
+                            newPOB = parseObject.getParseObject("placeOfBirth");
 
-                        if (newName != null) {
-                            displayName.setText(newName);
+                            if (newName != null) {
+                                displayName.setText(newName);
+                            }
+                            if (newGender != null) {
+                                gender.setText(newGender);
+                            }
+                            if (newDOB != null) {
+                                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                String subdateStr = df.format(newDOB.getTime());
+                                datePicker.setText(subdateStr);
+                            }
+                            if (newTOB != null) {
+                                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                String subdateStr = df.format(newTOB.getTime());
+                                timepicker.setText(subdateStr);
+                            }
+                            if (newPOB != null) {
+                                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
+                                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            }
+                            if (newCurrentLocation != null) {
+                                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
+                                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
-                        if (newGender != null) {
-                            gender.setText(newGender);
-                        }
-                        if (newDOB != null) {
-                            DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newDOB.getTime());
-                            datePicker.setText(subdateStr);
-                        }
-                        if (newTOB != null) {
-                            DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newTOB.getTime());
-                            timepicker.setText(subdateStr);
-                        }
-                        if (newPOB != null) {
-                            placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
-                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                        }
-                        if (newCurrentLocation != null) {
-                            currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
-                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    } else {
+                        e.printStackTrace();
                     }
-                } else {
-                    e.printStackTrace();
+                    mApp.dialog.dismiss();
                 }
-                mApp.dialog.dismiss();
-            }
-        });
+            });
+        } else {
+            getActivity().finish();
+        }
     }
-
-
 }

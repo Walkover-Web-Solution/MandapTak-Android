@@ -54,7 +54,7 @@
             android:layout_centerHorizontal="true"
             android:layout_gravity="center|bottom"
             android:orientation="vertical"
-            android:paddingBottom="102dp">
+            android:paddingBottom="122dp">
 
             <TextView
                 android:id="@+id/front_name"
@@ -93,9 +93,7 @@
                 android:layout_marginBottom="4dp"
                 android:textColor="@color/white"
                 android:textSize="18sp"/>
-
         </LinearLayout>
-
 
         <ImageView
             android:id="@+id/pin_button"
@@ -109,7 +107,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="?actionBarSize"
             android:gravity="center"
@@ -117,24 +115,27 @@
 
             <ImageView
                 android:id="@+id/undo_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_icon_pin"/>
+                android:src="@drawable/ic_undo_white"/>
 
             <ImageView
                 android:id="@+id/like_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_icon_pin"/>
+                android:src="@drawable/ic_favorite_white"/>
 
             <ImageView
                 android:id="@+id/skip_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_icon_pin"/>
+                android:src="@drawable/ic_skip_white"/>
         </LinearLayout>
 
         <com.skyfishjy.library.RippleBackground
@@ -143,23 +144,25 @@
             android:layout_height="match_parent"
             android:background="@color/white"
             app:rb_color="@color/red_200"
-            app:rb_duration="2500"
-            app:rb_radius="80dp"
-            app:rb_rippleAmount="3"
-            app:rb_scale="6">
+            app:rb_duration="3000"
+            app:rb_radius="60dp"
+            app:rb_rippleAmount="2"
+            app:rb_scale="3"
+            app:rb_strokeWidth="2dp"
+            app:rb_type="fillRipple">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/search_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <com.mandaptak.android.Views.CircleImageView
+                    android:id="@+id/loading_profile"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:layout_centerInParent="true"
-                    android:text="Finding people..."
-                    android:textColor="@color/red_700"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
+                    app:border_color="@color/red_500"
+                    app:border_overlay="true"
+                    app:border_width="2dp"/>
             </RelativeLayout>
         </com.skyfishjy.library.RippleBackground>
 
@@ -251,32 +254,16 @@
                         android:textSize="18sp"/>
                 </LinearLayout>
 
-                <LinearLayout
+                <ImageButton
+                    android:id="@+id/matches_icon"
                     android:layout_width="wrap_content"
-                    android:layout_height="?actionBarSize"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
-                    android:orientation="horizontal"
-                    android:paddingBottom="10dp">
-
-                    <ImageButton
-                        android:id="@+id/action_share"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="16dp"
-                        android:background="@drawable/ic_share_red"
-                        android:padding="8dp"/>
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:background="@drawable/heart_icon_dual"
-                        android:padding="12dp"/>
-
-                </LinearLayout>
+                    android:background="@drawable/heart_icon_dual"
+                    android:padding="12dp"/>
 
                 <ImageButton
                     android:id="@+id/like_user"
@@ -429,7 +416,6 @@
                     android:paddingTop="4dp"
                     android:textColor="@color/black_dark"
                     android:textSize="@dimen/abc_text_size_small_material"/>
-
             </LinearLayout>
 
             <TextView
@@ -439,14 +425,17 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:background="@color/white"
-                android:gravity="center|start"
+                android:drawableLeft="@drawable/ic_profile_red"
+                android:drawablePadding="16dp"
+                android:drawableStart="@drawable/ic_profile_red"
+                android:gravity="center"
                 android:paddingBottom="16dp"
                 android:paddingLeft="16dp"
                 android:paddingTop="16dp"
                 android:text="View Full Profile"
                 android:textColor="@color/red_400"
-                android:textSize="@dimen/abc_text_size_small_material"/>
-
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textStyle="bold"/>
         </RelativeLayout>
 
         <LinearLayout

@@ -1,6 +1,5 @@
 package com.mandaptak.android.Matches;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.mandaptak.android.Adapter.MatchesAdapter;
 import com.mandaptak.android.Models.MatchesModel;
@@ -21,21 +19,15 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
-
 
 public class MatchesFragment extends Fragment {
     Common mApp;
-    private View rootView;
-    private Context context;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
+    private View rootView;
+    private Context context;
 
     public MatchesFragment() {
         // Required empty public constructor
@@ -109,7 +101,6 @@ public class MatchesFragment extends Fragment {
                 }
             }
         });
-
 
         mApp.dialog.dismiss();
         return matchList;

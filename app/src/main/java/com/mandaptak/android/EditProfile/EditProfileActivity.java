@@ -38,7 +38,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         actionBar.setDisplayHomeAsUpEnabled(false);
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setIcon(R.drawable.ic_mode_edit_white);
-        actionBar.setTitle("  Edit Profile");
+        actionBar.setTitle("    Edit Profile");
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
@@ -102,7 +102,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onBackPressed() {
-//        startActivity(new Intent(EditProfileActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//        startActivity(new Intent(EditProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
 //        EditProfileActivity.this.finish();
     }
 

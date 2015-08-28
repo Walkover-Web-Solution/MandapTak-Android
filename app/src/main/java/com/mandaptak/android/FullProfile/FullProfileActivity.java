@@ -17,18 +17,18 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
-import com.mandaptak.android.EditProfile.BasicProfileFragment;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
@@ -46,10 +46,12 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     ViewPager mMenuPager, mImagesPager;
     CirclePageIndicator circlePageIndicator;
     ArrayList<ImageModel> parsePhotos = new ArrayList<>();
+    ImageButton backButton;
+    String parseObjectId;
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(FullProfileActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        startActivity(new Intent(FullProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
         FullProfileActivity.this.finish();
     }
 
@@ -57,6 +59,11 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.full_profile_activity);
+        if (getIntent() != null) {
+            parseObjectId = getIntent().getStringExtra("parseObjectId");
+        } else {
+            this.finish();
+        }
         try {
             getSupportActionBar().hide();
         } catch (Exception ignored) {
@@ -65,6 +72,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         getImages();
         mMenuPager = (ViewPager) findViewById(R.id.pager_menu);
         mImagesPager = (ViewPager) findViewById(R.id.pager_images);
+        backButton = (ImageButton) findViewById(R.id.home);
         mMenuPager.setAdapter(mSectionsPagerAdapter);
         mMenuPager.setOffscreenPageLimit(1);
         final TabPageIndicator iconPageIndicator = (TabPageIndicator) findViewById(R.id.icons);
@@ -80,7 +88,13 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         mMenuPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-
+                iconPageIndicator.setCurrentItem(position);
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
     }
@@ -96,8 +110,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
         mMenuPager.setCurrentItem(tab.getPosition());
     }
 
@@ -110,21 +122,31 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     }
 
     private void getImages() {
-        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-        queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null) {
-                    for (ParseObject item : list) {
-                        parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
-                    }
-                    imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
-                    mImagesPager.setAdapter(imagePagerAdapter);
-                    circlePageIndicator.setViewPager(mImagesPager);
+        if (parseObjectId != null) {
+            ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Profile");
+            parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                    queryParseQuery.whereEqualTo("profileId", parseObject);
+                    queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null) {
+                                for (ParseObject item : list) {
+                                    parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                                }
+                                imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
+                                mImagesPager.setAdapter(imagePagerAdapter);
+                                circlePageIndicator.setViewPager(mImagesPager);
+                            }
+                        }
+                    });
                 }
-            }
-        });
+            });
+        } else {
+            this.finish();
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter implements IconPagerAdapter {
@@ -183,7 +205,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
-            return view == ((LinearLayout) object);
+            return view == object;
         }
 
         @Override

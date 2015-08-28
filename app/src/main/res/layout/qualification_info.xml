@@ -1,9 +1,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context="com.mandaptak.android.EditProfile.QualificationEditProfileFragment">
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            tools:context="com.mandaptak.android.EditProfile.QualificationEditProfileFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
             android:paddingTop="16dp"
             android:text="Work"
             android:textColor="@color/red_200"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
         <LinearLayout
             android:id="@+id/work_layout"
@@ -50,7 +50,7 @@
                     android:textColor="@color/black_dark"
                     android:textColorHint="@color/black_light"
                     android:textCursorDrawable="@drawable/color_cursor"
-                    android:textSize="@dimen/abc_text_size_small_material" />
+                    android:textSize="@dimen/abc_text_size_small_material"/>
             </LinearLayout>
 
             <TextView
@@ -63,7 +63,7 @@
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
                 android:textCursorDrawable="@drawable/color_cursor"
-                android:textSize="@dimen/abc_text_size_small_material" />
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
             <TextView
                 android:id="@+id/company"
@@ -75,7 +75,7 @@
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
                 android:textCursorDrawable="@drawable/color_cursor"
-                android:textSize="@dimen/abc_text_size_small_material" />
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
             <TextView
                 android:id="@+id/current_income"
@@ -86,7 +86,7 @@
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
                 android:textCursorDrawable="@drawable/color_cursor"
-                android:textSize="@dimen/abc_text_size_small_material" />
+                android:textSize="@dimen/abc_text_size_small_material"/>
         </LinearLayout>
 
         <TextView
@@ -96,7 +96,7 @@
             android:paddingTop="16dp"
             android:text="Education"
             android:textColor="@color/red_200"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
         <LinearLayout
             android:id="@+id/education_layout_primary"
@@ -110,8 +110,8 @@
                 android:layout_height="wrap_content"
                 android:padding="16dp"
                 android:text="Degree"
-                android:textSize="@dimen/abc_text_size_small_material"
-                android:textColor="@color/black_light" />
+                android:textColor="@color/black_light"
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
         </LinearLayout>
 
@@ -128,16 +128,16 @@
                 android:clickable="true"
                 android:gravity="center|start"
                 android:padding="16dp"
-                android:textSize="@dimen/abc_text_size_small_material"
                 android:text="Want to work after marriage?"
-                android:textColor="@color/black_light" />
+                android:textColor="@color/black_light"
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
             <TextView
                 android:id="@+id/work_after_marriage"
                 android:layout_width="wrap_content"
-                android:textSize="@dimen/abc_text_size_small_material"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:textSize="@dimen/abc_text_size_small_material"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

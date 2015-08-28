@@ -14,10 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.mandaptak.android.EditProfile.BasicProfileFragment;
-import com.mandaptak.android.EditProfile.DetailsProfileFragment;
-import com.mandaptak.android.EditProfile.FinalEditProfileFragment;
-import com.mandaptak.android.EditProfile.QualificationEditProfileFragment;
 import com.mandaptak.android.FullProfile.BasicProfileInfo;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
@@ -72,10 +68,9 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(MatchesActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        startActivity(new Intent(MatchesActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
         MatchesActivity.this.finish();
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

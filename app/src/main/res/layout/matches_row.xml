@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingTop="16dp"
-    android:paddingBottom="16dp">
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:paddingBottom="16dp"
+                android:paddingTop="16dp">
 
     <!-- Thumbnail Image -->
     <com.mandaptak.android.Views.CircleImageView
@@ -13,7 +13,7 @@
         android:layout_height="90dp"
         android:layout_alignParentLeft="true"
         android:layout_marginRight="8dp"
-        android:background="@drawable/ic_account_circle_red" />
+        android:background="@drawable/ic_account_circle_red"/>
 
     <!-- User Title -->
     <TextView
@@ -21,10 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
+        android:layout_marginTop="10dp"
         android:layout_toRightOf="@+id/thumbnail"
         android:singleLine="true"
-        android:layout_marginTop="10dp"
-        android:textSize="18sp" />
+        android:textSize="18sp"/>
 
     <!-- caste -->
     <TextView
@@ -36,7 +36,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:singleLine="true"
         android:textColor="@color/black_light"
-        android:textSize="14sp" />
+        android:textSize="14sp"/>
 
     <!-- work -->
     <TextView
@@ -48,7 +48,7 @@
         android:layout_toRightOf="@+id/thumbnail"
         android:singleLine="true"
         android:textColor="@color/black_light"
-        android:textSize="14sp" />
+        android:textSize="14sp"/>
 
 
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.mandaptak.android.Models;
 
-
 public class MatchesModel {
 
     String url;

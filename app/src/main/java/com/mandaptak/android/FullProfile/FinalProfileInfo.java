@@ -26,11 +26,20 @@ public class FinalProfileInfo extends Fragment {
     long newMinBudget = 0, newMaxBudget = 0;
     String newBiodataFileName;
     LinearLayout budgetMainLayout;
+    private String parseObjectId;
 
     public FinalProfileInfo() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getActivity().getIntent() != null)
+            parseObjectId = getActivity().getIntent().getStringExtra("parseObjectId");
+        else
+            getActivity().finish();
+    }
 
     void init() {
         context = getActivity();
@@ -49,7 +58,6 @@ public class FinalProfileInfo extends Fragment {
         getParseData();
         return rootView;
     }
-
 
     private void getParseData() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
@@ -81,6 +89,5 @@ public class FinalProfileInfo extends Fragment {
         });
 
     }
-
 
 }

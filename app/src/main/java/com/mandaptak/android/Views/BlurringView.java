@@ -162,12 +162,12 @@ public class BlurringView extends View {
         mBlurOutput.copyTo(mBlurredBitmap);
     }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-        if (mRenderScript != null) {
-            mRenderScript.destroy();
-        }
-    }
+//    @Override
+//    protected void onDetachedFromWindow() {
+//        super.onDetachedFromWindow();
+//        if (mRenderScript != null) {
+//            mRenderScript.destroy();
+//        }
+//    }
 
 }

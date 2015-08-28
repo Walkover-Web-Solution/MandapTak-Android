@@ -3,12 +3,6 @@
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="com.mandaptak.android.Main.MainActivity">
     <item
-        android:id="@+id/action_share"
-        android:icon="@drawable/ic_share_red"
-        android:orderInCategory="100"
-        android:title="Share"
-        app:showAsAction="always"/>
-    <item
         android:id="@+id/action_matches"
         android:icon="@drawable/heart_icon_dual"
         android:orderInCategory="100"

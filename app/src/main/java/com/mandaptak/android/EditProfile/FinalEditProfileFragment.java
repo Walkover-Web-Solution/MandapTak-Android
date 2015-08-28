@@ -23,6 +23,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.mandaptak.android.Adapter.LayoutAdapter;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
@@ -185,6 +186,7 @@ public class FinalEditProfileFragment extends Fragment {
                         mApp.dialog.dismiss();
                         Toast.makeText(context, "Profile Update", Toast.LENGTH_SHORT).show();
                         try {
+                            startActivity(new Intent(getActivity(), MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
                             getActivity().finish();
                         } catch (Exception e2) {
                             e2.printStackTrace();

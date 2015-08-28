@@ -168,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
                 alertDialog.dismiss();
                 mApp.show_PDialog(context, "Verifying");
                 if (!searchBar.getText().toString().equals("") && searchBar.getText().toString() != null) {
-                    ParseUser.logInInBackground("girl4", "walkover", new LogInCallback() {
+                    ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
                         public void done(ParseUser user, ParseException e) {
                             if (user != null) {
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));

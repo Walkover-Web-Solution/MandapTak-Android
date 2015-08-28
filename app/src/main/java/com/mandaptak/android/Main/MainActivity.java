@@ -2,6 +2,7 @@ package com.mandaptak.android.Main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
@@ -21,12 +22,15 @@ import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Matches.MatchesActivity;
+import com.mandaptak.android.Models.UndoModel;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.BitmapTransform;
 import com.mandaptak.android.Views.BlurringView;
 import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -36,12 +40,12 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONObject;
 import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;
@@ -75,23 +79,12 @@ public class MainActivity extends AppCompatActivity {
     TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
     RippleBackground rippleBackground;
     TextView loadingLabel;
+    Toolbar toolbar;
+    ImageView mainLikeButton, mainSkipButton, mainUndoButton;
+    UndoModel undoModel;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = this;
-        mApp = (Common) context.getApplicationContext();
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        try {
-            getSupportActionBar().setTitle("Mandap Tak");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+    void init() {
+        undoModel = new UndoModel();
         rippleBackground = (RippleBackground) findViewById(R.id.content);
         slidingLayout = (RelativeLayout) findViewById(R.id.sliding_layout);
         bottomLayout = (LinearLayout) findViewById(R.id.bottom_panel);
@@ -120,20 +113,234 @@ public class MainActivity extends AppCompatActivity {
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
         loadingLabel = (TextView) findViewById(R.id.search_label);
         viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
-        blurringView.setBlurredView(backgroundPhoto);
-        rippleBackground.startRippleAnimation();
-        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        mainLikeButton = (ImageView) findViewById(R.id.like_button);
+        mainSkipButton = (ImageView) findViewById(R.id.skip_button);
+        mainUndoButton = (ImageView) findViewById(R.id.undo_button);
+    }
+
+    void clickListeners() {
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                try {
+                    mApp.show_PDialog(context, "Pinning Profile..");
+                    ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
+                    dislikeParseObject.put("pinProfileId", profileList.get(0));
+                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mApp.dialog.dismiss();
+                            if (e == null) {
+                                undoModel.setProfileParseObject(profileList.get(0));
+                                undoModel.setActionPerformed(2);
+                                profileList.remove(0);
+                                if (profileList.size() > 0) {
+                                    setProfileDetails();
+                                } else {
+                                    loadingLabel.setText("No more Matching profiles present.");
+                                    rippleBackground.setVisibility(View.VISIBLE);
+                                    rippleBackground.stopRippleAnimation();
+                                    toolbar.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                e.printStackTrace();
+                                mApp.showToast(context, "Error while pinning profile");
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    mApp.dialog.dismiss();
+                    e.printStackTrace();
+                    mApp.showToast(context, "Error while pinning profile");
+                }
             }
         });
-
+        mainUndoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (undoModel.getActionPerformed() != -1) {
+                    switch (undoModel.getActionPerformed()) {
+                        case 0:
+                            try {
+                                mApp.show_PDialog(context, "Performing Undo..");
+                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("DislikeProfile");
+                                parseQuery.whereEqualTo("dislikeProfileId", undoModel.getProfileParseObject());
+                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(ParseObject parseObject, ParseException e) {
+                                        if (e == null) {
+                                            parseObject.deleteInBackground(new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    mApp.dialog.dismiss();
+                                                    if (e == null) {
+                                                        profileList.add(0, undoModel.getProfileParseObject());
+                                                        undoModel = new UndoModel();
+                                                        setProfileDetails();
+                                                    } else {
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            mApp.dialog.dismiss();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case 1:
+                            try {
+                                mApp.show_PDialog(context, "Performing Undo..");
+                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LikedProfile");
+                                parseQuery.whereEqualTo("likeProfileId", undoModel.getProfileParseObject());
+                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(ParseObject parseObject, ParseException e) {
+                                        if (e == null) {
+                                            parseObject.deleteInBackground(new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    mApp.dialog.dismiss();
+                                                    if (e == null) {
+                                                        profileList.add(0, undoModel.getProfileParseObject());
+                                                        undoModel = new UndoModel();
+                                                        setProfileDetails();
+                                                    } else {
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            mApp.dialog.dismiss();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case 2:
+                            try {
+                                mApp.show_PDialog(context, "Performing Undo..");
+                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("PinnedProfile");
+                                parseQuery.whereEqualTo("pinProfileId", undoModel.getProfileParseObject());
+                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(ParseObject parseObject, ParseException e) {
+                                        if (e == null) {
+                                            parseObject.deleteInBackground(new DeleteCallback() {
+                                                @Override
+                                                public void done(ParseException e) {
+                                                    mApp.dialog.dismiss();
+                                                    if (e == null) {
+                                                        profileList.add(0, undoModel.getProfileParseObject());
+                                                        undoModel = new UndoModel();
+                                                        setProfileDetails();
+                                                    } else {
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            mApp.dialog.dismiss();
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                    }
+                }
+            }
+        });
+        mainSkipButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    mApp.show_PDialog(context, "Skipping Profile..");
+                    ParseObject dislikeParseObject = new ParseObject("DislikeProfile");
+                    dislikeParseObject.put("dislikeProfileId", profileList.get(0));
+                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mApp.dialog.dismiss();
+                            if (e == null) {
+                                undoModel.setProfileParseObject(profileList.get(0));
+                                undoModel.setActionPerformed(0);
+                                profileList.remove(0);
+                                if (profileList.size() > 0) {
+                                    setProfileDetails();
+                                } else {
+                                    loadingLabel.setText("No more Matching profiles present.");
+                                    rippleBackground.setVisibility(View.VISIBLE);
+                                    rippleBackground.stopRippleAnimation();
+                                    toolbar.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                e.printStackTrace();
+                                mApp.showToast(context, "Error while skipping profile");
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    mApp.dialog.dismiss();
+                    e.printStackTrace();
+                    mApp.showToast(context, "Error while skipping profile");
+                }
+            }
+        });
+        mainLikeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    mApp.show_PDialog(context, "Liking Profile..");
+                    ParseObject dislikeParseObject = new ParseObject("LikedProfile");
+                    dislikeParseObject.put("likeProfileId", profileList.get(0));
+                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mApp.dialog.dismiss();
+                            if (e == null) {
+                                undoModel.setProfileParseObject(profileList.get(0));
+                                undoModel.setActionPerformed(1);
+                                profileList.remove(0);
+                                if (profileList.size() > 0) {
+                                    setProfileDetails();
+                                } else {
+                                    loadingLabel.setText("No more Matching profiles present.");
+                                    rippleBackground.setVisibility(View.VISIBLE);
+                                    rippleBackground.stopRippleAnimation();
+                                    toolbar.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                e.printStackTrace();
+                                mApp.showToast(context, "Error while liking profile");
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    mApp.dialog.dismiss();
+                    e.printStackTrace();
+                    mApp.showToast(context, "Error while liking profile");
+                }
+            }
+        });
         viewFullProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(context, FullProfileActivity.class));
+                Intent intent = new Intent(context, FullProfileActivity.class);
+                intent.putExtra("parseObjectId", profileList.get(0).getObjectId());
+                startActivity(intent);
                 MainActivity.this.finish();
             }
         });
@@ -145,13 +352,40 @@ public class MainActivity extends AppCompatActivity {
                     mLikeUser.setBackgroundResource(R.drawable.unlike);
                     liked = false;
                     mApp.showToast(context, "Liked");
-
                 } else {
                     mLikeUser.setBackgroundResource(R.drawable.like);
                     liked = true;
                 }
             }
         });
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        context = this;
+        mApp = (Common) context.getApplicationContext();
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        try {
+            getSupportActionBar().setTitle("Mandap Tak");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        toolbar.setVisibility(View.GONE);
+
+        init();
+
+        blurringView.setBlurredView(backgroundPhoto);
+        rippleBackground.startRippleAnimation();
+        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
+        clickListeners();
+
         if (mApp.isNetworkAvailable(context))
             getParseData();
     }
@@ -235,7 +469,7 @@ public class MainActivity extends AppCompatActivity {
             public void onPanelCollapsed(View view) {
                 slidingLayout.setVisibility(View.GONE);
                 bottomLayout.setVisibility(View.VISIBLE);
-                menu.setSlidingEnabled(true);
+
             }
 
             @Override
@@ -272,17 +506,17 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 loadingLabel.setText("Matching profile not found");
                                 rippleBackground.stopRippleAnimation();
-                                menu.setSlidingEnabled(true);
+                                toolbar.setVisibility(View.VISIBLE);
                             }
                         } else {
                             loadingLabel.setText("Matching profile not found");
-                            menu.setSlidingEnabled(true);
+                            toolbar.setVisibility(View.VISIBLE);
                             rippleBackground.stopRippleAnimation();
                         }
                     } else {
                         e.printStackTrace();
                         loadingLabel.setText("Matching profile not found");
-                        menu.setSlidingEnabled(true);
+                        toolbar.setVisibility(View.VISIBLE);
                         rippleBackground.stopRippleAnimation();
                     }
                 }
@@ -300,17 +534,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void setProfileDetails() {
         try {
-            if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != JSONObject.NULL)
+            if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != null)
                 Picasso.with(context)
-                        .load(profileList.get(0).getParseFile("profilePic").getUrl())
+                        .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
+            else {
+                Picasso.with(context)
+                        .load(Uri.EMPTY)
+                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                        .into(frontPhoto);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != JSONObject.NULL) {
+            if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != null) {
                 frontProfileName.setText(profileList.get(0).getString("name"));
                 slideName.setText(profileList.get(0).getString("name"));
             }
@@ -318,7 +559,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != JSONObject.NULL) {
+            if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != null) {
                 int[] bases = getResources().getIntArray(R.array.heightCM);
                 String[] values = getResources().getStringArray(R.array.height);
                 Arrays.sort(bases);
@@ -330,34 +571,34 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != JSONObject.NULL) {
-                frontReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
-                slideReligion.setText(profileList.get(0).getParseObject("religionId").fetchIfNeeded().getString("name"));
+            if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != null) {
+                frontReligion.setText(profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name"));
+                slideReligion.setText(profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != JSONObject.NULL) {
-                slideReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
-                frontReligion.append(", " + profileList.get(0).getParseObject("casteId").fetchIfNeeded().getString("name"));
+            if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != null) {
+                slideReligion.append(", " + profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name"));
+                frontReligion.append(", " + profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != JSONObject.NULL) {
-                frontDesignation.setText(profileList.get(0).getString("designation"));
-                slideDesignation.setText(profileList.get(0).getString("designation"));
+            if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != null) {
+                frontDesignation.setText(profileList.get(0).fetchIfNeeded().getString("designation"));
+                slideDesignation.setText(profileList.get(0).fetchIfNeeded().getString("designation"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != JSONObject.NULL) {
-                ParseObject city = profileList.get(0).getParseObject("currentLocation");
-                ParseObject state = profileList.get(0).getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent");
-                ParseObject country = profileList.get(0).getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
+            if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != null) {
+                ParseObject city = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation");
+                ParseObject state = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent");
+                ParseObject country = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
                 currentLocation.setText(": " + city.fetchIfNeeded().getString("name"));
                 currentLocation.append(", " + state.fetchIfNeeded().getString("name"));
                 currentLocation.append(", " + country.fetchIfNeeded().getString("name"));
@@ -380,21 +621,21 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != JSONObject.NULL) {
+            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null) {
                 education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != JSONObject.NULL) {
+            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
                 education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != JSONObject.NULL) {
+            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
                 education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {
@@ -402,7 +643,7 @@ public class MainActivity extends AppCompatActivity {
         }
         rippleBackground.stopRippleAnimation();
         rippleBackground.setVisibility(View.GONE);
-        menu.setSlidingEnabled(true);
+        toolbar.setVisibility(View.VISIBLE);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
@@ -419,8 +660,12 @@ public class MainActivity extends AppCompatActivity {
                             imageModel.setIsPrimary(true);
                             userProfileImages.add(imageModel);
                             if (model.getBoolean("isPrimary")) {
+                                final int MAX_WIDTH = 512;
+                                final int MAX_HEIGHT = 334;
+
                                 Picasso.with(context)
                                         .load(file.getUrl())
+                                        .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
                                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                                         .into(backgroundPhoto, new Callback() {
@@ -449,7 +694,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     @Override
@@ -460,13 +704,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
+        switch (item.getItemId()) {
             case android.R.id.home:
                 menu.toggle();
                 return true;
             case R.id.action_matches:
                 startActivity(new Intent(context, MatchesActivity.class));
+                MainActivity.this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

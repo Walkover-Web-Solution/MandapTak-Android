@@ -28,8 +28,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -493,16 +491,10 @@ public class DetailsProfileFragment extends Fragment {
             public void done(ParseObject parseObject, ParseException e) {
                 if (newReligion != null)
                     parseObject.put("religionId", newReligion.getParseObject());
-                else
-                    parseObject.put("religionId", JSONObject.NULL);
                 if (newCaste != null)
                     parseObject.put("casteId", newCaste.getParseObject());
-                else
-                    parseObject.put("casteId", JSONObject.NULL);
                 if (newGotra != null)
                     parseObject.put("gotraId", newGotra.getParseObject());
-                else
-                    parseObject.put("gotraId", JSONObject.NULL);
 
                 parseObject.put("height", newHeight);
                 parseObject.put("weight", newWeight);

@@ -30,8 +30,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -751,30 +749,18 @@ public class QualificationEditProfileFragment extends Fragment {
             public void done(ParseObject parseObject, ParseException e) {
                 if (newCurrentIncome != 0)
                     parseObject.put("package", newCurrentIncome);
-                else
-                    parseObject.put("package", JSONObject.NULL);
                 if (newCompany != null)
                     parseObject.put("placeOfWork", newCompany);
-                else
-                    parseObject.put("placeOfWork", JSONObject.NULL);
                 if (newDesignation != null)
                     parseObject.put("designation", newDesignation);
-                else
-                    parseObject.put("designation", JSONObject.NULL);
                 if (newIndustry != null)
                     parseObject.put("industryId", newIndustry);
                 if (newEducationDetail1 != null)
                     parseObject.put("education1", newEducationDetail1.getParseObject());
-                else
-                    parseObject.put("education1", JSONObject.NULL);
                 if (newEducationDetail2 != null)
                     parseObject.put("education2", newEducationDetail2.getParseObject());
-                else
-                    parseObject.put("education2", JSONObject.NULL);
                 if (newEducationDetail3 != null)
                     parseObject.put("education3", newEducationDetail3.getParseObject());
-                else
-                    parseObject.put("education3", JSONObject.NULL);
                 parseObject.put("workAfterMarriage", newWorkAfterMarriage);
                 parseObject.saveInBackground();
             }

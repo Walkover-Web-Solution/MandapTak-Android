@@ -20,6 +20,7 @@ import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 
@@ -41,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         loginButton = (Button) findViewById(R.id.login_button);
+        loginButton.setText("LOGIN WITH FB");
         etNumber = (EditText) findViewById(R.id.number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
@@ -60,11 +62,21 @@ public class LoginActivity extends AppCompatActivity {
                     showDialogVerifyNumber();
                 } else
                     mApp.showToast(context, "Invalid Number");
-
+               // loginWithFacebook();
             }
         });
 //        importLocation();
     }
+
+    private void loginWithFacebook(){
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+    }
+
 
 //    void importLocation() {
 //        InputStream inputStream = getResources().openRawResource(R.raw.location);

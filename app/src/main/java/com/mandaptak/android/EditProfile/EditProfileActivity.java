@@ -14,6 +14,11 @@ import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.R;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.Locale;
 
@@ -82,6 +87,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                 if (mViewPager.getCurrentItem() < 3) {
                     mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
                 }
+            }
+        });
+
+        ParseQuery<ParseObject> parseQueryParseQuery = ParseQuery.getQuery("Profile");
+        parseQueryParseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                parseObject.put("isComplete", false);
+                parseObject.saveInBackground();
             }
         });
     }

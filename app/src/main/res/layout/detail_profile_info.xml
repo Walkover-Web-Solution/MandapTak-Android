@@ -53,7 +53,7 @@
             android:textSize="@dimen/abc_text_size_small_material" />
 
         <TextView
-            android:id="@+id/caste"
+            android:id="@+id/religion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"

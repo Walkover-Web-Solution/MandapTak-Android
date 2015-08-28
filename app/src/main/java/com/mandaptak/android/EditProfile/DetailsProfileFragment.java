@@ -515,7 +515,7 @@ public class DetailsProfileFragment extends Fragment {
     private void init() {
         religion = (TextView) rootView.findViewById(R.id.religion);
         height = (TextView) rootView.findViewById(R.id.height);
-        caste = (TextView) rootView.findViewById(R.id.caste);
+        caste = (TextView) rootView.findViewById(R.id.religion);
         gotra = (TextView) rootView.findViewById(R.id.gotra);
         weight = (ExtendedEditText) rootView.findViewById(R.id.weight);
         mangalik = (Spinner) rootView.findViewById(R.id.mangalik);

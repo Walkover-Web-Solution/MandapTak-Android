@@ -1,5 +1,6 @@
 package com.mandaptak.android.Matches;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -18,6 +19,7 @@ import com.mandaptak.android.EditProfile.DetailsProfileFragment;
 import com.mandaptak.android.EditProfile.FinalEditProfileFragment;
 import com.mandaptak.android.EditProfile.QualificationEditProfileFragment;
 import com.mandaptak.android.FullProfile.BasicProfileInfo;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 
 import java.util.Locale;
@@ -69,6 +71,13 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
     }
 
     @Override
+    public void onBackPressed() {
+        startActivity(new Intent(MatchesActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP));
+        MatchesActivity.this.finish();
+    }
+
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
@@ -102,9 +111,9 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new BasicProfileInfo();
+                    return new MatchesFragment();
                 case 1:
-                    return new BasicProfileInfo();
+                    return new PinsFragment();
                 case 2:
                     return new BasicProfileInfo();
                 default:

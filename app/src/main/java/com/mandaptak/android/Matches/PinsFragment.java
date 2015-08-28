@@ -1,6 +1,5 @@
 package com.mandaptak.android.Matches;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,7 +13,6 @@ import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -23,13 +21,12 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class PinsFragment extends Fragment {
     Common mApp;
-    private View rootView;
-    private Context context;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
+    private View rootView;
+    private Context context;
 
     public PinsFragment() {
         // Required empty public constructor
@@ -83,16 +80,10 @@ public class PinsFragment extends Fragment {
 
                     }
                     listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
-
-
                 }
             }
         });
-
-
         mApp.dialog.dismiss();
         return matchList;
-
     }
-
 }

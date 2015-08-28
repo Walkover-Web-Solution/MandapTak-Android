@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     mApp.show_PDialog(context, "Pinning Profile..");
                     ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
-                    dislikeParseObject.put("pinProfileId", profileList.get(0));
+                    dislikeParseObject.put("pinnedProfileId", profileList.get(0));
                     dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
                     dislikeParseObject.saveInBackground(new SaveCallback() {
                         @Override
@@ -651,46 +651,62 @@ public class MainActivity extends AppCompatActivity {
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject model : list) {
-                        try {
-                            ImageModel imageModel = new ImageModel();
-                            ParseFile file = model.fetchIfNeeded().getParseFile("file");
-                            imageModel.setLink(file.getUrl());
-                            imageModel.setIsPrimary(true);
-                            userProfileImages.add(imageModel);
-                            if (model.getBoolean("isPrimary")) {
-                                final int MAX_WIDTH = 512;
-                                final int MAX_HEIGHT = 334;
+                if (e == null) {
+                    if (list != null && list.size() > 0) {
+                        for (ParseObject model : list) {
+                            try {
+                                ImageModel imageModel = new ImageModel();
+                                ParseFile file = model.fetchIfNeeded().getParseFile("file");
+                                imageModel.setLink(file.getUrl());
+                                imageModel.setIsPrimary(true);
+                                userProfileImages.add(imageModel);
+                                if (model.getBoolean("isPrimary")) {
+                                    final int MAX_WIDTH = 512;
+                                    final int MAX_HEIGHT = 334;
 
-                                Picasso.with(context)
-                                        .load(file.getUrl())
-                                        .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
-                                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-                                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-                                        .into(backgroundPhoto, new Callback() {
-                                            @Override
-                                            public void onSuccess() {
-                                                new Handler().postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        blurringView.invalidate();
-                                                    }
-                                                }, 800);
-                                            }
+                                    Picasso.with(context)
+                                            .load(file.getUrl())
+                                            .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
+                                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                                            .into(backgroundPhoto, new Callback() {
+                                                @Override
+                                                public void onSuccess() {
+                                                    new Handler().postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            blurringView.invalidate();
+                                                        }
+                                                    }, 800);
+                                                }
 
-                                            @Override
-                                            public void onError() {
-                                                blurringView.invalidate();
-                                            }
-                                        });
+                                                @Override
+                                                public void onError() {
+                                                    blurringView.invalidate();
+                                                }
+                                            });
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
                             }
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
                         }
+                        userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+                        profileImages.setAdapter(userImagesAdapter);
+                    } else {
+                        Picasso.with(context)
+                                .load(Uri.EMPTY)
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .into(frontPhoto);
+                        blurringView.invalidate();
                     }
-                    userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
-                    profileImages.setAdapter(userImagesAdapter);
+                } else {
+                    Picasso.with(context)
+                            .load(Uri.EMPTY)
+                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .into(frontPhoto);
+                    blurringView.invalidate();
                 }
             }
         });

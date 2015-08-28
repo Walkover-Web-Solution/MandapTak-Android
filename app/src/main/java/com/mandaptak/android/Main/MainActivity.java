@@ -20,6 +20,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
+import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -463,6 +464,9 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case android.R.id.home:
                 menu.toggle();
+                return true;
+            case R.id.action_matches:
+                startActivity(new Intent(context, MatchesActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

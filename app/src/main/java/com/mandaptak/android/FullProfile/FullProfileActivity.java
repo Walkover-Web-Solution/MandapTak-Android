@@ -151,7 +151,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
                 case 3:
                     return new FinalProfileInfo();
                 default:
-                    return new BasicProfileFragment();
+                    return new BasicProfileInfo();
             }
         }
 

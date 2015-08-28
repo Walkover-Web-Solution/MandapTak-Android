@@ -174,7 +174,6 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                                 mApp.dialog.dismiss();
                                 LoginActivity.this.finish();
-                                mApp.showToast(context, "Welcome");
                             } else {
                                 Log.e("Login", "" + e);
                                 mApp.showToast(context, "Invalid ID/Password");

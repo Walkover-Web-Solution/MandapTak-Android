@@ -46,6 +46,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONObject;
 import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;
@@ -386,8 +387,22 @@ public class MainActivity extends AppCompatActivity {
 
         clickListeners();
 
-        if (mApp.isNetworkAvailable(context))
-            getParseData();
+        if (mApp.isNetworkAvailable(context)) {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+            query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        validateProfile(parseObject);
+                    } else {
+                        e.printStackTrace();
+                        mApp.dialog.dismiss();
+                        mApp.showToast(context, "Connection Error");
+                    }
+                }
+            });
+        }
     }
 
     void getParseData() {
@@ -730,6 +745,87 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void validateProfile(final ParseObject parseObject) {
+        if (checkFieldsTab1(parseObject)) {
+            if (checkFieldsTab2(parseObject)) {
+                if (checkFieldsTab3(parseObject)) {
+                    if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
+                        startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                        mApp.dialog.dismiss();
+                        MainActivity.this.finish();
+                    } else {
+                        mApp.dialog.dismiss();
+                        getParseData();
+                    }
+                } else {
+                    startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                    mApp.dialog.dismiss();
+                    MainActivity.this.finish();
+                }
+            } else {
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+                mApp.dialog.dismiss();
+                MainActivity.this.finish();
+            }
+        } else {
+            startActivity(new Intent(MainActivity.this, EditProfileActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            mApp.dialog.dismiss();
+            MainActivity.this.finish();
+        }
+    }
+
+    private boolean checkFieldsTab1(ParseObject parseObject) {
+        if (!parseObject.containsKey("name") || parseObject.get("name").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("gender") || parseObject.get("gender").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("dob") || parseObject.get("dob").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("tob") || parseObject.get("tob").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("currentLocation") || parseObject.get("currentLocation").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("placeOfBirth") || parseObject.get("placeOfBirth").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkFieldsTab2(ParseObject parseObject) {
+        if (!parseObject.containsKey("height") || parseObject.get("height").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("weight") || parseObject.get("weight").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("religionId") || parseObject.get("religionId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("mangalik") || parseObject.get("mangalik").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkFieldsTab3(ParseObject parseObject) {
+        if (!parseObject.containsKey("workAfterMarriage") || parseObject.get("workAfterMarriage").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("package") || parseObject.get("package").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("designation") || parseObject.get("designation").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("placeOfWork") || parseObject.get("placeOfWork").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.has("industryId") || parseObject.get("industryId").equals(JSONObject.NULL)) {
+            return false;
+        } else if (!parseObject.containsKey("education1") || parseObject.get("education1").equals(JSONObject.NULL)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public void previewPhoto(Intent intent) {

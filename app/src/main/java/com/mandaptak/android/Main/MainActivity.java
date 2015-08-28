@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                             try {
                                 mApp.show_PDialog(context, "Performing Undo..");
                                 ParseQuery<ParseObject> parseQuery = new ParseQuery<>("PinnedProfile");
-                                parseQuery.whereEqualTo("pinProfileId", undoModel.getProfileParseObject());
+                                parseQuery.whereEqualTo("pinnedProfileId", undoModel.getProfileParseObject());
                                 parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
                                 parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                                     @Override

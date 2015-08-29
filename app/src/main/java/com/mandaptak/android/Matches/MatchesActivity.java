@@ -60,9 +60,9 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
         actionBar.addTab(
                 actionBar.newTab().setText("PINS")
                         .setTabListener(this));
-        actionBar.addTab(
+      /*  actionBar.addTab(
                 actionBar.newTab().setText("CHATS")
-                        .setTabListener(this));
+                        .setTabListener(this));*/
 
     }
 
@@ -109,16 +109,14 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                     return new MatchesFragment();
                 case 1:
                     return new PinsFragment();
-                case 2:
-                    return new BasicProfileInfo();
                 default:
-                    return new BasicProfileInfo();
+                    return new MatchesFragment();
             }
         }
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -129,9 +127,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
+                          }
             return null;
         }
     }

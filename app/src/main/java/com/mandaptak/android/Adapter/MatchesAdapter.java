@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -43,10 +44,10 @@ public class MatchesAdapter extends BaseAdapter {
         if (paramView == null) {
             paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
             ViewHolder viewholder = new ViewHolder();
-            viewholder.tvName = ((TextView) paramView.findViewById(R.id.title));
+            viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
-            viewholder.tvWork = ((TextView) paramView.findViewById(R.id.work));
-            viewholder.profilePic = ((CircleImageView) paramView.findViewById(R.id.thumbnail));
+            viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
+            viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
             paramView.setTag(viewholder);
         }
 

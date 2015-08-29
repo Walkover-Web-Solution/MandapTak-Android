@@ -65,7 +65,7 @@
         android:clickable="true"
         android:gravity="center|start"
         android:padding="16dp"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/fb_icon"

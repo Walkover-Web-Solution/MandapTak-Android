@@ -28,7 +28,9 @@ import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -49,6 +51,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import me.iwf.photopicker.PhotoPickerActivity;
@@ -138,6 +141,7 @@ public class FinalEditProfileFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         alertDialog.dismiss();
+                        //  makeMeRequest();
                     }
                 });
                 alertDialog.show();
@@ -374,6 +378,7 @@ public class FinalEditProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case FILE_SELECT_CODE:
@@ -483,6 +488,7 @@ public class FinalEditProfileFragment extends Fragment {
     }
 
     public void getUserPhotos() {
+        makeMeRequest();
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + fbUserId + "/albums",
@@ -531,43 +537,63 @@ public class FinalEditProfileFragment extends Fragment {
     }
 
     private void makeMeRequest() {
-        Log.e("makeMeRequest", "Start");
-        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
-                        if (jsonObject != null) {
-                            try {
-                                fbUserId = jsonObject.getLong("id");
-                                Log.e("fbUserId", "" + fbUserId);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            getUserPhotos();
-                        } else if (graphResponse.getError() != null) {
-                            switch (graphResponse.getError().getCategory()) {
-                                case LOGIN_RECOVERABLE:
-                                    Log.d("facebook",
-                                            "Authentication error: " + graphResponse.getError());
-                                    break;
 
-                                case TRANSIENT:
-                                    Log.d("facebook",
-                                            "Transient error. Try again. " + graphResponse.getError());
-                                    break;
+        List<String> permissions = Arrays.asList("public_profile", "email", "user_photos");
+        // NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
+        // (https://developers.facebook.com/docs/facebook-login/permissions/)
 
-                                case OTHER:
-                                    Log.d("facebook",
-                                            "Some other error: " + graphResponse.getError());
-                                    break;
-                            }
-                        }
-                    }
-                });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,email,gender,name");
-        request.setParameters(parameters);
-        request.executeAsync();
-        Log.e("makeMeRequest", "End");
+        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException err) {
+                if (user == null) {
+                    Log.d("facebook", "Uh oh. The user cancelled the Facebook login.");
+                } else if (user.isNew()) {
+                    Log.d("facebook", "User signed up and logged in through Facebook!");
+                } else {
+                    Log.d("facebook", "User logged in through Facebook!");
+                    mApp.showToast(context, "Login Successful");
+                    Log.e("makeMeRequest", "Start");
+                    GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(),
+                            new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                                    if (jsonObject != null) {
+                                        try {
+                                            fbUserId = jsonObject.getLong("id");
+                                            Log.e("fbUserId", "" + fbUserId);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                        getUserPhotos();
+                                    } else if (graphResponse.getError() != null) {
+                                        switch (graphResponse.getError().getCategory()) {
+                                            case LOGIN_RECOVERABLE:
+                                                Log.d("facebook",
+                                                        "Authentication error: " + graphResponse.getError());
+                                                break;
+
+                                            case TRANSIENT:
+                                                Log.d("facebook",
+                                                        "Transient error. Try again. " + graphResponse.getError());
+                                                break;
+
+                                            case OTHER:
+                                                Log.d("facebook",
+                                                        "Some other error: " + graphResponse.getError());
+                                                break;
+                                        }
+                                    }
+                                }
+                            });
+                    Bundle parameters = new Bundle();
+                    parameters.putString("fields", "id,email,gender,name");
+                    request.setParameters(parameters);
+                    request.executeAsync();
+                    Log.e("makeMeRequest", "End");
+                    getUserPhotos();
+                }
+            }
+        });
     }
+
 }

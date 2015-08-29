@@ -186,6 +186,7 @@ public class Common extends Application {
         defaultACL.setPublicReadAccess(true);
         defaultACL.setPublicWriteAccess(false);
         ParseACL.setDefaultACL(defaultACL, true);
+
     }
 
     public String numberToWords(int number) {

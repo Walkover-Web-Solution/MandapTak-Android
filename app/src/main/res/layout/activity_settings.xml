@@ -14,23 +14,34 @@
         android:textColor="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
-    <LinearLayout
+    <ListView
         android:id="@+id/permissions_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-    </LinearLayout>
+        android:orientation="vertical"/>
 
     <LinearLayout
+        android:id="@+id/reset_profiles_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Reset the Profiles"/>
+            android:text="Reset the Profiles"
+            android:textColor="@color/red_500"
+            android:textSize="@dimen/abc_text_size_medium_material"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Profiles viewed before will then appear once again"
+            android:textColor="@color/black_light"
+            android:textSize="@dimen/abc_text_size_small_material"/>
     </LinearLayout>
 </LinearLayout>

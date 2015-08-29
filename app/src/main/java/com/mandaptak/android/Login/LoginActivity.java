@@ -42,18 +42,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         loginButton = (Button) findViewById(R.id.login_button);
-        loginButton.setText("LOGIN");
         etNumber = (EditText) findViewById(R.id.number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         titleIndicator.setViewPager(pager);
-        ParseUser currentUser = ParseUser.getCurrentUser();
 
-        if (currentUser != null) {
-            startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-            this.finish();
-        }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {

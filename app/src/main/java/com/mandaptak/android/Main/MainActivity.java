@@ -21,6 +21,7 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
+import com.mandaptak.android.Login.LoginActivity;
 import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Models.UndoModel;
 import com.mandaptak.android.Preferences.UserPreferences;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     ImageView mainLikeButton, mainSkipButton, mainUndoButton;
     UndoModel undoModel;
+    TextView labelLoading;
 
     void init() {
         undoModel = new UndoModel();
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         mainSkipButton = (ImageView) findViewById(R.id.skip_button);
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
         matches = (ImageButton) findViewById(R.id.matches_icon);
+        labelLoading = (TextView) findViewById(R.id.label_loading);
     }
 
     void clickListeners() {
@@ -359,48 +362,60 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
+        loadingProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getMatchesFromFunction();
+            }
+        });
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = this;
-        mApp = (Common) context.getApplicationContext();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        try {
-            getSupportActionBar().setTitle("Mandap Tak");
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser == null) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            this.finish();
+        } else {
+            setContentView(R.layout.activity_main);
 
-        init();
+            context = this;
+            mApp = (Common) context.getApplicationContext();
+            toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            try {
+                getSupportActionBar().setTitle("Mandap Tak");
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setDisplayShowHomeEnabled(true);
+                getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_menu_red);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
 
-        blurringView.setBlurredView(backgroundPhoto);
-        rippleBackground.startRippleAnimation();
-        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            init();
 
-        clickListeners();
+            blurringView.setBlurredView(backgroundPhoto);
+            rippleBackground.startRippleAnimation();
+            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
-        if (mApp.isNetworkAvailable(context)) {
-            mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-            query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (e == null) {
-                        validateProfile(parseObject);
-                    } else {
-                        e.printStackTrace();
-                        mApp.dialog.dismiss();
-                        mApp.showToast(context, "Connection Error");
+            clickListeners();
+            if (mApp.isNetworkAvailable(context)) {
+                mApp.show_PDialog(context, "Loading..");
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+                query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject parseObject, ParseException e) {
+                        if (e == null) {
+                            validateProfile(parseObject);
+                        } else {
+                            e.printStackTrace();
+                            mApp.dialog.dismiss();
+                            mApp.showToast(context, "Connection Error");
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -512,6 +527,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMatchesFromFunction() {
+        labelLoading.setText("Finding People...");
         try {
             HashMap<String, Object> params = new HashMap<>();
             params.put("oid", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getObjectId());
@@ -523,9 +539,14 @@ public class MainActivity extends AppCompatActivity {
                             profileList = (ArrayList<ParseObject>) o;
                             if (profileList.size() > 0) {
                                 setProfileDetails();
+                            } else {
+                                labelLoading.setText("No matching results found.");
                             }
+                        } else {
+                            labelLoading.setText("No matching results found.");
                         }
                     } else {
+                        labelLoading.setText("No matching results found.");
                         e.printStackTrace();
                     }
                 }

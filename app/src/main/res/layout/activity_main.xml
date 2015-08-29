@@ -163,6 +163,16 @@
                     app:border_color="@color/red_500"
                     app:border_overlay="true"
                     app:border_width="2dp"/>
+
+                <TextView
+                    android:id="@+id/label_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/loading_profile"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="32dp"
+                    android:textColor="@color/red_700"
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
             </RelativeLayout>
         </com.skyfishjy.library.RippleBackground>
 

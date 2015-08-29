@@ -25,6 +25,7 @@ import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Models.UndoModel;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Settings.SettingsActivity;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.BitmapTransform;
 import com.mandaptak.android.Views.BlurringView;
@@ -426,13 +427,14 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                MainActivity.this.finish();
             }
         });
         prefsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, UserPreferences.class));
+                startActivity(new Intent(MainActivity.this, UserPreferences.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 MainActivity.this.finish();
             }
         });

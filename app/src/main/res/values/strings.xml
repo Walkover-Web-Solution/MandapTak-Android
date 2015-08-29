@@ -111,4 +111,9 @@
         <item>210</item>
         <item>213</item>
     </integer-array>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="profile_permissions">Profile edit permissions are given to folllowing contact numbers.</string>
 </resources>

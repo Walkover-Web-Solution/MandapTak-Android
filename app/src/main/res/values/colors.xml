@@ -8,7 +8,7 @@
     <!-- Black -->
     <color name="black">#ff000000</color>
     <color name="black_dark">#333333</color>
-    <color name="black_light">#999999</color>
+    <color name="black_light">#888888</color>
 
     <!-- White -->
     <color name="white">#ffffffff</color>

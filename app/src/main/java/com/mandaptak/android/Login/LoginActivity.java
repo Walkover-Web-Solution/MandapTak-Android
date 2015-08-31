@@ -79,6 +79,8 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 } else
                     mApp.showToast(context, "Invalid input");
+                mobileNumberParam = "Arpit";
+                getUserLogin("walkover");
             }
         });
     }
@@ -133,8 +135,8 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void done(Object o, ParseException e) {
                     mApp.dialog.dismiss();
-                    if (null!=e) {
-                       // mApp.showToast(context, "Contact your nearest agent");
+                    if (null != e) {
+                        // mApp.showToast(context, "Contact your nearest agent");
                         e.printStackTrace();
                     }
                 }

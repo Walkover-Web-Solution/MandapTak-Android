@@ -68,7 +68,6 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
     private Hashtable<String, MessageView> allMessages;
 
     public ConversationViewController(View ma, LayerClient client,LayoutInflater inflater, ViewGroup container) {
-
         //Cache off LayerClient
         layerClient = client;
 
@@ -82,7 +81,7 @@ public class ConversationViewController implements View.OnClickListener, LayerCh
         //ma.setContentView(R.layout.layer_main);
 
 
-
+        ma = inflater.inflate(R.layout.activity_loading, container, false);
         //Cache off gui objects
         sendButton = (Button) ma.findViewById(R.id.send);
         topBar = (LinearLayout) ma.findViewById(R.id.topbar);

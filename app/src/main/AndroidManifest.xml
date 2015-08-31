@@ -75,6 +75,10 @@
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings">
         </activity>
+        <activity
+            android:name=".Matches.MatchedProfileActivity"
+            android:label="@string/title_activity_matched_profile">
+        </activity>
     </application>
 
 </manifest>

@@ -1,11 +1,16 @@
 package com.mandaptak.android.Models;
 
-public class MatchesModel {
+import java.io.Serializable;
 
-    String url;
-    String name;
-    String caste;
-    String work;
+public class MatchesModel implements Serializable {
+
+    private String url;
+    private String name;
+    private String religion;
+    private String work;
+
+    public MatchesModel() {
+    }
 
     public String getUrl() {
         return url;
@@ -23,12 +28,12 @@ public class MatchesModel {
         this.name = name;
     }
 
-    public String getCaste() {
-        return caste;
+    public String getReligion() {
+        return religion;
     }
 
-    public void setCaste(String caste) {
-        this.caste = caste;
+    public void setReligion(String religion) {
+        this.religion = religion;
     }
 
     public String getWork() {

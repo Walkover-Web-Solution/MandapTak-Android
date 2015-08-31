@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -14,7 +13,6 @@ import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class MatchesAdapter extends BaseAdapter {
@@ -27,7 +25,6 @@ public class MatchesAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-
         return this.list.size();
     }
 
@@ -40,32 +37,26 @@ public class MatchesAdapter extends BaseAdapter {
     }
 
     public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-
+        ViewHolder viewholder;
         if (paramView == null) {
             paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
-            ViewHolder viewholder = new ViewHolder();
+            viewholder = new ViewHolder();
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
             viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
             viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
             paramView.setTag(viewholder);
+        } else {
+            viewholder = (ViewHolder) paramView.getTag();
         }
-
-        final ViewHolder viewholder = (ViewHolder) paramView.getTag();
         MatchesModel matchesModel = list.get(paramInt);
         viewholder.tvName.setText(matchesModel.getName());
-        viewholder.tvReligion.setText(matchesModel.getCaste());
+        viewholder.tvReligion.setText(matchesModel.getReligion());
         viewholder.tvWork.setText(matchesModel.getWork());
-        final String path = list.get(paramInt).getUrl();
-        final Uri uri;
-        if (path.startsWith("http")) {
-            uri = Uri.parse(path);
-        } else {
-            uri = Uri.fromFile(new File(path));
-        }
         Glide.with(ctx)
-                .load(uri)
-                .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
+                .load(Uri.parse(list.get(paramInt).getUrl()))
+                .error(R.drawable.com_facebook_profile_picture_blank_square)
+                .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
                 .into(viewholder.profilePic);
         return paramView;
     }

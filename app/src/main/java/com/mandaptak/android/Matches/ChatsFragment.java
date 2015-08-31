@@ -1,13 +1,11 @@
 package com.mandaptak.android.Matches;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.mandaptak.android.Adapter.MatchesAdapter;
@@ -24,14 +22,14 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatchesFragment extends Fragment {
+public class ChatsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
     private View rootView;
     private Context context;
 
-    public MatchesFragment() {
+    public ChatsFragment() {
         // Required empty public constructor
     }
 
@@ -41,14 +39,7 @@ public class MatchesFragment extends Fragment {
         init(inflater, container);
         if (mApp.isNetworkAvailable(context)) {
             getParseData();
-            listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
-                    intent.putExtra("profile", matchList.get(i));
-                    startActivity(intent);
-                }
-            });
+
         }
         return rootView;
     }
@@ -56,8 +47,8 @@ public class MatchesFragment extends Fragment {
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
-        rootView = inflater.inflate(R.layout.fragment_matches, container, false);
-        listViewMatches = (ListView) rootView.findViewById(R.id.list);
+        rootView = inflater.inflate(R.layout.fragment_chats, container, false);
+        listViewMatches = (ListView) rootView.findViewById(R.id.matches_list);
     }
 
     private ArrayList<MatchesModel> getParseData() {
@@ -113,5 +104,7 @@ public class MatchesFragment extends Fragment {
 
         mApp.dialog.dismiss();
         return matchList;
+
     }
+
 }

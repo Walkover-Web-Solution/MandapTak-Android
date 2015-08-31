@@ -6,11 +6,11 @@
 
 
     <ListView
-        android:id="@+id/list"
+        android:id="@+id/matches_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/black_light"
         android:dividerHeight="0.1dp"
-      >
+        >
     </ListView>
 </LinearLayout>

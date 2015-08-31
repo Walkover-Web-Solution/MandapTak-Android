@@ -58,7 +58,7 @@ public class DetailsProfileInfo extends Fragment {
     private void init() {
         religion = (TextView) rootView.findViewById(R.id.religion);
         height = (TextView) rootView.findViewById(R.id.height);
-        caste = (TextView) rootView.findViewById(R.id.religion);
+        caste = (TextView) rootView.findViewById(R.id.caste);
         gotra = (TextView) rootView.findViewById(R.id.gotra);
         weight = (ExtendedEditText) rootView.findViewById(R.id.weight);
         mangalikStatus = (TextView) rootView.findViewById(R.id.mangalik);

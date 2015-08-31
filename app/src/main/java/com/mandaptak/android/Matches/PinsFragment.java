@@ -46,7 +46,7 @@ public class PinsFragment extends Fragment {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.fragment_matches, container, false);
-        listViewMatches = (ListView) rootView.findViewById(R.id.matches_list);
+        listViewMatches = (ListView) rootView.findViewById(R.id.list);
     }
 
     private ArrayList<MatchesModel> getParseData() {
@@ -68,7 +68,7 @@ public class PinsFragment extends Fragment {
                                 model.setWork(work);
                             String religion = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
                             if (religion != null)
-                                model.setCaste(religion);
+                                model.setReligion(religion);
                             String url = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
                             if (url != null) {
                                 model.setUrl(url);

@@ -10,8 +10,11 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
@@ -70,6 +73,24 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 } else
                     mApp.showToast(context, "Invalid input");
+            }
+        });
+        etNumber.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_GO) {
+                    mobileNumber = etNumber.getText().toString();
+                    if (!mobileNumber.equals("")) {
+                        if (sendOtp && mobileNumber.length() > 9) {
+                            mobileNumberParam = mobileNumber;
+                            sendOtpOnGivenNumber(mobileNumberParam);
+                        } else if (mobileNumber.length() > 5) {
+                            verifyOtpForGivenNumber(mobileNumber);
+                        }
+                    } else
+                        mApp.showToast(context, "Invalid input");
+                }
+                return true;
             }
         });
     }

@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
@@ -37,7 +39,9 @@ public class LoginActivity extends AppCompatActivity {
     Context context;
     Common mApp;
     EditText etNumber;
-    String mobileNumber;
+    String mobileNumber, mobileNumberParam;
+    Boolean sendOtp = true;
+    TypefaceTextView label;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,22 +53,31 @@ public class LoginActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         } catch (Exception ignored) {
         }
-
         loginButton = (Button) findViewById(R.id.login_button);
         etNumber = (EditText) findViewById(R.id.number);
+        label = (TypefaceTextView) findViewById(R.id.label_number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         titleIndicator.setViewPager(pager);
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
                 mobileNumber = etNumber.getText().toString();
-                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
-                    sendOtpOnGivenNumber(mobileNumber);
+                if (!mobileNumber.equals("") && mobileNumber != null) {
+                    if (sendOtp && mobileNumber.length() > 9) {
+                        mobileNumberParam = mobileNumber;
+                        etNumber.setText("");
+                        etNumber.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+                        sendOtp = false;
+                        loginButton.setText("VERIFY");
+                        label.setText("Enter the verification code you received");
+                        sendOtpOnGivenNumber(mobileNumber);
+                    } else if (mobileNumber.length() > 5) {
+                        verifyOtpForGivenNumber(mobileNumber);
+                    }
                 } else
-                    mApp.showToast(context, "Invalid Number");
+                    mApp.showToast(context, "Invalid input");
             }
         });
     }
@@ -75,29 +88,24 @@ public class LoginActivity extends AppCompatActivity {
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void showDialogVerifyNumber() {
-        final View locationDialog = View.inflate(context, R.layout.verify_otp_dialog, null);
-        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-        alertDialog.setView(locationDialog);
-        TextView title = (TextView) locationDialog.findViewById(R.id.title);
-        final EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
-        title.setText("Verify Otp");
-        final Button done = (Button) locationDialog.findViewById(R.id.cancel_button);
-        done.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                alertDialog.dismiss();
-                verifyOtpForGivenNumber(searchBar.getText().toString());
-            }
-        });
 
-        alertDialog.show();
+    @Override
+    public void onBackPressed() {
+        if (!sendOtp) {
+            etNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
+            loginButton.setText("LOGIN");
+            etNumber.setText("");
+            label.setText("Enter your number below to get access");
+            sendOtp = true;
+        } else
+            super.onBackPressed();
+
     }
 
     private void verifyOtpForGivenNumber(String code) {
         try {
             HashMap<String, Object> params = new HashMap<>();
-            params.put("mobile", mobileNumber);
+            params.put("mobile", mobileNumberParam);
             params.put("otp", code);
             ParseCloud.callFunctionInBackground("verifyNumber", params, new FunctionCallback<Object>() {
                 @Override
@@ -124,10 +132,8 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void done(Object o, ParseException e) {
                     mApp.dialog.dismiss();
-                    if (e == null) {
-                        showDialogVerifyNumber();
-                    } else {
-                        mApp.showToast(context, "Contact your nearest agent");
+                    if (null!=e) {
+                       // mApp.showToast(context, "Contact your nearest agent");
                         e.printStackTrace();
                     }
                 }
@@ -138,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getUserLogin(String password) {
-        ParseUser.logInInBackground(mobileNumber, password, new LogInCallback() {
+        ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");

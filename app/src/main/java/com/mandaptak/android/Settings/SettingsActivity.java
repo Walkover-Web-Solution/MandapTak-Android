@@ -15,14 +15,8 @@ import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.parse.FindCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SettingsActivity extends AppCompatActivity {
     LinearLayout resetButton;
@@ -65,42 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context)) {
-                    ParseQuery<ParseObject> likeQuery = new ParseQuery<>("LikedProfile");
-                    likeQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                    likeQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                            if (e == null && list.size() > 0) {
-                                for (ParseObject parseObject : list) {
-                                    parseObject.deleteInBackground();
-                                }
-                            }
-                        }
-                    });
-                    ParseQuery<ParseObject> dislikParseQuery = new ParseQuery<>("DislikeProfile");
-                    dislikParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                    dislikParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                            if (e == null && list.size() > 0) {
-                                for (ParseObject parseObject : list) {
-                                    parseObject.deleteInBackground();
-                                }
-                            }
-                        }
-                    });
-                    ParseQuery<ParseObject> pinnedParseQuery = new ParseQuery<>("PinnedProfile");
-                    pinnedParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                    pinnedParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                            if (e == null && list.size() > 0) {
-                                for (ParseObject parseObject : list) {
-                                    parseObject.deleteInBackground();
-                                }
-                            }
-                        }
-                    });
+
                 } else {
                     mApp.showToast(context, "Internet connection required");
                 }

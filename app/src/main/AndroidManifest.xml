@@ -79,6 +79,38 @@
             android:name=".Matches.MatchedProfileActivity"
             android:label="@string/title_activity_matched_profile">
         </activity>
+
+
+        <receiver android:name="com.layer.sdk.services.LayerReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.ANY_DATA_STATE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.layer.sdk.services.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="com.layer.quick_start_android"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".Layer.LayerPushReceiver">
+            <intent-filter>
+                <action android:name="com.layer.sdk.PUSH"/>
+                <category android:name="com.layer.quick_start_android"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="com.layer.quick_start_android"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- For GCM Push Notifications -->
+        <service android:name="com.layer.sdk.services.GcmIntentService"/>
     </application>
 
 </manifest>

@@ -99,12 +99,13 @@ public class LoginActivity extends AppCompatActivity {
     private void verifyOtpForGivenNumber(String code) {
         try {
             HashMap<String, Object> params = new HashMap<>();
-            params.put("mobile", code);
+            params.put("mobile", mobileNumber);
+            params.put("otp", code);
             ParseCloud.callFunctionInBackground("verifyNumber", params, new FunctionCallback<Object>() {
                 @Override
                 public void done(Object o, ParseException e) {
-                    if (e != null) {
-                        getUserLogin();
+                    if (e == null) {
+                        getUserLogin(o.toString());
                     } else {
                         mApp.showToast(context, "Try after some time");
                         e.printStackTrace();
@@ -124,10 +125,11 @@ public class LoginActivity extends AppCompatActivity {
             ParseCloud.callFunctionInBackground("sendOtp", params, new FunctionCallback<Object>() {
                 @Override
                 public void done(Object o, ParseException e) {
-                    if (e != null) {
+                    mApp.dialog.dismiss();
+                    if (e == null) {
                         showDialogVerifyNumber();
                     } else {
-                        mApp.showToast(context, "Try after some time");
+                        mApp.showToast(context, "Contact your nearest agent");
                         e.printStackTrace();
                     }
                 }
@@ -137,8 +139,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void getUserLogin() {
-        ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
+    private void getUserLogin(String password) {
+        ParseUser.logInInBackground(mobileNumber, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");

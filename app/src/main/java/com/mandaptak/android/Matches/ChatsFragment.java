@@ -22,14 +22,14 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MatchesFragment extends Fragment {
+public class ChatsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
     private View rootView;
     private Context context;
 
-    public MatchesFragment() {
+    public ChatsFragment() {
         // Required empty public constructor
     }
 
@@ -39,6 +39,7 @@ public class MatchesFragment extends Fragment {
         init(inflater, container);
         if (mApp.isNetworkAvailable(context)) {
             getParseData();
+
         }
         return rootView;
     }
@@ -46,7 +47,7 @@ public class MatchesFragment extends Fragment {
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
-        rootView = inflater.inflate(R.layout.fragment_matches, container, false);
+        rootView = inflater.inflate(R.layout.fragment_chats, container, false);
         listViewMatches = (ListView) rootView.findViewById(R.id.matches_list);
     }
 

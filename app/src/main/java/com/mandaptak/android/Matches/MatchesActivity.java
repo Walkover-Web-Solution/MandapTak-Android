@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.mandaptak.android.FullProfile.BasicProfileInfo;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 
@@ -40,7 +39,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
         skipButton = (FloatingActionButton) findViewById(R.id.skip_next);
         skipButton.setVisibility(View.GONE);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -60,9 +59,9 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
         actionBar.addTab(
                 actionBar.newTab().setText("PINS")
                         .setTabListener(this));
-      /*  actionBar.addTab(
+        actionBar.addTab(
                 actionBar.newTab().setText("CHATS")
-                        .setTabListener(this));*/
+                        .setTabListener(this));
 
     }
 
@@ -83,8 +82,6 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        // When the given tab is selected, switch to the corresponding page in
-        // the ViewPager.
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
@@ -109,6 +106,8 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                     return new MatchesFragment();
                 case 1:
                     return new PinsFragment();
+                case 2:
+                    return new ChatsFragment();
                 default:
                     return new MatchesFragment();
             }
@@ -127,7 +126,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                     return getString(R.string.title_section1).toUpperCase(l);
                 case 1:
                     return getString(R.string.title_section2).toUpperCase(l);
-                          }
+            }
             return null;
         }
     }

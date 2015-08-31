@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FunctionCallback;

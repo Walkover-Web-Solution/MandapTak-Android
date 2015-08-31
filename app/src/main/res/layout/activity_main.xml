@@ -119,7 +119,7 @@
                 android:layout_height="32dp"
                 android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_undo_white"/>
+                android:src="@drawable/ic_undo"/>
 
             <ImageView
                 android:id="@+id/like_button"
@@ -127,7 +127,7 @@
                 android:layout_height="32dp"
                 android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_favorite_white"/>
+                android:src="@drawable/ic_like"/>
 
             <ImageView
                 android:id="@+id/skip_button"
@@ -135,7 +135,7 @@
                 android:layout_height="32dp"
                 android:layout_margin="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_skip_white"/>
+                android:src="@drawable/ic_dislike"/>
         </LinearLayout>
 
         <com.skyfishjy.library.RippleBackground
@@ -272,7 +272,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/heart_icon_dual"
+                    android:background="@drawable/ic_dual_heart"
                     android:padding="12dp"/>
 
                 <ImageButton
@@ -283,7 +283,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginRight="32dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/unlike"/>
+                    android:background="@drawable/like"/>
             </RelativeLayout>
 
             <LinearLayout
@@ -460,7 +460,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_keyboard_arrow_up_white"/>
+                android:src="@drawable/ic_up_arrow"/>
         </LinearLayout>
     </RelativeLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

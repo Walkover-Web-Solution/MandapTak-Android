@@ -4,7 +4,7 @@
       tools:context="com.mandaptak.android.Main.MainActivity">
     <item
         android:id="@+id/action_matches"
-        android:icon="@drawable/heart_icon_dual"
+        android:icon="@drawable/ic_dual_heart"
         android:orderInCategory="100"
         android:title="Matches"
         app:showAsAction="always"/>

@@ -21,7 +21,7 @@ public class TypefaceTextView extends TextView {
         super(context, attrs, defStyle);
 
         if (mTypeface == null) {
-            mTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/calibri.ttf");
+            mTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/myriad_pro.ttf");
         }
         setTypeface(mTypeface);
     }

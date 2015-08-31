@@ -28,7 +28,7 @@
         android:layout_marginTop="16dp"
         android:padding="16dp"
         android:text="Enter your number below to get access"
-        android:textColor="@color/white"
+        android:textColor="@color/white_alpha"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <EditText

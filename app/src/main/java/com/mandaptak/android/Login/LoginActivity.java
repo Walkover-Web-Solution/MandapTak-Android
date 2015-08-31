@@ -146,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
                     query.getFirstInBackground(new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
-//                            mApp.dialog.dismiss();
                             if (e == null) {
                                 Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));

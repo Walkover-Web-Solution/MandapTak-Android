@@ -36,6 +36,7 @@ import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -485,6 +486,16 @@ public class MainActivity extends AppCompatActivity {
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                     }
+                } else if (e.getCode() == 209) {
+                    ParseUser.logOutInBackground(new LogOutCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                startActivity(new Intent(MainActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                MainActivity.this.finish();
+                            }
+                        }
+                    });
                 } else {
                     e.printStackTrace();
                 }

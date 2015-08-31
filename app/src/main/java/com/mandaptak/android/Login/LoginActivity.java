@@ -18,17 +18,24 @@ import android.widget.TextView;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
     Button loginButton;
     Context context;
     Common mApp;
     EditText etNumber;
+    String mobileNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,8 +58,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                if (!etNumber.getText().toString().equals("") && etNumber.getText().toString() != null) {
-                    showDialogVerifyNumber();
+                mobileNumber = etNumber.getText().toString();
+                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
+                    sendOtpOnGivenNumber(mobileNumber);
                 } else
                     mApp.showToast(context, "Invalid Number");
             }
@@ -77,22 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                mApp.show_PDialog(context, "Verifying");
-                if (!searchBar.getText().toString().equals("") && searchBar.getText().toString() != null) {
-                    ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            if (user != null) {
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                mApp.dialog.dismiss();
-                                LoginActivity.this.finish();
-                            } else {
-                                Log.e("Login", "" + e);
-                                mApp.showToast(context, "Invalid ID/Password");
-                            }
-                        }
-                    });
-                }
-
+                verifyOtpForGivenNumber(searchBar.getText().toString());
             }
         });
 
@@ -129,4 +122,59 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void verifyOtpForGivenNumber(String code) {
+        try {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("mobile", code);
+            ParseCloud.callFunctionInBackground("verifyNumber", params, new FunctionCallback<Object>() {
+                @Override
+                public void done(Object o, ParseException e) {
+                    if (e != null) {
+                        getUserLogin();
+                    } else {
+                        mApp.showToast(context, "Try after some time");
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void sendOtpOnGivenNumber(String mobileNumber) {
+        mApp.show_PDialog(context, "Loading...");
+        try {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("mobile", mobileNumber);
+            ParseCloud.callFunctionInBackground("sendOtp", params, new FunctionCallback<Object>() {
+                @Override
+                public void done(Object o, ParseException e) {
+                    if (e != null) {
+                        showDialogVerifyNumber();
+                    } else {
+                        mApp.showToast(context, "Try after some time");
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getUserLogin() {
+        ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
+            public void done(ParseUser user, ParseException e) {
+                if (user != null) {
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                    mApp.dialog.dismiss();
+                    LoginActivity.this.finish();
+                } else {
+                    Log.e("Login", "" + e);
+                    mApp.showToast(context, "Invalid ID/Password");
+                }
+            }
+        });
+    }
 }

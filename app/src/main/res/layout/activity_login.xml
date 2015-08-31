@@ -48,14 +48,14 @@
         android:textColorHint="@color/white_alpha"
         android:textCursorDrawable="@drawable/color_cursor"/>
 
-    <Button
+    <android.support.v7.widget.AppCompatButton
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/number"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
         android:background="@color/red_300"
+        android:gravity="center"
         android:text="Login"
         android:textColor="@color/white"/>
 </RelativeLayout>

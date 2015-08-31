@@ -1,6 +1,5 @@
 package com.mandaptak.android.Login;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,12 +8,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
@@ -25,7 +22,6 @@ import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -36,7 +32,7 @@ import java.util.HashMap;
 import me.iwf.photopicker.utils.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
-    Button loginButton;
+    AppCompatButton loginButton;
     Context context;
     Common mApp;
     EditText etNumber;
@@ -54,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         } catch (Exception ignored) {
         }
-        loginButton = (Button) findViewById(R.id.login_button);
+        loginButton = (AppCompatButton) findViewById(R.id.login_button);
         etNumber = (EditText) findViewById(R.id.number);
         label = (TypefaceTextView) findViewById(R.id.label_number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
@@ -65,47 +61,33 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(final View view) {
                 mobileNumber = etNumber.getText().toString();
-                if (!mobileNumber.equals("") && mobileNumber != null) {
+                if (!mobileNumber.equals("")) {
                     if (sendOtp && mobileNumber.length() > 9) {
                         mobileNumberParam = mobileNumber;
-                        etNumber.setText("");
-                        etNumber.setInputType(InputType.TYPE_NUMBER_VARIATION_PASSWORD);
-                        sendOtp = false;
-                        loginButton.setText("VERIFY");
-                        label.setText("Enter the verification code you received");
-                        sendOtpOnGivenNumber(mobileNumber);
+                        sendOtpOnGivenNumber(mobileNumberParam);
                     } else if (mobileNumber.length() > 5) {
                         verifyOtpForGivenNumber(mobileNumber);
                     }
                 } else
                     mApp.showToast(context, "Invalid input");
-                mobileNumberParam = "Arpit";
-                getUserLogin("walkover");
             }
         });
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-    }
-
-
-    @Override
     public void onBackPressed() {
         if (!sendOtp) {
-            etNumber.setInputType(InputType.TYPE_CLASS_NUMBER);
             loginButton.setText("LOGIN");
             etNumber.setText("");
+            etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_call_white, 0, 0, 0);
             label.setText("Enter your number below to get access");
             sendOtp = true;
         } else
             super.onBackPressed();
-
     }
 
     private void verifyOtpForGivenNumber(String code) {
+        mApp.show_PDialog(context, "Verifying...");
         try {
             HashMap<String, Object> params = new HashMap<>();
             params.put("mobile", mobileNumberParam);
@@ -113,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
             ParseCloud.callFunctionInBackground("verifyNumber", params, new FunctionCallback<Object>() {
                 @Override
                 public void done(Object o, ParseException e) {
+                    mApp.dialog.dismiss();
                     if (e == null) {
                         getUserLogin(o.toString());
                     } else {
@@ -127,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendOtpOnGivenNumber(String mobileNumber) {
-        mApp.show_PDialog(context, "Loading...");
+        mApp.show_PDialog(context, "Sending Verification Code...");
         try {
             HashMap<String, Object> params = new HashMap<>();
             params.put("mobile", mobileNumber);
@@ -135,8 +118,14 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void done(Object o, ParseException e) {
                     mApp.dialog.dismiss();
-                    if (null != e) {
-                        // mApp.showToast(context, "Contact your nearest agent");
+                    if (e == null) {
+                        etNumber.setText("");
+                        etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_code_verify_white, 0, 0, 0);
+                        sendOtp = false;
+                        loginButton.setText("VERIFY");
+                        label.setText("Enter the verification code you received");
+                    } else {
+                        mApp.showToast(context, "Contact your nearest agent");
                         e.printStackTrace();
                     }
                 }
@@ -147,6 +136,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getUserLogin(String password) {
+        mApp.show_PDialog(context, "Logging in...");
         ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
@@ -155,6 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                     query.getFirstInBackground(new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
+                            mApp.dialog.dismiss();
                             if (e == null) {
                                 Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
@@ -166,7 +157,6 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         }
                     });
-
                 } else {
                     Log.e("Login", "" + e);
                     mApp.showToast(context, "Invalid ID/Password");

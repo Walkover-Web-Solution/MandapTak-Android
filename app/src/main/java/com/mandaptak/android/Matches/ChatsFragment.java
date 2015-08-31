@@ -17,15 +17,17 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class ChatsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
+    ParseObject profileObject;
     private View rootView;
     private Context context;
 
@@ -53,58 +55,70 @@ public class ChatsFragment extends Fragment {
 
     private ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedProfile");
-        query.whereEqualTo("likeProfileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-        query.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery q1 = ParseQuery.getQuery("Profile");
+        q1.getInBackground(Prefs.getProfileId(context), new GetCallback() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list.size() > 0) {
-                    for (final ParseObject parseObject : list) {
-                        try {
-                            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("LikedProfile");
-                            query2.whereEqualTo("likeProfileId", parseObject.fetchIfNeeded().getParseObject("profileId")).
-                                    whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                            query2.getFirstInBackground(new GetCallback<ParseObject>() {
-                                @Override
-                                public void done(ParseObject object, ParseException e) {
-                                    try {
-                                        if (e == null)
-                                            if (object != null) {
-                                                MatchesModel model = new MatchesModel();
-                                                String name = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("name");
-                                                if (name != null)
-                                                    model.setName(name);
-                                                String work = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("designation");
-                                                if (work != null)
-                                                    model.setWork(work);
-                                                String religion = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
-                                                if (religion != null)
-                                                    model.setReligion(religion);
-                                                String url = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
-                                                if (url != null) {
-                                                    model.setUrl(url);
+            public void done(ParseObject object, ParseException e) {
+                if (e == null)
+                    profileObject = object;
+            }
+
+            @Override
+            public void done(Object o, Throwable throwable) {
+
+            }
+        });
+        if (profileObject != null) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedProfile");
+            query.whereEqualTo("likeProfileId", profileObject);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list.size() > 0) {
+                        for (final ParseObject parseObject : list) {
+                            try {
+                                ParseQuery<ParseObject> query2 = ParseQuery.getQuery("LikedProfile");
+                                query2.whereEqualTo("likeProfileId", parseObject.fetchIfNeeded().getParseObject("profileId")).
+                                        whereEqualTo("profileId", profileObject);
+                                query2.getFirstInBackground(new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(ParseObject object, ParseException e) {
+                                        try {
+                                            if (e == null)
+                                                if (object != null) {
+                                                    MatchesModel model = new MatchesModel();
+                                                    String name = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("name");
+                                                    if (name != null)
+                                                        model.setName(name);
+                                                    String work = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("designation");
+                                                    if (work != null)
+                                                        model.setWork(work);
+                                                    String religion = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                                    if (religion != null)
+                                                        model.setReligion(religion);
+                                                    String url = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
+                                                    if (url != null) {
+                                                        model.setUrl(url);
+                                                    }
+                                                    matchList.add(model);
+                                                    listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
                                                 }
-                                                matchList.add(model);
-                                                listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
-                                            }
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
                                     }
-                                }
-                            });
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
+                                });
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+
                         }
 
                     }
-
                 }
-            }
-        });
-
+            });
+        }
         mApp.dialog.dismiss();
         return matchList;
-
     }
-
 }

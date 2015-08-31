@@ -27,7 +27,6 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.soundcloud.android.crop.Crop;
 
@@ -44,11 +43,13 @@ import java.util.List;
 
 import me.iwf.photopicker.fragment.ImagePagerFragment;
 import me.iwf.photopicker.utils.ImageModel;
+import me.iwf.photopicker.utils.Prefs;
 
 public class PhotoPagerActivity extends AppCompatActivity {
 
     public final static String EXTRA_CURRENT_ITEM = "current_item";
     public final static String EXTRA_PHOTOS = "photos";
+    ParseObject profileObject;
     private ImagePagerFragment pagerFragment;
     private ActionBar actionBar;
     private Context context;
@@ -128,7 +129,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
             final int index = pagerFragment.getCurrentItem();
             final String deleteParseObjectId = pagerFragment.getPaths().get(index).getParseObjectId();
             ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-            deleteObjectParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+            deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
             deleteObjectParseQuery.getInBackground(deleteParseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -243,8 +244,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
                             Uri uri = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
                             final File file = new File(uri.getPath());
                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-                            parseQuery.whereEqualTo("objectId", ParseUser.getCurrentUser().getParseObject("profileId").getObjectId());
-                            parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                                 @Override
                                 public void done(final ParseObject parseObject, ParseException e) {
                                     try {
@@ -260,8 +260,16 @@ public class PhotoPagerActivity extends AppCompatActivity {
                                                                 file.delete();
                                                                 Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
                                                                 final int index = pagerFragment.getCurrentItem();
+                                                                ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+                                                                q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                                                                    @Override
+                                                                    public void done(ParseObject object, ParseException e) {
+                                                                        if (e == null)
+                                                                            profileObject = object;
+                                                                    }
+                                                                });
                                                                 ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-                                                                deleteObjectParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+                                                                deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
                                                                 deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                                     @Override
                                                                     public void done(List<ParseObject> list, ParseException e) {

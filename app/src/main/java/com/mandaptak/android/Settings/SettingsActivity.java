@@ -15,8 +15,14 @@ import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class SettingsActivity extends AppCompatActivity {
     LinearLayout resetButton;
@@ -52,14 +58,28 @@ public class SettingsActivity extends AppCompatActivity {
         morePermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mApp.isNetworkAvailable(context)) {
 
+                }
             }
         });
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context)) {
-
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("oid", Prefs.getProfileId(context));
+                    ParseCloud.callFunctionInBackground("resetProfiles", params, new FunctionCallback<Object>() {
+                        @Override
+                        public void done(Object o, ParseException e) {
+                            if (e == null) {
+                                onBackPressed();
+                            } else {
+                                e.printStackTrace();
+                                mApp.showToast(context, "Error while resetting profiles");
+                            }
+                        }
+                    });
                 } else {
                     mApp.showToast(context, "Internet connection required");
                 }

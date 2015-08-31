@@ -18,9 +18,10 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.Locale;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class EditProfileActivity extends AppCompatActivity implements ActionBar.TabListener {
 
@@ -91,7 +92,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         });
 
         ParseQuery<ParseObject> parseQueryParseQuery = ParseQuery.getQuery("Profile");
-        parseQueryParseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 parseObject.put("isComplete", false);

@@ -29,7 +29,6 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class BasicProfileFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     Common mApp;
@@ -257,7 +258,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private void getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
@@ -356,7 +357,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     void saveInfo() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (newGender != null)

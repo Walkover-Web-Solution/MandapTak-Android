@@ -28,11 +28,12 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class QualificationEditProfileFragment extends Fragment {
     private ArrayList<ParseNameModel> industryList;
@@ -610,7 +611,7 @@ public class QualificationEditProfileFragment extends Fragment {
     private void getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
@@ -744,7 +745,7 @@ public class QualificationEditProfileFragment extends Fragment {
 
     private void saveInfo() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (newCurrentIncome != 0)

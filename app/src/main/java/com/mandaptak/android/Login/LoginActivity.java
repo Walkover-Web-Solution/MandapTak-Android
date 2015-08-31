@@ -19,16 +19,19 @@ import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FunctionCallback;
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
     Button loginButton;
@@ -58,11 +61,12 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                mobileNumber = etNumber.getText().toString();
-                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
-                    sendOtpOnGivenNumber(mobileNumber);
-                } else
-                    mApp.showToast(context, "Invalid Number");
+                getUserLogin();
+//                mobileNumber = etNumber.getText().toString();
+//                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
+//                    sendOtpOnGivenNumber(mobileNumber);
+//                } else
+//                    mApp.showToast(context, "Invalid Number");
             }
         });
     }
@@ -90,36 +94,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         alertDialog.show();
-    }
-
-    private class MyPagerAdapter extends FragmentPagerAdapter {
-
-        public MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int pos) {
-            switch (pos) {
-                case 0:
-                    return WelcomeScreen1.newInstance();
-                case 1:
-                    return WelcomeScreen2.newInstance();
-                case 2:
-                    return WelcomeScreen3.newInstance();
-                case 3:
-                    return WelcomeScreen4.newInstance();
-                case 4:
-                    return WelcomeScreen5.newInstance();
-                default:
-                    return WelcomeScreen1.newInstance();
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 5;
-        }
     }
 
     private void verifyOtpForGivenNumber(String code) {
@@ -167,14 +141,59 @@ public class LoginActivity extends AppCompatActivity {
         ParseUser.logInInBackground("Arpit", "walkover", new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
                 if (user != null) {
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                    mApp.dialog.dismiss();
-                    LoginActivity.this.finish();
+                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                    query.whereEqualTo("userId", user);
+                    query.getFirstInBackground(new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject parseObject, ParseException e) {
+//                            mApp.dialog.dismiss();
+                            if (e == null) {
+                                Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                LoginActivity.this.finish();
+                            } else {
+                                ParseUser.logOut();
+                                e.printStackTrace();
+                                mApp.showToast(context, "Login Error");
+                            }
+                        }
+                    });
+
                 } else {
                     Log.e("Login", "" + e);
                     mApp.showToast(context, "Invalid ID/Password");
                 }
             }
         });
+    }
+
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+
+        public MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            switch (pos) {
+                case 0:
+                    return WelcomeScreen1.newInstance();
+                case 1:
+                    return WelcomeScreen2.newInstance();
+                case 2:
+                    return WelcomeScreen3.newInstance();
+                case 3:
+                    return WelcomeScreen4.newInstance();
+                case 4:
+                    return WelcomeScreen5.newInstance();
+                default:
+                    return WelcomeScreen1.newInstance();
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 5;
+        }
     }
 }

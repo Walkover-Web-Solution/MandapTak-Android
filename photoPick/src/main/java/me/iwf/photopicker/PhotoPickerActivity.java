@@ -13,10 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
+import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
@@ -31,6 +32,7 @@ import me.iwf.photopicker.entity.Photo;
 import me.iwf.photopicker.event.OnItemCheckListener;
 import me.iwf.photopicker.fragment.ImagePagerFragment;
 import me.iwf.photopicker.fragment.PhotoPickerFragment;
+import me.iwf.photopicker.utils.Prefs;
 
 import static android.widget.Toast.LENGTH_LONG;
 
@@ -208,26 +210,35 @@ public class PhotoPickerActivity extends AppCompatActivity {
                             final ParseFile parseFile = new ParseFile(file.getName(), read(file));
                             parseFile.saveInBackground(new SaveCallback() {
                                 public void done(ParseException e) {
-                                    image.put("file", parseFile);
-                                    image.put("isPrimary", false);
-                                    image.put("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-                                    image.saveInBackground(new SaveCallback() {
+                                    ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+                                    q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                                         @Override
-                                        public void done(ParseException e) {
-                                            dialog.dismiss();
-                                            Intent intent = new Intent();
+                                        public void done(ParseObject object, ParseException e) {
                                             if (e == null) {
-                                                Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show();
-                                                intent.putExtra(KEY_SELECTED_PHOTOS, true);
-                                            } else {
-                                                e.printStackTrace();
-                                                Toast.makeText(context, "Error while uploading photos", Toast.LENGTH_SHORT).show();
-                                                intent.putExtra(KEY_SELECTED_PHOTOS, false);
+                                                image.put("file", parseFile);
+                                                image.put("isPrimary", false);
+                                                image.put("profileId", object);
+                                                image.saveInBackground(new SaveCallback() {
+                                                    @Override
+                                                    public void done(ParseException e) {
+                                                        dialog.dismiss();
+                                                        Intent intent = new Intent();
+                                                        if (e == null) {
+                                                            Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show();
+                                                            intent.putExtra(KEY_SELECTED_PHOTOS, true);
+                                                        } else {
+                                                            e.printStackTrace();
+                                                            Toast.makeText(context, "Error while uploading photos", Toast.LENGTH_SHORT).show();
+                                                            intent.putExtra(KEY_SELECTED_PHOTOS, false);
+                                                        }
+                                                        setResult(RESULT_OK, intent);
+                                                        finish();
+                                                    }
+                                                });
                                             }
-                                            setResult(RESULT_OK, intent);
-                                            finish();
                                         }
                                     });
+
                                 }
                             });
                         } catch (IOException e) {

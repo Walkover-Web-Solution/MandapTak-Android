@@ -26,11 +26,12 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import me.iwf.photopicker.utils.Prefs;
 
 public class DetailsProfileFragment extends Fragment {
     Common mApp;
@@ -431,7 +432,7 @@ public class DetailsProfileFragment extends Fragment {
 
     private void getParseData() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
@@ -485,7 +486,7 @@ public class DetailsProfileFragment extends Fragment {
 
     void saveInfo() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.whereEqualTo("objectId", ParseUser.getCurrentUser().getParseObject("profileId").getObjectId());
+        parseQuery.whereEqualTo("objectId", Prefs.getProfileId(context));
         parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {

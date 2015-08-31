@@ -57,6 +57,7 @@ import java.util.List;
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.PhotoPickerIntent;
+import me.iwf.photopicker.utils.Prefs;
 
 public class FinalEditProfileFragment extends Fragment {
     public final static int REQUEST_CODE = 11;
@@ -72,6 +73,7 @@ public class FinalEditProfileFragment extends Fragment {
     LinearLayout budgetMainLayout;
     EditText minBudget, maxBudget;
     long newMinBudget = 0, newMaxBudget = 0;
+    ParseObject profileObject;
     private LinearLayout saveProfile;
     private Long fbUserId;
     private String albumId;
@@ -160,7 +162,7 @@ public class FinalEditProfileFragment extends Fragment {
             public void onClick(View view) {
                 mApp.show_PDialog(context, "Saving Profile..");
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-                query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+                query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         if (e == null) {
@@ -279,49 +281,64 @@ public class FinalEditProfileFragment extends Fragment {
     }
 
     private void getParseData() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-        query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+        ParseQuery q1 = ParseQuery.getQuery("Profile");
+        q1.getInBackground(Prefs.getProfileId(context), new GetCallback() {
             @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    if (parseObject.containsKey("bioData") && parseObject.getParseFile("bioData") != null)
-                        newBiodataFileName = parseObject.getParseFile("bioData").getName();
+            public void done(ParseObject object, ParseException e) {
+                if (e == null)
+                    profileObject = object;
+            }
 
-                    if (!parseObject.containsKey("minMarriageBudget")) {
-                        budgetMainLayout.setVisibility(View.GONE);
+            @Override
+            public void done(Object o, Throwable throwable) {
+
+            }
+        });
+        if (profileObject != null) {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        if (parseObject.containsKey("bioData") && parseObject.getParseFile("bioData") != null)
+                            newBiodataFileName = parseObject.getParseFile("bioData").getName();
+
+                        if (!parseObject.containsKey("minMarriageBudget")) {
+                            budgetMainLayout.setVisibility(View.GONE);
+                        } else {
+                            budgetMainLayout.setVisibility(View.VISIBLE);
+                            newMinBudget = parseObject.getLong("minMarriageBudget");
+                            newMaxBudget = parseObject.getLong("maxMarriageBudget");
+                            if (newMinBudget != 0)
+                                minBudget.setText("" + newMinBudget);
+                            if (newMaxBudget != 0)
+                                maxBudget.setText("" + newMaxBudget);
+                        }
+
+                        if (newBiodataFileName != null) {
+                            uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
+                            uploadBiodata.setText(newBiodataFileName);
+                        }
                     } else {
-                        budgetMainLayout.setVisibility(View.VISIBLE);
-                        newMinBudget = parseObject.getLong("minMarriageBudget");
-                        newMaxBudget = parseObject.getLong("maxMarriageBudget");
-                        if (newMinBudget != 0)
-                            minBudget.setText("" + newMinBudget);
-                        if (newMaxBudget != 0)
-                            maxBudget.setText("" + newMaxBudget);
+                        e.printStackTrace();
                     }
-
-                    if (newBiodataFileName != null) {
-                        uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
-                        uploadBiodata.setText(newBiodataFileName);
-                    }
-                } else {
-                    e.printStackTrace();
                 }
-            }
-        });
+            });
 
-        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-        queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
-        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null) {
-                    for (ParseObject item : list) {
-                        parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+            ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+            queryParseQuery.whereEqualTo("profileId", profileObject);
+            queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list != null) {
+                        for (ParseObject item : list) {
+                            parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                        }
+                        photoAdapter.notifyDataSetChanged();
                     }
-                    photoAdapter.notifyDataSetChanged();
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -362,7 +379,7 @@ public class FinalEditProfileFragment extends Fragment {
             }
         }
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.whereEqualTo("objectId", ParseUser.getCurrentUser().getParseObject("profileId").getObjectId());
+        parseQuery.whereEqualTo("objectId", Prefs.getProfileId(context));
         parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
@@ -388,7 +405,7 @@ public class FinalEditProfileFragment extends Fragment {
                         final File file = new File(path);
                         mApp.show_PDialog(context, "Uploading..");
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-                        parseQuery.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+                        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                             @Override
                             public void done(final ParseObject parseObject, ParseException e) {
                                 try {
@@ -439,7 +456,7 @@ public class FinalEditProfileFragment extends Fragment {
                         if (data.hasExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS)) {
                             if (data.getBooleanExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, false)) {
                                 ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                                queryParseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().getParseObject("profileId"));
+                                queryParseQuery.whereEqualTo("profileId", profileObject);
                                 queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                                     @Override
                                     public void done(List<ParseObject> list, ParseException e) {

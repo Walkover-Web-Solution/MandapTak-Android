@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import me.iwf.photopicker.utils.ImageModel;
+import me.iwf.photopicker.utils.Prefs;
 
 public class MainActivity extends AppCompatActivity {
     public final static int REQUEST_CODE = 11;
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView mainLikeButton, mainSkipButton, mainUndoButton;
     UndoModel undoModel;
     TextView labelLoading;
+    ParseObject profileObject;
 
     void init() {
         undoModel = new UndoModel();
@@ -122,9 +124,18 @@ public class MainActivity extends AppCompatActivity {
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
         matches = (ImageButton) findViewById(R.id.matches_icon);
         labelLoading = (TextView) findViewById(R.id.label_loading);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null)
+                    profileObject = object;
+            }
+        });
     }
 
     void clickListeners() {
+
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                     mApp.show_PDialog(context, "Pinning Profile..");
                     ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
                     dislikeParseObject.put("pinnedProfileId", profileList.get(0));
-                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.put("profileId", profileObject);
                     dislikeParseObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -169,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
                                 mApp.show_PDialog(context, "Performing Undo..");
                                 ParseQuery<ParseObject> parseQuery = new ParseQuery<>("DislikeProfile");
                                 parseQuery.whereEqualTo("dislikeProfileId", undoModel.getProfileParseObject());
-                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.whereEqualTo("profileId", profileObject);
                                 parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                                     @Override
                                     public void done(ParseObject parseObject, ParseException e) {
@@ -201,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                                 mApp.show_PDialog(context, "Performing Undo..");
                                 ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LikedProfile");
                                 parseQuery.whereEqualTo("likeProfileId", undoModel.getProfileParseObject());
-                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.whereEqualTo("profileId", profileObject);
                                 parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                                     @Override
                                     public void done(ParseObject parseObject, ParseException e) {
@@ -233,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                                 mApp.show_PDialog(context, "Performing Undo..");
                                 ParseQuery<ParseObject> parseQuery = new ParseQuery<>("PinnedProfile");
                                 parseQuery.whereEqualTo("pinnedProfileId", undoModel.getProfileParseObject());
-                                parseQuery.whereEqualTo("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                                parseQuery.whereEqualTo("profileId", profileObject);
                                 parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                                     @Override
                                     public void done(ParseObject parseObject, ParseException e) {
@@ -271,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
                     mApp.show_PDialog(context, "Skipping Profile..");
                     ParseObject dislikeParseObject = new ParseObject("DislikeProfile");
                     dislikeParseObject.put("dislikeProfileId", profileList.get(0));
-                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.put("profileId", profileObject);
                     dislikeParseObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -305,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                     mApp.show_PDialog(context, "Liking Profile..");
                     ParseObject dislikeParseObject = new ParseObject("LikedProfile");
                     dislikeParseObject.put("likeProfileId", profileList.get(0));
-                    dislikeParseObject.put("profileId", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId"));
+                    dislikeParseObject.put("profileId", profileObject);
                     dislikeParseObject.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -403,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
             if (mApp.isNetworkAvailable(context)) {
                 mApp.show_PDialog(context, "Loading..");
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-                query.getInBackground(ParseUser.getCurrentUser().getParseObject("profileId").getObjectId(), new GetCallback<ParseObject>() {
+                query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
                         if (e == null) {
@@ -453,36 +464,33 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
-        try {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
-            query.getInBackground(ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getObjectId(), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (e == null) {
-                        try {
-                            ParseFile file = parseObject.getParseFile("profilePic");
-                            profileName.setText(parseObject.fetchIfNeeded().getString("name"));
-                            Picasso.with(context)
-                                    .load(file.getUrl())
-                                    .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                    .into(profilePicture);
-                            Picasso.with(context)
-                                    .load(file.getUrl())
-                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                    .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                    .into(loadingProfile);
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        e.printStackTrace();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    try {
+                        ParseFile file = parseObject.getParseFile("profilePic");
+                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
+                        Picasso.with(context)
+                                .load(file.getUrl())
+                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .into(profilePicture);
+                        Picasso.with(context)
+                                .load(file.getUrl())
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .into(loadingProfile);
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
                     }
+                } else {
+                    e.printStackTrace();
                 }
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            }
+        });
+
         menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
@@ -528,32 +536,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void getMatchesFromFunction() {
         labelLoading.setText("Finding People...");
-        try {
-            HashMap<String, Object> params = new HashMap<>();
-            params.put("oid", ParseUser.getCurrentUser().fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getObjectId());
-            ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
-                @Override
-                public void done(Object o, ParseException e) {
-                    if (e == null) {
-                        if (o != null) {
-                            profileList = (ArrayList<ParseObject>) o;
-                            if (profileList.size() > 0) {
-                                setProfileDetails();
-                            } else {
-                                labelLoading.setText("No matching results found.");
-                            }
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("oid", Prefs.getProfileId(context));
+        ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object o, ParseException e) {
+                if (e == null) {
+                    if (o != null) {
+                        profileList = (ArrayList<ParseObject>) o;
+                        if (profileList.size() > 0) {
+                            setProfileDetails();
                         } else {
                             labelLoading.setText("No matching results found.");
                         }
                     } else {
                         labelLoading.setText("No matching results found.");
-                        e.printStackTrace();
                     }
+                } else {
+                    labelLoading.setText("No matching results found.");
+                    e.printStackTrace();
                 }
-            });
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            }
+        });
     }
 
     @Override

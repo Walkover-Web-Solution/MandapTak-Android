@@ -61,12 +61,11 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                getUserLogin();
-//                mobileNumber = etNumber.getText().toString();
-//                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
-//                    sendOtpOnGivenNumber(mobileNumber);
-//                } else
-//                    mApp.showToast(context, "Invalid Number");
+                mobileNumber = etNumber.getText().toString();
+                if (!mobileNumber.equals("") && mobileNumber != null && mobileNumber.length() > 9) {
+                    sendOtpOnGivenNumber(mobileNumber);
+                } else
+                    mApp.showToast(context, "Invalid Number");
             }
         });
     }

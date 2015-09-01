@@ -92,7 +92,6 @@ public class PinsFragment extends Fragment {
                     }
                     listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
                 }
-                
             }
         });
         mApp.dialog.dismiss();

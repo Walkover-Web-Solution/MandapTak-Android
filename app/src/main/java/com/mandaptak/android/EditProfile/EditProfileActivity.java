@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -28,6 +27,10 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
     FloatingActionButton skipButton;
+    BasicProfileFragment basicProfileFragment;
+    DetailsProfileFragment detailsProfileFragment;
+    QualificationEditProfileFragment qualificationEditProfileFragment;
+    FinalEditProfileFragment finalEditProfileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,17 +106,6 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onBackPressed() {
-//        startActivity(new Intent(EditProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//        EditProfileActivity.this.finish();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-//            onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -129,6 +121,13 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    void init() {
+        basicProfileFragment = new BasicProfileFragment();
+        detailsProfileFragment = new DetailsProfileFragment();
+        qualificationEditProfileFragment = new QualificationEditProfileFragment();
+        finalEditProfileFragment = new FinalEditProfileFragment();
+    }
+
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 
         public SectionsPagerAdapter(FragmentManager fm) {
@@ -139,15 +138,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return new BasicProfileFragment();
+                    return basicProfileFragment;
                 case 1:
-                    return new DetailsProfileFragment();
+                    return detailsProfileFragment;
                 case 2:
-                    return new QualificationEditProfileFragment();
+                    return qualificationEditProfileFragment;
                 case 3:
-                    return new FinalEditProfileFragment();
+                    return finalEditProfileFragment;
                 default:
-                    return new BasicProfileFragment();
+                    return basicProfileFragment;
             }
         }
 
@@ -173,5 +172,4 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             return null;
         }
     }
-
 }

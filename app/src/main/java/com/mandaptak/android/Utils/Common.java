@@ -178,9 +178,6 @@ public class Common extends Application implements LayerCallbacks {
     public void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
-    public void getParseUser(Context context, String message) {
-
-    }
 
     @Override
     public void onCreate() {

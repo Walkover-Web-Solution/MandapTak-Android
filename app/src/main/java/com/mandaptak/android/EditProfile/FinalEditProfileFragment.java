@@ -186,16 +186,26 @@ public class FinalEditProfileFragment extends Fragment {
                 if (checkFieldsTab3(parseObject)) {
                     if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
                         mApp.dialog.dismiss();
-                        Toast.makeText(context, "Please update primary profile photo", Toast.LENGTH_SHORT).show();
+                        mApp.showToast(context, "Please update primary profile photo");
                     } else {
                         mApp.dialog.dismiss();
-                        Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show();
-                        try {
-                            startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                            getActivity().finish();
-                        } catch (Exception e2) {
-                            e2.printStackTrace();
-                        }
+                        parseObject.put("isComplete", true);
+                        parseObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    try {
+                                        startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                        getActivity().finish();
+                                        mApp.showToast(context, "Profile updated");
+                                    } catch (Exception e2) {
+                                        e2.printStackTrace();
+                                    }
+                                } else {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
                     }
                 } else {
                     mApp.dialog.dismiss();
@@ -403,11 +413,11 @@ public class FinalEditProfileFragment extends Fragment {
                                                         uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
                                                         uploadBiodata.setText(file.getName());
                                                         mApp.dialog.dismiss();
-                                                        Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show();
+                                                        mApp.showToast(context, "Uploaded");
                                                     } else {
                                                         e.printStackTrace();
                                                         mApp.dialog.dismiss();
-                                                        Toast.makeText(context, "Error while uploading file", Toast.LENGTH_SHORT).show();
+                                                        mApp.showToast(context, "Error while uploading file");
                                                     }
                                                 }
                                             });
@@ -425,12 +435,12 @@ public class FinalEditProfileFragment extends Fragment {
                                 } catch (IOException e1) {
                                     e1.printStackTrace();
                                     mApp.dialog.dismiss();
-                                    Toast.makeText(context, "Error while uploading file", Toast.LENGTH_SHORT).show();
+                                    mApp.showToast(context, "Error while uploading file");
                                 }
                             }
                         });
                     } else {
-                        Toast.makeText(context, "Error: File not found", Toast.LENGTH_SHORT).show();
+                        mApp.showToast(context, "Error: File not found");
                     }
                     break;
 

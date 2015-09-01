@@ -24,6 +24,7 @@ import android.widget.LinearLayout;
 import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -48,6 +49,8 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     ArrayList<ImageModel> parsePhotos = new ArrayList<>();
     ImageButton backButton;
     String parseObjectId;
+    Context context;
+    Common mApp;
 
     @Override
     public void onBackPressed() {
@@ -59,6 +62,8 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.full_profile_activity);
+        mApp = (Common) getApplicationContext();
+        context = this;
         if (getIntent() != null) {
             parseObjectId = getIntent().getStringExtra("parseObjectId");
         } else {
@@ -69,7 +74,8 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         } catch (Exception ignored) {
         }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        getImages();
+        if (mApp.isNetworkAvailable(context))
+            getImages();
         mMenuPager = (ViewPager) findViewById(R.id.pager_menu);
         mImagesPager = (ViewPager) findViewById(R.id.pager_images);
         backButton = (ImageButton) findViewById(R.id.home);

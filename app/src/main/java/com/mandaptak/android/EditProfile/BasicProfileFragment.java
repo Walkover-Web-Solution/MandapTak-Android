@@ -65,7 +65,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         init(inflater, container);
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
 
         displayName.addTextChangedListener(new TextWatcher() {
             @Override

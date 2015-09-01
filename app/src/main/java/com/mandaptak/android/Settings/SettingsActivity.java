@@ -67,7 +67,8 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         init();
-        getExistingPermissions();
+        if (mApp.isNetworkAvailable(context))
+            getExistingPermissions();
         morePermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -88,24 +89,26 @@ public class SettingsActivity extends AppCompatActivity {
                             if (!mobileNumber.equals("")) {
                                 if (mobileNumber.length() == 10) {
                                     alertDialog.dismiss();
-                                    mApp.show_PDialog(context, "Giving Permission..");
-                                    HashMap<String, Object> params = new HashMap<>();
-                                    params.put("mobile", mobileNumber);
-                                    params.put("profileId", Prefs.getProfileId(context));
-                                    params.put("relation", relations.getSelectedItem());
+                                    if (mApp.isNetworkAvailable(context)) {
+                                        mApp.show_PDialog(context, "Giving Permission..");
+                                        HashMap<String, Object> params = new HashMap<>();
+                                        params.put("mobile", mobileNumber);
+                                        params.put("profileId", Prefs.getProfileId(context));
+                                        params.put("relation", relations.getSelectedItem());
 
-                                    ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
-                                        @Override
-                                        public void done(Object o, ParseException e) {
-                                            mApp.dialog.dismiss();
-                                            if (e == null) {
-                                                getExistingPermissions();
-                                            } else {
-                                                e.printStackTrace();
-                                                mApp.showToast(context, "Error while resetting profiles");
+                                        ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
+                                            @Override
+                                            public void done(Object o, ParseException e) {
+                                                mApp.dialog.dismiss();
+                                                if (e == null) {
+                                                    getExistingPermissions();
+                                                } else {
+                                                    e.printStackTrace();
+                                                    mApp.showToast(context, "Error while resetting profiles");
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }
                                 } else {
                                     mApp.showToast(context, "Invalid Mobile Number");
                                 }

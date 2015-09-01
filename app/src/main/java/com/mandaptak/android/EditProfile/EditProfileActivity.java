@@ -1,5 +1,6 @@
 package com.mandaptak.android.EditProfile;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -13,6 +14,7 @@ import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -31,12 +33,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     DetailsProfileFragment detailsProfileFragment;
     QualificationEditProfileFragment qualificationEditProfileFragment;
     FinalEditProfileFragment finalEditProfileFragment;
+    Common mApp;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-
+        context = this;
+        mApp = (Common) getApplicationContext();
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayHomeAsUpEnabled(false);
@@ -93,15 +98,17 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                 }
             }
         });
-
-        ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
-        parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                parseObject.put("isComplete", false);
-                parseObject.saveInBackground();
-            }
-        });
+        init();
+        if (mApp.isNetworkAvailable(context)) {
+            ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
+            parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    parseObject.put("isComplete", false);
+                    parseObject.saveInBackground();
+                }
+            });
+        }
     }
 
     @Override

@@ -604,7 +604,8 @@ public class QualificationEditProfileFragment extends Fragment {
                 educationMoreButton.setVisibility(View.VISIBLE);
             }
         });
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

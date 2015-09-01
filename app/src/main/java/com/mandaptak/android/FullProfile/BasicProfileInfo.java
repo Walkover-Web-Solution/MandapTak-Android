@@ -40,7 +40,8 @@ public class BasicProfileInfo extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         init(inflater, container);
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

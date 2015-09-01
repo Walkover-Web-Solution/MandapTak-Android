@@ -51,7 +51,8 @@ public class DetailsProfileInfo extends Fragment {
         mApp = (Common) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.detail_profile_info, container, false);
         init();
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

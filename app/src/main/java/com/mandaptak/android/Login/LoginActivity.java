@@ -132,64 +132,68 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendOtpOnGivenNumber(String mobileNumber) {
-        mApp.show_PDialog(context, "Sending Verification Code...");
-        try {
-            HashMap<String, Object> params = new HashMap<>();
-            params.put("mobile", mobileNumber);
-            ParseCloud.callFunctionInBackground("sendOtp", params, new FunctionCallback<Object>() {
-                @Override
-                public void done(Object o, ParseException e) {
-                    mApp.dialog.dismiss();
-                    if (e == null) {
-                        etNumber.setText("");
-                        etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_code_verify_white, 0, 0, 0);
-                        sendOtp = false;
-                        loginButton.setText("VERIFY");
-                        label.setText("Enter the verification code you received");
-                    } else {
-                        mApp.showToast(context, "Contact your nearest agent");
-                        e.printStackTrace();
+        if (mApp.isNetworkAvailable(context)) {
+            mApp.show_PDialog(context, "Sending Verification Code...");
+            try {
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("mobile", mobileNumber);
+                ParseCloud.callFunctionInBackground("sendOtp", params, new FunctionCallback<Object>() {
+                    @Override
+                    public void done(Object o, ParseException e) {
+                        mApp.dialog.dismiss();
+                        if (e == null) {
+                            etNumber.setText("");
+                            etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_code_verify_white, 0, 0, 0);
+                            sendOtp = false;
+                            loginButton.setText("VERIFY");
+                            label.setText("Enter the verification code you received");
+                        } else {
+                            mApp.showToast(context, "Contact your nearest agent");
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void getUserLogin(String password) {
-        mApp.show_PDialog(context, "Logging in...");
-        ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
-            public void done(ParseUser user, ParseException e) {
-                if (user != null) {
-                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                    query.whereEqualTo("userId", user);
-                    query.getFirstInBackground(new GetCallback<ParseObject>() {
-                                                   @Override
-                                                   public void done(ParseObject parseObject, ParseException e) {
-                                                       mApp.dialog.dismiss();
-                                                       if (e == null) {
-                                                           if (!LayerImpl.isAuthenticated()) {
-                                                               LayerImpl.authenticateUser();
+        if (mApp.isNetworkAvailable(context)) {
+            mApp.show_PDialog(context, "Logging in...");
+            ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
+                public void done(ParseUser user, ParseException e) {
+                    if (user != null) {
+                        ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                        query.whereEqualTo("userId", user);
+                        query.getFirstInBackground(new GetCallback<ParseObject>() {
+                                                       @Override
+                                                       public void done(ParseObject parseObject, ParseException e) {
+                                                           mApp.dialog.dismiss();
+                                                           if (e == null) {
+                                                               if (!LayerImpl.isAuthenticated()) {
+                                                                   LayerImpl.authenticateUser();
+                                                               }
+                                                               Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                                               startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                               LoginActivity.this.finish();
+                                                           } else {
+                                                               ParseUser.logOut();
+                                                               e.printStackTrace();
+                                                               mApp.showToast(context, "Login Error");
                                                            }
-                                                           Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                                           startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                                           LoginActivity.this.finish();
-                                                       } else {
-                                                           ParseUser.logOut();
-                                                           e.printStackTrace();
-                                                           mApp.showToast(context, "Login Error");
                                                        }
                                                    }
-                                               }
 
-                    );
-                } else {
-                    Log.e("Login", "" + e);
-                    mApp.showToast(context, "Invalid ID/Password");
+                        );
+                    } else {
+                        Log.e("Login", "" + e);
+                        mApp.showToast(context, "Invalid ID/Password");
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {

@@ -35,7 +35,8 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
         mApp = (Common) context.getApplicationContext();
         init();
 
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

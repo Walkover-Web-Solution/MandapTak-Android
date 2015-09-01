@@ -4,6 +4,7 @@ import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +20,7 @@ import com.facebook.FacebookSdk;
 import com.layer.sdk.exceptions.LayerException;
 import com.mandaptak.android.Layer.LayerCallbacks;
 import com.mandaptak.android.Layer.LayerImpl;
+import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
@@ -160,7 +162,10 @@ public class Common extends Application implements LayerCallbacks {
             return true;//connected to data
         else if (conMan.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)
             return true; //connected to wifi
-        return false;
+        else {
+            startActivity(new Intent(context, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            return false;
+        }
     }
 
     public void show_PDialog(Context con, String message) {
@@ -196,6 +201,7 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.setContext(this);
 
     }
+
     public String numberToWords(int number) {
         if (number == 0) {
             return "zero";

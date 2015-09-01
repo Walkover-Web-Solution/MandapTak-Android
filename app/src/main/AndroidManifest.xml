@@ -64,7 +64,6 @@
             android:name=".Main.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityTheme"/>
-
         <activity
             android:name=".EditProfile.EditProfileActivity"
             android:screenOrientation="portrait"/>
@@ -125,6 +124,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Utils.InternetConnectionError"
+            android:label="@string/title_activity_internet_connection_error">
         </activity>
     </application>
 

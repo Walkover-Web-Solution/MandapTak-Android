@@ -56,7 +56,8 @@ public class FinalProfileInfo extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.final_profile_info, container, false);
         init();
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

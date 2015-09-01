@@ -176,7 +176,8 @@ public class FinalEditProfileFragment extends Fragment {
                 });
             }
         });
-        getParseData();
+        if (mApp.isNetworkAvailable(context))
+            getParseData();
         return rootView;
     }
 

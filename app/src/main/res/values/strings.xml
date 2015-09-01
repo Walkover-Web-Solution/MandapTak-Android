@@ -127,4 +127,5 @@
     <string name="profile_permissions">Profile edit permissions are given to folllowing contact numbers.</string>
     <string name="title_activity_matched_profile">MatchedProfileActivity</string>
     <string name="title_activity_splash_screen">MandapTak</string>
+    <string name="title_activity_internet_connection_error">InternetConnectionError</string>
 </resources>

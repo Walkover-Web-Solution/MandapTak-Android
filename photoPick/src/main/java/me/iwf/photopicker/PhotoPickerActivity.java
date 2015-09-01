@@ -30,7 +30,6 @@ import java.util.List;
 
 import me.iwf.photopicker.entity.Photo;
 import me.iwf.photopicker.event.OnItemCheckListener;
-import me.iwf.photopicker.fragment.ImagePagerFragment;
 import me.iwf.photopicker.fragment.PhotoPickerFragment;
 import me.iwf.photopicker.utils.Prefs;
 
@@ -42,7 +41,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
     public final static int DEFAULT_MAX_COUNT = 9;
     public static ProgressDialog dialog;
     private PhotoPickerFragment pickerFragment;
-    private ImagePagerFragment imagePagerFragment;
     private MenuItem menuDoneItem;
     private int maxCount = DEFAULT_MAX_COUNT;
     private Context context;
@@ -153,34 +151,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     * Overriding this method allows us to run our exit animation first, then exiting
-     * the activity when it complete.
-     */
-    @Override
-    public void onBackPressed() {
-        if (imagePagerFragment != null && imagePagerFragment.isVisible()) {
-            imagePagerFragment.runExitAnimation(new Runnable() {
-                public void run() {
-                    if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                        getSupportFragmentManager().popBackStack();
-                    }
-                }
-            });
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    public void addImagePagerFragment(ImagePagerFragment imagePagerFragment) {
-        this.imagePagerFragment = imagePagerFragment;
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, this.imagePagerFragment)
-                .addToBackStack(null)
-                .commit();
     }
 
     @Override

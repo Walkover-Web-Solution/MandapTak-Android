@@ -34,7 +34,45 @@ import java.util.List;
 import java.util.Set;
 
 public class Common extends Application implements LayerCallbacks {
+    private static HashMap<String, ParseUser> allUsers;
     public ProgressDialog dialog;
+
+    public static void cacheAllUsers() {
+        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
+        userQuery.findInBackground(new FindCallback<ParseUser>() {
+            public void done(List<ParseUser> results, ParseException e) {
+                if (e == null) {
+                    allUsers = new HashMap<>();
+                    for (int i = 0; i < results.size(); i++) {
+                        allUsers.put(results.get(i).getObjectId(), results.get(i));
+                    }
+                }
+            }
+        });
+    }
+
+    //Takes a ParseObject id and returns the associated username (handle) for display purposes
+    public static String getUsername(String id) {
+        //Does this id appear in the "all users" list?
+        if (id != null && allUsers != null && allUsers.containsKey(id) && allUsers.get(id) != null)
+            return allUsers.get(id).getUsername();
+
+        //Does this id belong to the currently signed in user?
+        if (id != null && ParseUser.getCurrentUser() != null && id.equals(ParseUser.getCurrentUser().getObjectId()))
+            return ParseUser.getCurrentUser().getUsername();
+
+        //If the handle can't be found, return whatever value was passed in
+        return id;
+    }
+
+    //Returns all users NOT including the currently signed in user
+    public static Set<String> getAllFriends() {
+        Set<String> friends = allUsers.keySet();
+        String currentUserId = ParseUser.getCurrentUser().getObjectId();
+        if (friends.contains(currentUserId))
+            friends.remove(currentUserId);
+        return friends;
+    }
 
     /**
      * Get a file path from a Uri. This will get the the path for Storage Access
@@ -179,7 +217,7 @@ public class Common extends Application implements LayerCallbacks {
     public void show_PDialog(Context con, String message) {
         dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
         dialog.setMessage(message);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.show();
     }
 
@@ -289,41 +327,6 @@ public class Common extends Application implements LayerCallbacks {
     @Override
     public void onUserDeauthenticated() {
 
-    }
-    private static HashMap<String, ParseUser> allUsers;
-    public static void cacheAllUsers(){
-        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-        userQuery.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> results, ParseException e) {
-                if(e == null){
-                    allUsers = new HashMap<>();
-                    for(int i = 0; i < results.size(); i++){
-                        allUsers.put(results.get(i).getObjectId(), results.get(i));
-                    }
-                }
-            }
-        });
-    }
-    //Takes a ParseObject id and returns the associated username (handle) for display purposes
-    public static String getUsername(String id){
-        //Does this id appear in the "all users" list?
-        if(id != null && allUsers != null && allUsers.containsKey(id) && allUsers.get(id) != null)
-            return allUsers.get(id).getUsername();
-
-        //Does this id belong to the currently signed in user?
-        if(id != null && ParseUser.getCurrentUser() != null && id.equals(ParseUser.getCurrentUser().getObjectId()))
-            return ParseUser.getCurrentUser().getUsername();
-
-        //If the handle can't be found, return whatever value was passed in
-        return id;
-    }
-    //Returns all users NOT including the currently signed in user
-    public static Set<String> getAllFriends(){
-        Set<String> friends = allUsers.keySet();
-        String currentUserId = ParseUser.getCurrentUser().getObjectId();
-        if(friends.contains(currentUserId))
-            friends.remove(currentUserId);
-        return friends;
     }
 
 }

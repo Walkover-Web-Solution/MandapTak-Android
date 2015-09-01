@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mandaptak.android.Layer.LayerImpl;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     String mobileNumber, mobileNumberParam;
     Boolean sendOtp = true;
     TypefaceTextView label;
+    ImageView numberImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = (AppCompatButton) findViewById(R.id.login_button);
         etNumber = (ExtendedEditText) findViewById(R.id.number);
         label = (TypefaceTextView) findViewById(R.id.label_number);
+        numberImage = (ImageView) findViewById(R.id.number_image);
+        etNumber.setPrefix("+91 ");
+
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);
@@ -102,7 +107,8 @@ public class LoginActivity extends AppCompatActivity {
             loginButton.setText("LOGIN");
             etNumber.setText("");
             etNumber.setHint("xxx-xxx-xxxx");
-            etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_call_white, 0, 0, 0);
+            etNumber.setPrefix("+91 ");
+            numberImage.setImageResource(R.drawable.ic_call_white);
             label.setText("Enter your number below to get access");
             sendOtp = true;
         } else
@@ -144,9 +150,10 @@ public class LoginActivity extends AppCompatActivity {
                         mApp.dialog.dismiss();
                         if (e == null) {
                             etNumber.setText("");
-                            etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_code_verify_white, 0, 0, 0);
+                            numberImage.setImageResource(R.drawable.ic_code_verify_white);
                             sendOtp = false;
                             etNumber.setHint("xxxx");
+                            etNumber.setPrefix("");
                             loginButton.setText("VERIFY");
                             label.setText("Enter the verification code you received");
                         } else {

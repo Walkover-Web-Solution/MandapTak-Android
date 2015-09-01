@@ -1,6 +1,5 @@
 package com.mandaptak.android.Adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +9,24 @@ import android.widget.TextView;
 
 import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Settings.SettingsActivity;
+import com.mandaptak.android.Utils.Common;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PermissionsAdapter extends BaseAdapter {
-    Context context;
+    SettingsActivity activity;
     ArrayList<PermissionModel> list;
+    Common mApp;
 
-    public PermissionsAdapter(Context context, ArrayList<PermissionModel> paramArrayList) {
+    public PermissionsAdapter(SettingsActivity activity, ArrayList<PermissionModel> paramArrayList) {
         this.list = paramArrayList;
-        this.context = context;
+        this.activity = activity;
+        mApp = (Common) activity.getApplicationContext();
     }
 
     public int getCount() {
@@ -40,7 +47,7 @@ public class PermissionsAdapter extends BaseAdapter {
 
         if (paramView == null) {
             viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(context).inflate(R.layout.permission_item, null);
+            paramView = LayoutInflater.from(activity).inflate(R.layout.permission_item, null);
             viewholder.tvNumber = (TextView) paramView.findViewById(R.id.number);
             viewholder.tvRelation = ((TextView) paramView.findViewById(R.id.relation));
             viewholder.tvDate = (TextView) paramView.findViewById(R.id.date);
@@ -49,7 +56,7 @@ public class PermissionsAdapter extends BaseAdapter {
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
-        PermissionModel permissionModel = list.get(paramInt);
+        final PermissionModel permissionModel = list.get(paramInt);
         viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
         viewholder.tvRelation.setText(permissionModel.getRelation());
         viewholder.tvDate.setText(permissionModel.getDate());
@@ -60,7 +67,21 @@ public class PermissionsAdapter extends BaseAdapter {
             viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    HashMap<String, Object> params = new HashMap<>();
+                    params.put("mobile", permissionModel.getNumber());
+                    params.put("profileId", permissionModel.getProfileId());
+                    ParseCloud.callFunctionInBackground("deletePermission", params, new FunctionCallback<Object>() {
+                        @Override
+                        public void done(Object o, ParseException e) {
+                            if (e == null) {
+                                mApp.showToast(activity, "Permission Removed");
+                                activity.getExistingPermissions();
+                            } else {
+                                mApp.showToast(activity, "Error while deleting permission");
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
             });
         }

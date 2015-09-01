@@ -58,7 +58,7 @@ public class SettingsActivity extends AppCompatActivity {
         permissionList.addFooterView(permissionFooter);
         permissionList.setFooterDividersEnabled(true);
         permissionModels = new ArrayList<>();
-        permissionsAdapter = new PermissionsAdapter(context, permissionModels);
+        permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels);
         permissionList.setAdapter(permissionsAdapter);
     }
 
@@ -149,13 +149,13 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    void getExistingPermissions() {
+    public void getExistingPermissions() {
         mApp.show_PDialog(context, "Loading...");
         try {
             ParseQuery<ParseObject> profileQuery = new ParseQuery<>("Profile");
             profileQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
-                public void done(ParseObject profileObject, ParseException e) {
+                public void done(final ParseObject profileObject, ParseException e) {
                     if (e == null) {
                         ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                         query.whereEqualTo("profileId", profileObject);
@@ -182,11 +182,12 @@ public class SettingsActivity extends AppCompatActivity {
                                                 } else {
                                                     permissionModel.setIsCurrentUser(false);
                                                 }
+                                                permissionModel.setProfileId(profileObject.getObjectId());
                                                 permissionModels.add(permissionModel);
                                             } catch (ParseException e1) {
                                                 e1.printStackTrace();
                                             }
-                                            permissionsAdapter = new PermissionsAdapter(context, permissionModels);
+                                            permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels);
                                             permissionList.setAdapter(permissionsAdapter);
                                         }
                                     }

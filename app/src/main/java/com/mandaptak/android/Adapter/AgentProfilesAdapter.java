@@ -1,6 +1,7 @@
 package com.mandaptak.android.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,26 +47,39 @@ public class AgentProfilesAdapter extends BaseAdapter {
             viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
             viewholder.status = (TextView) paramView.findViewById(R.id.status);
             viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
+            viewholder.more = (ImageView) paramView.findViewById(R.id.more);
             paramView.setTag(viewholder);
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
         AgentProfileModel agentProfileModel = list.get(paramInt);
         try {
-            viewholder.name.setText(agentProfileModel.getName());
-            viewholder.date.setText("Uploaded On: " + agentProfileModel.getCreateDate());
-            if (agentProfileModel.isActive()) {
-                viewholder.status.setTextColor(context.getResources().getColor(R.color.green_500));
-                viewholder.status.setText("Active");
-            } else {
+            viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
+            if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
+                viewholder.status.setTextColor(context.getResources().getColor(R.color.yellow_700));
+                viewholder.status.setText("Profile Incomplete");
+            } else if (!agentProfileModel.isActive()) {
                 viewholder.status.setTextColor(context.getResources().getColor(R.color.red_500));
                 viewholder.status.setText("Deactive");
+            } else {
+                viewholder.status.setTextColor(context.getResources().getColor(R.color.green_500));
+                viewholder.status.setText("Active");
             }
-            Picasso.with(context)
-                    .load(agentProfileModel.getImageUri())
-                    .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-                    .error(R.drawable.com_facebook_profile_picture_blank_square)
-                    .into(viewholder.image);
+            if (agentProfileModel.isComplete()) {
+                viewholder.name.setText(agentProfileModel.getName());
+                Picasso.with(context)
+                        .load(agentProfileModel.getImageUrl())
+                        .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+                        .error(R.drawable.com_facebook_profile_picture_blank_square)
+                        .into(viewholder.image);
+            } else {
+                viewholder.name.setText("+91" + agentProfileModel.getName());
+                Picasso.with(context)
+                        .load(Uri.parse(agentProfileModel.getImageUrl()))
+                        .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+                        .error(R.drawable.com_facebook_profile_picture_blank_square)
+                        .into(viewholder.image);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,5 +91,6 @@ public class AgentProfilesAdapter extends BaseAdapter {
         private TextView date;
         private TextView status;
         private ImageView image;
+        private ImageView more;
     }
 }

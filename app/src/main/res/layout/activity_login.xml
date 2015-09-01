@@ -31,29 +31,41 @@
         android:textColor="@color/white_alpha"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
-    <com.mandaptak.android.Views.ExtendedEditText
-        android:id="@+id/number"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/number_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/label_number"
         android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:digits="0123456789"
-        android:drawableLeft="@drawable/ic_call_white"
-        android:drawablePadding="8dp"
-        android:drawableStart="@drawable/ic_call_white"
-        android:hint="xxx-xxx-xxxx "
-        android:imeOptions="actionGo"
-        android:inputType="number"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white_alpha"
-        android:textCursorDrawable="@drawable/color_cursor"/>
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/number_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_call_white"/>
+
+        <com.mandaptak.android.Views.ExtendedEditText
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
+            android:digits="0123456789"
+            android:hint="xxx-xxx-xxxx "
+            android:imeOptions="actionGo"
+            android:inputType="number"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white_alpha"
+            android:textCursorDrawable="@drawable/color_cursor"/>
+    </LinearLayout>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/number"
+        android:layout_below="@+id/number_layout"
         android:layout_centerHorizontal="true"
         android:background="@color/red_300"
         android:gravity="center"

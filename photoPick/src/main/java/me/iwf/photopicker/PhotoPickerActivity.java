@@ -56,7 +56,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
     public static void show_PDialog(Context con, String message) {
         dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
         dialog.setMessage(message);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.show();
     }
 

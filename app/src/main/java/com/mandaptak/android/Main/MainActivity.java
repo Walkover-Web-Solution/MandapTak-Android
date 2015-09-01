@@ -381,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
-        loadingProfile.setOnClickListener(new View.OnClickListener() {
+        rippleBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getMatchesFromFunction();
@@ -676,21 +676,21 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null) {
+            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null && profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name") != null) {
                 education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
+            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null && profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name") != null) {
                 education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
+            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null && profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name") != null) {
                 education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name").replace("null", ""));
             }
         } catch (Exception e) {

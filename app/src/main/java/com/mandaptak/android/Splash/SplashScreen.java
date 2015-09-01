@@ -52,6 +52,11 @@ public class SplashScreen extends AppCompatActivity {
                                 public void done(ParseObject parseObject, ParseException e) {
                                     if (e == null) {
                                         validateProfile(parseObject);
+                                    } else if (e.getCode() == 209) {
+                                        //INVALID SESSION TOKEN
+                                        ParseUser.logOut();
+                                        startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                        SplashScreen.this.finish();
                                     } else {
                                         e.printStackTrace();
                                         mApp.showToast(context, "Connection Error");
@@ -84,6 +89,10 @@ public class SplashScreen extends AppCompatActivity {
                     SplashScreen.this.finish();
                 }
             } catch (Exception e) {
+                //INVALID SESSION TOKEN
+                ParseUser.logOut();
+                startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                SplashScreen.this.finish();
                 e.printStackTrace();
             }
         }

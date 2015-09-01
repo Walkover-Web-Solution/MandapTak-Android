@@ -187,7 +187,7 @@ public class FinalEditProfileFragment extends Fragment {
                 if (checkFieldsTab3(parseObject)) {
                     if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
                         mApp.dialog.dismiss();
-                        mApp.showToast(context, "Please update primary profile photo");
+                        mApp.showToast(context, "Please select a primary profile photo");
                     } else {
                         mApp.dialog.dismiss();
                         parseObject.put("isComplete", true);
@@ -200,9 +200,11 @@ public class FinalEditProfileFragment extends Fragment {
                                         getActivity().finish();
                                         mApp.showToast(context, "Profile updated");
                                     } catch (Exception e2) {
+                                        mApp.showToast(context, "Error while updating profile");
                                         e2.printStackTrace();
                                     }
                                 } else {
+                                    mApp.showToast(context, "Error while updating profile");
                                     e.printStackTrace();
                                 }
                             }

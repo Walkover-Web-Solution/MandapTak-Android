@@ -42,7 +42,7 @@
         android:drawableLeft="@drawable/ic_call_white"
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_call_white"
-        android:hint="XXX-XXX-XXX "
+        android:hint="xxx-xxx-xxxx "
         android:imeOptions="actionGo"
         android:inputType="number"
         android:textColor="@color/white"

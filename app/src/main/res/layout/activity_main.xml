@@ -38,10 +38,10 @@
             android:id="@+id/front_photo"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_above="@+id/bottom_layout"
+            android:layout_below="@+id/toolbar"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginBottom="28dp"
+            android:layout_marginTop="28dp"
             app:border_color="@color/white"
             app:border_overlay="true"
             app:border_width="2dp"/>
@@ -97,12 +97,12 @@
 
         <ImageView
             android:id="@+id/pin_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/toolbar"
+            android:layout_margin="16dp"
             android:clickable="true"
-            android:padding="16dp"
             android:src="@drawable/ic_pin"/>
 
         <LinearLayout
@@ -115,29 +115,29 @@
 
             <ImageView
                 android:id="@+id/undo_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:src="@drawable/ic_undo"/>
 
             <ImageView
                 android:id="@+id/like_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:src="@drawable/ic_like"/>
 
             <ImageView
                 android:id="@+id/skip_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:src="@drawable/ic_dislike"/>
         </LinearLayout>
 
@@ -146,6 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
+            android:clickable="true"
             app:rb_color="@color/red_200"
             app:rb_duration="3000"
             app:rb_radius="60dp"

@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -106,15 +105,10 @@ public class PhotoPagerActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        ArrayList<String> photoPaths = new ArrayList<>();
-        for (int i = 0; i < pagerFragment.getPaths().size(); i++) {
-            photoPaths.add(pagerFragment.getPaths().get(i).getLink());
-        }
         Intent intent = new Intent();
         intent.putExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, true);
         setResult(RESULT_OK, intent);
         finish();
-//        super.onBackPressed();
     }
 
     @Override
@@ -183,7 +177,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
     }
 
     public void downloadFile(final String link) {
-        final File file = new File(Environment.getExternalStorageDirectory() + "/pics/");
+        final File file = getApplicationContext().getCacheDir();
         new AsyncTask<Void, int[], Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -194,7 +188,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
                     conection.connect();
                     int lenghtOfFile = conection.getContentLength();
                     InputStream input = new BufferedInputStream(url.openStream(), 8192);
-                    OutputStream output = new FileOutputStream(Environment.getExternalStorageDirectory() + "/pics/pic.jpg");
+                    OutputStream output = new FileOutputStream(file.getPath() + "/pic.jpg");
                     byte data[] = new byte[1024];
                     long total = 0;
                     while ((count = input.read(data)) != -1) {
@@ -221,8 +215,17 @@ public class PhotoPagerActivity extends AppCompatActivity {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
                 PhotoPickerActivity.dialog.dismiss();
-                Crop.of(Uri.fromFile(new File(file.getPath() + "/" + "pic.jpg")), Uri.fromFile(new File(file.getPath() + "/" + "cropped.jpg"))).asSquare().start(PhotoPagerActivity.this, Crop.REQUEST_CROP);
-
+                try {
+                    File pic = new File(file.getAbsolutePath() + "/pic.jpg");
+                    File crop = new File(file.getAbsolutePath() + "/cropped.jpg");
+                    Log.e("Crop", "" + crop.exists());
+                    Log.e("Pic", "" + pic.exists());
+                    Crop.of(Uri.fromFile(pic), Uri.fromFile(crop))
+                            .asSquare()
+                            .start(PhotoPagerActivity.this, Crop.REQUEST_CROP);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }.execute();
     }
@@ -243,69 +246,72 @@ public class PhotoPagerActivity extends AppCompatActivity {
                         if (data.hasExtra(MediaStore.EXTRA_OUTPUT)) {
                             Uri uri = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
                             final File file = new File(uri.getPath());
-                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-                            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                                @Override
-                                public void done(final ParseObject parseObject, ParseException e) {
-                                    try {
-                                        final ParseFile parseFile = new ParseFile(file.getName(), PhotoPickerActivity.read(file));
-                                        parseFile.saveInBackground(new SaveCallback() {
-                                            public void done(ParseException e) {
-                                                if (e == null) {
-                                                    parseObject.put("profilePic", parseFile);
-                                                    parseObject.saveInBackground(new SaveCallback() {
-                                                        @Override
-                                                        public void done(ParseException e) {
-                                                            if (e == null) {
-                                                                file.delete();
-                                                                Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
-                                                                final int index = pagerFragment.getCurrentItem();
-                                                                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-                                                                q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                                                                    @Override
-                                                                    public void done(ParseObject object, ParseException e) {
-                                                                        if (e == null)
-                                                                            profileObject = object;
-                                                                    }
-                                                                });
-                                                                ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-                                                                deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
-                                                                deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                                                    @Override
-                                                                    public void done(List<ParseObject> list, ParseException e) {
-                                                                        if (e == null) {
-                                                                            for (int i = 0; i < list.size(); i++) {
-                                                                                ParseObject parseObject = list.get(i);
-                                                                                if (i == index) {
-                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(true);
-                                                                                    parseObject.put("isPrimary", true);
-                                                                                    parseObject.saveInBackground();
-                                                                                } else {
-                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(false);
-                                                                                    parseObject.put("isPrimary", false);
-                                                                                    parseObject.saveInBackground();
-                                                                                }
-                                                                            }
-                                                                            pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                                                                            pagerFragment.getViewPager().setCurrentItem(index, true);
+                            if (file.exists()) {
+                                PhotoPickerActivity.show_PDialog(context, "Uploading Profile Photo");
+                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+                                parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                                    @Override
+                                    public void done(final ParseObject parseObject, ParseException e) {
+                                        try {
+                                            final ParseFile parseFile = new ParseFile(file.getName(), PhotoPickerActivity.read(file));
+                                            parseFile.saveInBackground(new SaveCallback() {
+                                                public void done(ParseException e) {
+                                                    if (e == null) {
+                                                        parseObject.put("profilePic", parseFile);
+                                                        parseObject.saveInBackground(new SaveCallback() {
+                                                            @Override
+                                                            public void done(ParseException e) {
+                                                                if (e == null) {
+                                                                    Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
+                                                                    final int index = pagerFragment.getCurrentItem();
+                                                                    ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                                                                    q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                                                                        @Override
+                                                                        public void done(ParseObject object, ParseException e) {
+                                                                            if (e == null)
+                                                                                profileObject = object;
                                                                         }
-                                                                    }
-                                                                });
-                                                            } else {
-                                                                Toast.makeText(context, "Failed to save profile photo.", Toast.LENGTH_SHORT).show();
-                                                                e.printStackTrace();
+                                                                    });
+                                                                    ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
+                                                                    deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
+                                                                    deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                                        @Override
+                                                                        public void done(List<ParseObject> list, ParseException e) {
+                                                                            if (e == null) {
+                                                                                for (int i = 0; i < list.size(); i++) {
+                                                                                    ParseObject parseObject = list.get(i);
+                                                                                    if (i == index) {
+                                                                                        pagerFragment.getPaths().get(i).setIsPrimary(true);
+                                                                                        parseObject.put("isPrimary", true);
+                                                                                        parseObject.saveInBackground();
+                                                                                    } else {
+                                                                                        pagerFragment.getPaths().get(i).setIsPrimary(false);
+                                                                                        parseObject.put("isPrimary", false);
+                                                                                        parseObject.saveInBackground();
+                                                                                    }
+                                                                                }
+                                                                                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                                                                                pagerFragment.getViewPager().setCurrentItem(index, true);
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    Toast.makeText(context, "Failed to save profile photo.", Toast.LENGTH_SHORT).show();
+                                                                    e.printStackTrace();
+                                                                }
                                                             }
-                                                        }
-                                                    });
+                                                        });
+                                                    }
+                                                    PhotoPickerActivity.dialog.dismiss();
                                                 }
-                                            }
-                                        });
-                                    } catch (IOException e1) {
-                                        e1.printStackTrace();
+                                            });
+                                        } catch (IOException e1) {
+                                            PhotoPickerActivity.dialog.dismiss();
+                                            e1.printStackTrace();
+                                        }
                                     }
-                                }
-                            });
-
+                                });
+                            }
                         }
                     }
                     break;

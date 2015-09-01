@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (sendOtp && mobileNumber.length() > 9) {
                         mobileNumberParam = mobileNumber;
                         sendOtpOnGivenNumber(mobileNumberParam);
-                    } else if (mobileNumber.length() == 4) {
+                    } else if (!sendOtp && mobileNumber.length() == 4) {
                         verifyOtpForGivenNumber(mobileNumber);
                     }
                 } else
@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (sendOtp && mobileNumber.length() > 9) {
                             mobileNumberParam = mobileNumber;
                             sendOtpOnGivenNumber(mobileNumberParam);
-                        } else if (mobileNumber.length() > 5) {
+                        } else if (!sendOtp && mobileNumber.length() == 4) {
                             verifyOtpForGivenNumber(mobileNumber);
                         }
                     } else
@@ -101,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         if (!sendOtp) {
             loginButton.setText("LOGIN");
             etNumber.setText("");
+            etNumber.setHint("xxx-xxx-xxxx");
             etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_call_white, 0, 0, 0);
             label.setText("Enter your number below to get access");
             sendOtp = true;
@@ -145,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                             etNumber.setText("");
                             etNumber.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_code_verify_white, 0, 0, 0);
                             sendOtp = false;
+                            etNumber.setHint("xxxx");
                             loginButton.setText("VERIFY");
                             label.setText("Enter the verification code you received");
                         } else {

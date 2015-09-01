@@ -16,11 +16,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
+import com.layer.sdk.exceptions.LayerException;
+import com.mandaptak.android.Layer.LayerCallbacks;
+import com.mandaptak.android.Layer.LayerImpl;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseFacebookUtils;
 
-public class Common extends Application {
+public class Common extends Application implements LayerCallbacks {
     public ProgressDialog dialog;
 
     /**
@@ -103,6 +106,7 @@ public class Common extends Application {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
+
     public String getDataColumn(Context context, Uri uri, String selection,
                                 String[] selectionArgs) {
 
@@ -174,6 +178,9 @@ public class Common extends Application {
     public void showToast(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
+    public void getParseUser(Context context, String message) {
+
+    }
 
     @Override
     public void onCreate() {
@@ -186,9 +193,12 @@ public class Common extends Application {
         defaultACL.setPublicReadAccess(true);
         defaultACL.setPublicWriteAccess(false);
         ParseACL.setDefaultACL(defaultACL, true);
+        //Initializes and connects the LayerClient if it hasn't been created already
+        LayerImpl.initialize(getApplicationContext());
+        //Registers the activity so callbacks are executed on the correct class
+        LayerImpl.setContext(this);
 
     }
-
     public String numberToWords(int number) {
         if (number == 0) {
             return "zero";
@@ -239,4 +249,33 @@ public class Common extends Application {
         return words;
     }
 
+    @Override
+    public void onLayerConnected() {
+
+    }
+
+    @Override
+    public void onLayerDisconnected() {
+
+    }
+
+    @Override
+    public void onLayerConnectionError(LayerException e) {
+
+    }
+
+    @Override
+    public void onUserAuthenticated(String id) {
+
+    }
+
+    @Override
+    public void onUserAuthenticatedError(LayerException e) {
+
+    }
+
+    @Override
+    public void onUserDeauthenticated() {
+
+    }
 }

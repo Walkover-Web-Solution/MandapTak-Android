@@ -16,6 +16,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -164,20 +165,25 @@ public class LoginActivity extends AppCompatActivity {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                     query.whereEqualTo("userId", user);
                     query.getFirstInBackground(new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject parseObject, ParseException e) {
-                            mApp.dialog.dismiss();
-                            if (e == null) {
-                                Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                LoginActivity.this.finish();
-                            } else {
-                                ParseUser.logOut();
-                                e.printStackTrace();
-                                mApp.showToast(context, "Login Error");
-                            }
-                        }
-                    });
+                                                   @Override
+                                                   public void done(ParseObject parseObject, ParseException e) {
+                                                       mApp.dialog.dismiss();
+                                                       if (e == null) {
+                                                           if (!LayerImpl.isAuthenticated()) {
+                                                               LayerImpl.authenticateUser();
+                                                           }
+                                                           Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                                           startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                           LoginActivity.this.finish();
+                                                       } else {
+                                                           ParseUser.logOut();
+                                                           e.printStackTrace();
+                                                           mApp.showToast(context, "Login Error");
+                                                       }
+                                                   }
+                                               }
+
+                    );
                 } else {
                     Log.e("Login", "" + e);
                     mApp.showToast(context, "Invalid ID/Password");

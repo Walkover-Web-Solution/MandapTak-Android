@@ -1,50 +1,41 @@
 package com.mandaptak.android.Layer;
 
-import android.util.Log;
-
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
 import com.layer.sdk.listeners.LayerConnectionListener;
-import com.mandaptak.android.Matches.ChatsFragment;
 
 public class MyConnectionListener implements LayerConnectionListener {
 
-    private static final String TAG = MyConnectionListener.class.getSimpleName();
+/*
+ * MyConnectionListener.java
+ * Handles the Connection process. Layer automatically tries to connect during Authentication, when
+ *  sending messages, or when the connection is dropped. If the connection is dropped, Layer will
+ *  continue to try to connect in the background.
+ */
 
-    private ChatsFragment main_activity;
+    //The Connection listener will execute callbacks on the current Activity
+    private LayerCallbacks mCurrentContext;
 
-    public MyConnectionListener(ChatsFragment ma) {
-        //Cache off the main activity in order to perform callbacks
-        main_activity = ma;
-    }
-
-    //Called on connection success. The Quick Start App immediately tries to
-    //authenticate a user (or, if a user is already authenticated, return to the conversation
-    //screen).
+    //When a connection is established, execute the appropriate callback
     public void onConnectionConnected(LayerClient client) {
-        Log.v(TAG, "Connected to Layer");
-
-        //If the user is already authenticated (and this connection was being established after
-        // the app was disconnected from the network), then start the conversation view.
-        //Otherwise, start the authentication process, which effectively "logs in" a user
-        if (client.isAuthenticated())
-            main_activity.onUserAuthenticated();
-        else
-            client.authenticate();
-
+        if(mCurrentContext != null)
+            mCurrentContext.onLayerConnected();
     }
 
-    //Called when the connection is closed
+    //When a connection is closed/dropped, execute the appropriate callback
     public void onConnectionDisconnected(LayerClient client) {
-        Log.v(TAG, "Connection to Layer closed");
+        if(mCurrentContext != null)
+            mCurrentContext.onLayerDisconnected();
     }
 
-    //Called when there is an error establishing a connection. There is no need to re-establish
-    // the connection again by calling layerClient.connect() - the SDK will handle re-connection
-    // automatically. However, this callback can be used with conjunction with onConnectionConnected
-    // to provide feedback to the user that messages cannot be sent/received (assuming there is an
-    // authenticated user).
+    //If there was an error connecting, execute the appropriate callback
     public void onConnectionError(LayerClient client, LayerException e) {
-        Log.v(TAG, "Error connecting to layer: " + e.toString());
+        if(mCurrentContext != null)
+            mCurrentContext.onLayerConnectionError(e);
+    }
+
+    //Helper function to keep track of the current Activity (set whenever an Activity resumes)
+    public void setActiveContext(LayerCallbacks context){
+        mCurrentContext = context;
     }
 }

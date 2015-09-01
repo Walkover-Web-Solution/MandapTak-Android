@@ -21,7 +21,6 @@ import com.layer.sdk.exceptions.LayerException;
 import com.mandaptak.android.Layer.LayerCallbacks;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
-import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -210,7 +209,7 @@ public class Common extends Application implements LayerCallbacks {
         else if (conMan.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)
             return true; //connected to wifi
         else {
-            startActivity(new Intent(context, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            startActivity(new Intent(context, InternetConnectionError.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
             return false;
         }
     }

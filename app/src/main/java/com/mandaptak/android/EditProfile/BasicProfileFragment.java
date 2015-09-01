@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,8 +66,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         init(inflater, container);
-        if (mApp.isNetworkAvailable(context))
-            getParseData();
 
         displayName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -220,10 +219,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
-        newDOB = Calendar.getInstance();
-        newTOB = Calendar.getInstance();
-        newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-        newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         rootView = inflater.inflate(R.layout.fragment_edit_basic_profile, container, false);
         gender = (TextView) rootView.findViewById(R.id.gender);
@@ -234,7 +229,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         displayName = (EditText) rootView.findViewById(R.id.display_name);
     }
 
-    private void getParseData() {
+    public void getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -246,10 +241,16 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                         newGender = parseObject.getString("gender");
                         Date tmpDOB = parseObject.getDate("dob");
                         Date tmpTOB = parseObject.getDate("tob");
-                        if (tmpDOB != null)
+                        if (tmpDOB != null) {
+                            newDOB = Calendar.getInstance();
+                            newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
                             newDOB.setTime(tmpDOB);
-                        if (tmpTOB != null)
+                        }
+                        if (tmpTOB != null) {
+                            newTOB = Calendar.getInstance();
+                            newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
                             newTOB.setTime(tmpTOB);
+                        }
                         newCurrentLocation = parseObject.getParseObject("currentLocation");
                         newPOB = parseObject.getParseObject("placeOfBirth");
 
@@ -349,30 +350,13 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     @Override
-    public void onDetach() {
+    public void onPause() {
         saveInfo();
-        super.onDetach();
-    }
-
-    @Override
-    public void onDestroy() {
-        saveInfo();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        saveInfo();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStop() {
-        saveInfo();
-        super.onStop();
+        super.onPause();
     }
 
     void saveInfo() {
+        Log.e("Save Screen", "1");
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
         parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
@@ -401,6 +385,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.year = selectedYear;
         this.month = selectedMonth;
         this.day = selectedDay;
+        newDOB = Calendar.getInstance();
+        newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         newDOB.set(year, month, day, 0, 0);
         SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
@@ -413,6 +399,9 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public void onTimeSet(TimePicker tp, int hourOfDay, int minute) {
         this.hourofDay = hourOfDay;
         this.minute = minute;
+        newTOB = Calendar.getInstance();
+        newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         newTOB.set(92, 0, 1, hourOfDay, minute);
         SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));

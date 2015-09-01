@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -19,6 +18,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.Locale;
 
@@ -56,20 +56,27 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         skipButton.setSize(FloatingActionButton.SIZE_MINI);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
-        mViewPager.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return false;
-            }
-        });
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);
-                if (position == 3) {
-                    skipButton.setVisibility(View.GONE);
-                } else {
-                    skipButton.setVisibility(View.VISIBLE);
+                switch (position) {
+                    case 0:
+                        basicProfileFragment.getParseData();
+                        skipButton.setVisibility(View.VISIBLE);
+                        break;
+                    case 1:
+                        detailsProfileFragment.getParseData();
+                        skipButton.setVisibility(View.VISIBLE);
+                        break;
+                    case 2:
+                        qualificationEditProfileFragment.getParseData();
+                        skipButton.setVisibility(View.VISIBLE);
+                        break;
+                    case 3:
+                        finalEditProfileFragment.getParseData();
+                        skipButton.setVisibility(View.GONE);
+                        break;
                 }
             }
         });
@@ -100,12 +107,19 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         });
         init();
         if (mApp.isNetworkAvailable(context)) {
+            mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
             parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     parseObject.put("isComplete", false);
-                    parseObject.saveInBackground();
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mApp.dialog.dismiss();
+                            basicProfileFragment.getParseData();
+                        }
+                    });
                 }
             });
         }

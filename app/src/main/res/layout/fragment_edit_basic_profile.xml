@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        android:digits=""
         android:drawableLeft="@drawable/ic_icon_name"
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_icon_name"

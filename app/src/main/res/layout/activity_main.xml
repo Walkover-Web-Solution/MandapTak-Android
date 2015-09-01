@@ -1,9 +1,9 @@
 <com.sothree.slidinguppanel.SlidingUpPanelLayout
+    android:id="@+id/sliding_panel"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/sliding_panel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipChildren="false"
-            android:scaleType="fitXY" />
+            android:scaleType="fitXY"/>
 
         <com.mandaptak.android.Views.BlurringView
             android:id="@+id/blurring_view"
@@ -31,7 +31,7 @@
             android:layout_gravity="center"
             app:blurRadius="12"
             app:downsampleFactor="2"
-            app:overlayColor="#22000000" />
+            app:overlayColor="#22000000"/>
 
 
         <com.mandaptak.android.Views.CircleImageView
@@ -44,7 +44,7 @@
             android:layout_marginTop="28dp"
             app:border_color="@color/white"
             app:border_overlay="true"
-            app:border_width="2dp" />
+            app:border_width="2dp"/>
 
         <LinearLayout
             android:id="@+id/bottom_layout"
@@ -65,7 +65,7 @@
                 android:paddingTop="4dp"
                 android:textColor="@color/white"
                 android:textSize="24sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/front_height"
@@ -74,7 +74,7 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
             <TextView
                 android:id="@+id/front_religion"
@@ -83,7 +83,7 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
 
             <TextView
                 android:id="@+id/front_designation"
@@ -92,7 +92,7 @@
                 android:layout_gravity="center|bottom"
                 android:layout_marginBottom="4dp"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"/>
         </LinearLayout>
 
         <ImageView
@@ -103,7 +103,7 @@
             android:layout_below="@+id/toolbar"
             android:layout_margin="16dp"
             android:clickable="true"
-            android:src="@drawable/ic_pin" />
+            android:src="@drawable/ic_pin"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -115,30 +115,30 @@
 
             <ImageView
                 android:id="@+id/undo_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_undo" />
+                android:src="@drawable/ic_undo"/>
 
             <ImageView
                 android:id="@+id/like_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_like" />
+                android:src="@drawable/ic_like"/>
 
             <ImageView
                 android:id="@+id/skip_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:clickable="true"
-                android:src="@drawable/ic_dislike" />
+                android:src="@drawable/ic_dislike"/>
         </LinearLayout>
 
         <com.skyfishjy.library.RippleBackground
@@ -166,7 +166,7 @@
                     android:layout_centerInParent="true"
                     app:border_color="@color/red_500"
                     app:border_overlay="true"
-                    app:border_width="2dp" />
+                    app:border_width="2dp"/>
 
                 <TextView
                     android:id="@+id/label_loading"
@@ -176,7 +176,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="32dp"
                     android:textColor="@color/red_700"
-                    android:textSize="@dimen/abc_text_size_medium_material" />
+                    android:textSize="@dimen/abc_text_size_medium_material"/>
             </RelativeLayout>
         </com.skyfishjy.library.RippleBackground>
 
@@ -188,7 +188,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/transparent_black"
             android:minHeight="?actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -225,7 +225,7 @@
                         android:paddingTop="8dp"
                         android:textColor="@color/white"
                         android:textSize="@dimen/abc_text_size_title_material"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/slide_height"
@@ -235,7 +235,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"/>
 
                     <TextView
                         android:id="@+id/slide_religion"
@@ -245,7 +245,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"/>
 
                     <TextView
                         android:id="@+id/slide_designation"
@@ -255,7 +255,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"/>
 
                     <TextView
                         android:id="@+id/slide_traits_match"
@@ -265,7 +265,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/teal_600"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"/>
                 </LinearLayout>
 
                 <ImageButton
@@ -277,17 +277,8 @@
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/ic_dual_heart"
-                    android:padding="12dp" />
+                    android:padding="12dp"/>
 
-                <ImageButton
-                    android:id="@+id/like_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="32dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/ic_like" />
             </RelativeLayout>
 
             <LinearLayout
@@ -302,7 +293,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
                     android:orientation="horizontal"
-                    app:twowayview_layoutManager="ListLayoutManager" />
+                    app:twowayview_layoutManager="ListLayoutManager"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -319,7 +310,7 @@
                         android:text="Current Location"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/current_location"
@@ -330,7 +321,7 @@
                         android:paddingTop="16dp"
                         android:singleLine="true"
                         android:textColor="@color/black_dark"
-                        android:textSize="@dimen/abc_text_size_small_material" />
+                        android:textSize="@dimen/abc_text_size_small_material"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -348,7 +339,7 @@
                         android:text="Weight"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/weight"
@@ -359,7 +350,7 @@
                         android:paddingTop="4dp"
                         android:singleLine="true"
                         android:textColor="@color/black_dark"
-                        android:textSize="@dimen/abc_text_size_small_material" />
+                        android:textSize="@dimen/abc_text_size_small_material"/>
 
                 </LinearLayout>
 
@@ -371,7 +362,7 @@
                     android:paddingTop="16dp"
                     android:text="Work"
                     android:textColor="@color/red_200"
-                    android:textSize="@dimen/abc_text_size_small_material" />
+                    android:textSize="@dimen/abc_text_size_small_material"/>
 
                 <TextView
                     android:id="@+id/designation"
@@ -381,7 +372,7 @@
                     android:paddingLeft="16dp"
                     android:paddingTop="4dp"
                     android:textColor="@color/black_dark"
-                    android:textSize="@dimen/abc_text_size_small_material" />
+                    android:textSize="@dimen/abc_text_size_small_material"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -397,7 +388,7 @@
                         android:paddingLeft="16dp"
                         android:paddingTop="4dp"
                         android:textColor="@color/black_light"
-                        android:textSize="@dimen/abc_text_size_small_material" />
+                        android:textSize="@dimen/abc_text_size_small_material"/>
 
                     <TextView
                         android:id="@+id/salary"
@@ -408,7 +399,7 @@
                         android:paddingTop="4dp"
                         android:singleLine="true"
                         android:textColor="@color/black_light"
-                        android:textSize="@dimen/abc_text_size_small_material" />
+                        android:textSize="@dimen/abc_text_size_small_material"/>
                 </LinearLayout>
 
                 <TextView
@@ -419,7 +410,7 @@
                     android:paddingTop="16dp"
                     android:text="Education"
                     android:textColor="@color/red_200"
-                    android:textSize="@dimen/abc_text_size_small_material" />
+                    android:textSize="@dimen/abc_text_size_small_material"/>
 
                 <TextView
                     android:id="@+id/education"
@@ -429,7 +420,7 @@
                     android:paddingLeft="16dp"
                     android:paddingTop="4dp"
                     android:textColor="@color/black_dark"
-                    android:textSize="@dimen/abc_text_size_small_material" />
+                    android:textSize="@dimen/abc_text_size_small_material"/>
             </LinearLayout>
 
             <TextView
@@ -448,7 +439,7 @@
                 android:text="View Full Profile"
                 android:textColor="@color/red_400"
                 android:textSize="@dimen/abc_text_size_medium_material"
-                android:textStyle="bold" />
+                android:textStyle="bold"/>
         </RelativeLayout>
 
         <LinearLayout
@@ -463,7 +454,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_up_arrow" />
+                android:src="@drawable/ic_up_arrow"/>
         </LinearLayout>
     </RelativeLayout>
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

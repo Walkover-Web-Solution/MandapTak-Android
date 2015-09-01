@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ImageModel> userProfileImages = new ArrayList<>();
     TwoWayView profileImages;
     UserImagesAdapter userImagesAdapter;
-    ImageButton mLikeUser;
     Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
     TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
@@ -98,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
         pinButton = (ImageView) findViewById(R.id.pin_button);
         profileImages = (TwoWayView) findViewById(R.id.list);
         backgroundPhoto = (ImageView) findViewById(R.id.background_photo);
-        mLikeUser = (ImageButton) findViewById(R.id.like_user);
         profileImages = (TwoWayView) findViewById(R.id.list);
         blurringView = (BlurringView) findViewById(R.id.blurring_view);
         frontProfileName = (TextView) findViewById(R.id.front_name);
@@ -361,19 +359,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mLikeUser.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (liked) {
-                    mLikeUser.setBackgroundResource(R.drawable.unlike);
-                    liked = false;
-                    mApp.showToast(context, "Liked");
-                } else {
-                    mLikeUser.setBackgroundResource(R.drawable.like);
-                    liked = true;
-                }
-            }
-        });
         matches.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

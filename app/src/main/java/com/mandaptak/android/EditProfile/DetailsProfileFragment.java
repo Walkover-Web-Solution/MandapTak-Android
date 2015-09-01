@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -280,8 +281,6 @@ public class DetailsProfileFragment extends Fragment {
 
             }
         });
-        if (mApp.isNetworkAvailable(context))
-            getParseData();
         return rootView;
     }
 
@@ -378,30 +377,13 @@ public class DetailsProfileFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
+    public void onPause() {
         saveInfo();
-        super.onDetach();
+        super.onPause();
     }
 
-    @Override
-    public void onDestroy() {
-        saveInfo();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        saveInfo();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStop() {
-        saveInfo();
-        super.onStop();
-    }
-
-    private void getParseData() {
+    public void getParseData() {
+        mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
@@ -449,13 +431,16 @@ public class DetailsProfileFragment extends Fragment {
                         e1.printStackTrace();
                     }
                 } else {
+                    mApp.showToast(context, e.getMessage());
                     e.printStackTrace();
                 }
+                mApp.dialog.dismiss();
             }
         });
     }
 
     void saveInfo() {
+        Log.e("Save Screen", "2");
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
         parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
@@ -470,9 +455,10 @@ public class DetailsProfileFragment extends Fragment {
                     parseObject.put("gotraId", newGotra.getParseObject());
                 else
                     parseObject.put("gotraId", JSONObject.NULL);
-
-                parseObject.put("height", newHeight);
-                parseObject.put("weight", newWeight);
+                if (newHeight != 0)
+                    parseObject.put("height", newHeight);
+                if (newWeight != 0)
+                    parseObject.put("weight", newWeight);
                 parseObject.put("manglik", newManglik);
                 parseObject.saveInBackground();
             }

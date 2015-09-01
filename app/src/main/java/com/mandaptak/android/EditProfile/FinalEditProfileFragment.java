@@ -159,6 +159,9 @@ public class FinalEditProfileFragment extends Fragment {
         saveProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (isAdded()) {
+
+                }
                 mApp.show_PDialog(context, "Saving Profile..");
                 ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
                 query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -176,8 +179,6 @@ public class FinalEditProfileFragment extends Fragment {
                 });
             }
         });
-        if (mApp.isNetworkAvailable(context))
-            getParseData();
         return rootView;
     }
 
@@ -313,7 +314,8 @@ public class FinalEditProfileFragment extends Fragment {
         }
     }
 
-    private void getParseData() {
+    public void getParseData() {
+        mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
@@ -344,6 +346,7 @@ public class FinalEditProfileFragment extends Fragment {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
                             if (list != null) {
+                                parsePhotos.clear();
                                 for (ParseObject item : list) {
                                     parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
                                 }
@@ -352,37 +355,22 @@ public class FinalEditProfileFragment extends Fragment {
                         }
                     });
                 } else {
+                    mApp.showToast(context, e.getMessage());
                     e.printStackTrace();
                 }
+                mApp.dialog.dismiss();
             }
         });
     }
 
     @Override
-    public void onDetach() {
+    public void onPause() {
         saveInfo();
-        super.onDetach();
+        super.onPause();
     }
 
-    @Override
-    public void onDestroy() {
-        saveInfo();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        saveInfo();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStop() {
-        saveInfo();
-        super.onStop();
-    }
-
-    private void saveInfo() {
+    public void saveInfo() {
+        Log.e("Save Screen", "3");
         if (!minBudget.getText().toString().equals("")) {
             try {
                 newMinBudget = Long.parseLong(minBudget.getText().toString().replaceAll("[^0-9]+", ""));

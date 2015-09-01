@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -654,12 +655,10 @@ public class QualificationEditProfileFragment extends Fragment {
                 educationMoreButton.setVisibility(View.VISIBLE);
             }
         });
-        if (mApp.isNetworkAvailable(context))
-            getParseData();
         return rootView;
     }
 
-    private void getParseData() {
+    public void getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -697,15 +696,16 @@ public class QualificationEditProfileFragment extends Fragment {
                             currentIncome.setText(String.valueOf(newCurrentIncome));
                         if (newIndustry != null)
                             industry.setText(newIndustry.fetchIfNeeded().getString("name"));
-                        if (newCompany != null)
+                        if (newCompany != null && !newCompany.equals(""))
                             company.setText(newCompany);
-                        if (newDesignation != null)
+                        if (newDesignation != null && !newDesignation.equals(""))
                             designation.setText(newDesignation);
                         workAfterMarriage.setSelection(newWorkAfterMarriage);
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                     }
                 } else {
+                    mApp.showToast(context, e.getMessage());
                     e.printStackTrace();
                 }
                 mApp.dialog.dismiss();
@@ -774,39 +774,22 @@ public class QualificationEditProfileFragment extends Fragment {
     }
 
     @Override
-    public void onDetach() {
+    public void onPause() {
         saveInfo();
-        super.onDetach();
-    }
-
-    @Override
-    public void onDestroy() {
-        saveInfo();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onDestroyView() {
-        saveInfo();
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStop() {
-        saveInfo();
-        super.onStop();
+        super.onPause();
     }
 
     private void saveInfo() {
+        Log.e("Save Screen", "4");
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
         parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (newCurrentIncome != 0)
                     parseObject.put("package", newCurrentIncome);
-                if (newCompany != null)
+                if (newCompany != null && !newCompany.equals(""))
                     parseObject.put("placeOfWork", newCompany);
-                if (newDesignation != null)
+                if (newDesignation != null && !newDesignation.equals(""))
                     parseObject.put("designation", newDesignation);
                 if (newIndustry != null)
                     parseObject.put("industryId", newIndustry);

@@ -36,6 +36,7 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
     ListView listViewMatches;
     private View rootView;
     private Context context;
+    private  RecyclerView conversationsView;
     private ConversationQueryAdapter mConversationsAdapter;
     public ChatsFragment() {
         // Required empty public constructor
@@ -54,9 +55,18 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
         rootView = inflater.inflate(R.layout.fragment_chat_layout, container, false);
         listViewMatches = (ListView) rootView.findViewById(R.id.list);
         //Grab the Recycler View and list all conversation objects in a vertical list
-        RecyclerView conversationsView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+         conversationsView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         conversationsView.setLayoutManager(layoutManager);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!LayerImpl.isAuthenticated()) {
+            LayerImpl.authenticateUser();
+        }
         mConversationsAdapter = new ConversationQueryAdapter(context.getApplicationContext(), LayerImpl.getLayerClient(), this, new QueryAdapter.Callback() {
             @Override
             public void onItemInserted() {
@@ -69,14 +79,6 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
 
         //Execute the Query
         mConversationsAdapter.refresh();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!LayerImpl.isAuthenticated()) {
-            LayerImpl.authenticateUser();
-        }
 
     }
 

@@ -27,6 +27,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -103,23 +105,9 @@ public class DetailsProfileFragment extends Fragment {
                         alertDialog.dismiss();
                     }
                 });
+                listView.setVisibility(View.VISIBLE);
                 if (mApp.isNetworkAvailable(context)) {
-                    final ArrayList<ParseNameModel> list = getReligionList(null);
-                    listView.setVisibility(View.VISIBLE);
-                    listView.setAdapter(new DataAdapter(context, list));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            newReligion = list.get(i);
-                            newCaste = null;
-                            newGotra = null;
-                            caste.setText("");
-                            gotra.setText("");
-                            religion.setText(list.get(i).getName());
-                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
-                            alertDialog.dismiss();
-                        }
-                    });
+                    getReligionList(null, listView, alertDialog);
                 }
                 searchBar.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -134,23 +122,11 @@ public class DetailsProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (mApp.isNetworkAvailable(context)) {
-                            final ArrayList<ParseNameModel> list = getReligionList(editable.toString());
+                        if (editable.length() == 0) {
+                            getReligionList(null, listView, alertDialog);
+                        } else {
                             listView.setVisibility(View.VISIBLE);
-                            listView.setAdapter(new DataAdapter(context, list));
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                    newReligion = list.get(i);
-                                    newCaste = null;
-                                    newGotra = null;
-                                    caste.setText("");
-                                    gotra.setText("");
-                                    religion.setText(list.get(i).getName());
-                                    religion.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                    alertDialog.dismiss();
-                                }
-                            });
+                            getReligionList(editable.toString(), listView, alertDialog);
                         }
                     }
                 });
@@ -178,21 +154,10 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
+                    listView.setVisibility(View.VISIBLE);
                     if (mApp.isNetworkAvailable(context)) {
-                        final ArrayList<ParseNameModel> list = getCasteList(null);
-                        listView.setVisibility(View.VISIBLE);
-                        listView.setAdapter(new DataAdapter(context, list));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                newCaste = list.get(i);
-                                newGotra = null;
-                                gotra.setText("");
-                                caste.setText(list.get(i).getName());
-                                caste.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                alertDialog.dismiss();
-                            }
-                        });
+                        getCasteList(null, listView, alertDialog);
+
                     }
                     searchBar.addTextChangedListener(new TextWatcher() {
                         @Override
@@ -207,21 +172,10 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (mApp.isNetworkAvailable(context)) {
-                                final ArrayList<ParseNameModel> list = getCasteList(editable.toString());
-                                listView.setVisibility(View.VISIBLE);
-                                listView.setAdapter(new DataAdapter(context, list));
-                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                        newCaste = list.get(i);
-                                        newGotra = null;
-                                        gotra.setText("");
-                                        caste.setText(list.get(i).getName());
-                                        caste.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                        alertDialog.dismiss();
-                                    }
-                                });
+                            if (editable.length() == 0) {
+                                getCasteList(null, listView, alertDialog);
+                            } else {
+                                getCasteList(editable.toString(), listView, alertDialog);
                             }
                         }
                     });
@@ -252,19 +206,9 @@ public class DetailsProfileFragment extends Fragment {
                             alertDialog.dismiss();
                         }
                     });
+                    listView.setVisibility(View.VISIBLE);
                     if (mApp.isNetworkAvailable(context)) {
-                        final ArrayList<ParseNameModel> list = getGotraList(null);
-                        listView.setVisibility(View.VISIBLE);
-                        listView.setAdapter(new DataAdapter(context, list));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                newGotra = list.get(i);
-                                gotra.setText(list.get(i).getName());
-                                gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                alertDialog.dismiss();
-                            }
-                        });
+                        getGotraList(null, listView, alertDialog);
                     }
                     searchBar.addTextChangedListener(new TextWatcher() {
                         @Override
@@ -279,20 +223,10 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (mApp.isNetworkAvailable(context)) {
-                                empty.setVisibility(View.GONE);
-                                final ArrayList<ParseNameModel> list = getGotraList(editable.toString());
-                                listView.setVisibility(View.VISIBLE);
-                                listView.setAdapter(new DataAdapter(context, list));
-                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                    @Override
-                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                        newGotra = list.get(i);
-                                        gotra.setText(list.get(i).getName());
-                                        gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                        alertDialog.dismiss();
-                                    }
-                                });
+                            if (editable.length() == 0) {
+                                getGotraList(null, listView, alertDialog);
+                            } else {
+                                getGotraList(editable.toString(), listView, alertDialog);
                             }
                         }
                     });
@@ -351,25 +285,39 @@ public class DetailsProfileFragment extends Fragment {
         return rootView;
     }
 
-    private ArrayList<ParseNameModel> getReligionList(String query) {
+    private ArrayList<ParseNameModel> getReligionList(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Religion");
         if (query != null)
             parseQuery.whereMatches("name", "(?i)^" + query);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
+            public void done(final List<ParseObject> list, ParseException e) {
                 if (list != null && list.size() > 0) {
                     for (ParseObject model : list) {
                         models.add(new ParseNameModel(model.getString("name"), model));
                     }
+                    listView.setAdapter(new DataAdapter(context, models));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            newReligion = models.get(i);
+                            newCaste = null;
+                            newGotra = null;
+                            caste.setText("");
+                            gotra.setText("");
+                            religion.setText(models.get(i).getName());
+                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            alertDialog.dismiss();
+                        }
+                    });
                 }
             }
         });
         return models;
     }
 
-    private ArrayList<ParseNameModel> getCasteList(String query) {
+    private ArrayList<ParseNameModel> getCasteList(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Caste");
         if (query != null)
@@ -382,13 +330,25 @@ public class DetailsProfileFragment extends Fragment {
                     for (ParseObject model : list) {
                         models.add(new ParseNameModel(model.getString("name"), model));
                     }
+                    listView.setAdapter(new DataAdapter(context, models));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            newCaste = models.get(i);
+                            newGotra = null;
+                            gotra.setText("");
+                            caste.setText(models.get(i).getName());
+                            caste.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            alertDialog.dismiss();
+                        }
+                    });
                 }
             }
         });
         return models;
     }
 
-    private ArrayList<ParseNameModel> getGotraList(String query) {
+    private ArrayList<ParseNameModel> getGotraList(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Gotra");
         if (query != null)
@@ -396,11 +356,21 @@ public class DetailsProfileFragment extends Fragment {
         parseQuery.whereEqualTo("casteId", newCaste.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
+            public void done(final List<ParseObject> list, ParseException e) {
                 if (list != null && list.size() > 0) {
                     for (ParseObject model : list) {
                         models.add(new ParseNameModel(model.getString("name"), model));
                     }
+                    listView.setAdapter(new DataAdapter(context, models));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            newGotra = models.get(i);
+                            gotra.setText(models.get(i).getName());
+                            gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            alertDialog.dismiss();
+                        }
+                    });
                 }
             }
         });
@@ -494,8 +464,12 @@ public class DetailsProfileFragment extends Fragment {
                     parseObject.put("religionId", newReligion.getParseObject());
                 if (newCaste != null)
                     parseObject.put("casteId", newCaste.getParseObject());
+                else
+                    parseObject.put("casteId", JSONObject.NULL);
                 if (newGotra != null)
                     parseObject.put("gotraId", newGotra.getParseObject());
+                else
+                    parseObject.put("gotraId", JSONObject.NULL);
 
                 parseObject.put("height", newHeight);
                 parseObject.put("weight", newWeight);

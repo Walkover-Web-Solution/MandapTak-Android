@@ -123,17 +123,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                             listView.setVisibility(View.GONE);
                         } else if (mApp.isNetworkAvailable(context)) {
                             empty.setVisibility(View.GONE);
-                            final ArrayList<Location> list = getCityList(editable.toString());
-                            listView.setVisibility(View.VISIBLE);
-                            listView.setAdapter(new LocationAdapter(context, list));
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                    newPOB = list.get(i).getCityObject();
-                                    placeOfBirth.setText(list.get(i).getCity() + ", " + list.get(i).getState() + ", " + list.get(i).getCountry());
-                                    alertDialog.dismiss();
-                                }
-                            });
+                            getPOB(editable.toString(), listView, alertDialog);
                         }
                     }
                 });
@@ -178,23 +168,11 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                             listView.setVisibility(View.GONE);
                         } else if (mApp.isNetworkAvailable(context)) {
                             mApp.show_PDialog(context, "Loading..");
-                            final ArrayList<Location> list = getCityList(editable.toString());
+                            getCurrentLocation(editable.toString(), listView, alertDialog);
                             mApp.dialog.dismiss();
-                            empty.setVisibility(View.GONE);
-                            listView.setVisibility(View.VISIBLE);
-                            listView.setAdapter(new LocationAdapter(context, list));
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                    currentLocation.setText(list.get(i).getCity() + ", " + list.get(i).getState() + ", " + list.get(i).getCountry());
-                                    newCurrentLocation = list.get(i).getCityObject();
-                                    alertDialog.dismiss();
-                                }
-                            });
                         }
                     }
                 });
-
                 alertDialog.show();
             }
         });
@@ -312,20 +290,58 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         });
     }
 
-    private ArrayList<Location> getCityList(String query) {
+    private ArrayList<Location> getPOB(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
         parseQuery.whereMatches("name", "(?i)^" + query);
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
+            public void done(final List<ParseObject> list, ParseException e) {
                 if (list != null && list.size() > 0) {
                     for (ParseObject location : list) {
                         locationArrayList.add(new Location(location.getString("name"), location,
                                 location.getParseObject("Parent").getString("name"),
                                 location.getParseObject("Parent").getParseObject("Parent").getString("name")));
                     }
+                    listView.setAdapter(new LocationAdapter(context, locationArrayList));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            newPOB = locationArrayList.get(i).getCityObject();
+                            placeOfBirth.setText(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry());
+                            alertDialog.dismiss();
+                        }
+                    });
+                }
+            }
+        });
+        return locationArrayList;
+    }
+
+    private ArrayList<Location> getCurrentLocation(String query, final ListView listView, final AlertDialog alertDialog) {
+        final ArrayList<Location> locationArrayList = new ArrayList<>();
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
+        parseQuery.whereMatches("name", "(?i)^" + query);
+        parseQuery.include("Parent.Parent");
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(final List<ParseObject> list, ParseException e) {
+                if (list != null && list.size() > 0) {
+                    for (ParseObject location : list) {
+                        locationArrayList.add(new Location(location.getString("name"), location,
+                                location.getParseObject("Parent").getString("name"),
+                                location.getParseObject("Parent").getParseObject("Parent").getString("name")));
+                    }
+                    listView.setAdapter(new LocationAdapter(context, locationArrayList));
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            currentLocation.setText(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry());
+                            newCurrentLocation = locationArrayList.get(i).getCityObject();
+                            alertDialog.dismiss();
+                        }
+                    });
                 }
             }
         });

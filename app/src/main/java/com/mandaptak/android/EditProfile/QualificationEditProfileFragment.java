@@ -36,7 +36,6 @@ import java.util.List;
 import me.iwf.photopicker.utils.Prefs;
 
 public class QualificationEditProfileFragment extends Fragment {
-    private ArrayList<ParseNameModel> industryList;
     private LinearLayout mainEducationLayout;
     private TextView educationMoreButton, industry;
     private ExtendedEditText currentIncome;
@@ -110,51 +109,62 @@ public class QualificationEditProfileFragment extends Fragment {
                     }
                 });
                 if (mApp.isNetworkAvailable(context)) {
-                    final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                    listView.setAdapter(new DataAdapter(context, degreeList));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            alertDialog.dismiss();
-                            mApp.show_PDialog(context, "Loading..");
-                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                    context);
-                            conductor.setTitle("Select Specialization");
-                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(final List<ParseObject> list, ParseException e) {
-                                    if (list != null && list.size() > 0) {
-                                        ArrayList<String> arrayList = new ArrayList<>();
-                                        for (ParseObject model : list) {
-                                            arrayList.add(model.getString("name"));
-                                        }
-                                        Object[] objectList = arrayList.toArray();
-                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                        if (stringArray.length > 1) {
-                                            conductor.setItems(stringArray,
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int index) {
-                                                            newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                            eduChildDegree1.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                        }
-                                                    });
-                                            AlertDialog alert = conductor.create();
-                                            mApp.dialog.dismiss();
-                                            alert.show();
-                                        } else {
-                                            newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                            eduChildDegree1.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                            mApp.dialog.dismiss();
-                                        }
-                                    }
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null && list.size() > 0) {
+                                for (ParseObject model : list) {
+                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
                                 }
-                            });
+                                listView.setAdapter(new DataAdapter(context, degreeList));
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                        alertDialog.dismiss();
+                                        mApp.show_PDialog(context, "Loading..");
+                                        final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                context);
+                                        conductor.setTitle("Select Specialization");
+                                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                            @Override
+                                            public void done(final List<ParseObject> list, ParseException e) {
+                                                if (list != null && list.size() > 0) {
+                                                    ArrayList<String> arrayList = new ArrayList<>();
+                                                    for (ParseObject model : list) {
+                                                        arrayList.add(model.getString("name"));
+                                                    }
+                                                    Object[] objectList = arrayList.toArray();
+                                                    String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                    if (stringArray.length > 1) {
+                                                        conductor.setItems(stringArray,
+                                                                new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog,
+                                                                                        int index) {
+                                                                        newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                        eduChildDegree1.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                        eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                                    }
+                                                                });
+                                                        AlertDialog alert = conductor.create();
+                                                        mApp.dialog.dismiss();
+                                                        alert.show();
+                                                    } else {
+                                                        newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                        eduChildDegree1.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                        eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            }
+                                        });
 
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -171,51 +181,64 @@ public class QualificationEditProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                        listView.setAdapter(new DataAdapter(context, degreeList));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                        if (editable.length() != 0)
+                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                alertDialog.dismiss();
-                                mApp.show_PDialog(context, "Loading..");
-                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                        context);
-                                conductor.setTitle("Select Specialization");
-                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(final List<ParseObject> list, ParseException e) {
-                                        if (list != null && list.size() > 0) {
-                                            ArrayList<String> arrayList = new ArrayList<>();
-                                            for (ParseObject model : list) {
-                                                arrayList.add(model.getString("name"));
-                                            }
-                                            Object[] objectList = arrayList.toArray();
-                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                            if (stringArray.length > 1) {
-                                                conductor.setItems(stringArray,
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog,
-                                                                                int index) {
-                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                eduChildDegree1.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                            }
-                                                        });
-                                                AlertDialog alert = conductor.create();
-                                                mApp.dialog.dismiss();
-                                                alert.show();
-                                            } else {
-                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                eduChildDegree1.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                mApp.dialog.dismiss();
-                                            }
-                                        }
+                            public void done(List<ParseObject> list, ParseException e) {
+                                if (list != null && list.size() > 0) {
+                                    for (ParseObject model : list) {
+                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
                                     }
-                                });
+                                    listView.setAdapter(new DataAdapter(context, degreeList));
+                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            alertDialog.dismiss();
+                                            mApp.show_PDialog(context, "Loading..");
+                                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                    context);
+                                            conductor.setTitle("Select Specialization");
+                                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                @Override
+                                                public void done(final List<ParseObject> list, ParseException e) {
+                                                    if (list != null && list.size() > 0) {
+                                                        ArrayList<String> arrayList = new ArrayList<>();
+                                                        for (ParseObject model : list) {
+                                                            arrayList.add(model.getString("name"));
+                                                        }
+                                                        Object[] objectList = arrayList.toArray();
+                                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                        if (stringArray.length > 1) {
+                                                            conductor.setItems(stringArray,
+                                                                    new DialogInterface.OnClickListener() {
+                                                                        public void onClick(DialogInterface dialog,
+                                                                                            int index) {
+                                                                            newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                            eduChildDegree1.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                                        }
+                                                                    });
+                                                            AlertDialog alert = conductor.create();
+                                                            mApp.dialog.dismiss();
+                                                            alert.show();
+                                                        } else {
+                                                            newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                            eduChildDegree1.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                            mApp.dialog.dismiss();
+                                                        }
+                                                    }
+                                                }
+                                            });
 
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
@@ -240,51 +263,62 @@ public class QualificationEditProfileFragment extends Fragment {
                     }
                 });
                 if (mApp.isNetworkAvailable(context)) {
-                    final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                    listView.setAdapter(new DataAdapter(context, degreeList));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            alertDialog.dismiss();
-                            mApp.show_PDialog(context, "Loading..");
-                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                    context);
-                            conductor.setTitle("Select Specialization");
-                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(final List<ParseObject> list, ParseException e) {
-                                    if (list != null && list.size() > 0) {
-                                        ArrayList<String> arrayList = new ArrayList<>();
-                                        for (ParseObject model : list) {
-                                            arrayList.add(model.getString("name"));
-                                        }
-                                        Object[] objectList = arrayList.toArray();
-                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                        if (stringArray.length > 1) {
-                                            conductor.setItems(stringArray,
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int index) {
-                                                            newEducationDetail2 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                            eduChildDegree2.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                            eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                                                        }
-                                                    });
-                                            AlertDialog alert = conductor.create();
-                                            mApp.dialog.dismiss();
-                                            alert.show();
-                                        } else {
-                                            newEducationDetail2 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                            eduChildDegree2.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                            eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                                            mApp.dialog.dismiss();
-                                        }
-                                    }
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null && list.size() > 0) {
+                                for (ParseObject model : list) {
+                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
                                 }
-                            });
+                                listView.setAdapter(new DataAdapter(context, degreeList));
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                        alertDialog.dismiss();
+                                        mApp.show_PDialog(context, "Loading..");
+                                        final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                context);
+                                        conductor.setTitle("Select Specialization");
+                                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                            @Override
+                                            public void done(final List<ParseObject> list, ParseException e) {
+                                                if (list != null && list.size() > 0) {
+                                                    ArrayList<String> arrayList = new ArrayList<>();
+                                                    for (ParseObject model : list) {
+                                                        arrayList.add(model.getString("name"));
+                                                    }
+                                                    Object[] objectList = arrayList.toArray();
+                                                    String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                    if (stringArray.length > 1) {
+                                                        conductor.setItems(stringArray,
+                                                                new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog,
+                                                                                        int index) {
+                                                                        newEducationDetail2 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                        eduChildDegree2.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                        eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                                                    }
+                                                                });
+                                                        AlertDialog alert = conductor.create();
+                                                        mApp.dialog.dismiss();
+                                                        alert.show();
+                                                    } else {
+                                                        newEducationDetail2 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                        eduChildDegree2.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                        eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            }
+                                        });
 
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -301,51 +335,64 @@ public class QualificationEditProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                        listView.setAdapter(new DataAdapter(context, degreeList));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                        if (editable.length() != 0)
+                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                alertDialog.dismiss();
-                                mApp.show_PDialog(context, "Loading..");
-                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                        context);
-                                conductor.setTitle("Select Specialization");
-                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(final List<ParseObject> list, ParseException e) {
-                                        if (list != null && list.size() > 0) {
-                                            ArrayList<String> arrayList = new ArrayList<>();
-                                            for (ParseObject model : list) {
-                                                arrayList.add(model.getString("name"));
-                                            }
-                                            Object[] objectList = arrayList.toArray();
-                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                            if (stringArray.length > 1) {
-                                                conductor.setItems(stringArray,
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog,
-                                                                                int index) {
-                                                                newEducationDetail2 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                eduChildDegree2.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                                eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                                                            }
-                                                        });
-                                                AlertDialog alert = conductor.create();
-                                                mApp.dialog.dismiss();
-                                                alert.show();
-                                            } else {
-                                                newEducationDetail2 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                eduChildDegree2.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                                eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                                                mApp.dialog.dismiss();
-                                            }
-                                        }
+                            public void done(List<ParseObject> list, ParseException e) {
+                                if (list != null && list.size() > 0) {
+                                    for (ParseObject model : list) {
+                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
                                     }
-                                });
+                                    listView.setAdapter(new DataAdapter(context, degreeList));
+                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            alertDialog.dismiss();
+                                            mApp.show_PDialog(context, "Loading..");
+                                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                    context);
+                                            conductor.setTitle("Select Specialization");
+                                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                @Override
+                                                public void done(final List<ParseObject> list, ParseException e) {
+                                                    if (list != null && list.size() > 0) {
+                                                        ArrayList<String> arrayList = new ArrayList<>();
+                                                        for (ParseObject model : list) {
+                                                            arrayList.add(model.getString("name"));
+                                                        }
+                                                        Object[] objectList = arrayList.toArray();
+                                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                        if (stringArray.length > 1) {
+                                                            conductor.setItems(stringArray,
+                                                                    new DialogInterface.OnClickListener() {
+                                                                        public void onClick(DialogInterface dialog,
+                                                                                            int index) {
+                                                                            newEducationDetail2 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                            eduChildDegree2.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                            eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                                                        }
+                                                                    });
+                                                            AlertDialog alert = conductor.create();
+                                                            mApp.dialog.dismiss();
+                                                            alert.show();
+                                                        } else {
+                                                            newEducationDetail2 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                            eduChildDegree2.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                            eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                                            mApp.dialog.dismiss();
+                                                        }
+                                                    }
+                                                }
+                                            });
 
+                                        }
+                                    });
+                                }
                             }
                         });
                     }
@@ -370,51 +417,62 @@ public class QualificationEditProfileFragment extends Fragment {
                     }
                 });
                 if (mApp.isNetworkAvailable(context)) {
-                    final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                    listView.setAdapter(new DataAdapter(context, degreeList));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            alertDialog.dismiss();
-                            mApp.show_PDialog(context, "Loading..");
-                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                    context);
-                            conductor.setTitle("Select Specialization");
-                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(final List<ParseObject> list, ParseException e) {
-                                    if (list != null && list.size() > 0) {
-                                        ArrayList<String> arrayList = new ArrayList<>();
-                                        for (ParseObject model : list) {
-                                            arrayList.add(model.getString("name"));
-                                        }
-                                        Object[] objectList = arrayList.toArray();
-                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                        if (stringArray.length > 1) {
-                                            conductor.setItems(stringArray,
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int index) {
-                                                            newEducationDetail3 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                            eduChildDegree3.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                            eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                                                        }
-                                                    });
-                                            AlertDialog alert = conductor.create();
-                                            mApp.dialog.dismiss();
-                                            alert.show();
-                                        } else {
-                                            newEducationDetail3 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                            eduChildDegree3.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                            eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                                            mApp.dialog.dismiss();
-                                        }
-                                    }
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null && list.size() > 0) {
+                                for (ParseObject model : list) {
+                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
                                 }
-                            });
+                                listView.setAdapter(new DataAdapter(context, degreeList));
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                        alertDialog.dismiss();
+                                        mApp.show_PDialog(context, "Loading..");
+                                        final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                context);
+                                        conductor.setTitle("Select Specialization");
+                                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                            @Override
+                                            public void done(final List<ParseObject> list, ParseException e) {
+                                                if (list != null && list.size() > 0) {
+                                                    ArrayList<String> arrayList = new ArrayList<>();
+                                                    for (ParseObject model : list) {
+                                                        arrayList.add(model.getString("name"));
+                                                    }
+                                                    Object[] objectList = arrayList.toArray();
+                                                    String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                    if (stringArray.length > 1) {
+                                                        conductor.setItems(stringArray,
+                                                                new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog,
+                                                                                        int index) {
+                                                                        newEducationDetail3 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                        eduChildDegree3.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                        eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                                                    }
+                                                                });
+                                                        AlertDialog alert = conductor.create();
+                                                        mApp.dialog.dismiss();
+                                                        alert.show();
+                                                    } else {
+                                                        newEducationDetail3 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                        eduChildDegree3.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                        eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            }
+                                        });
 
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -431,53 +489,67 @@ public class QualificationEditProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                        listView.setAdapter(new DataAdapter(context, degreeList));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                        if (editable.length() != 0)
+                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                alertDialog.dismiss();
-                                mApp.show_PDialog(context, "Loading..");
-                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                        context);
-                                conductor.setTitle("Select Specialization");
-                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(final List<ParseObject> list, ParseException e) {
-                                        if (list != null && list.size() > 0) {
-                                            ArrayList<String> arrayList = new ArrayList<>();
-                                            for (ParseObject model : list) {
-                                                arrayList.add(model.getString("name"));
-                                            }
-                                            Object[] objectList = arrayList.toArray();
-                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                            if (stringArray.length > 1) {
-                                                conductor.setItems(stringArray,
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog,
-                                                                                int index) {
-                                                                newEducationDetail3 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                eduChildDegree3.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                                eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                                                            }
-                                                        });
-                                                AlertDialog alert = conductor.create();
-                                                mApp.dialog.dismiss();
-                                                alert.show();
-                                            } else {
-                                                newEducationDetail3 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                eduChildDegree3.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                                eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                                                mApp.dialog.dismiss();
-                                            }
-                                        }
+                            public void done(List<ParseObject> list, ParseException e) {
+                                if (list != null && list.size() > 0) {
+                                    for (ParseObject model : list) {
+                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
                                     }
-                                });
+                                    listView.setAdapter(new DataAdapter(context, degreeList));
+                                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                        @Override
+                                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                            alertDialog.dismiss();
+                                            mApp.show_PDialog(context, "Loading..");
+                                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                    context);
+                                            conductor.setTitle("Select Specialization");
+                                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                @Override
+                                                public void done(final List<ParseObject> list, ParseException e) {
+                                                    if (list != null && list.size() > 0) {
+                                                        ArrayList<String> arrayList = new ArrayList<>();
+                                                        for (ParseObject model : list) {
+                                                            arrayList.add(model.getString("name"));
+                                                        }
+                                                        Object[] objectList = arrayList.toArray();
+                                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                        if (stringArray.length > 1) {
+                                                            conductor.setItems(stringArray,
+                                                                    new DialogInterface.OnClickListener() {
+                                                                        public void onClick(DialogInterface dialog,
+                                                                                            int index) {
+                                                                            newEducationDetail3 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                            eduChildDegree3.setText(list.get(index).getParseObject("degreeId").getString("name"));
+                                                                            eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                                                        }
+                                                                    });
+                                                            AlertDialog alert = conductor.create();
+                                                            mApp.dialog.dismiss();
+                                                            alert.show();
+                                                        } else {
+                                                            newEducationDetail3 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                            eduChildDegree3.setText(list.get(0).getParseObject("degreeId").getString("name"));
+                                                            eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                                            mApp.dialog.dismiss();
+                                                        }
+                                                    }
+                                                }
+                                            });
 
+                                        }
+                                    });
+                                }
                             }
                         });
+
                     }
                 });
                 alertDialog.show();
@@ -486,29 +558,7 @@ public class QualificationEditProfileFragment extends Fragment {
         industry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (industryList != null) {
-                    AlertDialog.Builder conductor = new AlertDialog.Builder(
-                            context);
-                    conductor.setTitle("Select Work Industry");
-                    ArrayList<String> arrayList = new ArrayList<>();
-                    for (ParseNameModel parseNameModel : industryList) {
-                        arrayList.add(parseNameModel.getName());
-                    }
-                    Object[] objectList = arrayList.toArray();
-                    String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                    conductor.setItems(stringArray,
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog,
-                                                    int index) {
-                                    newIndustry = industryList.get(index).getParseObject();
-                                    industry.setText(industryList.get(index).getName());
-                                }
-                            });
-                    AlertDialog alert = conductor.create();
-                    alert.show();
-                } else {
-                    mApp.showToast(context, "Error loading content");
-                }
+                getIndustryList();
             }
         });
         currentIncome.addTextChangedListener(new TextWatcher() {
@@ -663,38 +713,42 @@ public class QualificationEditProfileFragment extends Fragment {
         });
     }
 
-    private ArrayList<ParseNameModel> getDegreeList(String query) {
-        final ArrayList<ParseNameModel> models = new ArrayList<>();
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
-        if (query != null)
-            parseQuery.whereMatches("name", "(?i)^" + query);
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject model : list) {
-                        models.add(new ParseNameModel(model.getString("name"), model));
-                    }
-                }
-            }
-        });
-        return models;
-    }
-
-    private ArrayList<ParseNameModel> getIndustryList() {
-        final ArrayList<ParseNameModel> models = new ArrayList<>();
+    private void getIndustryList() {
+        final ArrayList<ParseNameModel> industryList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Industries");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 if (list != null && list.size() > 0) {
                     for (ParseObject model : list) {
-                        models.add(new ParseNameModel(model.getString("name"), model));
+                        industryList.add(new ParseNameModel(model.getString("name"), model));
+                    }
+                    if (industryList != null) {
+                        AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                context);
+                        conductor.setTitle("Select Work Industry");
+                        ArrayList<String> arrayList = new ArrayList<>();
+                        for (ParseNameModel parseNameModel : industryList) {
+                            arrayList.add(parseNameModel.getName());
+                        }
+                        Object[] objectList = arrayList.toArray();
+                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                        conductor.setItems(stringArray,
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int index) {
+                                        newIndustry = industryList.get(index).getParseObject();
+                                        industry.setText(industryList.get(index).getName());
+                                    }
+                                });
+                        AlertDialog alert = conductor.create();
+                        alert.show();
+                    } else {
+                        mApp.showToast(context, "Error loading content");
                     }
                 }
             }
         });
-        return models;
     }
 
     void init() {
@@ -717,7 +771,6 @@ public class QualificationEditProfileFragment extends Fragment {
         eduChildDegreeBranch3 = (TextView) educationLayoutChild3.findViewById(R.id.degree_branch);
         eduChildClose2 = (ImageView) educationLayoutChild2.findViewById(R.id.remove_button);
         eduChildClose3 = (ImageView) educationLayoutChild3.findViewById(R.id.remove_button);
-        industryList = getIndustryList();
     }
 
     @Override

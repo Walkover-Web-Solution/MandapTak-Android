@@ -39,14 +39,19 @@ import java.util.List;
 import me.iwf.photopicker.utils.Prefs;
 
 public class LoginActivity extends AppCompatActivity {
+    static ExtendedEditText etNumber;
+    static Boolean sendOtp = true;
     AppCompatButton loginButton;
     Context context;
     Common mApp;
-    ExtendedEditText etNumber;
     String mobileNumber, mobileNumberParam;
-    Boolean sendOtp = true;
     TypefaceTextView label;
     ImageView numberImage;
+
+    public static void setCode(String code) {
+        if (etNumber != null && !sendOtp)
+            etNumber.setText(code);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                 return true;
             }
         });
+        etNumber.setText(mApp.getNumber());
     }
 
     @Override
@@ -114,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
             numberImage.setImageResource(R.drawable.ic_call_white);
             label.setText("Enter your number below to get access");
             sendOtp = true;
+            etNumber.setText(mApp.getNumber());
         } else
             super.onBackPressed();
     }
@@ -190,11 +197,12 @@ public class LoginActivity extends AppCompatActivity {
                                         if (e == null) {
                                             int size = list.size();
                                             ParseObject parseObject = null;
-
+                                            boolean hasPrimary = false;
                                             for (int i = 0; i < size; i++) {
                                                 if (list.get(i).getBoolean("isPrimary")) {
                                                     parseObject = list.get(i);
-                                                } else if (size == i - 1) {
+                                                    hasPrimary = true;
+                                                } else if (!hasPrimary && size == i - 1) {
                                                     parseObject = list.get(i);
                                                 }
                                             }
@@ -222,7 +230,6 @@ public class LoginActivity extends AppCompatActivity {
                                 ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                                 query.whereEqualTo("userId", user);
                                 query.whereEqualTo("isPrimary", true);
-                                query.whereNotEqualTo("relation", "Agent");
                                 query.getFirstInBackground(new GetCallback<ParseObject>() {
                                                                @Override
                                                                public void done(ParseObject parseObject, ParseException e) {

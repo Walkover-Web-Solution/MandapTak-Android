@@ -16,8 +16,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import me.iwf.photopicker.utils.Prefs;
-
 public class FinalProfileInfo extends Fragment {
     View rootView;
     TextView uploadBiodata;
@@ -63,11 +61,12 @@ public class FinalProfileInfo extends Fragment {
 
     private void getParseData() {
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+        query.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    newBiodataFileName = parseObject.getParseFile("bioData").getName();
+                    if (parseObject.containsKey("bioData") && parseObject.getParseObject("bioData") != null)
+                        newBiodataFileName = parseObject.getParseFile("bioData").getName();
 
                     if (!parseObject.containsKey("minMarriageBudget")) {
                         budgetMainLayout.setVisibility(View.GONE);
@@ -83,6 +82,12 @@ public class FinalProfileInfo extends Fragment {
 
                     if (newBiodataFileName != null) {
                         uploadBiodata.setText("↓ DOWNLOAD BIODATA (" + newBiodataFileName + ")");
+                        uploadBiodata.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                            }
+                        });
                     }
                 } else {
                     e.printStackTrace();

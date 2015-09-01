@@ -12,6 +12,7 @@
     <string name="divider">divider</string>
     <string name="user_preferences">Your Preferences</string>
     <string-array name="relation_array">
+        <item>Bachelor</item>
         <item>Father</item>
         <item>Mother</item>
         <item>Sister</item>

@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
@@ -219,6 +220,16 @@ public class Common extends Application implements LayerCallbacks {
         dialog.setMessage(message);
         dialog.setCancelable(true);
         dialog.show();
+    }
+
+    public String getNumber() {
+        TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        String getSimNumber = telemamanger.getLine1Number();
+        if (!getSimNumber.equals("")) {
+            getSimNumber.trim();
+            getSimNumber = getSimNumber.replace("+91", "");
+        }
+        return getSimNumber;
     }
 
     public void updateDialogProgress(int progress, String message) {

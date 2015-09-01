@@ -14,17 +14,13 @@ import com.mandaptak.android.Adapter.MatchesAdapter;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.parse.FindCallback;
 import com.parse.FunctionCallback;
-import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import me.iwf.photopicker.utils.Prefs;
 
@@ -111,6 +107,5 @@ public class MatchesFragment extends Fragment {
             }
         });
     }
-
 
 }

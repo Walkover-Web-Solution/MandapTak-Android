@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context="com.mandaptak.android.Agent.AgentActivity">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                tools:context="com.mandaptak.android.Agent.AgentActivity">
 
     <LinearLayout
         android:id="@+id/top"
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:text="1000 Credits"
             android:textColor="@color/red_500"
-            android:textSize="@dimen/abc_text_size_large_material" />
+            android:textSize="@dimen/abc_text_size_large_material"/>
     </LinearLayout>
 
     <ImageView
@@ -26,14 +26,14 @@
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:layout_below="@+id/top"
-        android:background="@color/black_light" />
+        android:background="@color/black_light"/>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/add_button"
-        android:layout_below="@+id/divider1" />
+        android:layout_below="@+id/divider1"/>
 
     <TextView
         android:id="@+id/add_button"
@@ -47,5 +47,5 @@
         android:padding="16dp"
         android:text="+ Upload More Profiles"
         android:textColor="@color/white"
-        android:textSize="@dimen/abc_text_size_medium_material" />
+        android:textSize="@dimen/abc_text_size_medium_material"/>
 </RelativeLayout>

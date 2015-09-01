@@ -10,26 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.layer.sdk.messaging.Conversation;
 import com.mandaptak.android.Adapter.ConversationQueryAdapter;
-import com.mandaptak.android.Adapter.MatchesAdapter;
 import com.mandaptak.android.Adapter.QueryAdapter;
 import com.mandaptak.android.Layer.LayerImpl;
-import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import me.iwf.photopicker.utils.Prefs;
 
 public class ChatsFragment extends Fragment implements ConversationQueryAdapter.ConversationClickHandler {
     Common mApp;

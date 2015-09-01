@@ -24,7 +24,7 @@ import java.util.List;
  *   connected to the Layer servers.
  */
 
-public class LayerImpl  {
+public class LayerImpl {
 
     //You must set your Layer App ID. If you haven't already, create a Layer account at
     // http://layer.com/signup, then follow these instructions:
@@ -34,7 +34,6 @@ public class LayerImpl  {
     // 4. Copy your Staging App ID and paste it here:
     private static String LayerAppID = "layer:///apps/staging/3ffe495e-45e8-11e5-9685-919001005125";
 
-
     //The LayerClient object. There should only be one instance of this object in your app.
     private static LayerClient mLayerClient;
 
@@ -43,20 +42,18 @@ public class LayerImpl  {
     private static MyConnectionListener connectionListener;
     private static MyAuthenticationListener authenticationListener;
 
-
     //Merely checks to see if you have updated the App ID. If the App ID is entered incorrectly,
     // the LayerClient will fail to initialize
 
-
     //Called when any Activity is created to make sure the LayerClient is created, the callbacks
     // are registered, and the LayerClient is connected
-    public static void initialize(Context context){
-        if(mLayerClient == null){
+    public static void initialize(Context context) {
+        if (mLayerClient == null) {
             LayerClient.enableLogging(context);
             mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID);
         }
 
-        if(mLayerClient != null) {
+        if (mLayerClient != null) {
             if (connectionListener == null) {
                 connectionListener = new MyConnectionListener();
                 mLayerClient.registerConnectionListener(connectionListener);
@@ -72,31 +69,31 @@ public class LayerImpl  {
     }
 
     //Connects to the Layer service
-    public static void connectClient(){
-        if(mLayerClient != null)
+    public static void connectClient() {
+        if (mLayerClient != null)
             mLayerClient.connect();
     }
 
     //Starts the Authentication process. The actual User registration happens in the
     // MyAuthenticationListener callbacks
-    public static void authenticateUser(){
-        if(mLayerClient != null)
+    public static void authenticateUser() {
+        if (mLayerClient != null)
             mLayerClient.authenticate();
     }
 
     //Returns true if the LayerClient exists and is connected to the web service
-    public static boolean isConnected(){
+    public static boolean isConnected() {
 
-        if(mLayerClient != null)
+        if (mLayerClient != null)
             return mLayerClient.isConnected();
 
         return false;
     }
 
     //Returns true if the LayerClient exists and a user has been authenticated successfully
-    public static boolean isAuthenticated(){
+    public static boolean isAuthenticated() {
 
-        if(mLayerClient != null)
+        if (mLayerClient != null)
             return mLayerClient.isAuthenticated();
 
         return false;
@@ -104,44 +101,44 @@ public class LayerImpl  {
 
     //When an Activity comes to the foreground (onResume), we want that Activity to handle any
     // callbacks
-    public static void setContext(LayerCallbacks callbacks){
+    public static void setContext(LayerCallbacks callbacks) {
 
-        if(connectionListener != null)
+        if (connectionListener != null)
             connectionListener.setActiveContext(callbacks);
 
-        if(authenticationListener != null)
+        if (authenticationListener != null)
             authenticationListener.setActiveContext(callbacks);
     }
 
     //Returns the App ID set by the developer
-    public static String getLayerAppID(){
+    public static String getLayerAppID() {
         return LayerAppID;
     }
 
     //Returns the actual LayerClient object
-    public static LayerClient getLayerClient(){
+    public static LayerClient getLayerClient() {
         return mLayerClient;
     }
 
     //A helper function that takes a Message Object and returns the String contents of its data.
     // In this implementation, we make the assumption that all messages are text, but this could
     // be changed to handle any other file types (images, audio, JSON, etc)
-    public static String getMessageText(Message msg){
+    public static String getMessageText(Message msg) {
 
         //The message content that will be returned
         String msgContent = "";
-        if(msg != null){
+        if (msg != null) {
 
             //Iterate through all the messasge parts, if the mime type indicates it is text, decode
             // it and add it to the string that will be returned
             List<MessagePart> parts = msg.getMessageParts();
-            for(MessagePart part : parts){
+            for (MessagePart part : parts) {
                 try {
 
-                    if(part.getMimeType().equals("text/plain"))
+                    if (part.getMimeType().equals("text/plain"))
                         msgContent += new String(part.getData(), "UTF-8") + "\n";
 
-                } catch(UnsupportedEncodingException e){
+                } catch (UnsupportedEncodingException e) {
 
                 }
             }
@@ -152,9 +149,9 @@ public class LayerImpl  {
 
     //A helper function that takes a Message object and returns a String representation of the
     // ReceivedAt time (the local time the message was downloaded to the device)
-    public static String getReceivedAtTime(Message msg){
+    public static String getReceivedAtTime(Message msg) {
         String dateString = "";
-        if(msg != null && msg.getReceivedAt() != null) {
+        if (msg != null && msg.getReceivedAt() != null) {
             SimpleDateFormat format = new SimpleDateFormat("M/dd hh:mm:ss");
             dateString = format.format(msg.getReceivedAt());
         }

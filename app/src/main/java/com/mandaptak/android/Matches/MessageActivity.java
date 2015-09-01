@@ -1,7 +1,5 @@
 package com.mandaptak.android.Matches;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,15 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.messaging.MessagePart;
-import com.layer.sdk.query.Query;
 import com.mandaptak.android.Adapter.MessageQueryAdapter;
 import com.mandaptak.android.Adapter.QueryAdapter;
 import com.mandaptak.android.Layer.LayerImpl;
@@ -26,10 +21,7 @@ import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /*
  * MessageActivity.java
@@ -50,6 +42,7 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
     //When starting a new Conversation, we keep a list of all target participants. The Conversation
     // is only created when the first message is sent
     private ArrayList<String> mTargetParticipants;
+
     //Grab all the view objects on the message_screen layout when the Activity starts
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +55,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
         Button sendButton = (Button) findViewById(R.id.sendButton);
         if (sendButton != null)
             sendButton.setOnClickListener(this);
-
 
         //If the soft keyboard changes the size of the mMessagesView, we want to force the scroll to
         // the bottom of the view so the latest message is always displayed
@@ -183,7 +175,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
     public boolean onMessageLongClick(Message message) {
         return false;
     }
-
 
     //Handle the sendButtona nd Add/Remove Participants button (if displayed)
     public void onClick(View v) {

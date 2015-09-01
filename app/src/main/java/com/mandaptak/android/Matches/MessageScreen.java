@@ -1,6 +1,5 @@
 package com.mandaptak.android.Matches;
 
-
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -40,7 +39,6 @@ public class MessageScreen extends AppCompatActivity {
         messagesList = (AtlasMessagesList) findViewById(R.id.messageslist);
         messagesList.init(layerClient, Common.getIdentityProvider());
         messagesList.setConversation(conversation);
-
 
         participantPicker = (AtlasParticipantPicker) findViewById(R.id.participantpicker);
         String[] currentUser = {layerClient.getAuthenticatedUserId()};

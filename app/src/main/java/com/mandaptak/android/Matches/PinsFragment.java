@@ -29,7 +29,6 @@ public class PinsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
-    ParseObject profileObject;
     private View rootView;
     private Context context;
 

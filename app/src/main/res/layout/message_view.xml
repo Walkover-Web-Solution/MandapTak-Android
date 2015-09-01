@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:atlas="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              xmlns:atlas="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             atlas:myBubbleColor="@color/red_100"
             atlas:myTextColor="#444444"
             atlas:theirBubbleColor="#FFFFCC"
-            atlas:theirTextColor="#444444" />
+            atlas:theirTextColor="#444444"/>
 
         <com.layer.atlas.AtlasTypingIndicator
             android:id="@+id/typingindicator"
@@ -27,7 +27,7 @@
             android:id="@+id/participantpicker"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:visibility="gone"/>
 
     </FrameLayout>
 

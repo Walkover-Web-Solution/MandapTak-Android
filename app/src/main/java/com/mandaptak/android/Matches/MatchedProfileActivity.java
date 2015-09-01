@@ -175,7 +175,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
                                         }
                                     }
 
-
                                 }
 
                         }

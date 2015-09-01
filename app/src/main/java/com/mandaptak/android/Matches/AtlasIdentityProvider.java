@@ -35,7 +35,6 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     public AtlasIdentityProvider(Context context) {
         this.context = context;
 
-
     }
 
     @Override

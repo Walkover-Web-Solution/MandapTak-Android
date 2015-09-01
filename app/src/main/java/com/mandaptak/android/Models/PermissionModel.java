@@ -9,6 +9,7 @@ public class PermissionModel {
 
     public PermissionModel() {
     }
+
     public PermissionModel(String number, String relation, String date) {
         this.number = number;
         this.relation = relation;

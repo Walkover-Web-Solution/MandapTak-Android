@@ -1,14 +1,12 @@
 package com.mandaptak.android.Adapter;
 
 import android.content.Context;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;

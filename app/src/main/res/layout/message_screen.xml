@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="fill_parent"
@@ -20,7 +20,7 @@
                 class="android.support.v7.widget.RecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
+                android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
         <LinearLayout
@@ -33,7 +33,7 @@
             android:background="#ff615fff"
             android:measureWithLargestChild="false"
             android:minHeight="1dp"
-            android:orientation="vertical" />
+            android:orientation="vertical"/>
 
         <EditText
             android:id="@+id/textInput"
@@ -45,7 +45,7 @@
             android:layout_toLeftOf="@+id/sendButton"
             android:layout_toStartOf="@+id/sendButton"
             android:hint="Your Message..."
-            android:padding="12dp" />
+            android:padding="12dp"/>
 
         <Button
             android:id="@+id/sendButton"
@@ -57,7 +57,7 @@
             android:layout_alignParentRight="true"
             android:clickable="true"
             android:enabled="true"
-            android:text="Send" />
+            android:text="Send"/>
 
     </RelativeLayout>
 </LinearLayout>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:orientation="vertical">
 
     <com.mandaptak.android.Views.CircleImageView
         android:id="@+id/profile_image"
@@ -13,5 +13,5 @@
         android:clickable="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:src="@drawable/com_facebook_profile_picture_blank_portrait" />
+        android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>
 </FrameLayout>

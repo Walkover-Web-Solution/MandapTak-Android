@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
     android:id="@+id/rootLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:gravity="right"
@@ -28,7 +29,7 @@
             android:singleLine="false"
             android:text="My message here. My message here. My message here. My message here. My message here. My message here."
             android:textColor="#ff000000"
-            android:textSize="15dp" />
+            android:textSize="15dp"/>
 
         <TextView
             android:id="@+id/senderID"
@@ -37,7 +38,7 @@
             android:layout_gravity="right"
             android:text="John Doe"
             android:textAlignment="gravity"
-            android:textColor="#ff292929" />
+            android:textColor="#ff292929"/>
 
         <TextView
             android:id="@+id/sendTime"
@@ -47,6 +48,6 @@
             android:text="4:30pm"
             android:textAlignment="gravity"
             android:textColor="#ff000000"
-            android:textStyle="italic" />
+            android:textStyle="italic"/>
     </LinearLayout>
 </LinearLayout>

@@ -13,6 +13,7 @@ import com.layer.sdk.messaging.Conversation;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+
 public class ConversationFragment extends android.support.v4.app.Fragment {
     static public LayerClient layerClient;
     Common mApp;
@@ -39,7 +40,6 @@ public class ConversationFragment extends android.support.v4.app.Fragment {
             onUserAuthenticated();
         }
     }
-
 
     public void onUserAuthenticated() {
         myConversationList = (AtlasConversationsList) rootView.findViewById(R.id.conversationlist);

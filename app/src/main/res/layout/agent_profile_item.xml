@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:padding="16dp">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:padding="16dp">
 
     <ImageView
         android:id="@+id/thumbnail"
@@ -12,7 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/com_facebook_profile_picture_blank_square" />
+        android:src="@drawable/com_facebook_profile_picture_blank_square"/>
 
     <LinearLayout
         android:id="@+id/text_layout"
@@ -34,7 +34,7 @@
             android:gravity="bottom|start"
             android:singleLine="true"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/abc_text_size_medium_material" />
+            android:textSize="@dimen/abc_text_size_medium_material"/>
 
         <TextView
             android:id="@+id/create_date"
@@ -44,7 +44,7 @@
             android:gravity="bottom|start"
             android:singleLine="true"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
         <TextView
             android:id="@+id/status"
@@ -54,7 +54,7 @@
             android:gravity="bottom|start"
             android:singleLine="true"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
     </LinearLayout>
 
     <ImageView
@@ -66,5 +66,5 @@
         android:clickable="true"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        android:src="@drawable/ic_more_red" />
+        android:src="@drawable/ic_more_red"/>
 </RelativeLayout>

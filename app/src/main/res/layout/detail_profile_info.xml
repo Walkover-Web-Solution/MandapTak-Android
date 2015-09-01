@@ -1,6 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
             android:textCursorDrawable="@drawable/color_cursor"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
 
         <TextView
@@ -37,7 +37,7 @@
             android:singleLine="true"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
 
         <TextView
@@ -50,7 +50,7 @@
             android:padding="16dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
         <TextView
             android:id="@+id/caste"
@@ -62,7 +62,7 @@
             android:padding="16dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
 
         <TextView
@@ -75,7 +75,7 @@
             android:padding="16dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material" />
+            android:textSize="@dimen/abc_text_size_small_material"/>
 
 
         <LinearLayout
@@ -92,13 +92,13 @@
                 android:padding="16dp"
                 android:text="manglik "
                 android:textColor="@color/black_light"
-                android:textSize="@dimen/abc_text_size_small_material" />
+                android:textSize="@dimen/abc_text_size_small_material"/>
 
             <TextView
                 android:id="@+id/manglik"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"/>
 
         </LinearLayout>
 

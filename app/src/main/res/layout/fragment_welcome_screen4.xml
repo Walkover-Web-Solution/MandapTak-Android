@@ -1,12 +1,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
-        android:src="@drawable/screen5" />
+        android:src="@drawable/screen5"/>
 
     <ImageView
         android:id="@+id/icon"
@@ -16,7 +16,7 @@
         android:layout_centerHorizontal="true"
         android:layout_gravity="center|top"
         android:layout_marginTop="48dp"
-        android:src="@drawable/ic_icon_screen4" />
+        android:src="@drawable/ic_icon_screen4"/>
 
     <com.mandaptak.android.Views.TypefaceTextView
         android:id="@+id/title"
@@ -28,7 +28,7 @@
         android:text="See Matching Traits"
         android:textColor="@color/white"
         android:textSize="@dimen/abc_text_size_large_material"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <com.mandaptak.android.Views.TypefaceTextView
         android:layout_width="wrap_content"
@@ -41,5 +41,5 @@
         android:text="See the number of Traist out of 36\n matching for each profile you see"
         android:textColor="@color/white"
         android:textSize="@dimen/abc_text_size_small_material"
-        android:textStyle="normal" />
+        android:textStyle="normal"/>
 </RelativeLayout>

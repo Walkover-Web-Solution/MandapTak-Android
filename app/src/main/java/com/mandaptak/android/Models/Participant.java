@@ -24,14 +24,6 @@ public class Participant implements Atlas.Participant {
         this.userId = userId;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public void setAvatarImg(Bitmap avatarImg) {
         this.avatarImg = avatarImg;
     }
@@ -48,8 +40,16 @@ public class Participant implements Atlas.Participant {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
     public String getLastName() {
         return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     @Override

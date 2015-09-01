@@ -23,6 +23,10 @@
 /.gradle
 /twoWayViewCore/build
 /.idea
+/photoPick/build/tmp
+/photoPick/build/intermediates
+/photoPick/build/outputs
+/photoPick/build/generated
 /twoWayViewLayouts/build
 /slidingMenu/slidingMenu.iml
 /twoWayViewCore/gradle.properties

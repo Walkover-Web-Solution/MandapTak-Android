@@ -104,15 +104,17 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
      */
     private ArrayList<MessageData> messagesOrder = new ArrayList<AtlasMessagesList.MessageData>();
     /**
-     *  Collects ids of messages that was changed to rebuild cells at next {@link #updateValues()} <p>
+     * Collects ids of messages that was changed to rebuild cells at next {@link #updateValues()} <p>
      * (see {@link #onEventMainThread(LayerChangeEvent)}
-     * */
+     */
     private HashSet<Uri> messagesToUpdate = new HashSet<Uri>();
     /**
      * Cells to render messages (generated in {@link #updateValues()}
      */
     private ArrayList<Cell> cells = new ArrayList<Cell>();
-    /** Where cells comes from */
+    /**
+     * Where cells comes from
+     */
     private CellFactory cellFactory;
     private LayerClient client;
     private Conversation conv;
@@ -133,7 +135,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     private int dateTextColor;
     private int avatarTextColor;
     private int avatarBackgroundColor;
-    private Bitmap maskSingleBmp = Bitmap.createBitmap((int)Tools.getPxFromDp(24, getContext()), (int)Tools.getPxFromDp(24, getContext()), Config.ARGB_8888);
+    private Bitmap maskSingleBmp = Bitmap.createBitmap((int) Tools.getPxFromDp(24, getContext()), (int) Tools.getPxFromDp(24, getContext()), Config.ARGB_8888);
     private Paint avatarPaint = new Paint();
     private Paint maskPaint = new Paint();
     private long messageUpdateSentAt = 0;
@@ -166,27 +168,33 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         setupPaints();
     }
-    
+
     public AtlasMessagesList(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
-    
+
     public AtlasMessagesList(Context context) {
         super(context);
         this.timeFormat = android.text.format.DateFormat.getTimeFormat(context);
         setupPaints();
     }
 
-    /** Setup with {@link Atlas.DefaultCellFactory}  */
+    /**
+     * Setup with {@link Atlas.DefaultCellFactory}
+     */
     public void init(final LayerClient layerClient, final Atlas.ParticipantProvider participantProvider) {
         init(layerClient, participantProvider, new Atlas.DefaultCellFactory(this));
     }
-    
-    /** @param cellFactory - use or extend {@link DefaultCellFactory} to get basic cells support */
+
+    /**
+     * @param cellFactory - use or extend {@link DefaultCellFactory} to get basic cells support
+     */
     public void init(final LayerClient layerClient, final Atlas.ParticipantProvider participantProvider, CellFactory cellFactory) {
         if (layerClient == null) throw new IllegalArgumentException("LayerClient cannot be null");
-        if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
-        if (messagesList != null) throw new IllegalStateException("AtlasMessagesList is already initialized!");
+        if (participantProvider == null)
+            throw new IllegalArgumentException("ParticipantProvider cannot be null");
+        if (messagesList != null)
+            throw new IllegalStateException("AtlasMessagesList is already initialized!");
 
         this.client = layerClient;
         this.cellFactory = cellFactory;
@@ -381,22 +389,22 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         Canvas maskSingleCanvas = new Canvas(maskSingleBmp);
         maskSingleCanvas.drawCircle(0.5f * maskSingleBmp.getWidth(), 0.5f * maskSingleBmp.getHeight(), 0.5f * maskSingleBmp.getWidth(), paintCircle);
     }
-    
+
     public void parseStyle(Context context, AttributeSet attrs, int defStyle) {
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasMessageList, R.attr.AtlasMessageList, defStyle);
         this.myTextColor = ta.getColor(R.styleable.AtlasMessageList_myTextColor, context.getResources().getColor(R.color.atlas_text_black));
         this.myTextStyle = ta.getInt(R.styleable.AtlasMessageList_myTextStyle, Typeface.NORMAL);
         String myTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_myTextTypeface);
-        this.myTextTypeface  = myTextTypefaceName != null ? Typeface.create(myTextTypefaceName, myTextStyle) : null;
+        this.myTextTypeface = myTextTypefaceName != null ? Typeface.create(myTextTypefaceName, myTextStyle) : null;
         //this.myTextSize = ta.getDimension(R.styleable.AtlasMessageList_myTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
 
         this.otherTextColor = ta.getColor(R.styleable.AtlasMessageList_theirTextColor, context.getResources().getColor(R.color.atlas_text_black));
         this.otherTextStyle = ta.getInt(R.styleable.AtlasMessageList_theirTextStyle, Typeface.NORMAL);
         String otherTextTypefaceName = ta.getString(R.styleable.AtlasMessageList_theirTextTypeface);
-        this.otherTextTypeface  = otherTextTypefaceName != null ? Typeface.create(otherTextTypefaceName, otherTextStyle) : null;
+        this.otherTextTypeface = otherTextTypefaceName != null ? Typeface.create(otherTextTypefaceName, otherTextStyle) : null;
         //this.otherTextSize = ta.getDimension(R.styleable.AtlasMessageList_theirTextSize, context.getResources().getDimension(R.dimen.atlas_text_size_general));
 
-        this.myBubbleColor  = ta.getColor(R.styleable.AtlasMessageList_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
+        this.myBubbleColor = ta.getColor(R.styleable.AtlasMessageList_myBubbleColor, context.getResources().getColor(R.color.atlas_bubble_blue));
         this.otherBubbleColor = ta.getColor(R.styleable.AtlasMessageList_theirBubbleColor, context.getResources().getColor(R.color.atlas_background_gray));
 
         this.dateTextColor = ta.getColor(R.styleable.AtlasMessageList_dateTextColor, context.getResources().getColor(R.color.atlas_text_gray));
@@ -404,7 +412,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         this.avatarBackgroundColor = ta.getColor(R.styleable.AtlasMessageList_avatarBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
         ta.recycle();
     }
-    
+
     private void applyStyle() {
         messagesAdapter.notifyDataSetChanged();
     }
@@ -412,7 +420,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     protected void buildCellForMessage(Message msg, List<Cell> result) {
         cellFactory.buildCellForMessage(msg, result);
     }
-    
+
     public void updateValues() {
         long started = System.currentTimeMillis();
 
@@ -432,15 +440,17 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             this.participants.clear();
             this.messagesAdapter.notifyDataSetChanged();
             return;
-        };
+        }
+        ;
 
         // check last message is added
         boolean jumpToTheEnd = false;
         Uri lastMessageId = msgIds.get(msgIds.size() - 1);
-        if ( ! messagesData.containsKey(lastMessageId) ) {
+        if (!messagesData.containsKey(lastMessageId)) {
             jumpToTheEnd = true;
         }
-        if (debug) Log.w(TAG, "updateValues() jump: " + jumpToTheEnd + ", lastMessage: " + lastMessageId);
+        if (debug)
+            Log.w(TAG, "updateValues() jump: " + jumpToTheEnd + ", lastMessage: " + lastMessageId);
 
         // consider each cached messageData to remove
         HashSet<Uri> ids2Delete = new HashSet<Uri>(messagesData.keySet());
@@ -467,7 +477,8 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         // remove all cached messages that absents in current query results
         messagesData.keySet().removeAll(ids2Delete);
         messagesToUpdate.clear();
-        if (debug) Log.w(TAG, "updateValues() change applied in: " + (System.currentTimeMillis() - started) + " ms, messageData removed: " + ids2Delete.size());
+        if (debug)
+            Log.w(TAG, "updateValues() change applied in: " + (System.currentTimeMillis() - started) + " ms, messageData removed: " + ids2Delete.size());
 
         // rebuild participants list (for conv - pick from conversation, from query - scan for everyone)
         participants.clear();
@@ -517,10 +528,9 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                 cell.firstUserMsg = true;
                 if (i > 0) cells.get(i - 1).lastUserMsg = true;
             }
-            if (i > 0 && cells.get(i -1).noDecorations) {
+            if (i > 0 && cells.get(i - 1).noDecorations) {
                 cell.lastUserMsg = true;
             }
-
 
             // check time header is needed
             if (sentAt.getTime() - lastMessageTime > oneHourSpan) {
@@ -544,12 +554,13 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         cells.get(cells.size() - 1).lastUserMsg = true; // last one is always a last message from user
         cells.get(cells.size() - 1).clusterTail = true; // last one is always a tail
 
-        if (debug) Log.d(TAG, "updateValues() parts finished in: " + (System.currentTimeMillis() - started) + " ms");
+        if (debug)
+            Log.d(TAG, "updateValues() parts finished in: " + (System.currentTimeMillis() - started) + " ms");
         messagesAdapter.notifyDataSetChanged();
 
         if (jumpToTheEnd) jumpToLastMessage();
     }
-    
+
     private boolean updateDeliveryStatus(List<MessageData> messagesData) {
         if (debug) Log.w(TAG, "updateDeliveryStatus() checking messages:   " + messagesData.size());
         Message oldLatestDeliveredMessage = latestDeliveredMessage;
@@ -561,7 +572,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         for (MessageData msgData : messagesData) {
             // only our messages
             Message message = msgData.msg;
-            if (client.getAuthenticatedUserId().equals(message.getSender().getUserId())){
+            if (client.getAuthenticatedUserId().equals(message.getSender().getUserId())) {
                 if (!message.isSent()) continue;
                 Map<String, RecipientStatus> statuses = message.getRecipientStatus();
                 if (statuses == null || statuses.size() == 0) continue;
@@ -581,32 +592,36 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             }
         }
         boolean changed = false;
-        if      (oldLatestDeliveredMessage == null && latestDeliveredMessage != null) changed = true;
+        if (oldLatestDeliveredMessage == null && latestDeliveredMessage != null) changed = true;
         else if (oldLatestDeliveredMessage != null && latestDeliveredMessage == null)
             changed = true;
         else if (oldLatestDeliveredMessage != null && latestDeliveredMessage != null
-                && !oldLatestDeliveredMessage.getId().equals(latestDeliveredMessage.getId())) changed = true;
+                && !oldLatestDeliveredMessage.getId().equals(latestDeliveredMessage.getId()))
+            changed = true;
 
-        if      (oldLatestReadMessage == null && latestReadMessage != null) changed = true;
+        if (oldLatestReadMessage == null && latestReadMessage != null) changed = true;
         else if (oldLatestReadMessage != null && latestReadMessage == null) changed = true;
         else if (oldLatestReadMessage != null && latestReadMessage != null
                 && !oldLatestReadMessage.getId().equals(latestReadMessage.getId())) changed = true;
 
-        if (debug) Log.w(TAG, "updateDeliveryStatus() read status changed: " + (changed ? "yes" : "no"));
-        if (debug) Log.w(TAG, "updateDeliveryStatus() latestRead:          " + (latestReadMessage != null ? latestReadMessage.getSentAt() + ", id: " + latestReadMessage.getId() : "null"));
-        if (debug) Log.w(TAG, "updateDeliveryStatus() latestDelivered:     " + (latestDeliveredMessage != null ? latestDeliveredMessage.getSentAt()+ ", id: " + latestDeliveredMessage.getId() : "null"));
+        if (debug)
+            Log.w(TAG, "updateDeliveryStatus() read status changed: " + (changed ? "yes" : "no"));
+        if (debug)
+            Log.w(TAG, "updateDeliveryStatus() latestRead:          " + (latestReadMessage != null ? latestReadMessage.getSentAt() + ", id: " + latestReadMessage.getId() : "null"));
+        if (debug)
+            Log.w(TAG, "updateDeliveryStatus() latestDelivered:     " + (latestDeliveredMessage != null ? latestDeliveredMessage.getSentAt() + ", id: " + latestDeliveredMessage.getId() : "null"));
 
         return changed;
     }
-    
+
     @Override
     public void onEventMainThread(LayerChangeEvent event) {
         boolean updateValues = false;
         boolean jumpToBottom = false;
         boolean updateDeliveryStatus = false;
-        
+
         for (LayerChange change : event.getChanges()) {
-            
+
             if (change.getObjectType() == LayerObject.Type.MESSAGE) {
                 Message msg = (Message) change.getObject();
                 messagesToUpdate.add(msg.getId());
@@ -614,46 +629,46 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                 MessagePart part = (MessagePart) change.getObject();
                 messagesToUpdate.add(part.getMessage().getId());
             }
-            
+
             if (query != null) {
                 updateValues = true;
-                
+
             } else if (conv != null) {
                 if (change.getObjectType() == LayerObject.Type.MESSAGE) {
                     Message msg = (Message) change.getObject();
-                    if ( ! msg.getConversation().getId().equals(conv.getId())) continue;
-                    
+                    if (!msg.getConversation().getId().equals(conv.getId())) continue;
+
                     if (change.getChangeType() == Type.UPDATE && "recipientStatus".equals(change.getAttributeName())) {
                         updateDeliveryStatus = true;
                     }
-                    
+
                     if (change.getChangeType() == Type.DELETE || change.getChangeType() == Type.INSERT) {
                         updateValues = true;
                         jumpToBottom = true;
                     }
                 }
-            }  
+            }
         }
-        
+
         if (updateValues || updateDeliveryStatus) {
             requestRefreshValues(updateValues, jumpToBottom);
         }
     }
-    
+
     public void requestRefreshValues(boolean updateValues, boolean jumpToBottom) {
         if (messageUpdateSentAt == 0) messageUpdateSentAt = System.currentTimeMillis();
         refreshHandler.removeMessages(MESSAGE_TYPE_UPDATE_VALUES);
         final android.os.Message message = refreshHandler.obtainMessage();
         message.arg1 = updateValues ? MESSAGE_REFRESH_UPDATE_ALL : MESSAGE_REFRESH_UPDATE_DELIVERY;
-        message.arg2 = jumpToBottom ? 1 : 0; 
-        message.obj  = client;
+        message.arg2 = jumpToBottom ? 1 : 0;
+        message.obj = client;
         refreshHandler.sendMessage(message);
     }
-    
+
     public void requestRefresh() {
         messagesList.post(INVALIDATE_VIEW);
     }
-    
+
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
@@ -663,11 +678,11 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         messagesAdapter.notifyDataSetChanged();
         messagesList.removeAllViewsInLayout();
     }
-    
+
     public void jumpToLastMessage() {
         messagesList.smoothScrollToPosition(cells.size() - 1);
     }
-    
+
     public Conversation getConversation() {
         return conv;
     }
@@ -681,7 +696,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
 
     public void setQuery(Query<Message> query) {
         // check
-        if ( ! Message.class.equals(query.getQueryClass())) {
+        if (!Message.class.equals(query.getQueryClass())) {
             throw new IllegalArgumentException("Query must return Message object. Actual class: " + query.getQueryClass());
         }
         //
@@ -690,12 +705,13 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         updateValues();
         jumpToLastMessage();
     }
-    
+
     public LayerClient getLayerClient() {
-        if (client == null) throw new IllegalStateException("AtlasMessagesList has not been initialized yet. Please call .init() first");
+        if (client == null)
+            throw new IllegalStateException("AtlasMessagesList has not been initialized yet. Please call .init() first");
         return client;
     }
-    
+
     public void setItemClickListener(ItemClickListener clickListener) {
         this.clickListener = clickListener;
     }
@@ -707,18 +723,21 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
     public static abstract class CellFactory {
         public abstract void buildCellForMessage(Message msg, List<Cell> result);
     }
-    
-    /** Cells per message container */
+
+    /**
+     * Cells per message container
+     */
     private static class MessageData {
         final Message msg;
         final List<Cell> cells;
+
         public MessageData(Message msg) {
             if (msg == null) throw new IllegalArgumentException("Message cannot be null");
             this.msg = msg;
             this.cells = new ArrayList<Cell>();
         }
     }
-    
+
     public static class TextCell extends Cell {
 
         protected String text;
@@ -770,7 +789,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                         textMy.setBackgroundResource(R.drawable.atlas_shape_rounded16_blue_no_right);
                     }
                 }
-                ((GradientDrawable)textMy.getBackground()).setColor(messagesList.myBubbleColor);
+                ((GradientDrawable) textMy.getBackground()).setColor(messagesList.myBubbleColor);
                 textMy.setTextColor(messagesList.myTextColor);
                 //textMy.setTextSize(TypedValue.COMPLEX_UNIT_DIP, myTextSize);
                 textMy.setTypeface(messagesList.myTextTypeface, messagesList.myTextStyle);
@@ -789,7 +808,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
                         textOther.setBackgroundResource(R.drawable.atlas_shape_rounded16_gray_no_left);
                     }
                 }
-                ((GradientDrawable)textOther.getBackground()).setColor(messagesList.otherBubbleColor);
+                ((GradientDrawable) textOther.getBackground()).setColor(messagesList.otherBubbleColor);
                 textOther.setTextColor(messagesList.otherTextColor);
                 //textOther.setTextSize(TypedValue.COMPLEX_UNIT_DIP, otherTextSize);
                 textOther.setTypeface(messagesList.otherTextTypeface, messagesList.otherTextStyle);
@@ -797,7 +816,7 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
             return cellText;
         }
     }
-    
+
     public static abstract class Cell {
         public final MessagePart messagePart;
         protected int clusterHeadItemId;
@@ -805,12 +824,18 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         protected boolean clusterTail;
         private boolean timeHeader;
 
-        /** if true, than previous message was from different user*/
+        /**
+         * if true, than previous message was from different user
+         */
         private boolean firstUserMsg;
-        /** if true, than next message is from different user */
+        /**
+         * if true, than next message is from different user
+         */
         private boolean lastUserMsg;
 
-        /** don't move left and right */
+        /**
+         * don't move left and right
+         */
         private boolean noDecorations;
 
         public Cell(MessagePart messagePart) {
@@ -826,18 +851,18 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
         public String toString() {
             StringBuilder builder = new StringBuilder();
             builder.append("[ ")
-                .append("messagePart: ").append(messagePart.getMimeType())
-                .append(": ").append(messagePart.getSize() < 2048 ? new String(messagePart.getData()) : messagePart.getSize() + " bytes" )
-                .append(", clusterId: ").append(clusterHeadItemId)
-                .append(", clusterItem: ").append(clusterItemId)
-                .append(", clusterTail: ").append(clusterTail)
-                .append(", timeHeader: ").append(timeHeader).append(" ]");
+                    .append("messagePart: ").append(messagePart.getMimeType())
+                    .append(": ").append(messagePart.getSize() < 2048 ? new String(messagePart.getData()) : messagePart.getSize() + " bytes")
+                    .append(", clusterId: ").append(clusterHeadItemId)
+                    .append(", clusterItem: ").append(clusterItemId)
+                    .append(", clusterTail: ").append(clusterTail)
+                    .append(", timeHeader: ").append(timeHeader).append(" ]");
             return builder.toString();
         }
 
         private void reset() {
             clusterHeadItemId = 0;
-            clusterItemId     = 0;
+            clusterItemId = 0;
             clusterTail = false;
             timeHeader = false;
             firstUserMsg = false;
@@ -846,14 +871,14 @@ public class AtlasMessagesList extends FrameLayout implements LayerChangeEventLi
 
         /**
          * Start with inflating your own cell.xml
-        <pre>
-            View rootView = Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_image);
-         if (rootView == null) {
-         rootView = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_image, cellContainer, false);
-            }
-            // ...
-            return rootView;
-        </pre>
+         * <pre>
+         * View rootView = Tools.findChildById(cellContainer, R.id.atlas_view_messages_cell_image);
+         * if (rootView == null) {
+         * rootView = LayoutInflater.from(cellContainer.getContext()).inflate(R.layout.atlas_view_messages_cell_image, cellContainer, false);
+         * }
+         * // ...
+         * return rootView;
+         * </pre>
          */
         public abstract View onBind(ViewGroup cellContainer);
     }

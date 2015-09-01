@@ -15,33 +15,6 @@
  */
 package com.layer.atlas;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -70,17 +43,40 @@ import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.messaging.MessagePart;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Oleg Orlov
  * @since 12 May 2015
  */
 public class Atlas {
-    
-    private static final String TAG = Atlas.class.getSimpleName();
-    private static final boolean debug = false;
 
     public static final String METADATA_KEY_CONVERSATION_TITLE = "conversationName";
-    
     public static final String MIME_TYPE_ATLAS_LOCATION = "location/coordinate";
     public static final String MIME_TYPE_TEXT = "text/plain";
     public static final String MIME_TYPE_IMAGE_JPEG = "image/jpeg";
@@ -90,10 +86,10 @@ public class Atlas {
     public static final String MIME_TYPE_IMAGE_GIF = "image/gif";
     public static final String MIME_TYPE_IMAGE_GIF_PREVIEW = "image/gif+preview";
     public static final String MIME_TYPE_IMAGE_DIMENSIONS = "application/json+imageSize";
-
     public static final ImageLoader imageLoader = new ImageLoader();
-
     public static final Atlas.DownloadQueue downloadQueue = new DownloadQueue();
+    private static final String TAG = Atlas.class.getSimpleName();
+    private static final boolean debug = false;
 
     public static String getInitials(Participant p) {
         StringBuilder sb = new StringBuilder();
@@ -118,7 +114,7 @@ public class Atlas {
         StringBuilder sb = new StringBuilder();
         if (p.getFirstName() != null && p.getFirstName().trim().length() > 0) {
             sb.append(p.getFirstName().trim());
-    }
+        }
         if (p.getLastName() != null && p.getLastName().trim().length() > 0) {
             sb.append(" ").append(p.getLastName().trim());
         }
@@ -135,7 +131,8 @@ public class Atlas {
 
     public static String getTitle(Conversation conversation, ParticipantProvider provider, String userId) {
         String conversationTitle = getTitle(conversation);
-        if (conversationTitle != null && conversationTitle.trim().length() > 0) return conversationTitle.trim();
+        if (conversationTitle != null && conversationTitle.trim().length() > 0)
+            return conversationTitle.trim();
 
         StringBuilder sb = new StringBuilder();
         for (String participantId : conversation.getParticipants()) {
@@ -151,7 +148,7 @@ public class Atlas {
 
     /**
      * @param imageFile   - to create a preview of
-     * @param layerClient - required to create {@link MessagePart} 
+     * @param layerClient - required to create {@link MessagePart}
      * @param tempDir     - required to store preview file until it is picked by LayerClient
      * @return MessagePart[] {previewBytes, json_with_dimensions} or null if preview cannot be built
      */
@@ -160,14 +157,16 @@ public class Atlas {
         if (layerClient == null) throw new IllegalArgumentException("layerClient cannot be null");
         if (tempDir == null) throw new IllegalArgumentException("tempDir cannot be null");
         if (!tempDir.exists()) throw new IllegalArgumentException("tempDir doesn't exist");
-        if (!tempDir.isDirectory()) throw new IllegalArgumentException("tempDir must be a directory");
-        
+        if (!tempDir.isDirectory())
+            throw new IllegalArgumentException("tempDir must be a directory");
+
         // prepare preview
         BitmapFactory.Options optOriginal = new BitmapFactory.Options();
         optOriginal.inJustDecodeBounds = true;
         //BitmapFactory.decodeFile(photoFile.getAbsolutePath(), optOriginal);
         BitmapFactory.decodeStream(new FileInputStream(imageFile), null, optOriginal);
-        if (debug) Log.w(TAG, "buildPreviewAndSize() original: " + optOriginal.outWidth + "x" + optOriginal.outHeight);
+        if (debug)
+            Log.w(TAG, "buildPreviewAndSize() original: " + optOriginal.outWidth + "x" + optOriginal.outHeight);
         int previewWidthMax = 512;
         int previewHeightMax = 512;
         int previewWidth;
@@ -177,41 +176,47 @@ public class Atlas {
             sampleSize = optOriginal.outWidth / previewWidthMax;
             previewWidth = previewWidthMax;
             previewHeight = (int) (1.0 * previewWidth * optOriginal.outHeight / optOriginal.outWidth);
-            if (debug) Log.w(TAG, "buildPreviewAndSize() sampleSize: " + sampleSize + ", orig: " + optOriginal.outWidth + "x" + optOriginal.outHeight + ", preview: " + previewWidth + "x" + previewHeight);
+            if (debug)
+                Log.w(TAG, "buildPreviewAndSize() sampleSize: " + sampleSize + ", orig: " + optOriginal.outWidth + "x" + optOriginal.outHeight + ", preview: " + previewWidth + "x" + previewHeight);
         } else {
             sampleSize = optOriginal.outHeight / previewHeightMax;
             previewHeight = previewHeightMax;
             previewWidth = (int) (1.0 * previewHeight * optOriginal.outWidth / optOriginal.outHeight);
-            if (debug) Log.w(TAG, "buildPreviewAndSize() sampleSize: " + sampleSize + ", orig: " + optOriginal.outWidth + "x" + optOriginal.outHeight + ", preview: " + previewWidth + "x" + previewHeight);
+            if (debug)
+                Log.w(TAG, "buildPreviewAndSize() sampleSize: " + sampleSize + ", orig: " + optOriginal.outWidth + "x" + optOriginal.outHeight + ", preview: " + previewWidth + "x" + previewHeight);
         }
-        
+
         BitmapFactory.Options optsPreview = new BitmapFactory.Options();
         optsPreview.inSampleSize = sampleSize;
         //Bitmap decodedBmp = BitmapFactory.decodeFile(photoFile.getAbsolutePath(), optsPreview);
         Bitmap decodedBmp = BitmapFactory.decodeStream(new FileInputStream(imageFile), null, optsPreview);
         if (decodedBmp == null) {
-            if (debug) Log.w(TAG, "buildPreviewAndSize() taking photo, but photo file cannot be decoded: " + imageFile.getPath());
+            if (debug)
+                Log.w(TAG, "buildPreviewAndSize() taking photo, but photo file cannot be decoded: " + imageFile.getPath());
             return null;
         }
-        if (debug) Log.w(TAG, "buildPreviewAndSize() decoded bitmap: " + decodedBmp.getWidth() + "x" + decodedBmp.getHeight() + ", " + decodedBmp.getByteCount() + " bytes ");
+        if (debug)
+            Log.w(TAG, "buildPreviewAndSize() decoded bitmap: " + decodedBmp.getWidth() + "x" + decodedBmp.getHeight() + ", " + decodedBmp.getByteCount() + " bytes ");
         Bitmap bmp = Bitmap.createScaledBitmap(decodedBmp, previewWidth, previewHeight, false);
-        if (debug) Log.w(TAG, "buildPreviewAndSize() preview bitmap: " + bmp.getWidth() + "x" + bmp.getHeight() + ", " + bmp.getByteCount() + " bytes ");
-        
+        if (debug)
+            Log.w(TAG, "buildPreviewAndSize() preview bitmap: " + bmp.getWidth() + "x" + bmp.getHeight() + ", " + bmp.getByteCount() + " bytes ");
+
         String fileName = "atlasPreview" + System.currentTimeMillis() + ".jpg";
-        final File previewFile = new File(tempDir, fileName); 
+        final File previewFile = new File(tempDir, fileName);
         FileOutputStream fos = new FileOutputStream(previewFile);
         bmp.compress(Bitmap.CompressFormat.JPEG, 50, fos);
         fos.close();
-        
+
         FileInputStream fisPreview = new FileInputStream(previewFile) {
             public void close() throws IOException {
                 super.close();
                 boolean deleted = previewFile.delete();
-                if (debug) Log.w(TAG, "buildPreviewAndSize() preview file is" + (!deleted ? " not" : "") + " removed: " + previewFile.getName());
+                if (debug)
+                    Log.w(TAG, "buildPreviewAndSize() preview file is" + (!deleted ? " not" : "") + " removed: " + previewFile.getName());
             }
         };
         final MessagePart previewPart = layerClient.newMessagePart(MIME_TYPE_IMAGE_JPEG_PREVIEW, fisPreview, previewFile.length());
-        
+
         // prepare dimensions
         JSONObject joDimensions = new JSONObject();
         try {
@@ -222,14 +227,16 @@ public class Atlas {
             throw new IllegalStateException("Cannot create JSON Object", e);
         }
         if (debug) Log.w(TAG, "buildPreviewAndSize() dimensions: " + joDimensions);
-        final MessagePart dimensionsPart = layerClient.newMessagePart(MIME_TYPE_IMAGE_DIMENSIONS, joDimensions.toString().getBytes() );
-        MessagePart[] previewAndSize = new MessagePart[] {previewPart, dimensionsPart};
+        final MessagePart dimensionsPart = layerClient.newMessagePart(MIME_TYPE_IMAGE_DIMENSIONS, joDimensions.toString().getBytes());
+        MessagePart[] previewAndSize = new MessagePart[]{previewPart, dimensionsPart};
         return previewAndSize;
     }
 
-    /** @return if Today: time. If Yesterday: "Yesterday", if within one week: day of week, otherwise: dateFormat.format() */
+    /**
+     * @return if Today: time. If Yesterday: "Yesterday", if within one week: day of week, otherwise: dateFormat.format()
+     */
     public static String formatTimeShort(Date dateTime, DateFormat timeFormat, DateFormat dateFormat) {
-    
+
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -237,13 +244,13 @@ public class Atlas {
         long todayMidnight = cal.getTimeInMillis();
         long yesterMidnight = todayMidnight - Tools.TIME_HOURS_24;
         long weekAgoMidnight = todayMidnight - Tools.TIME_HOURS_24 * 7;
-        
+
         String timeText = null;
         if (dateTime.getTime() > todayMidnight) {
-            timeText = timeFormat.format(dateTime.getTime()); 
+            timeText = timeFormat.format(dateTime.getTime());
         } else if (dateTime.getTime() > yesterMidnight) {
             timeText = "Yesterday";
-        } else if (dateTime.getTime() > weekAgoMidnight){
+        } else if (dateTime.getTime() > weekAgoMidnight) {
             cal.setTime(dateTime);
             timeText = Tools.TIME_WEEKDAYS_NAMES[cal.get(Calendar.DAY_OF_WEEK) - 1];
         } else {
@@ -252,7 +259,9 @@ public class Atlas {
         return timeText;
     }
 
-    /** Today, Yesterday, Weekday or Weekday + date */
+    /**
+     * Today, Yesterday, Weekday or Weekday + date
+     */
     public static String formatTimeDay(Date sentAt) {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -261,10 +270,10 @@ public class Atlas {
         long todayMidnight = cal.getTimeInMillis();
         long yesterMidnight = todayMidnight - Tools.TIME_HOURS_24;
         long weekAgoMidnight = todayMidnight - Tools.TIME_HOURS_24 * 7;
-        
+
         String timeBarDayText = null;
         if (sentAt.getTime() > todayMidnight) {
-            timeBarDayText = "Today"; 
+            timeBarDayText = "Today";
         } else if (sentAt.getTime() > yesterMidnight) {
             timeBarDayText = "Yesterday";
         } else if (sentAt.getTime() > weekAgoMidnight) {
@@ -276,22 +285,85 @@ public class Atlas {
         return timeBarDayText;
     }
 
+    /**
+     * Participant allows Atlas classes to display information about users, like Message senders,
+     * Conversation participants, TypingIndicator users, etc.
+     */
+    public interface Participant {
+        public static Comparator<Participant> COMPARATOR = new FilteringComparator("");
+
+        /**
+         * Returns the first name of this Participant.
+         *
+         * @return The first name of this Participant
+         */
+        String getFirstName();
+
+        /**
+         * Returns the last name of this Participant.
+         *
+         * @return The last name of this Participant
+         */
+        String getLastName();
+
+        /**
+         * Returns drawable to be used as paprticipant's avatar in Atlas Views.
+         * If undefined, initials would be used instead.
+         *
+         * @return drawable, or null
+         */
+        Drawable getAvatarDrawable();
+    }
+
+    /**
+     * ParticipantProvider provides Atlas classes with Participant data.
+     */
+    public interface ParticipantProvider {
+        /**
+         * Returns a map of all Participants by their unique ID who match the provided `filter`, or
+         * all Participants if `filter` is `null`.  If `result` is provided, it is operated on and
+         * returned.  If `result` is `null`, a new Map is created and returned.
+         *
+         * @param filter The filter to apply to Participants
+         * @param result The Map to operate on
+         * @return A Map of all matching Participants keyed by ID.
+         */
+        Map<String, Participant> getParticipants(String filter, Map<String, Participant> result);
+
+        /**
+         * Returns the Participant with the given ID, or `null` if the participant is not yet
+         * available.
+         *
+         * @return The Participant with the given ID, or `null` if not available.
+         */
+        Atlas.Participant getParticipant(String userId);
+    }
+
     public static final class Tools {
-        /** Millis in 24 Hours */
+        /**
+         * Millis in 24 Hours
+         */
         public static final int TIME_HOURS_24 = 24 * 60 * 60 * 1000;
         // TODO: localization required to all time based constants below
-        public static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a"); 
+        public static final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm a");
         public static final SimpleDateFormat sdfDayOfWeek = new SimpleDateFormat("EEE, LLL dd,");
-        /** Ensure you decrease value returned by Calendar.get(Calendar.DAY_OF_WEEK) by 1. Calendar's days starts from 1. */
-        public static final String[] TIME_WEEKDAYS_NAMES = new String[] {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        public static final BitmapDrawable EMPTY_DRAWABLE = new BitmapDrawable(Bitmap.createBitmap(new int[] { Color.TRANSPARENT }, 1, 1, Bitmap.Config.ALPHA_8));
-        
+        /**
+         * Ensure you decrease value returned by Calendar.get(Calendar.DAY_OF_WEEK) by 1. Calendar's days starts from 1.
+         */
+        public static final String[] TIME_WEEKDAYS_NAMES = new String[]{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+        public static final BitmapDrawable EMPTY_DRAWABLE = new BitmapDrawable(Bitmap.createBitmap(new int[]{Color.TRANSPARENT}, 1, 1, Bitmap.Config.ALPHA_8));
+        /**
+         * Window flags for translucency are available on Android 5.0+
+         */
+        public static final int FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS = 0x80000000;
+        public static final int FLAG_TRANSLUCENT_STATUS = 0x04000000;
+
         public static String toString(Message msg) {
             StringBuilder sb = new StringBuilder();
             for (MessagePart mp : msg.getMessageParts()) {
                 if (MIME_TYPE_TEXT.equals(mp.getMimeType())) {
                     sb.append(new String(mp.getData()));
-                } else if (MIME_TYPE_ATLAS_LOCATION.equals(mp.getMimeType())){
+                } else if (MIME_TYPE_ATLAS_LOCATION.equals(mp.getMimeType())) {
                     sb.append("Attachment: Location");
                 } else {
                     sb.append("Attachment: Image");
@@ -303,31 +375,43 @@ public class Atlas {
 
         public static String toString(MotionEvent event) {
             StringBuilder sb = new StringBuilder();
-            
+
             sb.append("action: ");
             switch (event.getAction() & MotionEvent.ACTION_MASK) {
-                case MotionEvent.ACTION_DOWN    : sb.append("DOWN"); break; 
-                case MotionEvent.ACTION_UP      : sb.append("UP  "); break; 
-                case MotionEvent.ACTION_MOVE    : sb.append("MOVE"); break; 
-                case MotionEvent.ACTION_CANCEL  : sb.append("CANCEL"); break; 
-                case MotionEvent.ACTION_SCROLL  : sb.append("SCROLL"); break; 
-                case MotionEvent.ACTION_POINTER_UP     : {
-                    sb.append("ACTION_POINTER_UP"); 
+                case MotionEvent.ACTION_DOWN:
+                    sb.append("DOWN");
+                    break;
+                case MotionEvent.ACTION_UP:
+                    sb.append("UP  ");
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    sb.append("MOVE");
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    sb.append("CANCEL");
+                    break;
+                case MotionEvent.ACTION_SCROLL:
+                    sb.append("SCROLL");
+                    break;
+                case MotionEvent.ACTION_POINTER_UP: {
+                    sb.append("ACTION_POINTER_UP");
                     final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                     sb.append(" pointer: ").append(pointerIndex);
-                    break; 
+                    break;
                 }
-                case MotionEvent.ACTION_POINTER_DOWN   : {
-                    sb.append("ACTION_POINTER_DOWN");  
+                case MotionEvent.ACTION_POINTER_DOWN: {
+                    sb.append("ACTION_POINTER_DOWN");
                     final int pointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
                     sb.append(" pointer: ").append(pointerIndex);
-                    break; 
+                    break;
                 }
-                default                         : sb.append(event.getAction()); break; 
+                default:
+                    sb.append(event.getAction());
+                    break;
             }
             sb.append(", pts: [");
             for (int i = 0; i < event.getPointerCount(); i++) {
-                sb.append(i > 0 ? ", ":"");
+                sb.append(i > 0 ? ", " : "");
                 sb.append(i).append(": ").append(String.format("%.1fx%.1f", event.getX(i), event.getY(i)));
             }
             sb.append("]");
@@ -340,22 +424,23 @@ public class Atlas {
         }
 
         public static float[] getRoundRectRadii(float[] cornerRadiusDp, final DisplayMetrics displayMetrics, float[] result) {
-            if (result.length < cornerRadiusDp.length * 2) throw new IllegalArgumentException("result[] is shorter than required. result: " + result.length + ", required: " + cornerRadiusDp.length * 2);
+            if (result.length < cornerRadiusDp.length * 2)
+                throw new IllegalArgumentException("result[] is shorter than required. result: " + result.length + ", required: " + cornerRadiusDp.length * 2);
             for (int i = 0; i < cornerRadiusDp.length; i++) {
                 result[i * 2] = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp[i], displayMetrics);
                 result[i * 2 + 1] = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, cornerRadiusDp[i], displayMetrics);
             }
             return result;
         }
-        
+
         public static float getPxFromDp(float dp, Context context) {
             return getPxFromDp(dp, context.getResources().getDisplayMetrics());
         }
-        
+
         public static float getPxFromDp(float dp, DisplayMetrics displayMetrics) {
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, displayMetrics);
         }
-        
+
         public static View findChildById(ViewGroup group, int id) {
             for (int i = 0; i < group.getChildCount(); i++) {
                 View child = group.getChildAt(i);
@@ -363,19 +448,21 @@ public class Atlas {
             }
             return null;
         }
-        
+
         public static void closeQuietly(InputStream stream) {
             if (stream == null) return;
             try {
                 stream.close();
-            } catch (Throwable ignoredQueitly) {}
+            } catch (Throwable ignoredQueitly) {
+            }
         }
-        
+
         public static void closeQuietly(OutputStream stream) {
             if (stream == null) return;
             try {
                 stream.close();
-            } catch (Throwable ignoredQueitly) {}
+            } catch (Throwable ignoredQueitly) {
+            }
         }
 
         /**
@@ -403,12 +490,15 @@ public class Atlas {
 
         public static String toStringSpec(int measureSpec) {
             switch (MeasureSpec.getMode(measureSpec)) {
-                case MeasureSpec.AT_MOST : return "" + MeasureSpec.getSize(measureSpec) + ".A";  
-                case MeasureSpec.EXACTLY : return "" + MeasureSpec.getSize(measureSpec) + ".E";
-                default                  : return "" + MeasureSpec.getSize(measureSpec) + ".U";
+                case MeasureSpec.AT_MOST:
+                    return "" + MeasureSpec.getSize(measureSpec) + ".A";
+                case MeasureSpec.EXACTLY:
+                    return "" + MeasureSpec.getSize(measureSpec) + ".E";
+                default:
+                    return "" + MeasureSpec.getSize(measureSpec) + ".U";
             }
         }
-        
+
         public static String toStringSpec(int widthSpec, int heightSpec) {
             return toStringSpec(widthSpec) + "|" + toStringSpec(heightSpec);
         }
@@ -426,80 +516,93 @@ public class Atlas {
                 Log.e(TAG, "downloadToFile() cannot execute http request: " + url, e);
                 return false;
             }
-        
+
             File dir = file.getParentFile();
             if (!dir.exists() && !dir.mkdirs()) {
                 Log.e(TAG, String.format("Could not create directories for `%s`", dir.getAbsolutePath()));
                 return false;
             }
-            
+
             File tempFile = new File(file.getAbsolutePath() + ".tmp");
-            
+
             try {
                 streamCopyAndClose(response.getEntity().getContent(), new FileOutputStream(tempFile, false));
                 response.getEntity().consumeContent();
             } catch (IOException e) {
-                if (debug) Log.e(TAG, "downloadToFile() cannot extract content from http response: " + url, e);
+                if (debug)
+                    Log.e(TAG, "downloadToFile() cannot extract content from http response: " + url, e);
             }
-        
+
             if (tempFile.length() != response.getEntity().getContentLength()) {
                 tempFile.delete();
                 Log.e(TAG, String.format("downloadToFile() File size mismatch for `%s` (%d vs %d)", tempFile.getAbsolutePath(), tempFile.length(), response.getEntity().getContentLength()));
                 return false;
             }
-            
+
             // last step
             if (tempFile.renameTo(file)) {
-                if (debug) Log.w(TAG, "downloadToFile() Successfully downloaded file: " + file.getAbsolutePath());
+                if (debug)
+                    Log.w(TAG, "downloadToFile() Successfully downloaded file: " + file.getAbsolutePath());
                 return true;
             } else {
                 Log.e(TAG, "downloadToFile() Could not rename temp file: " + tempFile.getAbsolutePath() + " to: " + file.getAbsolutePath());
                 return false;
             }
-            
+
         }
-        
-        /** 
-         * @param dumpPathPrefix - final path is constructed as <code>dumpPathPrefix + path from partId</code> 
+
+        /**
+         * @param dumpPathPrefix - final path is constructed as <code>dumpPathPrefix + path from partId</code>
          */
         public static void dumpPart(MessagePart part, String dumpPathPrefix) {
             try {
                 String path = dumpPathPrefix + escapePath(part.getId().toString());
-                if (debug) Log.w(TAG, "onProgressComplete() dumping part into " + path + ", " + part.getMimeType() + ", id: " + part.getId());
+                if (debug)
+                    Log.w(TAG, "onProgressComplete() dumping part into " + path + ", " + part.getMimeType() + ", id: " + part.getId());
                 Tools.streamCopyAndClose(part.getDataStream(), new FileOutputStream(path));
             } catch (Exception e) {
                 Log.e(TAG, "onProgressComplete() cannot dump part: " + part.getMimeType() + ", id: " + part.getId(), e);
             }
         }
-        
-        /** escape characters of part.id if they are invalid for filePath */
+
+        /**
+         * escape characters of part.id if they are invalid for filePath
+         */
         public static String escapePath(String partId) {
             return partId.replaceAll("[:/\\+]", "_");
         }
 
-        /** draws lines between opposite corners of provided rect */
+        /**
+         * draws lines between opposite corners of provided rect
+         */
         public static void drawX(float left, float top, float right, float bottom, Paint paint, Canvas canvas) {
             canvas.drawLine(left, top, right, bottom, paint);
             canvas.drawLine(left, bottom, right, top, paint);
         }
-        /** @see #drawX(float, float, float, float, Paint, Canvas)*/
+
+        /**
+         * @see #drawX(float, float, float, float, Paint, Canvas)
+         */
         public static void drawX(Rect rect, Paint paint, Canvas canvas) {
             drawX(rect.left, rect.top, rect.right, rect.bottom, paint, canvas);
         }
-        /** @see #drawX(float, float, float, float, Paint, Canvas)*/
+
+        /**
+         * @see #drawX(float, float, float, float, Paint, Canvas)
+         */
         public static void drawX(RectF rect, Paint paint, Canvas canvas) {
             drawX(rect.left, rect.top, rect.right, rect.bottom, paint, canvas);
         }
-        
+
         public static void drawPlus(float left, float top, float right, float bottom, Paint paint, Canvas canvas) {
             canvas.drawLine(0.5f * (left + right), top, 0.5f * (left + right), bottom, paint);
-            canvas.drawLine(left, 0.5f * (top + bottom),  right, 0.5f * (top + bottom), paint);
+            canvas.drawLine(left, 0.5f * (top + bottom), right, 0.5f * (top + bottom), paint);
         }
-        
+
         public static void drawPlus(Rect rect, Paint paint, Canvas canvas) {
             drawPlus(rect.left, rect.top, rect.right, rect.bottom, paint, canvas);
         }
-        
+
         public static void drawPlus(RectF rect, Paint paint, Canvas canvas) {
             drawPlus(rect.left, rect.top, rect.right, rect.bottom, paint, canvas);
         }
@@ -514,11 +617,9 @@ public class Atlas {
             canvas.drawCircle(xCenter, yCenter, radius, paint);
         }
 
-        /** Window flags for translucency are available on Android 5.0+ */
-        public static final int FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS = 0x80000000;
-        public static final int FLAG_TRANSLUCENT_STATUS = 0x04000000;
-
-        /** Changes Status Bar color On Android 5.0+ devices. Do nothing on devices without translucency support */
+        /**
+         * Changes Status Bar color On Android 5.0+ devices. Do nothing on devices without translucency support
+         */
         public static void setStatusBarColor(Window wnd, int color) {
             try {
                 final Method mthd_setStatusBarColor = wnd.getClass().getMethod("setStatusBarColor", int.class);
@@ -527,86 +628,33 @@ public class Atlas {
                     wnd.addFlags(FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                     wnd.clearFlags(FLAG_TRANSLUCENT_STATUS);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
     }
 
-    /**
-     * Participant allows Atlas classes to display information about users, like Message senders,
-     * Conversation participants, TypingIndicator users, etc.
-     */
-    public interface Participant {
-        /**
-         * Returns the first name of this Participant.
-         * 
-         * @return The first name of this Participant
-         */
-        String getFirstName();
-
-        /**
-         * Returns the last name of this Participant.
-         *
-         * @return The last name of this Participant
-         */
-        String getLastName();
-        
-        /**
-         * Returns drawable to be used as paprticipant's avatar in Atlas Views.
-         * If undefined, initials would be used instead.
-         * 
-         * @return drawable, or null 
-         */
-        Drawable getAvatarDrawable();
-        
-        public static Comparator<Participant> COMPARATOR = new FilteringComparator("");
-    }
-
-    /**
-     * ParticipantProvider provides Atlas classes with Participant data.
-     */
-    public interface ParticipantProvider {
-        /**
-         * Returns a map of all Participants by their unique ID who match the provided `filter`, or
-         * all Participants if `filter` is `null`.  If `result` is provided, it is operated on and
-         * returned.  If `result` is `null`, a new Map is created and returned.
-         *
-         * @param filter The filter to apply to Participants
-         * @param result The Map to operate on
-         * @return A Map of all matching Participants keyed by ID.
-         */
-        Map<String, Participant> getParticipants(String filter, Map<String, Participant> result);
-
-        /**
-         * Returns the Participant with the given ID, or `null` if the participant is not yet
-         * available.
-         *
-         * @return The Participant with the given ID, or `null` if not available.
-         */
-        Atlas.Participant getParticipant(String userId);
-    }
-
     public static final class FilteringComparator implements Comparator<Atlas.Participant> {
         private final String filter;
-    
+
         /**
          * @param filter - the less indexOf(filter) the less order of participant
          */
         public FilteringComparator(String filter) {
             this.filter = filter;
         }
-    
+
         @Override
         public int compare(Atlas.Participant lhs, Atlas.Participant rhs) {
             int result = subCompareCaseInsensitive(lhs.getFirstName(), rhs.getFirstName());
             if (result != 0) return result;
             return subCompareCaseInsensitive(lhs.getLastName(), rhs.getLastName());
         }
-    
+
         private int subCompareCaseInsensitive(String lhs, String rhs) {
             int left = lhs != null ? lhs.toLowerCase().indexOf(filter) : -1;
             int right = rhs != null ? rhs.toLowerCase().indexOf(filter) : -1;
-    
+
             if (left == -1 && right == -1) return 0;
             if (left != -1 && right == -1) return -1;
             if (left == -1 && right != -1) return 1;
@@ -616,165 +664,63 @@ public class Atlas {
     }
 
     /**
-     * TODO: 
-     * 
-     * - imageCache should accept any "Downloader" that download something with progress 
+     * TODO:
+     * <p/>
+     * - imageCache should accept any "Downloader" that download something with progress
      * - imageCache should reschedule image if decoding failed
-     * - imageCache should reschedule image if decoded width was cut due to OOM (-> sampleSize > 1) 
+     * - imageCache should reschedule image if decoded width was cut due to OOM (-> sampleSize > 1)
      * - maximum retries should be configurable
-     * 
      */
     public static class ImageLoader {
         private static final String TAG = Atlas.ImageLoader.class.getSimpleName();
         private static final boolean debug = false;
-        
+
         private static final int BITMAP_DECODE_RETRIES = 10;
         private static final double MEMORY_THRESHOLD = 0.7;
-        
-        private volatile boolean shutdownLoader = false;
         private final Thread processingThread;
         private final Object lock = new Object();
         private final ArrayList<ImageSpec> queue = new ArrayList<ImageSpec>();
-        
-        /** image_id -> Bitmap | Movie */
+        private volatile boolean shutdownLoader = false;
+        /**
+         * image_id -> Bitmap | Movie
+         */
         private LinkedHashMap<Object, Object> cache = new LinkedHashMap<Object, Object>(40, 1f, true) {
             private static final long serialVersionUID = 1L;
+
             protected boolean removeEldestEntry(Entry<Object, Object> eldest) {
                 // calculate available memory
                 long maxMemory = Runtime.getRuntime().maxMemory();
                 long usedMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-                boolean cleaningRequired = 1.0 * usedMemory / maxMemory > MEMORY_THRESHOLD; 
-                
+                boolean cleaningRequired = 1.0 * usedMemory / maxMemory > MEMORY_THRESHOLD;
+
                 final Object id = eldest.getKey();
-                if (cleaningRequired) if (debug) Log.w(TAG, "removeEldestEntry() cleaning bitmap for: " + id + ", size: " + cache.size() + ", queue: " + queue.size());
-                else                  if (debug) Log.w(TAG, "removeEldestEntry() " + " nothing, size: " + cache.size() + ", queue: " + queue.size());                    
-    
+                if (cleaningRequired) if (debug)
+                    Log.w(TAG, "removeEldestEntry() cleaning bitmap for: " + id + ", size: " + cache.size() + ", queue: " + queue.size());
+                else if (debug)
+                    Log.w(TAG, "removeEldestEntry() " + " nothing, size: " + cache.size() + ", queue: " + queue.size());
+
                 return cleaningRequired;
             }
         };
-    
+
         public ImageLoader() {
             // launching thread
-            processingThread = new Decoder("AtlasImageLoader"); 
+            processingThread = new Decoder("AtlasImageLoader");
             processingThread.start();
         }
-        
-        private final class Decoder extends Thread {
-            public Decoder(String threadName) {
-                super(threadName);
-            }
-            public void run() {
-                if (debug) Log.w(TAG, "ImageLoader.run() started");
-                while (!shutdownLoader) {
-   
-                    ImageSpec spec = null;
-                    // search bitmap ready to inflate
-                    // wait for queue
-                    synchronized (lock) {
-                        while (spec == null && !shutdownLoader) {
-                            try {
-                                lock.wait();
-                                if (shutdownLoader) return;
-                                // picking from queue
-                                for (int i = 0; i < queue.size(); i++) {
-                                    if (queue.get(i).inputStreamProvider.ready()) { // ready to inflate
-                                        spec = queue.remove(i);
-                                        break;
-                                    }
-                                }
-                            } catch (InterruptedException e) {}
-                        }
-                    }
-                    
-                    Object result = null;
-                    if (spec.gif) {
-                        InputStream is = spec.inputStreamProvider.getInputStream();
-                        Movie mov = Movie.decodeStream(is);
-                        if (debug) Log.w(TAG, "decodeImage() decoded GIF " + mov.width() + "x" + mov.height() + ":" + mov.duration() + "ms");
-                        Tools.closeQuietly(is);
-                        result = mov;
-                    } else {
-                        // decode dimensions
-                        long started = System.currentTimeMillis();
-                        InputStream streamForBounds = spec.inputStreamProvider.getInputStream();
-                        if (streamForBounds == null) { 
-                            Log.e(TAG, "decodeImage() stream is null! Request cancelled. Spec: " + spec.id + ", provider: " + spec.inputStreamProvider.getClass().getSimpleName()); return; 
-                        }
-                        BitmapFactory.Options originalOpts = new BitmapFactory.Options();
-                        originalOpts.inJustDecodeBounds = true;
-                        BitmapFactory.decodeStream(streamForBounds, null, originalOpts);
-                        Tools.closeQuietly(streamForBounds);
-                        // update spec if width and height are unknown
-                        spec.originalWidth = originalOpts.outWidth;
-                        spec.originalHeight = originalOpts.outHeight;
-                        
-                        // if required dimensions are not defined or bigger than original - use original dimensions
-                        int requiredWidth  = spec.requiredWidth  > 0 ? Math.min(spec.requiredWidth,  originalOpts.outWidth)  : originalOpts.outWidth;
-                        int requiredHeight = spec.requiredHeight > 0 ? Math.min(spec.requiredHeight, originalOpts.outHeight) : originalOpts.outHeight;
-                        int sampleSize = 1;
-                        // Use dimension with higher quality to meet both requirements
-                        float widthSampleSize  = sampleSize(originalOpts.outWidth,  requiredWidth);
-                        float heightSampleSize = sampleSize(originalOpts.outHeight, requiredHeight);
-                        sampleSize = (int)Math.min(widthSampleSize, heightSampleSize);
-                        if (debug) Log.w(TAG, "decodeImage() sampleSize: " + sampleSize + ", original: " + spec.originalWidth + "x" + spec.originalHeight
-                                + " required: " + spec.requiredWidth + "x" + spec.requiredHeight);
-                        
-                        BitmapFactory.Options decodeOpts = new BitmapFactory.Options();
-                        decodeOpts.inSampleSize = sampleSize;
-                        Bitmap bmp = null;
-                        InputStream streamForBitmap = spec.inputStreamProvider.getInputStream();
-                        try {
-                            bmp = BitmapFactory.decodeStream(streamForBitmap, null, decodeOpts);
-                        } catch (OutOfMemoryError e) {
-                            if (debug) Log.w(TAG, "decodeImage() out of memory. remove eldest");
-                            removeEldest();
-                            System.gc();
-                        }
-                        Tools.closeQuietly(streamForBitmap);
-                        if (bmp != null) {
-                            if (debug) Log.d(TAG, "decodeImage() decoded " + bmp.getWidth() + "x" + bmp.getHeight() 
-                                    + " " + bmp.getByteCount() + " bytes" 
-                                    + " req: " + spec.requiredWidth + "x" + spec.requiredHeight 
-                                    + " original: " + originalOpts.outWidth + "x" + originalOpts.outHeight 
-                                    + " sampleSize: " + sampleSize
-                                    + " in " +(System.currentTimeMillis() - started) + "ms from: " + spec.id);
-                        } else {
-                            if (debug) Log.d(TAG, "decodeImage() not decoded " + " req: " + requiredWidth + "x" + requiredHeight 
-                                    + " in " +(System.currentTimeMillis() - started) + "ms from: " + spec.id);
-                        }
-                        result = bmp;
-                    }
-   
-                    // decoded
-                    synchronized (lock) {
-                        if (result != null) {
-                            cache.put(spec.id, result);
-                            if (spec.listener != null) spec.listener.onImageLoaded(spec);
-                        } else if (spec.retries < BITMAP_DECODE_RETRIES) {
-                            spec.retries++;
-                            queue.add(0, spec);         // schedule retry
-                            lock.notifyAll();
-                        } /*else forget about this image, never put it back in queue */
-                    }
-   
-                    if (debug) Log.w(TAG, "decodeImage()   cache: " + cache.size() + ", queue: " + queue.size() + ", id: " + spec.id);
-                }
-            }
-        }
-        
+
         /**
-         *
          * Return maximum possible sampleSize to decode bitmap with dimensions >= minRequired
-         * 
-         * <p>
-         * Despite {@link BitmapFactory.Options#inSampleSize} documentation, sampleSize 
-         * handles properly only 2^n values. Other values are handled as nearest lower 2^n.<p> 
+         * <p/>
+         * <p/>
+         * Despite {@link BitmapFactory.Options#inSampleSize} documentation, sampleSize
+         * handles properly only 2^n values. Other values are handled as nearest lower 2^n.<p>
          * I.e. result bitmap with <br>
-         * <code> 
-         *      opts.sampleSize = 3 is the same as opts.sampleSize = 2<br>
-         *      opts.sampleSize = 5 is the same as opts.sampleSize = 4 
+         * <code>
+         * opts.sampleSize = 3 is the same as opts.sampleSize = 2<br>
+         * opts.sampleSize = 5 is the same as opts.sampleSize = 4
          * </code>
-         * 
+         *
          * @return bitmap sampleSize values [1, 2, 4, 8, .. 2^n]
          */
         private static int sampleSize(int originalDimension, int minRequiredDimension) {
@@ -785,11 +731,11 @@ public class Atlas {
             }
             return sampleSize;
         }
-    
+
         public Object getImageFromCache(Object id) {
             return cache.get(id);
         }
-                
+
         /**
          * @return - byteCount of removed bitmap if bitmap found. <bold>-1</bold> otherwise
          */
@@ -800,7 +746,8 @@ public class Atlas {
                     Object bmp = entry.getValue();
                     cache.remove(entry.getKey());
                     int releasedBytes = (bmp instanceof Bitmap) ? ((Bitmap) bmp).getByteCount() : 0; /*((Movie)bmp).byteCount(); */
-                    if (debug) Log.w(TAG, "removeEldest() id: " + entry.getKey() + ", bytes: " + releasedBytes);
+                    if (debug)
+                        Log.w(TAG, "removeEldest() id: " + entry.getKey() + ", bytes: " + releasedBytes);
                     return releasedBytes;
                 } else {
                     if (debug) Log.w(TAG, "removeEldest() nothing to remove...");
@@ -808,28 +755,28 @@ public class Atlas {
                 }
             }
         }
-                
+
         /**
-         * @see #requestImage(Object, InputStreamProvider, int, int, boolean, ImageLoadListener) 
+         * @see #requestImage(Object, InputStreamProvider, int, int, boolean, ImageLoadListener)
          */
         public ImageSpec requestImage(Object id, InputStreamProvider streamProvider, ImageLoader.ImageLoadListener loadListener) {
             return requestImage(id, streamProvider, 0, 0, false, loadListener);
         }
-        
+
         /**
-         * @see #requestImage(Object, InputStreamProvider, int, int, boolean, ImageLoadListener) 
+         * @see #requestImage(Object, InputStreamProvider, int, int, boolean, ImageLoadListener)
          */
         public ImageSpec requestImage(Object id, InputStreamProvider streamProvider, boolean gif, ImageLoader.ImageLoadListener loadListener) {
             return requestImage(id, streamProvider, 0, 0, gif, loadListener);
         }
-        
-        /** 
-         * @param id                - something you will use to get image from cache later
-         * @param streamProvider    - something that provides raw bytes. See {@link Atlas.FileStreamProvider} or {@link Atlas.MessagePartStreamProvider}
-         * @param requiredWidth     - 
-         * @param requiredHeight    - provide image dimensions you need to save memory if original dimensions are bigger
-         * @param gif               - android.graphics.Movie would be decoded instead of Bitmap. <b>Warning!</b> {@link Atlas.MessagePartBufferedStreamProvider} must be used 
-         * @param loadListener      - something you can use to be notified when image is loaded
+
+        /**
+         * @param id             - something you will use to get image from cache later
+         * @param streamProvider - something that provides raw bytes. See {@link Atlas.FileStreamProvider} or {@link Atlas.MessagePartStreamProvider}
+         * @param requiredWidth  -
+         * @param requiredHeight - provide image dimensions you need to save memory if original dimensions are bigger
+         * @param gif            - android.graphics.Movie would be decoded instead of Bitmap. <b>Warning!</b> {@link Atlas.MessagePartBufferedStreamProvider} must be used
+         * @param loadListener   - something you can use to be notified when image is loaded
          */
         public ImageSpec requestImage(Object id, InputStreamProvider streamProvider, int requiredWidth, int requiredHeight, boolean gif, ImageLoader.ImageLoadListener loadListener) {
             ImageSpec spec = null;
@@ -852,8 +799,13 @@ public class Atlas {
                 queue.add(0, spec);
                 lock.notifyAll();
             }
-            if (debug) Log.w(TAG, "requestBitmap() cache: " + cache.size() + ", queue: " + queue.size() + ", id: " + id + ", reqs: " + requiredWidth + "x" + requiredHeight);
+            if (debug)
+                Log.w(TAG, "requestBitmap() cache: " + cache.size() + ", queue: " + queue.size() + ", id: " + id + ", reqs: " + requiredWidth + "x" + requiredHeight);
             return spec;
+        }
+
+        public interface ImageLoadListener {
+            public void onImageLoaded(ImageSpec spec);
         }
 
         public static class ImageSpec {
@@ -869,31 +821,168 @@ public class Atlas {
             public ImageLoader.ImageLoadListener listener;
         }
 
-        public interface ImageLoadListener {
-            public void onImageLoaded(ImageSpec spec);
-        }
-        
         public static abstract class InputStreamProvider {
             public abstract InputStream getInputStream();
+
             public abstract boolean ready();
+        }
+
+        private final class Decoder extends Thread {
+            public Decoder(String threadName) {
+                super(threadName);
+            }
+
+            public void run() {
+                if (debug) Log.w(TAG, "ImageLoader.run() started");
+                while (!shutdownLoader) {
+
+                    ImageSpec spec = null;
+                    // search bitmap ready to inflate
+                    // wait for queue
+                    synchronized (lock) {
+                        while (spec == null && !shutdownLoader) {
+                            try {
+                                lock.wait();
+                                if (shutdownLoader) return;
+                                // picking from queue
+                                for (int i = 0; i < queue.size(); i++) {
+                                    if (queue.get(i).inputStreamProvider.ready()) { // ready to inflate
+                                        spec = queue.remove(i);
+                                        break;
+                                    }
+                                }
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                    }
+
+                    Object result = null;
+                    if (spec.gif) {
+                        InputStream is = spec.inputStreamProvider.getInputStream();
+                        Movie mov = Movie.decodeStream(is);
+                        if (debug)
+                            Log.w(TAG, "decodeImage() decoded GIF " + mov.width() + "x" + mov.height() + ":" + mov.duration() + "ms");
+                        Tools.closeQuietly(is);
+                        result = mov;
+                    } else {
+                        // decode dimensions
+                        long started = System.currentTimeMillis();
+                        InputStream streamForBounds = spec.inputStreamProvider.getInputStream();
+                        if (streamForBounds == null) {
+                            Log.e(TAG, "decodeImage() stream is null! Request cancelled. Spec: " + spec.id + ", provider: " + spec.inputStreamProvider.getClass().getSimpleName());
+                            return;
+                        }
+                        BitmapFactory.Options originalOpts = new BitmapFactory.Options();
+                        originalOpts.inJustDecodeBounds = true;
+                        BitmapFactory.decodeStream(streamForBounds, null, originalOpts);
+                        Tools.closeQuietly(streamForBounds);
+                        // update spec if width and height are unknown
+                        spec.originalWidth = originalOpts.outWidth;
+                        spec.originalHeight = originalOpts.outHeight;
+
+                        // if required dimensions are not defined or bigger than original - use original dimensions
+                        int requiredWidth = spec.requiredWidth > 0 ? Math.min(spec.requiredWidth, originalOpts.outWidth) : originalOpts.outWidth;
+                        int requiredHeight = spec.requiredHeight > 0 ? Math.min(spec.requiredHeight, originalOpts.outHeight) : originalOpts.outHeight;
+                        int sampleSize = 1;
+                        // Use dimension with higher quality to meet both requirements
+                        float widthSampleSize = sampleSize(originalOpts.outWidth, requiredWidth);
+                        float heightSampleSize = sampleSize(originalOpts.outHeight, requiredHeight);
+                        sampleSize = (int) Math.min(widthSampleSize, heightSampleSize);
+                        if (debug)
+                            Log.w(TAG, "decodeImage() sampleSize: " + sampleSize + ", original: " + spec.originalWidth + "x" + spec.originalHeight
+                                    + " required: " + spec.requiredWidth + "x" + spec.requiredHeight);
+
+                        BitmapFactory.Options decodeOpts = new BitmapFactory.Options();
+                        decodeOpts.inSampleSize = sampleSize;
+                        Bitmap bmp = null;
+                        InputStream streamForBitmap = spec.inputStreamProvider.getInputStream();
+                        try {
+                            bmp = BitmapFactory.decodeStream(streamForBitmap, null, decodeOpts);
+                        } catch (OutOfMemoryError e) {
+                            if (debug) Log.w(TAG, "decodeImage() out of memory. remove eldest");
+                            removeEldest();
+                            System.gc();
+                        }
+                        Tools.closeQuietly(streamForBitmap);
+                        if (bmp != null) {
+                            if (debug)
+                                Log.d(TAG, "decodeImage() decoded " + bmp.getWidth() + "x" + bmp.getHeight()
+                                        + " " + bmp.getByteCount() + " bytes"
+                                        + " req: " + spec.requiredWidth + "x" + spec.requiredHeight
+                                        + " original: " + originalOpts.outWidth + "x" + originalOpts.outHeight
+                                        + " sampleSize: " + sampleSize
+                                        + " in " + (System.currentTimeMillis() - started) + "ms from: " + spec.id);
+                        } else {
+                            if (debug)
+                                Log.d(TAG, "decodeImage() not decoded " + " req: " + requiredWidth + "x" + requiredHeight
+                                        + " in " + (System.currentTimeMillis() - started) + "ms from: " + spec.id);
+                        }
+                        result = bmp;
+                    }
+
+                    // decoded
+                    synchronized (lock) {
+                        if (result != null) {
+                            cache.put(spec.id, result);
+                            if (spec.listener != null) spec.listener.onImageLoaded(spec);
+                        } else if (spec.retries < BITMAP_DECODE_RETRIES) {
+                            spec.retries++;
+                            queue.add(0, spec);         // schedule retry
+                            lock.notifyAll();
+                        } /*else forget about this image, never put it back in queue */
+                    }
+
+                    if (debug)
+                        Log.w(TAG, "decodeImage()   cache: " + cache.size() + ", queue: " + queue.size() + ", id: " + spec.id);
+                }
+            }
         }
     }
 
     public static class DownloadQueue {
         private static final String TAG = DownloadQueue.class.getSimpleName();
-        
+
         final ArrayList<Entry> queue = new ArrayList<Atlas.DownloadQueue.Entry>();
         final HashMap<String, Entry> url2Entry = new HashMap<String, Entry>();
         private volatile Entry inProgress = null;
-        
+        private Thread workingThread = new Thread(new Runnable() {
+            public void run() {
+                while (true) {
+                    Entry next = null;
+                    synchronized (queue) {
+                        while (queue.size() == 0) {
+                            try {
+                                queue.wait();
+                            } catch (InterruptedException ignored) {
+                            }
+                        }
+                        next = queue.remove(queue.size() - 1); // get last
+                        url2Entry.remove(next.url);
+                        inProgress = next;
+                    }
+                    try {
+                        if (Tools.downloadHttpToFile(next.url, next.file)) {
+                            if (next.completeListener != null) {
+                                next.completeListener.onDownloadComplete(next.url, next.file);
+                            }
+                        }
+                        ;
+                    } catch (Throwable e) {
+                        Log.e(TAG, "onComplete() thrown an exception for: " + next.url, e);
+                    }
+                    inProgress = null;
+                }
+            }
+        });
+
         public DownloadQueue() {
             workingThread.setDaemon(true);
-            workingThread.setName("Atlas-HttpDownloadQueue"); 
+            workingThread.setName("Atlas-HttpDownloadQueue");
             workingThread.start();
         }
-        
+
         public void schedule(String url, File to, CompleteListener onComplete) {
-            if (inProgress != null && inProgress.url.equals(url)){
+            if (inProgress != null && inProgress.url.equals(url)) {
                 return;
             }
             synchronized (queue) {
@@ -909,39 +998,16 @@ public class Atlas {
                 queue.notifyAll();
             }
         }
-        
-        private Thread workingThread = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    Entry next = null;
-                    synchronized (queue) {
-                        while (queue.size() == 0) {
-                            try {
-                                queue.wait();
-                            } catch (InterruptedException ignored) {}
-                        }
-                        next = queue.remove(queue.size() - 1); // get last
-                        url2Entry.remove(next.url);
-                        inProgress = next;
-                    }
-                    try {
-                        if (Tools.downloadHttpToFile(next.url, next.file)) {
-                            if (next.completeListener != null) {
-                                next.completeListener.onDownloadComplete(next.url, next.file);
-                            }
-                        };
-                    } catch (Throwable e) {
-                        Log.e(TAG, "onComplete() thrown an exception for: " + next.url, e);
-                    }
-                    inProgress = null;
-                }
-            }
-        });
-        
+
+        public interface CompleteListener {
+            public void onDownloadComplete(String url, File file);
+        }
+
         private static class Entry {
             String url;
             File file;
             CompleteListener completeListener;
+
             public Entry(String url, File file, CompleteListener listener) {
                 if (url == null) throw new IllegalArgumentException("url cannot be null");
                 if (file == null) throw new IllegalArgumentException("file cannot be null");
@@ -950,43 +1016,45 @@ public class Atlas {
                 this.completeListener = listener;
             }
         }
-        
-        public interface CompleteListener {
-            public void onDownloadComplete(String url, File file);
-        }
     }
 
     public static class MessagePartStreamProvider extends ImageLoader.InputStreamProvider {
         public final MessagePart part;
+
         public MessagePartStreamProvider(MessagePart part) {
             if (part == null) throw new IllegalStateException("MessagePart cannot be null");
             this.part = part;
         }
+
         public InputStream getInputStream() {
             return part.getDataStream();
         }
+
         public boolean ready() {
             return part.isContentReady();
         }
     }
-    
-    /** 
-     * Provides BufferedInputStream on top of messagePart.dataStream, with 16k buffer 
+
+    /**
+     * Provides BufferedInputStream on top of messagePart.dataStream, with 16k buffer
      * and mark set to 0 with 16k read limit. <p>
-     * 
+     * <p/>
      * Used for GIF purposes, because it calls <code>.reset()</code> stream during execution
      */
     public static class MessagePartBufferedStreamProvider extends ImageLoader.InputStreamProvider {
         public final MessagePart part;
+
         public MessagePartBufferedStreamProvider(MessagePart part) {
             if (part == null) throw new IllegalStateException("MessagePart cannot be null");
             this.part = part;
         }
+
         public InputStream getInputStream() {
             BufferedInputStream stream = new BufferedInputStream(part.getDataStream(), 16 * 1024);
             stream.mark(16 * 1024);
             return stream;
         }
+
         public boolean ready() {
             return part.isContentReady();
         }
@@ -994,11 +1062,13 @@ public class Atlas {
 
     public static class FileStreamProvider extends ImageLoader.InputStreamProvider {
         final File file;
+
         public FileStreamProvider(File file) {
             if (file == null) throw new IllegalStateException("File cannot be null");
             if (!file.exists()) throw new IllegalStateException("File must exist!");
             this.file = file;
         }
+
         public InputStream getInputStream() {
             try {
                 return new FileInputStream(file);
@@ -1007,13 +1077,15 @@ public class Atlas {
                 return null;
             }
         }
+
         public boolean ready() {
-            if (ImageLoader.debug) Log.w(ImageLoader.TAG, "ready() FileStreamProvider, file ready: " + file.getAbsolutePath());
+            if (ImageLoader.debug)
+                Log.w(ImageLoader.TAG, "ready() FileStreamProvider, file ready: " + file.getAbsolutePath());
             return true;
         }
     }
 
-    /** 
+    /**
      * Basic {@link AtlasMessagesList.CellFactory} supports mime-types
      * <li> {@link Atlas#MIME_TYPE_TEXT}
      * <li> {@link Atlas#MIME_TYPE_ATLAS_LOCATION}
@@ -1024,28 +1096,29 @@ public class Atlas {
      */
     public static class DefaultCellFactory extends AtlasMessagesList.CellFactory {
         public final AtlasMessagesList messagesList;
-        
+
         public DefaultCellFactory(AtlasMessagesList messagesList) {
             this.messagesList = messagesList;
         }
-    
-        /** 
+
+        /**
          * Scan message and messageParts and build corresponding Cell(s). Put them into result list
-         * @param msg           - message to build Cell(s) for
-         * @param destination   - result list of Cells
+         *
+         * @param msg         - message to build Cell(s) for
+         * @param destination - result list of Cells
          */
         public void buildCellForMessage(Message msg, List<AtlasMessagesList.Cell> destination) {
             final ArrayList<MessagePart> parts = new ArrayList<MessagePart>(msg.getMessageParts());
-            
-            for (int partNo = 0; partNo < parts.size(); partNo++ ) {
+
+            for (int partNo = 0; partNo < parts.size(); partNo++) {
                 final MessagePart part = parts.get(partNo);
                 final String mimeType = part.getMimeType();
-                
-                if (MIME_TYPE_IMAGE_PNG.equals(mimeType) 
+
+                if (MIME_TYPE_IMAGE_PNG.equals(mimeType)
                         || MIME_TYPE_IMAGE_JPEG.equals(mimeType)
                         || MIME_TYPE_IMAGE_GIF.equals(mimeType)
                         ) {
-                        
+
                     // 3 parts image support
                     if ((partNo + 2 < parts.size()) && MIME_TYPE_IMAGE_DIMENSIONS.equals(parts.get(partNo + 2).getMimeType())) {
                         String jsonDimensions = new String(parts.get(partNo + 2).getData());
@@ -1058,11 +1131,12 @@ public class Atlas {
                                 width = jo.getInt("height");
                                 height = jo.getInt("width");
                             }
-                            AtlasMessagesList.Cell imageCell = mimeType.equals(MIME_TYPE_IMAGE_GIF)  
+                            AtlasMessagesList.Cell imageCell = mimeType.equals(MIME_TYPE_IMAGE_GIF)
                                     ? new GIFCell(part, parts.get(partNo + 1), width, height, orientation, messagesList)
                                     : new ImageCell(part, parts.get(partNo + 1), width, height, orientation, messagesList);
                             destination.add(imageCell);
-                            if (debug) Log.w(TAG, "cellForMessage() 3-image part found at partNo: " + partNo + ", " + width + "x" + height + "@" + orientation);
+                            if (debug)
+                                Log.w(TAG, "cellForMessage() 3-image part found at partNo: " + partNo + ", " + width + "x" + height + "@" + orientation);
                             partNo++; // skip preview
                             partNo++; // skip dimensions part
                         } catch (JSONException e) {
@@ -1070,14 +1144,15 @@ public class Atlas {
                         }
                     } else {
                         // regular image
-                        AtlasMessagesList.Cell cell = mimeType.equals(MIME_TYPE_IMAGE_GIF) 
+                        AtlasMessagesList.Cell cell = mimeType.equals(MIME_TYPE_IMAGE_GIF)
                                 ? new GIFCell(part, messagesList)
                                 : new ImageCell(part, messagesList);
                         destination.add(cell);
-                        if (debug) Log.w(TAG, "cellForMessage() single-image part found at partNo: " + partNo);
+                        if (debug)
+                            Log.w(TAG, "cellForMessage() single-image part found at partNo: " + partNo);
                     }
-                
-                } else if (MIME_TYPE_ATLAS_LOCATION.equals(part.getMimeType())){
+
+                } else if (MIME_TYPE_ATLAS_LOCATION.equals(part.getMimeType())) {
                     destination.add(new GeoCell(part, messagesList));
                 } else {
                     AtlasMessagesList.Cell cellData = new AtlasMessagesList.TextCell(part, messagesList);
@@ -1086,5 +1161,5 @@ public class Atlas {
             }
         }
     }
-    
+
 }

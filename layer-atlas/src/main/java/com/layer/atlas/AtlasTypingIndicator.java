@@ -15,11 +15,6 @@
  */
 package com.layer.atlas;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -33,6 +28,11 @@ import com.layer.sdk.LayerClient;
 import com.layer.sdk.listeners.LayerTypingIndicatorListener;
 import com.layer.sdk.messaging.Conversation;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * AtlasTypingIndicator provides feedback about typists within a Conversation.  When initialized
  * and registered with a LayerClient as a LayerTypingIndicatorListener, AtlasTypingIndicator
@@ -40,9 +40,9 @@ import com.layer.sdk.messaging.Conversation;
  * needed.  AtlasTypingIndicator can provide a default UI updater if desired.
  */
 public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndicatorListener {
-    
-    private volatile Conversation mConversation;
+
     private final Set<String> mTypists = new HashSet<String>();
+    private volatile Conversation mConversation;
     private TextView mTextView;
     private Callback mCallback;
 
@@ -75,7 +75,8 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
      */
     public AtlasTypingIndicator init(Conversation conversation, Callback callback) {
         if (callback == null) throw new IllegalArgumentException("Callback cannot be null");
-        if (mTextView != null) throw new IllegalStateException("AtlasTypingIndicator is already initialized!");
+        if (mTextView != null)
+            throw new IllegalStateException("AtlasTypingIndicator is already initialized!");
         mConversation = conversation;
         this.mCallback = callback;
         this.mTextView = new TextView(getContext());
@@ -93,13 +94,14 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
      * @return This AtlasTypingIndicator for chaining.
      */
     public AtlasTypingIndicator init(Conversation conversation, ParticipantProvider participantProvider) {
-        if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
+        if (participantProvider == null)
+            throw new IllegalArgumentException("ParticipantProvider cannot be null");
         return init(conversation, new DefaultTypingIndicatorCallback(participantProvider));
     }
 
     /**
      * Sets the Conversation to listen for typing on.  If `null`, no typing will be listened to.
-     * 
+     *
      * @param conversation Conversation to listen for typing on
      * @return This AtlasTypingIndicator for chaining.
      */
@@ -190,7 +192,8 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
         private final Atlas.ParticipantProvider mParticipantProvider;
 
         public DefaultTypingIndicatorCallback(Atlas.ParticipantProvider participantProvider) {
-            if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
+            if (participantProvider == null)
+                throw new IllegalArgumentException("ParticipantProvider cannot be null");
             mParticipantProvider = participantProvider;
         }
 

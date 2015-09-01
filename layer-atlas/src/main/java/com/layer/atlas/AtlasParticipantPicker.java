@@ -15,14 +15,6 @@
  */
 package com.layer.atlas;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
-
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -59,6 +51,14 @@ import com.layer.atlas.Atlas.Participant;
 import com.layer.atlas.Atlas.ParticipantProvider;
 import com.layer.atlas.Atlas.Tools;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeSet;
+
 /**
  * @author Oleg Orlov
  * @since 27 Apr 2015
@@ -67,20 +67,16 @@ public class AtlasParticipantPicker extends FrameLayout {
 
     private static final String TAG = AtlasParticipantPicker.class.getSimpleName();
     private static final boolean debug = false;
-
+    private final Map<String, Participant> filteredParticipants = new HashMap<String, Participant>();
+    private final ArrayList<ParticipantEntry> participantsForAdapter = new ArrayList<ParticipantEntry>();
     // participants picker
     private View rootView;
     private EditText textFilter;
     private ListView participantsList;
     private ViewGroup selectedParticipantsContainer;
-
     private ParticipantProvider participantProvider;
-
     private TreeSet<String> skipUserIds = new TreeSet<String>();
-    private final Map<String, Participant> filteredParticipants = new HashMap<String, Participant>();
     private ArrayList<String> selectedParticipantIds = new ArrayList<String>();
-    private final ArrayList<ParticipantEntry> participantsForAdapter = new ArrayList<ParticipantEntry>();
-
     private BaseAdapter participantsAdapter;
 
     // styles
@@ -94,12 +90,12 @@ public class AtlasParticipantPicker extends FrameLayout {
     private int chipTextColor;
     private Typeface chipTextTypeface;
     private int chipTextStyle;
-    
-    private Bitmap maskSingleBmp = Bitmap.createBitmap((int)Tools.getPxFromDp(32, getContext()), (int)Tools.getPxFromDp(32, getContext()), Config.ARGB_8888);
+
+    private Bitmap maskSingleBmp = Bitmap.createBitmap((int) Tools.getPxFromDp(32, getContext()), (int) Tools.getPxFromDp(32, getContext()), Config.ARGB_8888);
     private Paint avatarPaint = new Paint();
     private Paint maskPaint = new Paint();
     private int avatarBackgroundColor;
-    private Bitmap maskSmallBmp = Bitmap.createBitmap((int)Tools.getPxFromDp(24, getContext()), (int)Tools.getPxFromDp(24, getContext()), Config.ARGB_8888);
+    private Bitmap maskSmallBmp = Bitmap.createBitmap((int) Tools.getPxFromDp(24, getContext()), (int) Tools.getPxFromDp(24, getContext()), Config.ARGB_8888);
 
     public AtlasParticipantPicker(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
@@ -117,14 +113,16 @@ public class AtlasParticipantPicker extends FrameLayout {
     }
 
     public void init(String[] userIdToSkip, ParticipantProvider participantProvider) {
-        if (participantProvider == null) throw new IllegalArgumentException("ParticipantProvider cannot be null");
-        if (participantsList != null) throw new IllegalStateException("AtlasParticipantPicker is already initialized!");
-        
+        if (participantProvider == null)
+            throw new IllegalArgumentException("ParticipantProvider cannot be null");
+        if (participantsList != null)
+            throw new IllegalStateException("AtlasParticipantPicker is already initialized!");
+
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_participants_picker, this);
 
         this.participantProvider = participantProvider;
         if (userIdToSkip != null) skipUserIds.addAll(Arrays.asList(userIdToSkip));
-        
+
         // START OF -------------------- Participant Picker ----------------------------------------
         this.rootView = this;
         textFilter = (EditText) rootView.findViewById(R.id.atlas_participants_picker_text);
@@ -165,16 +163,20 @@ public class AtlasParticipantPicker extends FrameLayout {
         textFilter.setOnFocusChangeListener(new OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 View focused = selectedParticipantsContainer.hasFocus() ? selectedParticipantsContainer : selectedParticipantsContainer.findFocus();
-                if (debug) Log.w(TAG, "filter.onFocusChange()   hasFocus: " + hasFocus + ", focused: " + focused);
+                if (debug)
+                    Log.w(TAG, "filter.onFocusChange()   hasFocus: " + hasFocus + ", focused: " + focused);
                 if (hasFocus) {
                     participantsList.setVisibility(View.VISIBLE);
                 }
                 v.post(new Runnable() { // check focus runnable
                     @Override
                     public void run() {
-                        if (debug) Log.w(TAG, "filter.onFocusChange.run()   filter.focus: " + textFilter.hasFocus());
-                        if (debug) Log.w(TAG, "filter.onFocusChange.run()    names.focus: " + selectedParticipantsContainer.hasFocus());
-                        if (debug) Log.w(TAG, "filter.onFocusChange.run() scroller.focus: " + scroller.hasFocus());
+                        if (debug)
+                            Log.w(TAG, "filter.onFocusChange.run()   filter.focus: " + textFilter.hasFocus());
+                        if (debug)
+                            Log.w(TAG, "filter.onFocusChange.run()    names.focus: " + selectedParticipantsContainer.hasFocus());
+                        if (debug)
+                            Log.w(TAG, "filter.onFocusChange.run() scroller.focus: " + scroller.hasFocus());
 
                         // check focus is on any descendants and hide list otherwise  
                         View focused = selectedParticipantsContainer.hasFocus() ? selectedParticipantsContainer : selectedParticipantsContainer.findFocus();
@@ -197,7 +199,7 @@ public class AtlasParticipantPicker extends FrameLayout {
                 TextView avatarText = (TextView) convertView.findViewById(R.id.atlas_view_participants_picker_convert_ava);
                 ImageView avatarImgView = (ImageView) convertView.findViewById(R.id.atlas_view_participants_picker_convert_avatar_img);
                 Bitmap avatarBmp = null;
-                if (avatarImgView.getDrawable() instanceof BitmapDrawable){
+                if (avatarImgView.getDrawable() instanceof BitmapDrawable) {
                     BitmapDrawable bitmapDrawable = (BitmapDrawable) avatarImgView.getDrawable();
                     avatarBmp = bitmapDrawable.getBitmap();
                 } else {
@@ -206,7 +208,7 @@ public class AtlasParticipantPicker extends FrameLayout {
                 Canvas avatarCanvas = new Canvas(avatarBmp);
                 avatarCanvas.drawColor(avatarBackgroundColor, Mode.CLEAR);
                 avatarCanvas.drawColor(avatarBackgroundColor);
-                
+
                 ParticipantEntry entry = participantsForAdapter.get(position);
 
                 if (entry != null) {
@@ -226,7 +228,7 @@ public class AtlasParticipantPicker extends FrameLayout {
                 }
                 avatarCanvas.drawBitmap(maskSingleBmp, 0, 0, maskPaint);
                 avatarImgView.setImageBitmap(avatarBmp);
-                
+
                 // apply styles
                 name.setTextColor(listTextColor);
                 name.setTypeface(listTextTypeface, listTextStyle);
@@ -263,11 +265,13 @@ public class AtlasParticipantPicker extends FrameLayout {
         // track text and filter participant list
         textFilter.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (debug) Log.w(TAG, "beforeTextChanged() s: " + s + " start: " + start + " count: " + count + " after: " + after);
+                if (debug)
+                    Log.w(TAG, "beforeTextChanged() s: " + s + " start: " + start + " count: " + count + " after: " + after);
             }
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (debug) Log.w(TAG, "onTextChanged()     s: " + s + " start: " + start + " before: " + before + " count: " + count);
+                if (debug)
+                    Log.w(TAG, "onTextChanged()     s: " + s + " start: " + start + " before: " + before + " count: " + count);
 
                 final String filter = s.toString().toLowerCase();
                 filterParticipants(filter);
@@ -293,7 +297,7 @@ public class AtlasParticipantPicker extends FrameLayout {
             }
         });
         // END OF ---------------------- Participant Picker ---------------------------------------- 
-        
+
         filterParticipants("");
 
         applyStyle();
@@ -308,7 +312,8 @@ public class AtlasParticipantPicker extends FrameLayout {
                 selectedParticipantsContainer.removeView(child);
             }
         }
-        if (debug) Log.w(TAG, "refreshParticipants() childs left: " + selectedParticipantsContainer.getChildCount());
+        if (debug)
+            Log.w(TAG, "refreshParticipants() childs left: " + selectedParticipantsContainer.getChildCount());
         for (String id : selectedParticipantIds) {
             Participant participant = participantProvider.getParticipant(id);
             View participantView = LayoutInflater.from(selectedParticipantsContainer.getContext()).inflate(R.layout.atlas_view_participants_picker_name_convert, selectedParticipantsContainer, false);
@@ -323,18 +328,19 @@ public class AtlasParticipantPicker extends FrameLayout {
 //                participant.getAvatarDrawable().draw(avatarCanvas);
 //                avaText.setVisibility(View.INVISIBLE);
 //            } else {
-                avaText.setText(Atlas.getInitials(participant));
+            avaText.setText(Atlas.getInitials(participant));
 //            }
 //            avatarCanvas.drawBitmap(maskSmallBmp, 0, 0, maskPaint);
 //            avatarImgView.setImageBitmap(avatarBmp);
-            
+
             TextView nameText = (TextView) participantView.findViewById(R.id.atlas_view_participants_picker_name_convert_name);
             nameText.setText(Atlas.getFullName(participant));
             participantView.setTag(participant);
 
             selectedParticipantsContainer.addView(participantView, selectedParticipantsContainer.getChildCount() - 1);
-            if (debug) Log.w(TAG, "refreshParticipants() child added: " + participantView + ", for: " + participant);
-            
+            if (debug)
+                Log.w(TAG, "refreshParticipants() child added: " + participantView + ", for: " + participant);
+
             // apply styles
             avaText.setTextColor(chipTextColor);
             avaText.setTypeface(chipTextTypeface, chipTextStyle);
@@ -343,7 +349,7 @@ public class AtlasParticipantPicker extends FrameLayout {
             View container = participantView.findViewById(R.id.atlas_view_participants_picker_name_convert);
             GradientDrawable drawable = (GradientDrawable) container.getBackground();
             drawable.setColor(chipBackgroundColor);
-            
+
         }
         if (selectedParticipantIds.size() == 0) {
             LayoutParams params = new LayoutParams(textFilter.getLayoutParams());
@@ -351,11 +357,12 @@ public class AtlasParticipantPicker extends FrameLayout {
         }
         selectedParticipantsContainer.requestLayout();
     }
-    
+
     private void filterParticipants(final String filter) {
         filteredParticipants.clear();
         participantProvider.getParticipants(filter, filteredParticipants);
-        if (debug) Log.w(TAG, "filterParticipants() filtered: " + filteredParticipants.size() + ", filter: " + filter);
+        if (debug)
+            Log.w(TAG, "filterParticipants() filtered: " + filteredParticipants.size() + ", filter: " + filter);
         participantsForAdapter.clear();
         for (Map.Entry<String, Participant> entry : filteredParticipants.entrySet()) {
             if (selectedParticipantIds.contains(entry.getKey())) continue;
@@ -363,26 +370,27 @@ public class AtlasParticipantPicker extends FrameLayout {
             participantsForAdapter.add(new ParticipantEntry(entry.getValue(), entry.getKey()));
         }
         Collections.sort(participantsForAdapter, new ParticipantEntryFilteringComparator(filter));
-        if (debug) Log.w(TAG, "filterParticipants() participants to show: " + participantsForAdapter.size());
+        if (debug)
+            Log.w(TAG, "filterParticipants() participants to show: " + participantsForAdapter.size());
         participantsAdapter.notifyDataSetChanged();
     }
 
     private void setupPaints() {
         avatarPaint.setAntiAlias(true);
         avatarPaint.setDither(true);
-        
+
         maskPaint.setAntiAlias(true);
         maskPaint.setDither(true);
         maskPaint.setXfermode(new PorterDuffXfermode(Mode.DST_IN));
-        
+
         Paint paintCircle = new Paint();
         paintCircle.setStyle(Style.FILL_AND_STROKE);
         paintCircle.setColor(Color.CYAN);
         paintCircle.setAntiAlias(true);
-        
+
         Canvas maskSingleCanvas = new Canvas(maskSingleBmp);
         maskSingleCanvas.drawCircle(0.5f * maskSingleBmp.getWidth(), 0.5f * maskSingleBmp.getHeight(), 0.5f * maskSingleBmp.getWidth(), paintCircle);
-        
+
         avatarBackgroundColor = getResources().getColor(R.color.atlas_shape_avatar_gray);
     }
 
@@ -390,22 +398,22 @@ public class AtlasParticipantPicker extends FrameLayout {
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.AtlasParticipantPicker, R.attr.AtlasParticipantPicker, defStyle);
         this.inputTextColor = ta.getColor(R.styleable.AtlasParticipantPicker_inputTextColor, context.getResources().getColor(R.color.atlas_text_black));
         this.inputTextStyle = ta.getInt(R.styleable.AtlasParticipantPicker_inputTextStyle, Typeface.NORMAL);
-        String inputTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_inputTextTypeface); 
-        this.inputTextTypeface  = inputTextTypefaceName != null ? Typeface.create(inputTextTypefaceName, inputTextStyle) : null;
-        
+        String inputTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_inputTextTypeface);
+        this.inputTextTypeface = inputTextTypefaceName != null ? Typeface.create(inputTextTypefaceName, inputTextStyle) : null;
+
         this.listTextColor = ta.getColor(R.styleable.AtlasParticipantPicker_listTextColor, context.getResources().getColor(R.color.atlas_text_black));
         this.listTextStyle = ta.getInt(R.styleable.AtlasParticipantPicker_listTextStyle, Typeface.NORMAL);
-        String listTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_listTextTypeface); 
-        this.listTextTypeface  = listTextTypefaceName != null ? Typeface.create(listTextTypefaceName, inputTextStyle) : null;
-        
-        this.chipBackgroundColor = ta.getColor(R.styleable.AtlasParticipantPicker_chipBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray)); 
-        this.chipTextColor = ta.getColor(R.styleable.AtlasParticipantPicker_chipTextColor, context.getResources().getColor(R.color.atlas_text_black)); 
+        String listTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_listTextTypeface);
+        this.listTextTypeface = listTextTypefaceName != null ? Typeface.create(listTextTypefaceName, inputTextStyle) : null;
+
+        this.chipBackgroundColor = ta.getColor(R.styleable.AtlasParticipantPicker_chipBackgroundColor, context.getResources().getColor(R.color.atlas_background_gray));
+        this.chipTextColor = ta.getColor(R.styleable.AtlasParticipantPicker_chipTextColor, context.getResources().getColor(R.color.atlas_text_black));
         this.chipTextStyle = ta.getInt(R.styleable.AtlasParticipantPicker_chipTextStyle, Typeface.NORMAL);
-        String chipTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_chipTextTypeface); 
-        this.chipTextTypeface  = chipTextTypefaceName != null ? Typeface.create(chipTextTypefaceName, inputTextStyle) : null;
+        String chipTextTypefaceName = ta.getString(R.styleable.AtlasParticipantPicker_chipTextTypeface);
+        this.chipTextTypeface = chipTextTypefaceName != null ? Typeface.create(chipTextTypefaceName, inputTextStyle) : null;
         ta.recycle();
     }
-    
+
     private void applyStyle() {
         refreshParticipants(selectedParticipantIds);
         participantsAdapter.notifyDataSetChanged();
@@ -470,13 +478,14 @@ public class AtlasParticipantPicker extends FrameLayout {
             return comparator.compare(lhs.participant, rhs.participant);
         }
     }
-    
+
     private static class ParticipantEntry {
         final Participant participant;
         final String id;
 
         public ParticipantEntry(Participant participant, String id) {
-            if (participant == null) throw new IllegalArgumentException("Participant cannot be null");
+            if (participant == null)
+                throw new IllegalArgumentException("Participant cannot be null");
             if (id == null) throw new IllegalArgumentException("ID cannot be null");
             this.participant = participant;
             this.id = id;

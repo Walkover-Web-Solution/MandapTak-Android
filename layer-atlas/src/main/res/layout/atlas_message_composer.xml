@@ -14,12 +14,11 @@
      limitations under the License.    
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
 
-    <TextView 
+    <TextView
         android:id="@+id/atlas_message_composer_upload"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -28,19 +27,19 @@
         android:text="+"
         android:visibility="gone"
         />
-    
+
     <EditText
         android:id="@+id/atlas_message_composer_text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:maxLines="4"
-        android:textSize="@dimen/atlas_text_size_general"
         android:background="@drawable/atlas_ctl_edit_text"
         android:hint="Hi there! ..."
+        android:maxLines="4"
         android:minHeight="48dp"
+        android:textSize="@dimen/atlas_text_size_general"
         />
-    
+
     <TextView
         android:id="@+id/atlas_message_composer_send"
         android:layout_width="wrap_content"
@@ -51,10 +50,10 @@
         android:maxLines="1"
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
-        android:textSize="@dimen/atlas_text_size_general" 
-        android:textColor="@color/atlas_text_gray"
         android:text="SEND"
+        android:textColor="@color/atlas_text_gray"
+        android:textSize="@dimen/atlas_text_size_general"
         />
-            
+
 </LinearLayout>
     

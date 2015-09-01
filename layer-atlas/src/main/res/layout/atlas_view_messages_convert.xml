@@ -14,9 +14,9 @@
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/atlas_view_messages_convert_timebar"
@@ -34,7 +34,7 @@
             android:text="Yesterday"
             android:textColor="@color/atlas_text_gray"
             android:textSize="@dimen/atlas_text_size_smaller2"
-            android:textStyle="bold" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/atlas_view_messages_convert_timebar_time"
@@ -45,13 +45,13 @@
             android:gravity="center_vertical|left"
             android:text="09:08"
             android:textColor="@color/atlas_text_gray"
-            android:textSize="@dimen/atlas_text_size_smaller2" />
+            android:textSize="@dimen/atlas_text_size_smaller2"/>
     </LinearLayout>
 
     <View
         android:id="@+id/atlas_view_messages_convert_spacer_top"
         android:layout_width="match_parent"
-        android:layout_height="7dp" />
+        android:layout_height="7dp"/>
 
     <TextView
         android:id="@+id/atlas_view_messages_convert_user_name"
@@ -61,7 +61,7 @@
         android:layout_marginLeft="48dp"
         android:text="Tomaz Stolfa"
         android:textColor="@color/atlas_text_gray"
-        android:textSize="@dimen/atlas_text_size_smaller2" />
+        android:textSize="@dimen/atlas_text_size_smaller2"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,7 +83,7 @@
                 android:id="@+id/atlas_view_messages_convert_avatar_img"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"/>
 
             <TextView
                 android:id="@+id/atlas_view_messages_convert_initials"
@@ -91,7 +91,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="TS"
-                android:textSize="@dimen/atlas_text_size_smaller2" />
+                android:textSize="@dimen/atlas_text_size_smaller2"/>
 
         </FrameLayout>
 
@@ -103,12 +103,12 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"/>
 
         <View
             android:id="@+id/atlas_view_messages_convert_spacer_right"
             android:layout_width="32dp"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
@@ -120,11 +120,11 @@
         android:layout_marginRight="12dp"
         android:text="Read at 10:12 AM"
         android:textColor="@color/atlas_text_gray"
-        android:textSize="@dimen/atlas_text_size_smaller2" />
+        android:textSize="@dimen/atlas_text_size_smaller2"/>
 
     <View
         android:id="@+id/atlas_view_messages_convert_spacer_bottom"
         android:layout_width="match_parent"
-        android:layout_height="7dp" />
+        android:layout_height="7dp"/>
 
 </LinearLayout>

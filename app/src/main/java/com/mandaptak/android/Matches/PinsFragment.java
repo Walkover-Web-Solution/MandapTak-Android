@@ -54,48 +54,49 @@ public class PinsFragment extends Fragment {
 
     private ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
-//        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-//        q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-//            @Override
-//            public void done(ParseObject object, ParseException e) {
-//                if (e == null)
-//                    profileObject = object;
-//            }
-//        });
-        ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
-        query.whereEqualTo("profileId", Prefs.getProfileId(context));
-        query.findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+        q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (e == null)
-                    if (list.size() > 0) {
-                        for (ParseObject parseObject : list) {
-                            try {
-                                MatchesModel model = new MatchesModel();
-                                String name = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("name");
-                                if (name != null)
-                                    model.setName(name);
-                                String work = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("designation");
-                                if (work != null)
-                                    model.setWork(work);
-                                String religion = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
-                                if (religion != null)
-                                    model.setReligion(religion);
-                                String url = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
-                                if (url != null) {
-                                    model.setUrl(url);
-                                }
-                                matchList.add(model);
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
+            public void done(ParseObject object, ParseException e) {
+                if (e == null){
+                    ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+                    query.whereEqualTo("profileId", object);
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (e == null)
+                                if (list.size() > 0) {
+                                    for (ParseObject parseObject : list) {
+                                        try {
+                                            MatchesModel model = new MatchesModel();
+                                            String name = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("name");
+                                            if (name != null)
+                                                model.setName(name);
+                                            String work = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("designation");
+                                            if (work != null)
+                                                model.setWork(work);
+                                            String religion = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                            if (religion != null)
+                                                model.setReligion(religion);
+                                            String url = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
+                                            if (url != null) {
+                                                model.setUrl(url);
+                                            }
+                                            matchList.add(model);
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
 
+                                    }
+                                    listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
+                                } else
+                                    mApp.showToast(context, "No pins");
                         }
-                        listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
-                    } else
-                        mApp.showToast(context, "No pins");
+                    });
+                }
             }
         });
+
         mApp.dialog.dismiss();
         return matchList;
     }

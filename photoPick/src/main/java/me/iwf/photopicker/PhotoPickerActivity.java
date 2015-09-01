@@ -11,8 +11,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
+import com.github.johnpersano.supertoasts.SuperToast;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -34,8 +34,6 @@ import me.iwf.photopicker.fragment.ImagePagerFragment;
 import me.iwf.photopicker.fragment.PhotoPickerFragment;
 import me.iwf.photopicker.utils.Prefs;
 
-import static android.widget.Toast.LENGTH_LONG;
-
 public class PhotoPickerActivity extends AppCompatActivity {
 
     public final static String EXTRA_MAX_COUNT = "MAX_COUNT";
@@ -52,6 +50,17 @@ public class PhotoPickerActivity extends AppCompatActivity {
      * to prevent multiple calls to inflate menu
      */
     private boolean menuIsInflated = false;
+
+    public static void showToast(Context context, String message) {
+        SuperToast superToast = new SuperToast(context);
+        superToast.cancelAllSuperToasts();
+        superToast.setAnimations(SuperToast.Animations.POPUP);
+        superToast.setDuration(SuperToast.Duration.MEDIUM);
+        superToast.setText(" " + message);
+        superToast.setTextColor(context.getResources().getColor(R.color.red_300));
+        superToast.setBackground(R.drawable.border_toast);
+        superToast.show();
+    }
 
     public static void show_PDialog(Context con, String message) {
         dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
@@ -136,8 +145,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 }
 
                 if (total > maxCount) {
-                    Toast.makeText(getActivity(), getString(R.string.over_max_count_tips, maxCount),
-                            LENGTH_LONG).show();
+                    PhotoPickerActivity.showToast(context, getString(R.string.over_max_count_tips));
                     return false;
                 }
                 menuDoneItem.setTitle(getString(R.string.done_with_count, total, maxCount));
@@ -196,7 +204,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
         if (item.getItemId() == R.id.done) {
             final ArrayList<String> photoPaths = pickerFragment.getPhotoGridAdapter().getSelectedPhotoPaths();
-            show_PDialog(context, "Uploading Image");
+            show_PDialog(context, "Uploading Image..");
             final int[] i = {1};
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -224,11 +232,11 @@ public class PhotoPickerActivity extends AppCompatActivity {
                                                         dialog.dismiss();
                                                         Intent intent = new Intent();
                                                         if (e == null) {
-                                                            Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show();
+                                                            PhotoPickerActivity.showToast(context, "Error while uploading photos");
                                                             intent.putExtra(KEY_SELECTED_PHOTOS, true);
                                                         } else {
                                                             e.printStackTrace();
-                                                            Toast.makeText(context, "Error while uploading photos", Toast.LENGTH_SHORT).show();
+                                                            PhotoPickerActivity.showToast(context, "Error while uploading photos");
                                                             intent.putExtra(KEY_SELECTED_PHOTOS, false);
                                                         }
                                                         setResult(RESULT_OK, intent);

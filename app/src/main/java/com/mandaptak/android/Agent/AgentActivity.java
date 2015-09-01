@@ -73,7 +73,7 @@ public class AgentActivity extends AppCompatActivity {
                                                 if (e == null) {
                                                     getProfiles();
                                                 } else {
-                                                    mApp.showToast(context, "Try after some time");
+                                                    mApp.showToast(context, e.getMessage());
                                                     e.printStackTrace();
                                                 }
                                             }
@@ -116,6 +116,7 @@ public class AgentActivity extends AppCompatActivity {
                                 final ParseObject profileObject = parseObject.fetchIfNeeded().getParseObject("profileId");
                                 boolean isComplete = profileObject.fetchIfNeeded().getBoolean("isComplete");
                                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
+                                agentProfileModel.setProfileObject(profileObject);
                                 if (isComplete) {
                                     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
                                     String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
@@ -124,7 +125,6 @@ public class AgentActivity extends AppCompatActivity {
                                     agentProfileModel.setImageUrl(profileObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
                                     agentProfileModel.setName(profileObject.fetchIfNeeded().getString("name"));
                                     agentProfileModel.setIsComplete(isComplete);
-                                    profileModels.add(agentProfileModel);
                                 } else {
                                     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
                                     String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
@@ -133,15 +133,17 @@ public class AgentActivity extends AppCompatActivity {
                                     agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
                                     agentProfileModel.setName(profileObject.fetchIfNeeded().getParseUser("userId").fetchIfNeeded().getUsername());
                                     agentProfileModel.setIsComplete(profileObject.fetchIfNeeded().getBoolean("isComplete"));
-                                    profileModels.add(agentProfileModel);
-                                    adapter.notifyDataSetChanged();
                                 }
+                                profileModels.add(agentProfileModel);
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }
-
+                        adapter.notifyDataSetChanged();
                     }
+                } else {
+                    mApp.showToast(context, e.getMessage());
+                    e.printStackTrace();
                 }
                 mApp.dialog.dismiss();
             }

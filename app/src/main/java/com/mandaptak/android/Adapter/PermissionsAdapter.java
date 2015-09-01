@@ -77,7 +77,7 @@ public class PermissionsAdapter extends BaseAdapter {
                                 mApp.showToast(activity, "Permission Removed");
                                 activity.getExistingPermissions();
                             } else {
-                                mApp.showToast(activity, "Error while deleting permission");
+                                mApp.showToast(activity, e.getMessage());
                                 e.printStackTrace();
                             }
                         }

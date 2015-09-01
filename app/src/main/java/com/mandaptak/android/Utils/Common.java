@@ -14,12 +14,13 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
+import com.github.johnpersano.supertoasts.SuperToast;
 import com.layer.sdk.exceptions.LayerException;
 import com.mandaptak.android.Layer.LayerCallbacks;
 import com.mandaptak.android.Layer.LayerImpl;
+import com.mandaptak.android.R;
 import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -227,7 +228,14 @@ public class Common extends Application implements LayerCallbacks {
     }
 
     public void showToast(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        SuperToast superToast = new SuperToast(context);
+        superToast.cancelAllSuperToasts();
+        superToast.setAnimations(SuperToast.Animations.POPUP);
+        superToast.setDuration(SuperToast.Duration.MEDIUM);
+        superToast.setText(" " + message);
+        superToast.setTextColor(context.getResources().getColor(R.color.primary));
+        superToast.setBackground(R.drawable.border_toast);
+        superToast.show();
     }
 
     @Override
@@ -285,16 +293,6 @@ public class Common extends Application implements LayerCallbacks {
                     words += "-" + (number % 10);
                 }
             }
-//            String[] unitsMap = new String[]{"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
-//            String[] tensMap = new String[]{"Zero", "Ten", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "seventy", "Eighty", "Ninety"};
-//            if (number < 20) {
-//                words += unitsMap[number];
-//            } else {
-//                words += tensMap[number / 10];
-//                if ((number % 10) > 0) {
-//                    words += "-" + unitsMap[number % 10];
-//                }
-//            }
         }
         return words;
     }

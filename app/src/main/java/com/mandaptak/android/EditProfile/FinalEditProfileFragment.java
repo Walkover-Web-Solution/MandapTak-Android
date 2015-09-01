@@ -189,23 +189,43 @@ public class FinalEditProfileFragment extends Fragment {
                         mApp.dialog.dismiss();
                         mApp.showToast(context, "Please select a primary profile photo");
                     } else {
-                        mApp.dialog.dismiss();
-                        parseObject.put("isComplete", true);
-                        parseObject.saveInBackground(new SaveCallback() {
+                        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                        queryParseQuery.whereEqualTo("profileId", parseObject);
+                        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    try {
-                                        startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                        getActivity().finish();
-                                        mApp.showToast(context, "Profile updated");
-                                    } catch (Exception e2) {
-                                        mApp.showToast(context, "Error while updating profile");
-                                        e2.printStackTrace();
+                            public void done(List<ParseObject> list, ParseException e) {
+                                boolean isPrimarySet = false;
+                                if (list != null) {
+                                    for (ParseObject item : list) {
+                                        if (item.getBoolean("isPrimary")) {
+                                            isPrimarySet = true;
+                                        }
                                     }
+                                }
+                                if (isPrimarySet) {
+                                    mApp.dialog.dismiss();
+                                    parseObject.put("isComplete", true);
+                                    parseObject.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if (e == null) {
+                                                try {
+                                                    startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                    getActivity().finish();
+                                                    mApp.showToast(context, "Profile updated");
+                                                } catch (Exception e2) {
+                                                    mApp.showToast(context, "Error while updating profile");
+                                                    e2.printStackTrace();
+                                                }
+                                            } else {
+                                                mApp.showToast(context, "Error while updating profile");
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
                                 } else {
-                                    mApp.showToast(context, "Error while updating profile");
-                                    e.printStackTrace();
+                                    mApp.dialog.dismiss();
+                                    mApp.showToast(context, "Please select a primary profile photo");
                                 }
                             }
                         });

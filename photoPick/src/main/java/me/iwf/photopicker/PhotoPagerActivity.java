@@ -17,7 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
@@ -48,7 +47,6 @@ public class PhotoPagerActivity extends AppCompatActivity {
 
     public final static String EXTRA_CURRENT_ITEM = "current_item";
     public final static String EXTRA_PHOTOS = "photos";
-    ParseObject profileObject;
     private ImagePagerFragment pagerFragment;
     private ActionBar actionBar;
     private Context context;
@@ -122,49 +120,58 @@ public class PhotoPagerActivity extends AppCompatActivity {
             PhotoPickerActivity.show_PDialog(context, "Deleting Photo..");
             final int index = pagerFragment.getCurrentItem();
             final String deleteParseObjectId = pagerFragment.getPaths().get(index).getParseObjectId();
-            ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-            deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
-            deleteObjectParseQuery.getInBackground(deleteParseObjectId, new GetCallback<ParseObject>() {
+            ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+            q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    parseObject.deleteInBackground(new DeleteCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            PhotoPickerActivity.dialog.dismiss();
-                            if (e == null) {
-                                if (pagerFragment.getPaths().size() <= 1) {
-                                    // show confirm dialog
-                                    new AlertDialog.Builder(context)
-                                            .setTitle(R.string.confirm_to_delete)
-                                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    dialogInterface.dismiss();
-                                                    Intent intent = new Intent();
-                                                    intent.putExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, true);
-                                                    setResult(RESULT_OK, intent);
-                                                    finish();
-                                                }
-                                            })
-                                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    dialogInterface.dismiss();
-                                                }
-                                            })
-                                            .show();
-                                } else {
-                                    pagerFragment.getPaths().remove(index);
-                                    pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                                }
-                            } else {
-                                Toast.makeText(context, "Unable to delete from record", Toast.LENGTH_SHORT).show();
+                public void done(ParseObject object, ParseException e) {
+                    if (e == null) {
+                        ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
+                        deleteObjectParseQuery.whereEqualTo("profileId", object);
+                        deleteObjectParseQuery.getInBackground(deleteParseObjectId, new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject parseObject, ParseException e) {
+                                parseObject.deleteInBackground(new DeleteCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        PhotoPickerActivity.dialog.dismiss();
+                                        if (e == null) {
+                                            if (pagerFragment.getPaths().size() <= 1) {
+                                                // show confirm dialog
+                                                new AlertDialog.Builder(context)
+                                                        .setTitle(R.string.confirm_to_delete)
+                                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                                dialogInterface.dismiss();
+                                                                Intent intent = new Intent();
+                                                                intent.putExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, true);
+                                                                setResult(RESULT_OK, intent);
+                                                                finish();
+                                                            }
+                                                        })
+                                                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                                dialogInterface.dismiss();
+                                                            }
+                                                        })
+                                                        .show();
+                                            } else {
+                                                pagerFragment.getPaths().remove(index);
+                                                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                                            }
+                                        } else {
+                                            PhotoPickerActivity.showToast(context, "Unable to delete from record");
+                                        }
+                                    }
+                                });
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        PhotoPickerActivity.showToast(context, "Unable to delete from record");
+                    }
                 }
             });
-
             return true;
         }
         if (item.getItemId() == R.id.profile) {
@@ -262,41 +269,41 @@ public class PhotoPagerActivity extends AppCompatActivity {
                                                             @Override
                                                             public void done(ParseException e) {
                                                                 if (e == null) {
-                                                                    Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
+                                                                    PhotoPickerActivity.showToast(context, "Profile photo saved");
                                                                     final int index = pagerFragment.getCurrentItem();
                                                                     ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
                                                                     q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                                                                         @Override
                                                                         public void done(ParseObject object, ParseException e) {
-                                                                            if (e == null)
-                                                                                profileObject = object;
-                                                                        }
-                                                                    });
-                                                                    ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
-                                                                    deleteObjectParseQuery.whereEqualTo("profileId", profileObject);
-                                                                    deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                                                        @Override
-                                                                        public void done(List<ParseObject> list, ParseException e) {
                                                                             if (e == null) {
-                                                                                for (int i = 0; i < list.size(); i++) {
-                                                                                    ParseObject parseObject = list.get(i);
-                                                                                    if (i == index) {
-                                                                                        pagerFragment.getPaths().get(i).setIsPrimary(true);
-                                                                                        parseObject.put("isPrimary", true);
-                                                                                        parseObject.saveInBackground();
-                                                                                    } else {
-                                                                                        pagerFragment.getPaths().get(i).setIsPrimary(false);
-                                                                                        parseObject.put("isPrimary", false);
-                                                                                        parseObject.saveInBackground();
+                                                                                ParseQuery<ParseObject> deleteObjectParseQuery = new ParseQuery<>("Photo");
+                                                                                deleteObjectParseQuery.whereEqualTo("profileId", object);
+                                                                                deleteObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                                                    @Override
+                                                                                    public void done(List<ParseObject> list, ParseException e) {
+                                                                                        if (e == null) {
+                                                                                            for (int i = 0; i < list.size(); i++) {
+                                                                                                ParseObject parseObject = list.get(i);
+                                                                                                if (i == index) {
+                                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(true);
+                                                                                                    parseObject.put("isPrimary", true);
+                                                                                                    parseObject.saveInBackground();
+                                                                                                } else {
+                                                                                                    pagerFragment.getPaths().get(i).setIsPrimary(false);
+                                                                                                    parseObject.put("isPrimary", false);
+                                                                                                    parseObject.saveInBackground();
+                                                                                                }
+                                                                                            }
+                                                                                            pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
+                                                                                            pagerFragment.getViewPager().setCurrentItem(index, true);
+                                                                                        }
                                                                                     }
-                                                                                }
-                                                                                pagerFragment.getViewPager().getAdapter().notifyDataSetChanged();
-                                                                                pagerFragment.getViewPager().setCurrentItem(index, true);
+                                                                                });
                                                                             }
                                                                         }
                                                                     });
                                                                 } else {
-                                                                    Toast.makeText(context, "Failed to save profile photo.", Toast.LENGTH_SHORT).show();
+                                                                    PhotoPickerActivity.showToast(context, "Failed to save profile photo.");
                                                                     e.printStackTrace();
                                                                 }
                                                             }

@@ -1,13 +1,24 @@
 package com.mandaptak.android.Models;
 
+import com.parse.ParseObject;
+
 public class AgentProfileModel {
     private String name;
     private String imageUrl;
     private boolean isActive;
     private boolean isComplete;
     private String createDate;
+    private ParseObject profileObject;
 
     public AgentProfileModel() {
+    }
+
+    public ParseObject getProfileObject() {
+        return profileObject;
+    }
+
+    public void setProfileObject(ParseObject profileObject) {
+        this.profileObject = profileObject;
     }
 
     public String getName() {

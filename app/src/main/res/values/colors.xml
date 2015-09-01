@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FFBF3D</color>
-    <color name="primary_dark">#ffffc632</color>
+    <color name="primary">@color/red_300</color>
+    <color name="primary_dark">@color/red_500</color>
     <!-- See through -->
     <color name="transparent">#00000000</color>
 

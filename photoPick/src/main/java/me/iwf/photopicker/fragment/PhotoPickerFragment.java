@@ -20,15 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.R;
 import me.iwf.photopicker.adapter.PhotoGridAdapter;
 import me.iwf.photopicker.adapter.PopupDirectoryListAdapter;
 import me.iwf.photopicker.entity.Photo;
 import me.iwf.photopicker.entity.PhotoDirectory;
-import me.iwf.photopicker.event.OnPhotoClickListener;
 import me.iwf.photopicker.utils.ImageCaptureManager;
-import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.MediaStoreHelper;
 
 import static android.app.Activity.RESULT_OK;
@@ -104,26 +101,6 @@ public class PhotoPickerFragment extends Fragment {
 
                 photoGridAdapter.setCurrentDirectoryIndex(position);
                 photoGridAdapter.notifyDataSetChanged();
-            }
-        });
-
-        photoGridAdapter.setOnPhotoClickListener(new OnPhotoClickListener() {
-            @Override
-            public void onClick(View v, int position, boolean showCamera) {
-                final int index = showCamera ? position - 1 : position;
-
-                List<String> photos = photoGridAdapter.getCurrentPhotoPaths();
-                ArrayList<ImageModel> pics = new ArrayList<>();
-                for (String pic : photos) {
-                    pics.add(new ImageModel(pic, false, null));
-                }
-                int[] screenLocation = new int[2];
-                v.getLocationOnScreen(screenLocation);
-                ImagePagerFragment imagePagerFragment =
-                        ImagePagerFragment.newInstance(pics, index, screenLocation,
-                                v.getWidth(), v.getHeight());
-
-                ((PhotoPickerActivity) getActivity()).addImagePagerFragment(imagePagerFragment);
             }
         });
 

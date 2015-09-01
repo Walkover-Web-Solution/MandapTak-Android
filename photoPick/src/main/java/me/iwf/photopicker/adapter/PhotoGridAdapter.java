@@ -17,7 +17,6 @@ import me.iwf.photopicker.R;
 import me.iwf.photopicker.entity.Photo;
 import me.iwf.photopicker.entity.PhotoDirectory;
 import me.iwf.photopicker.event.OnItemCheckListener;
-import me.iwf.photopicker.event.OnPhotoClickListener;
 import me.iwf.photopicker.utils.MediaStoreHelper;
 
 /**
@@ -30,7 +29,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
     private LayoutInflater inflater;
     private Context mContext;
     private OnItemCheckListener onItemCheckListener = null;
-    private OnPhotoClickListener onPhotoClickListener = null;
     private View.OnClickListener onCameraClickListener = null;
     private boolean hasCamera = true;
 
@@ -94,8 +92,15 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
             holder.ivPhoto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (onPhotoClickListener != null) {
-                        onPhotoClickListener.onClick(view, position, showCamera());
+                    boolean isEnable = true;
+
+                    if (onItemCheckListener != null) {
+                        isEnable = onItemCheckListener.OnItemCheck(position, photo, isChecked,
+                                getSelectedPhotos().size());
+                    }
+                    if (isEnable) {
+                        toggleSelection(photo);
+                        notifyItemChanged(position);
                     }
                 }
             });
@@ -133,10 +138,6 @@ public class PhotoGridAdapter extends SelectableAdapter<PhotoGridAdapter.PhotoVi
 
     public void setOnItemCheckListener(OnItemCheckListener onItemCheckListener) {
         this.onItemCheckListener = onItemCheckListener;
-    }
-
-    public void setOnPhotoClickListener(OnPhotoClickListener onPhotoClickListener) {
-        this.onPhotoClickListener = onPhotoClickListener;
     }
 
     public void setOnCameraClickListener(View.OnClickListener onCameraClickListener) {

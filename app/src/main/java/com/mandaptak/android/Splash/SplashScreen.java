@@ -52,7 +52,14 @@ public class SplashScreen extends AppCompatActivity {
                                 if (e == null) {
                                     try {
                                         if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
-                                            validateProfile(parseObject);
+                                            if (parseObject.fetchIfNeeded().getBoolean("isComplete")) {
+                                                startActivity(new Intent(SplashScreen.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                SplashScreen.this.finish();
+                                            } else {
+                                                startActivity(new Intent(SplashScreen.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                SplashScreen.this.finish();
+                                            }
+//                                            validateProfile(parseObject);
                                         } else {
                                             ParseUser.logOut();
                                             mApp.showToast(context, "Account Deactivated: Contact Agent");
@@ -80,7 +87,6 @@ public class SplashScreen extends AppCompatActivity {
                     } else {
                         mApp.showToast(context, "Internet Connection Required");
                     }
-
                 } else if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("Agent")) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
                     query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {

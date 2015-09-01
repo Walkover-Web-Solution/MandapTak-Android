@@ -9,11 +9,14 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mandaptak.android.Agent.AgentActivity;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -21,10 +24,12 @@ import java.util.ArrayList;
 public class AgentProfilesAdapter extends BaseAdapter {
     AgentActivity activity;
     ArrayList<AgentProfileModel> list;
+    Common mApp;
 
     public AgentProfilesAdapter(AgentActivity activity, ArrayList<AgentProfileModel> paramArrayList) {
         this.list = paramArrayList;
         this.activity = activity;
+        mApp = (Common) activity.getApplicationContext();
     }
 
     public int getCount() {
@@ -55,7 +60,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
-        AgentProfileModel agentProfileModel = list.get(paramInt);
+        final AgentProfileModel agentProfileModel = list.get(paramInt);
         try {
             viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
             if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
@@ -91,7 +96,21 @@ public class AgentProfilesAdapter extends BaseAdapter {
                         popup.getMenuInflater().inflate(R.menu.agent_pop_item_deactive_menu, popup.getMenu());
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             public boolean onMenuItemClick(MenuItem item) {
-                                Toast.makeText(activity, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                                mApp.show_PDialog(activity, "Deactivating Profile..");
+                                ParseObject parseObject = agentProfileModel.getProfileObject();
+                                parseObject.put("isActive", false);
+                                parseObject.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        mApp.dialog.dismiss();
+                                        if (e == null) {
+                                            mApp.showToast(activity, "Profile Deactivated");
+                                            activity.getProfiles();
+                                        } else {
+                                            mApp.showToast(activity, e.getMessage());
+                                        }
+                                    }
+                                });
                                 return true;
                             }
                         });
@@ -106,7 +125,21 @@ public class AgentProfilesAdapter extends BaseAdapter {
                         popup.getMenuInflater().inflate(R.menu.agent_pop_item_active_menu, popup.getMenu());
                         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             public boolean onMenuItemClick(MenuItem item) {
-                                Toast.makeText(activity, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                                mApp.show_PDialog(activity, "Activating Profile..");
+                                ParseObject parseObject = agentProfileModel.getProfileObject();
+                                parseObject.put("isActive", true);
+                                parseObject.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        mApp.dialog.dismiss();
+                                        if (e == null) {
+                                            mApp.showToast(activity, "Profile Activated");
+                                            activity.getProfiles();
+                                        } else {
+                                            mApp.showToast(activity, e.getMessage());
+                                        }
+                                    }
+                                });
                                 return true;
                             }
                         });

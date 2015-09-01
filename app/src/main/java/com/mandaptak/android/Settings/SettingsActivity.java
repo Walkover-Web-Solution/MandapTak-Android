@@ -138,7 +138,7 @@ public class SettingsActivity extends AppCompatActivity {
                                 onBackPressed();
                             } else {
                                 e.printStackTrace();
-                                mApp.showToast(context, "Error while resetting profiles");
+                                mApp.showToast(context, e.getMessage());
                             }
                         }
                     });
@@ -172,7 +172,10 @@ public class SettingsActivity extends AppCompatActivity {
                                                 ParseUser user = item.fetchIfNeeded().getParseUser("userId");
                                                 PermissionModel permissionModel = new PermissionModel();
                                                 String relation = item.fetchIfNeeded().getString("relation");
-                                                permissionModel.setRelation(relation);
+                                                if (relation.equals(""))
+                                                    permissionModel.setRelation("Bachelor");
+                                                else
+                                                    permissionModel.setRelation(relation);
                                                 permissionModel.setDate("Permission given on: " + date);
                                                 permissionModel.setNumber(user.fetchIfNeeded().getUsername());
                                                 if (user == ParseUser.getCurrentUser()) {

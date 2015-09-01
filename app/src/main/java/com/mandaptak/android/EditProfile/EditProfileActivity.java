@@ -91,7 +91,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             }
         });
 
-        ParseQuery<ParseObject> parseQueryParseQuery = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
         parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {

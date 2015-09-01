@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
         matches = (ImageButton) findViewById(R.id.matches_icon);
         labelLoading = (TextView) findViewById(R.id.label_loading);
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
             clickListeners();
             if (mApp.isNetworkAvailable(context)) {
                 mApp.show_PDialog(context, "Loading..");
-                ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+                ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
                 query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                     @Override
                     public void done(ParseObject parseObject, ParseException e) {
@@ -465,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
@@ -605,13 +605,21 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
+            if (profileList.get(0).containsKey("age") && profileList.get(0).getString("age") != null) {
+                frontHeight.setText(profileList.get(0).getString("age"));
+                slideHeight.setText(profileList.get(0).getString("age"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != null) {
                 int[] bases = getResources().getIntArray(R.array.heightCM);
                 String[] values = getResources().getStringArray(R.array.height);
                 Arrays.sort(bases);
                 int index = Arrays.binarySearch(bases, profileList.get(0).getInt("height"));
-                frontHeight.setText(values[index]);
-                slideHeight.setText(values[index]);
+                frontHeight.append(" ," + values[index]);
+                slideHeight.append(" ," + values[index]);
             }
         } catch (Exception e) {
             e.printStackTrace();

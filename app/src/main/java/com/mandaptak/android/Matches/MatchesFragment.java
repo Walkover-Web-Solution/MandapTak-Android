@@ -64,7 +64,7 @@ public class MatchesFragment extends Fragment {
 
     private ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -73,7 +73,7 @@ public class MatchesFragment extends Fragment {
             }
         });
         if (profileObject != null) {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("LikedProfile");
+            ParseQuery<ParseObject> query = new ParseQuery<>("LikedProfile");
             query.whereEqualTo("likeProfileId", profileObject);
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
@@ -81,7 +81,7 @@ public class MatchesFragment extends Fragment {
                     if (list.size() > 0) {
                         for (final ParseObject parseObject : list) {
                             try {
-                                ParseQuery<ParseObject> query2 = ParseQuery.getQuery("LikedProfile");
+                                ParseQuery<ParseObject> query2 = new ParseQuery<>("LikedProfile");
                                 query2.whereEqualTo("likeProfileId", parseObject.fetchIfNeeded().getParseObject("profileId")).
                                         whereEqualTo("profileId", profileObject);
                                 query2.getFirstInBackground(new GetCallback<ParseObject>() {

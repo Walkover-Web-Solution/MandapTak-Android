@@ -210,7 +210,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                             final ParseFile parseFile = new ParseFile(file.getName(), read(file));
                             parseFile.saveInBackground(new SaveCallback() {
                                 public void done(ParseException e) {
-                                    ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+                                    ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
                                     q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                                         @Override
                                         public void done(ParseObject object, ParseException e) {

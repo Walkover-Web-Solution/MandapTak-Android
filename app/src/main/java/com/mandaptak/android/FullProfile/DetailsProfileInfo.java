@@ -66,7 +66,7 @@ public class DetailsProfileInfo extends Fragment {
 
     private void getParseData() {
         if (parseObjectId != null) {
-            ParseQuery<ParseObject> parseQuery = ParseQuery.getQuery("Profile");
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {

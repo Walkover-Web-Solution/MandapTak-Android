@@ -54,7 +54,7 @@ public class PinsFragment extends Fragment {
 
     private ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -62,7 +62,7 @@ public class PinsFragment extends Fragment {
                     profileObject = object;
             }
         });
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("PinnedProfile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", profileObject);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override

@@ -431,7 +431,7 @@ public class DetailsProfileFragment extends Fragment {
     }
 
     private void getParseData() {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
@@ -486,8 +486,7 @@ public class DetailsProfileFragment extends Fragment {
 
     void saveInfo() {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.whereEqualTo("objectId", Prefs.getProfileId(context));
-        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (newReligion != null)

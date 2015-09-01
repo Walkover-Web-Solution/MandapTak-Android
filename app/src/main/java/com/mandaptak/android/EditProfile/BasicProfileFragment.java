@@ -257,7 +257,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     private void getParseData() {
         mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {

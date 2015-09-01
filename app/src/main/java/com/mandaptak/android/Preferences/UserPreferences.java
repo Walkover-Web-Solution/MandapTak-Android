@@ -643,7 +643,7 @@ public class UserPreferences extends AppCompatActivity {
     }
 
     private void getParseData() {
-        ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -652,7 +652,7 @@ public class UserPreferences extends AppCompatActivity {
             }
         });
         if (profileObject != null) {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("Preference");
+            ParseQuery<ParseObject> query = new ParseQuery<>("Preference");
             query.whereEqualTo("profileId", profileObject);
             query.getFirstInBackground(new GetCallback<ParseObject>() {
                 @Override
@@ -724,7 +724,7 @@ public class UserPreferences extends AppCompatActivity {
     }
 
     private void getLocationData(ParseObject object) {
-        ParseQuery<ParseObject> query2 = ParseQuery.getQuery("LocationPreferences");
+        ParseQuery<ParseObject> query2 = new ParseQuery<>("LocationPreferences");
         query2.whereEqualTo("preferenceId", object);
         query2.include("cityId");
         query2.include("cityId.Parent.Parent");

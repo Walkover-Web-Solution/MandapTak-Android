@@ -260,7 +260,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
                                                                 file.delete();
                                                                 Toast.makeText(context, "Profile photo saved", Toast.LENGTH_SHORT).show();
                                                                 final int index = pagerFragment.getCurrentItem();
-                                                                ParseQuery<ParseObject> q1 = ParseQuery.getQuery("Profile");
+                                                                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
                                                                 q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                                                                     @Override
                                                                     public void done(ParseObject object, ParseException e) {

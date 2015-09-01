@@ -49,7 +49,7 @@ public class SplashScreen extends AppCompatActivity {
                         @Override
                         protected Void doInBackground(Void... voids) {
                             try {
-                                role = user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name");
+                                role = user.fetch().getParseObject("roleId").fetch().getString("name");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

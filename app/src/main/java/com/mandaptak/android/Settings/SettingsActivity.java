@@ -37,7 +37,7 @@ import java.util.List;
 import me.iwf.photopicker.utils.Prefs;
 
 public class SettingsActivity extends AppCompatActivity {
-    LinearLayout resetButton, switchProfileButton;
+    LinearLayout resetButton;
     Common mApp;
     Context context;
     ListView permissionList;
@@ -54,7 +54,6 @@ public class SettingsActivity extends AppCompatActivity {
         permissionList = (ListView) findViewById(R.id.permissions_list);
         permissionFooter = View.inflate(context, R.layout.permission_list_footer, null);
         resetButton = (LinearLayout) permissionFooter.findViewById(R.id.reset_profiles_button);
-        switchProfileButton = (LinearLayout) permissionFooter.findViewById(R.id.switch_profile_button);
         morePermission = (TextView) permissionFooter.findViewById(R.id.more_permission);
         permissionList.addFooterView(permissionFooter);
         permissionList.setFooterDividersEnabled(true);
@@ -146,12 +145,6 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                     mApp.showToast(context, "Internet connection required");
                 }
-            }
-        });
-        switchProfileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
     }

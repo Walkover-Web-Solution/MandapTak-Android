@@ -9,7 +9,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
+import android.text.InputFilter;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -22,6 +22,7 @@ import com.mandaptak.android.Splash.SplashScreen;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
 import com.mandaptak.android.Views.TypefaceTextView;
+import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
@@ -33,6 +34,7 @@ import com.parse.ParseUser;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.HashMap;
+import java.util.List;
 
 import me.iwf.photopicker.utils.Prefs;
 
@@ -108,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             etNumber.setText("");
             etNumber.setHint("xxx-xxx-xxxx");
             etNumber.setPrefix("+91 ");
+            etNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
             numberImage.setImageResource(R.drawable.ic_call_white);
             label.setText("Enter your number below to get access");
             sendOtp = true;
@@ -139,8 +142,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendOtpOnGivenNumber(String mobileNumber) {
-        getUserLogin("");
-
         if (mApp.isNetworkAvailable(context)) {
             mApp.show_PDialog(context, "Sending Verification Code...");
             try {
@@ -154,6 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                             etNumber.setText("");
                             numberImage.setImageResource(R.drawable.ic_code_verify_white);
                             sendOtp = false;
+                            etNumber.setFilters(new InputFilter[]{new InputFilter.LengthFilter(4)});
                             etNumber.setHint("xxxx");
                             etNumber.setPrefix("");
                             loginButton.setText("VERIFY");
@@ -173,37 +175,53 @@ public class LoginActivity extends AppCompatActivity {
     private void getUserLogin(String password) {
         if (mApp.isNetworkAvailable(context)) {
             mApp.show_PDialog(context, "Logging in...");
-            ParseUser.logInInBackground("9407528910", "walkover", new LogInCallback() {
+            ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
                 public void done(final ParseUser user, ParseException e) {
                     if (user != null) {
                         try {
-                            if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("User")) {
+                            String role = user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name");
+                            if (role.equals("User")) {
                                 ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                                 query.whereEqualTo("userId", user);
                                 query.whereNotEqualTo("relation", "Agent");
-                                query.whereEqualTo("isPrimary", true);
-                                query.getFirstInBackground(new GetCallback<ParseObject>() {
-                                                               @Override
-                                                               public void done(ParseObject parseObject, ParseException e) {
-                                                                   mApp.dialog.dismiss();
-                                                                   if (e == null) {
-                                                                       if (!LayerImpl.isAuthenticated()) {
-                                                                           LayerImpl.authenticateUser();
-                                                                       }
-                                                                       Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                                                       startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                                                       LoginActivity.this.finish();
-                                                                   } else {
-                                                                       ParseUser.logOut();
-                                                                       e.printStackTrace();
-                                                                       mApp.showToast(context, "Login Error");
-                                                                   }
-                                                               }
-                                                           }
-                                );
-                            } else if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("Agent")) {
+                                query.findInBackground(new FindCallback<ParseObject>() {
+                                    @Override
+                                    public void done(List<ParseObject> list, ParseException e) {
+                                        if (e == null) {
+                                            int size = list.size();
+                                            ParseObject parseObject = null;
+
+                                            for (int i = 0; i < size; i++) {
+                                                if (list.get(i).getBoolean("isPrimary")) {
+                                                    parseObject = list.get(i);
+                                                } else if (size == i - 1) {
+                                                    parseObject = list.get(i);
+                                                }
+                                            }
+                                            if (parseObject != null) {
+                                                if (!LayerImpl.isAuthenticated()) {
+                                                    LayerImpl.authenticateUser();
+                                                }
+                                                Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                                startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                LoginActivity.this.finish();
+                                            } else {
+                                                ParseUser.logOut();
+                                                e.printStackTrace();
+                                                mApp.showToast(context, "Error fetching profile");
+                                            }
+                                        } else {
+                                            ParseUser.logOut();
+                                            e.printStackTrace();
+                                            mApp.showToast(context, e.getMessage());
+                                        }
+                                        mApp.dialog.dismiss();
+                                    }
+                                });
+                            } else if (role.equals("Agent")) {
                                 ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                                 query.whereEqualTo("userId", user);
+                                query.whereEqualTo("isPrimary", true);
                                 query.whereNotEqualTo("relation", "Agent");
                                 query.getFirstInBackground(new GetCallback<ParseObject>() {
                                                                @Override
@@ -233,8 +251,9 @@ public class LoginActivity extends AppCompatActivity {
                             e1.printStackTrace();
                         }
                     } else {
-                        Log.e("Login", "" + e);
-                        mApp.showToast(context, "Invalid ID/Password");
+                        mApp.dialog.dismiss();
+                        e.printStackTrace();
+                        mApp.showToast(context, e.getMessage());
                     }
                 }
             });

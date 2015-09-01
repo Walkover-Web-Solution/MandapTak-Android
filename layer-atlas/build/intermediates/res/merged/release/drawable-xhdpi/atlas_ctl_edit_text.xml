@@ -20,4 +20,4 @@
     <item android:state_activated="true" android:drawable="@drawable/atlas_ctl_edit_text_activated"/>    
     <item 								android:drawable="@drawable/atlas_ctl_edit_text_enabled"/>
 </selector>
-<!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/drawable-xhdpi/atlas_ctl_edit_text.xml -->
+<!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/drawable-xhdpi/atlas_ctl_edit_text.xml -->

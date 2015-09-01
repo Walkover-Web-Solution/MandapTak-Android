@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/values/atlas-strings.xml -->
+    <!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/values/atlas-strings.xml -->
     <eat-comment/>
     <string-array name="atlas_typing_indicator">
         <item>No one is typing</item>
@@ -9,7 +9,7 @@
         <item>Three people are typing…</item>
         <item>Many people are typing…</item>
     </string-array>
-    <!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/values/atlas-styles.xml -->
+    <!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/values/atlas-styles.xml -->
     <eat-comment/>
     <attr format="reference" name="AtlasConversationList"/>
     <attr format="reference" name="AtlasMessageComposer"/>
@@ -105,7 +105,7 @@
         <flag name="italic" value="2"/>
     </attr>
     <attr format="string|reference" name="theirTextTypeface"/>
-    <!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/values/atlas-colors.xml -->
+    <!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/values/atlas-colors.xml -->
     <eat-comment/>
     <color name="atlas_background_blue">#21AAE1</color>
     <color name="atlas_background_blue_bright">#2196F3</color>
@@ -135,14 +135,14 @@
     <declare-styleable name="AtlasMessageList"><attr name="myBubbleColor"/><attr name="myTextColor"/><attr name="myTextSize"/><attr name="myTextTypeface"/><attr name="myTextStyle"/><attr name="theirBubbleColor"/><attr name="theirTextColor"/><attr name="theirTextSize"/><attr name="theirTextTypeface"/><attr name="theirTextStyle"/><attr name="dateTextColor"/><attr name="avatarTextColor"/><attr name="avatarBackgroundColor"/></declare-styleable>
     <declare-styleable name="AtlasParticipantPicker"><attr name="inputTextColor"/><attr name="inputTextTypeface"/><attr name="inputTextStyle"/><attr name="listTextColor"/><attr name="listTextTypeface"/><attr name="listTextStyle"/><attr name="avatarBackgroundColor"/><attr name="avatarTextColor"/><attr name="chipBackgroundColor"/><attr name="chipTextColor"/><attr name="chipTextTypeface"/><attr name="chipTextStyle"/></declare-styleable>
     <declare-styleable name="AtlasTypingIndicator"><attr name="indicatorTextColor"/><attr name="indicatorTextSize"/><attr name="indicatorTextTypeface"/><attr name="indicatorTextStyle"/></declare-styleable>
-    <!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/values/atlas-dimens.xml -->
+    <!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/values/atlas-dimens.xml -->
     <eat-comment/>
     <dimen name="atlas_text_size_general">16sp</dimen>
     <dimen name="atlas_text_size_smaller">14sp</dimen>
     <dimen name="atlas_text_size_smaller2">12sp</dimen>
     <dimen name="atlas_text_size_tiny">8sp</dimen>
     <dimen name="atlas_text_size_title">20sp</dimen>
-    <!-- From: file:/C:/Rakshit/studio_projects/mandaptak-android/layer-atlas/src/main/res/values/atlas-styles.xml -->
+    <!-- From: file:/Users/arpit/Android%20Studio%20Projects/MandapTak/layer-atlas/src/main/res/values/atlas-styles.xml -->
     <eat-comment/>
     <style name="AtlasConversationList">
         <item name="cellTitleTextColor">@color/atlas_text_black</item>

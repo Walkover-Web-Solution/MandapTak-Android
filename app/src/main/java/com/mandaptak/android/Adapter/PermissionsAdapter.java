@@ -53,12 +53,17 @@ public class PermissionsAdapter extends BaseAdapter {
         viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
         viewholder.tvRelation.setText(permissionModel.getRelation());
         viewholder.tvDate.setText(permissionModel.getDate());
-        viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if (permissionModel.isCurrentUser()) {
+            viewholder.deleteButton.setVisibility(View.GONE);
+        } else {
+            viewholder.deleteButton.setVisibility(View.VISIBLE);
+            viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-            }
-        });
+                }
+            });
+        }
         return paramView;
     }
 

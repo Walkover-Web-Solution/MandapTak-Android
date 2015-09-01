@@ -20,12 +20,19 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
+import com.parse.FindCallback;
 import com.parse.FunctionCallback;
+import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import me.iwf.photopicker.utils.Prefs;
 
@@ -60,6 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         init();
+        getExistingPermissions();
         morePermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,7 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
                     alertDialog.setView(permissionDialog);
                     final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
                     AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
-                    Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
+                    final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
                     etNumber.setPrefix("+91");
                     relations.setAdapter(ArrayAdapter.createFromResource(context,
                             R.array.relation_array, R.layout.location_list_item));
@@ -79,16 +87,19 @@ public class SettingsActivity extends AppCompatActivity {
                             String mobileNumber = etNumber.getText().toString();
                             if (!mobileNumber.equals("")) {
                                 if (mobileNumber.length() == 10) {
+                                    alertDialog.dismiss();
                                     mApp.show_PDialog(context, "Giving Permission..");
                                     HashMap<String, Object> params = new HashMap<>();
                                     params.put("mobile", mobileNumber);
                                     params.put("profileId", Prefs.getProfileId(context));
+                                    params.put("relation", relations.getSelectedItem());
+
                                     ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
                                         @Override
                                         public void done(Object o, ParseException e) {
                                             mApp.dialog.dismiss();
                                             if (e == null) {
-                                                onBackPressed();
+                                                getExistingPermissions();
                                             } else {
                                                 e.printStackTrace();
                                                 mApp.showToast(context, "Error while resetting profiles");
@@ -136,7 +147,62 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     void getExistingPermissions() {
-
+        mApp.show_PDialog(context, "Loading...");
+        try {
+            ParseQuery<ParseObject> profileQuery = new ParseQuery<>("Profile");
+            profileQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject profileObject, ParseException e) {
+                    if (e == null) {
+                        ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                        query.whereEqualTo("profileId", profileObject);
+                        query.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> list, ParseException e) {
+                                if (e == null) {
+                                    if (list.size() > 0) {
+                                        permissionModels.clear();
+                                        for (ParseObject item : list) {
+                                            try {
+                                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                                                String date = sdf.format(item.getCreatedAt());
+                                                ParseUser user = item.fetchIfNeeded().getParseUser("userId");
+                                                PermissionModel permissionModel = new PermissionModel();
+                                                String relation = item.fetchIfNeeded().getString("relation");
+                                                permissionModel.setRelation(relation);
+                                                permissionModel.setDate("Permission given on: " + date);
+                                                permissionModel.setNumber(user.fetchIfNeeded().getUsername());
+                                                if (user == ParseUser.getCurrentUser()) {
+                                                    permissionModel.setIsCurrentUser(true);
+                                                } else if (relation.equals("Agent")) {
+                                                    permissionModel.setIsCurrentUser(true);
+                                                } else {
+                                                    permissionModel.setIsCurrentUser(false);
+                                                }
+                                                permissionModels.add(permissionModel);
+                                            } catch (ParseException e1) {
+                                                e1.printStackTrace();
+                                            }
+                                            permissionsAdapter = new PermissionsAdapter(context, permissionModels);
+                                            permissionList.setAdapter(permissionsAdapter);
+                                        }
+                                    }
+                                } else {
+                                    e.printStackTrace();
+                                }
+                                mApp.dialog.dismiss();
+                            }
+                        });
+                    } else {
+                        mApp.dialog.dismiss();
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            mApp.dialog.dismiss();
+            e.printStackTrace();
+        }
     }
 
     @Override

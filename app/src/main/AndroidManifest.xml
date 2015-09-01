@@ -12,6 +12,13 @@
         android:name="android.hardware.camera"
         android:required="true"/>
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true"/>
+
     <application
         android:name=".Utils.Common"
         android:allowBackup="true"
@@ -27,6 +34,7 @@
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         //-------------------Facebook INIT ---------------------------
         <activity
@@ -55,13 +63,8 @@
         <activity
             android:name=".Main.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+            android:theme="@style/MainActivityTheme"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
         <activity
             android:name=".EditProfile.EditProfileActivity"
             android:screenOrientation="portrait"/>
@@ -74,13 +77,12 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".Settings.SettingsActivity"
-            android:label="@string/title_activity_settings">
-        </activity>
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Matches.MatchedProfileActivity"
-            android:label="@string/title_activity_matched_profile">
-        </activity>
-
+            android:label="@string/title_activity_matched_profile"
+            android:screenOrientation="portrait"/>
 
         <receiver android:name="com.layer.sdk.services.LayerReceiver">
             <intent-filter>
@@ -89,29 +91,41 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-
         <receiver
             android:name="com.layer.sdk.services.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+
                 <category android:name="com.layer.quick_start_android"/>
             </intent-filter>
         </receiver>
-
         <receiver android:name=".Layer.LayerPushReceiver">
             <intent-filter>
                 <action android:name="com.layer.sdk.PUSH"/>
+
                 <category android:name="com.layer.quick_start_android"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
+
                 <category android:name="com.layer.quick_start_android"/>
             </intent-filter>
         </receiver>
 
         <!-- For GCM Push Notifications -->
         <service android:name="com.layer.sdk.services.GcmIntentService"/>
+
+        <activity
+            android:name=".Splash.SplashScreen"
+            android:label="@string/title_activity_splash_screen"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

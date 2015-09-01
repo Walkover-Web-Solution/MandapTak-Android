@@ -4,11 +4,24 @@ public class PermissionModel {
     private String number;
     private String relation;
     private String date;
+    private boolean isCurrentUser;
+
+    public PermissionModel() {
+    }
 
     public PermissionModel(String number, String relation, String date) {
         this.number = number;
         this.relation = relation;
         this.date = date;
+
+    }
+
+    public boolean isCurrentUser() {
+        return isCurrentUser;
+    }
+
+    public void setIsCurrentUser(boolean isCurrentUser) {
+        this.isCurrentUser = isCurrentUser;
     }
 
     public String getNumber() {

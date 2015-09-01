@@ -42,14 +42,14 @@ public abstract class QueryAdapter<Tquery extends Queryable, Tview extends Recyc
         mCallback = callback;
         setHasStableIds(false);
 
-        Log.d("Activity", "Query adapter created");
+        Log.e("Activity", "Query adapter created");
     }
 
     //After a Query Adapter is initialized, the refresh method executes the query, which will then
     // execute any necessary callbacks
     public void refresh() {
 
-        Log.d("Activity", "Query Adapter refreshed");
+        Log.e("Activity", "Query Adapter refreshed");
         mQueryController.execute();
     }
 
@@ -59,7 +59,7 @@ public abstract class QueryAdapter<Tquery extends Queryable, Tview extends Recyc
 
     //The Conversation or Message object can be unpacked into the ViewHolder
     public void onBindViewHolder(Tview viewHolder, int position) {
-        Log.d("Activity", "onBindViewHolder called: " + mQueryController.getItem(position).getId());
+        Log.e("Activity", "onBindViewHolder called: " + mQueryController.getItem(position).getId());
         onBindViewHolder(viewHolder, mQueryController.getItem(position));
     }
 

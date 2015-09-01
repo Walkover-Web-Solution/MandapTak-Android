@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -53,11 +54,10 @@ public class MatchesAdapter extends BaseAdapter {
         viewholder.tvName.setText(matchesModel.getName());
         viewholder.tvReligion.setText(matchesModel.getReligion());
         viewholder.tvWork.setText(matchesModel.getWork());
-        Glide.with(ctx)
-                .load(Uri.parse(list.get(paramInt).getUrl()))
-                .error(R.drawable.com_facebook_profile_picture_blank_square)
-                .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+        Picasso.with(ctx)
+                .load(matchesModel.getUrl())
                 .into(viewholder.profilePic);
+
         return paramView;
     }
 

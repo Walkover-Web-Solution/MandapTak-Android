@@ -116,7 +116,7 @@ private Common mApp;
             return;
         }
 
-        Log.d("Activity", "binding conversation: " + conversation.getId() + " with participants: " + conversation.getParticipants().toString());
+        Log.e("Activity", "binding conversation: " + conversation.getId() + " with participants: " + conversation.getParticipants().toString());
 
         //Set the Conversation (so when this item is clicked, we can start a MessageActivity and
         // show all the messages associated with it)

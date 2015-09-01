@@ -46,18 +46,12 @@ public class LayerImpl  {
 
     //Merely checks to see if you have updated the App ID. If the App ID is entered incorrectly,
     // the LayerClient will fail to initialize
-    public static boolean hasValidAppID(){
-        if(LayerAppID.equals("LAYER_APP_ID")){
-            return false;
-        }
 
-        return true;
-    }
 
     //Called when any Activity is created to make sure the LayerClient is created, the callbacks
     // are registered, and the LayerClient is connected
     public static void initialize(Context context){
-        if(mLayerClient == null && hasValidAppID()){
+        if(mLayerClient == null){
             LayerClient.enableLogging(context);
             mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID);
         }

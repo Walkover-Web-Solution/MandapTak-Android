@@ -67,18 +67,18 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
         if (!LayerImpl.isAuthenticated()) {
             LayerImpl.authenticateUser();
         }
-        mConversationsAdapter = new ConversationQueryAdapter(context.getApplicationContext(), LayerImpl.getLayerClient(), this, new QueryAdapter.Callback() {
-            @Override
-            public void onItemInserted() {
-                Log.d("Activity", "Conversation Adapter, new conversation inserted");
-            }
-        });
-
-        //Attach the Query Adapter to the Recycler View
-        conversationsView.setAdapter(mConversationsAdapter);
-
-        //Execute the Query
-        mConversationsAdapter.refresh();
+//        mConversationsAdapter = new ConversationQueryAdapter(context.getApplicationContext(), LayerImpl.getLayerClient(), this, new QueryAdapter.Callback() {
+//            @Override
+//            public void onItemInserted() {
+//                Log.d("Activity", "Conversation Adapter, new conversation inserted");
+//            }
+//        });
+//
+//        //Attach the Query Adapter to the Recycler View
+//        conversationsView.setAdapter(mConversationsAdapter);
+//
+//        //Execute the Query
+//        mConversationsAdapter.refresh();
 
     }
 

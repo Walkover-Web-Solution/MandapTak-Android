@@ -38,11 +38,11 @@ import me.iwf.photopicker.utils.Prefs;
 public class DetailsProfileFragment extends Fragment {
     Common mApp;
     private TextView religion, height, caste, gotra;
-    private Spinner mangalik;
+    private Spinner manglik;
     private ExtendedEditText weight;
     private Context context;
     private View rootView;
-    private int newHeight = 0, newWeight = 0, newMangalik = 0;
+    private int newHeight = 0, newWeight = 0, newManglik = 0;
     private ParseNameModel newReligion, newCaste, newGotra;
 
     public DetailsProfileFragment() {
@@ -267,12 +267,12 @@ public class DetailsProfileFragment extends Fragment {
                 alert.show();
             }
         });
-        mangalik.setAdapter(ArrayAdapter.createFromResource(getActivity(),
-                R.array.mangalik_array, R.layout.location_list_item));
-        mangalik.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        manglik.setAdapter(ArrayAdapter.createFromResource(getActivity(),
+                R.array.manglik_array, R.layout.location_list_item));
+        manglik.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                newMangalik = i;
+                newManglik = i;
             }
 
             @Override
@@ -414,8 +414,8 @@ public class DetailsProfileFragment extends Fragment {
                         tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
                         tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
                         tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-                        newMangalik = parseObject.getInt("mangalik");
-                        mangalik.setSelection(newMangalik);
+                        newManglik = parseObject.getInt("manglik");
+                        manglik.setSelection(newManglik);
                         if (newHeight != 0) {
                             if (isAdded()) {
                                 int[] bases = getResources().getIntArray(R.array.heightCM);
@@ -473,7 +473,7 @@ public class DetailsProfileFragment extends Fragment {
 
                 parseObject.put("height", newHeight);
                 parseObject.put("weight", newWeight);
-                parseObject.put("mangalik", newMangalik);
+                parseObject.put("manglik", newManglik);
                 parseObject.saveInBackground();
             }
         });
@@ -485,7 +485,7 @@ public class DetailsProfileFragment extends Fragment {
         caste = (TextView) rootView.findViewById(R.id.caste);
         gotra = (TextView) rootView.findViewById(R.id.gotra);
         weight = (ExtendedEditText) rootView.findViewById(R.id.weight);
-        mangalik = (Spinner) rootView.findViewById(R.id.mangalik);
+        manglik = (Spinner) rootView.findViewById(R.id.manglik);
     }
 
     public class DataAdapter extends ArrayAdapter<ParseNameModel> {

@@ -44,44 +44,67 @@ public class SplashScreen extends AppCompatActivity {
         } else {
             try {
                 if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("User")) {
-                    if (user.fetchIfNeeded().getBoolean("isActive")) {
-                        if (mApp.isNetworkAvailable(context)) {
-                            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-                            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                                @Override
-                                public void done(ParseObject parseObject, ParseException e) {
-                                    if (e == null) {
-                                        validateProfile(parseObject);
-                                    } else if (e.getCode() == 209) {
-                                        //INVALID SESSION TOKEN
+                    if (mApp.isNetworkAvailable(context)) {
+                        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+                        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject parseObject, ParseException e) {
+                                if (e == null) {
+                                    try {
+                                        if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
+                                            validateProfile(parseObject);
+                                        } else {
+                                            ParseUser.logOut();
+                                            mApp.showToast(context, "Account Deactivated: Contact Agent");
+                                            startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                            SplashScreen.this.finish();
+                                        }
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
                                         ParseUser.logOut();
+                                        mApp.showToast(context, "Account Deactivated: Contact Agent");
                                         startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                         SplashScreen.this.finish();
-                                    } else {
-                                        e.printStackTrace();
-                                        mApp.showToast(context, "Connection Error");
                                     }
+                                } else if (e.getCode() == 209) {
+                                    //INVALID SESSION TOKEN
+                                    ParseUser.logOut();
+                                    startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                    SplashScreen.this.finish();
+                                } else {
+                                    e.printStackTrace();
+                                    mApp.showToast(context, "Connection Error");
                                 }
-                            });
-                        } else {
-                            mApp.showToast(context, "Internet Connection Required");
-                        }
+                            }
+                        });
                     } else {
-                        ParseUser.logOut();
-                        mApp.showToast(context, "Account Deactivated: Contact Agent");
-                        startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                        SplashScreen.this.finish();
+                        mApp.showToast(context, "Internet Connection Required");
                     }
+
                 } else if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("Agent")) {
-                    if (user.fetchIfNeeded().getBoolean("isActive")) {
-                        startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                        SplashScreen.this.finish();
-                    } else {
-                        ParseUser.logOut();
-                        mApp.showToast(context, "Account Deactivated: Contact Administrator");
-                        startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                        SplashScreen.this.finish();
-                    }
+                    ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+                    query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject parseObject, ParseException e) {
+                            try {
+                                if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
+                                    startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                    SplashScreen.this.finish();
+                                } else {
+                                    ParseUser.logOut();
+                                    mApp.showToast(context, "Account Deactivated: Contact Administrator");
+                                    startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                    SplashScreen.this.finish();
+                                }
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                                ParseUser.logOut();
+                                mApp.showToast(context, "Account Deactivated: Contact Administrator");
+                                startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                SplashScreen.this.finish();
+                            }
+                        }
+                    });
                 } else {
                     ParseUser.logOut();
                     mApp.showToast(context, "Admin Comming Soon");
@@ -150,7 +173,7 @@ public class SplashScreen extends AppCompatActivity {
             return false;
         } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
             return false;
-        } else if (!parseObject.containsKey("mangalik") || parseObject.get("mangalik").equals(JSONObject.NULL)) {
+        } else if (!parseObject.containsKey("manglik") || parseObject.get("manglik").equals(JSONObject.NULL)) {
             return false;
         } else {
             return true;

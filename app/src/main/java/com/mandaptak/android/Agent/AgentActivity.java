@@ -16,7 +16,6 @@ import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
-import com.parse.GetCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -94,12 +93,14 @@ public class AgentActivity extends AppCompatActivity {
                 }
             }
         });
+        adapter = new AgentProfilesAdapter(AgentActivity.this, profileModels);
+        profileList.setAdapter(adapter);
         if (mApp.isNetworkAvailable(context)) {
             getProfiles();
         }
     }
 
-    void getProfiles() {
+    public void getProfiles() {
         mApp.show_PDialog(context, "Loading Profiles...");
         ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
         query.whereEqualTo("userId", ParseUser.getCurrentUser());
@@ -113,7 +114,7 @@ public class AgentActivity extends AppCompatActivity {
                         for (ParseObject parseObject : list) {
                             try {
                                 final ParseObject profileObject = parseObject.fetchIfNeeded().getParseObject("profileId");
-                                final boolean isComplete = profileObject.fetchIfNeeded().getBoolean("isComplete");
+                                boolean isComplete = profileObject.fetchIfNeeded().getBoolean("isComplete");
                                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
                                 if (isComplete) {
                                     SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
@@ -125,34 +126,21 @@ public class AgentActivity extends AppCompatActivity {
                                     agentProfileModel.setIsComplete(isComplete);
                                     profileModels.add(agentProfileModel);
                                 } else {
-                                    ParseUser.getQuery().getInBackground(profileObject.fetchIfNeeded().getString("userId"), new GetCallback<ParseUser>() {
-                                        @Override
-                                        public void done(ParseUser parseUser, ParseException e) {
-                                            if (e == null) {
-                                                try {
-                                                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-                                                    String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
-                                                    agentProfileModel.setCreateDate(date);
-                                                    agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
-                                                    agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
-                                                    agentProfileModel.setName(parseUser.fetchIfNeeded().getUsername());
-                                                    agentProfileModel.setIsComplete(isComplete);
-                                                    profileModels.add(agentProfileModel);
-                                                    adapter.notifyDataSetChanged();
-                                                } catch (Exception e1) {
-                                                    e1.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                    });
+                                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                                    String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
+                                    agentProfileModel.setCreateDate(date);
+                                    agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
+                                    agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
+                                    agentProfileModel.setName(profileObject.fetchIfNeeded().getParseUser("userId").fetchIfNeeded().getUsername());
+                                    agentProfileModel.setIsComplete(profileObject.fetchIfNeeded().getBoolean("isComplete"));
+                                    profileModels.add(agentProfileModel);
+                                    adapter.notifyDataSetChanged();
                                 }
-
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }
-                        adapter = new AgentProfilesAdapter(context, profileModels);
-                        profileList.setAdapter(adapter);
+
                     }
                 }
                 mApp.dialog.dismiss();

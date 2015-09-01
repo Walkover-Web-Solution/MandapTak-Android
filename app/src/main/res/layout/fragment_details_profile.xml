@@ -111,12 +111,12 @@
             android:clickable="true"
             android:gravity="center|start"
             android:padding="16dp"
-            android:text="Are you mangalik ?"
+            android:text="Are you manglik ?"
             android:textColor="@color/black_light"
             android:textSize="@dimen/abc_text_size_medium_material"/>
 
         <Spinner
-            android:id="@+id/mangalik"
+            android:id="@+id/manglik"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

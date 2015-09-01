@@ -1,14 +1,17 @@
 package com.mandaptak.android.Adapter;
 
-import android.content.Context;
 import android.net.Uri;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.mandaptak.android.Agent.AgentActivity;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
 import com.squareup.picasso.Picasso;
@@ -16,12 +19,12 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 public class AgentProfilesAdapter extends BaseAdapter {
-    Context context;
+    AgentActivity activity;
     ArrayList<AgentProfileModel> list;
 
-    public AgentProfilesAdapter(Context context, ArrayList<AgentProfileModel> paramArrayList) {
+    public AgentProfilesAdapter(AgentActivity activity, ArrayList<AgentProfileModel> paramArrayList) {
         this.list = paramArrayList;
-        this.context = context;
+        this.activity = activity;
     }
 
     public int getCount() {
@@ -42,7 +45,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
 
         if (paramView == null) {
             viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(context).inflate(R.layout.agent_profile_item, null);
+            paramView = LayoutInflater.from(activity).inflate(R.layout.agent_profile_item, null);
             viewholder.name = (TextView) paramView.findViewById(R.id.name);
             viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
             viewholder.status = (TextView) paramView.findViewById(R.id.status);
@@ -56,30 +59,62 @@ public class AgentProfilesAdapter extends BaseAdapter {
         try {
             viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
             if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
-                viewholder.status.setTextColor(context.getResources().getColor(R.color.yellow_700));
+                viewholder.status.setTextColor(activity.getResources().getColor(R.color.yellow_700));
                 viewholder.status.setText("Profile Incomplete");
             } else if (!agentProfileModel.isActive()) {
-                viewholder.status.setTextColor(context.getResources().getColor(R.color.red_500));
+                viewholder.status.setTextColor(activity.getResources().getColor(R.color.red_500));
                 viewholder.status.setText("Deactive");
             } else {
-                viewholder.status.setTextColor(context.getResources().getColor(R.color.green_500));
+                viewholder.status.setTextColor(activity.getResources().getColor(R.color.green_500));
                 viewholder.status.setText("Active");
             }
             if (agentProfileModel.isComplete()) {
                 viewholder.name.setText(agentProfileModel.getName());
-                Picasso.with(context)
+                Picasso.with(activity)
                         .load(agentProfileModel.getImageUrl())
                         .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
                         .error(R.drawable.com_facebook_profile_picture_blank_square)
                         .into(viewholder.image);
             } else {
                 viewholder.name.setText("+91" + agentProfileModel.getName());
-                Picasso.with(context)
+                Picasso.with(activity)
                         .load(Uri.parse(agentProfileModel.getImageUrl()))
                         .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
                         .error(R.drawable.com_facebook_profile_picture_blank_square)
                         .into(viewholder.image);
             }
+            if (agentProfileModel.isActive()) {
+                viewholder.more.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PopupMenu popup = new PopupMenu(activity, view);
+                        popup.getMenuInflater().inflate(R.menu.agent_pop_item_deactive_menu, popup.getMenu());
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                Toast.makeText(activity, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                                return true;
+                            }
+                        });
+                        popup.show();
+                    }
+                });
+            } else {
+                viewholder.more.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        PopupMenu popup = new PopupMenu(activity, view);
+                        popup.getMenuInflater().inflate(R.menu.agent_pop_item_active_menu, popup.getMenu());
+                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            public boolean onMenuItemClick(MenuItem item) {
+                                Toast.makeText(activity, "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
+                                return true;
+                            }
+                        });
+                        popup.show();
+                    }
+                });
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -22,11 +22,11 @@ import java.util.Arrays;
 public class DetailsProfileInfo extends Fragment {
 
     Common mApp;
-    private TextView religion, height, caste, gotra, mangalikStatus;
+    private TextView religion, height, caste, gotra, manglikStatus;
     private ExtendedEditText weight;
     private Context context;
     private View rootView;
-    private int newHeight = 0, newWeight = 0, newMangalik = 0;
+    private int newHeight = 0, newWeight = 0, newManglik = 0;
     private ParseNameModel newReligion, newCaste, newGotra;
     private String parseObjectId;
 
@@ -62,7 +62,7 @@ public class DetailsProfileInfo extends Fragment {
         caste = (TextView) rootView.findViewById(R.id.caste);
         gotra = (TextView) rootView.findViewById(R.id.gotra);
         weight = (ExtendedEditText) rootView.findViewById(R.id.weight);
-        mangalikStatus = (TextView) rootView.findViewById(R.id.mangalik);
+        manglikStatus = (TextView) rootView.findViewById(R.id.manglik);
     }
 
     private void getParseData() {
@@ -79,16 +79,16 @@ public class DetailsProfileInfo extends Fragment {
                             tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
                             tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
                             tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-                            newMangalik = parseObject.getInt("mangalik");
-                            switch (newMangalik) {
+                            newManglik = parseObject.getInt("manglik");
+                            switch (newManglik) {
                                 case 0:
-                                    mangalikStatus.setText("No");
+                                    manglikStatus.setText("No");
                                     break;
                                 case 1:
-                                    mangalikStatus.setText("Yes");
+                                    manglikStatus.setText("Yes");
                                     break;
                                 case 2:
-                                    mangalikStatus.setText("Aanshik");
+                                    manglikStatus.setText("Aanshik");
                                     break;
                             }
 

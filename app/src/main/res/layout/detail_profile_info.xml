@@ -90,12 +90,12 @@
                 android:clickable="true"
                 android:gravity="center|start"
                 android:padding="16dp"
-                android:text="mangalik "
+                android:text="manglik "
                 android:textColor="@color/black_light"
                 android:textSize="@dimen/abc_text_size_small_material"/>
 
             <TextView
-                android:id="@+id/mangalik"
+                android:id="@+id/manglik"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"/>

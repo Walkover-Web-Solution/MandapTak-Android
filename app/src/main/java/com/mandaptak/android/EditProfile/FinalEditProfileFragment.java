@@ -254,7 +254,7 @@ public class FinalEditProfileFragment extends Fragment {
             return false;
         } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
             return false;
-        } else if (!parseObject.containsKey("mangalik") || parseObject.get("mangalik").equals(JSONObject.NULL)) {
+        } else if (!parseObject.containsKey("manglik") || parseObject.get("manglik").equals(JSONObject.NULL)) {
             return false;
         } else {
             return true;

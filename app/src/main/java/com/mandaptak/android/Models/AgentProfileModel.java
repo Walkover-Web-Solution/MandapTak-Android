@@ -1,9 +1,12 @@
 package com.mandaptak.android.Models;
 
+import android.net.Uri;
+
 public class AgentProfileModel {
     private String name;
-    private String imageUrl;
+    private Uri imageUri;
     private boolean isActive;
+    private boolean isComplete;
     private String createDate;
 
     public AgentProfileModel() {
@@ -17,12 +20,12 @@ public class AgentProfileModel {
         this.name = name;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public Uri getImageUri() {
+        return imageUri;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
     }
 
     public boolean isActive() {
@@ -41,4 +44,11 @@ public class AgentProfileModel {
         this.createDate = createDate;
     }
 
+    public boolean isComplete() {
+        return isComplete;
+    }
+
+    public void setIsComplete(boolean isComplete) {
+        this.isComplete = isComplete;
+    }
 }

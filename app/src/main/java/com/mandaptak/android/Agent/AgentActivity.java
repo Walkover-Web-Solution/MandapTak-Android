@@ -2,6 +2,7 @@ package com.mandaptak.android.Agent;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -107,7 +108,6 @@ public class AgentActivity extends AppCompatActivity {
         mApp.show_PDialog(context, "Loading Profiles...");
         ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
         query.whereEqualTo("userId", ParseUser.getCurrentUser());
-        query.include("profileId");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -116,13 +116,26 @@ public class AgentActivity extends AppCompatActivity {
                         profileModels.clear();
                         for (ParseObject parseObject : list) {
                             try {
+                                ParseObject profileObject = parseObject.fetchIfNeeded().getParseObject("profileId");
+                                boolean isComplete = profileObject.fetchIfNeeded().getBoolean("isComplete");
                                 AgentProfileModel agentProfileModel = new AgentProfileModel();
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
-                                String date = sdf.format(parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getCreatedAt());
-                                agentProfileModel.setCreateDate(date);
-                                agentProfileModel.setIsActive(parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getBoolean("isActive"));
-                                agentProfileModel.setImageUrl(parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getParseFile("profilePic").getUrl());
-                                agentProfileModel.setName(parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("name"));
+                                if (isComplete) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                                    String date = sdf.format(profileObject.fetchIfNeeded().getCreatedAt());
+                                    agentProfileModel.setCreateDate(date);
+                                    agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
+                                    agentProfileModel.setImageUri(Uri.parse(profileObject.fetchIfNeeded().getParseFile("profilePic").getUrl()));
+                                    agentProfileModel.setName(profileObject.fetchIfNeeded().getString("name"));
+                                    agentProfileModel.setIsComplete(isComplete);
+                                } else {
+                                    SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                                    String date = sdf.format(parseObject.fetchIfNeeded().getParseUser("userId").fetchIfNeeded().getCreatedAt());
+                                    agentProfileModel.setCreateDate(date);
+                                    agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
+                                    agentProfileModel.setImageUri(Uri.parse("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square"));
+                                    agentProfileModel.setName(parseObject.fetchIfNeeded().getParseUser("userId").fetchIfNeeded().getUsername());
+                                    agentProfileModel.setIsComplete(isComplete);
+                                }
                                 profileModels.add(agentProfileModel);
                             } catch (Exception e1) {
                                 e1.printStackTrace();

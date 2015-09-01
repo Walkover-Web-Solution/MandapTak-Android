@@ -62,7 +62,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
                 viewholder.status.setText("Deactive");
             }
             Picasso.with(context)
-                    .load(agentProfileModel.getImageUrl())
+                    .load(agentProfileModel.getImageUri())
                     .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
                     .error(R.drawable.com_facebook_profile_picture_blank_square)
                     .into(viewholder.image);

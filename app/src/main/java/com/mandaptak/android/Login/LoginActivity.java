@@ -2,6 +2,7 @@ package com.mandaptak.android.Login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +21,7 @@ import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Splash.SplashScreen;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Utils.IncomingSms;
 import com.mandaptak.android.Views.ExtendedEditText;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FindCallback;
@@ -47,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     String mobileNumber, mobileNumberParam;
     TypefaceTextView label;
     ImageView numberImage;
+    IncomingSms incomingSms;
 
     public static void setCode(String code) {
         if (etNumber != null && !sendOtp)
@@ -57,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        incomingSms = new IncomingSms();
         context = this;
         mApp = (Common) context.getApplicationContext();
         try {
@@ -107,6 +111,16 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         etNumber.setText(mApp.getNumber());
+
+        IntentFilter intentFilter = new IntentFilter(
+                "android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(incomingSms, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(incomingSms);
+        super.onDestroy();
     }
 
     @Override

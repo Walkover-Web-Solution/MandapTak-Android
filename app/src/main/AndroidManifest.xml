@@ -37,12 +37,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         tools:replace="theme,icon,label">
-
-        <receiver android:name=".Utils.IncomingSms">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-            </intent-filter>
-        </receiver>
         //-------------------Facebook INIT ---------------------------
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"

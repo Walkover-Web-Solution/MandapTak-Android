@@ -560,6 +560,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (menu.isMenuShowing()) {
+            menu.toggle();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (mApp.isNetworkAvailable(context))

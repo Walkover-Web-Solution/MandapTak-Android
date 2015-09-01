@@ -129,6 +129,10 @@
             android:name=".Utils.InternetConnectionError"
             android:label="@string/title_activity_internet_connection_error">
         </activity>
+        <activity
+            android:name=".Agent.AgentActivity"
+            android:label="@string/title_activity_agent">
+        </activity>
     </application>
 
 </manifest>

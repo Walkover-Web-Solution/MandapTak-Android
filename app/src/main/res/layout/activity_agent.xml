@@ -1,0 +1,50 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.mandaptak.android.Agent.AgentActivity">
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1000 Credits"
+            android:textColor="@color/red_500"
+            android:textSize="@dimen/abc_text_size_large_material"/>
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="0.05dp"
+        android:layout_below="@+id/top"
+        android:layout_marginBottom="16dp"
+        android:background="@color/black_light"/>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/add_button"
+        android:layout_below="@+id/divider1"/>
+
+    <TextView
+        android:id="@+id/add_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/red_400"
+        android:clickable="true"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="+ Upload More Profiles"
+        android:textColor="@color/white"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
+</RelativeLayout>

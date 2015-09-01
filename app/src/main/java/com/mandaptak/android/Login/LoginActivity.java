@@ -13,13 +13,13 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.mandaptak.android.Layer.LayerImpl;
-import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Splash.SplashScreen;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.ExtendedEditText;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     AppCompatButton loginButton;
     Context context;
     Common mApp;
-    EditText etNumber;
+    ExtendedEditText etNumber;
     String mobileNumber, mobileNumberParam;
     Boolean sendOtp = true;
     TypefaceTextView label;
@@ -55,7 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception ignored) {
         }
         loginButton = (AppCompatButton) findViewById(R.id.login_button);
-        etNumber = (EditText) findViewById(R.id.number);
+        etNumber = (ExtendedEditText) findViewById(R.id.number);
         label = (TypefaceTextView) findViewById(R.id.label_number);
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (sendOtp && mobileNumber.length() > 9) {
                         mobileNumberParam = mobileNumber;
                         sendOtpOnGivenNumber(mobileNumberParam);
-                    } else if (mobileNumber.length() > 5) {
+                    } else if (mobileNumber.length() == 4) {
                         verifyOtpForGivenNumber(mobileNumber);
                     }
                 } else
@@ -163,10 +163,11 @@ public class LoginActivity extends AppCompatActivity {
         if (mApp.isNetworkAvailable(context)) {
             mApp.show_PDialog(context, "Logging in...");
             ParseUser.logInInBackground(mobileNumberParam, password, new LogInCallback() {
-                public void done(ParseUser user, ParseException e) {
+                public void done(final ParseUser user, ParseException e) {
                     if (user != null) {
                         ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
                         query.whereEqualTo("userId", user);
+                        query.include("roleId");
                         query.getFirstInBackground(new GetCallback<ParseObject>() {
                                                        @Override
                                                        public void done(ParseObject parseObject, ParseException e) {
@@ -176,7 +177,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                    LayerImpl.authenticateUser();
                                                                }
                                                                Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                                               startActivity(new Intent(LoginActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                               startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                                LoginActivity.this.finish();
                                                            } else {
                                                                ParseUser.logOut();

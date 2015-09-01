@@ -31,7 +31,7 @@
         android:textColor="@color/white_alpha"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
-    <EditText
+    <com.mandaptak.android.Views.ExtendedEditText
         android:id="@+id/number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

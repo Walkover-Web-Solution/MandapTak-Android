@@ -68,7 +68,7 @@ public class SplashScreen extends AppCompatActivity {
                         SplashScreen.this.finish();
                     }
                 } else if (user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name").equals("Agent")) {
-                    if (user.fetchIfNeeded().getBoolean("isAcive")) {
+                    if (user.fetchIfNeeded().getBoolean("isActive")) {
                         startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                         SplashScreen.this.finish();
                     } else {

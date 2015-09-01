@@ -1,16 +1,21 @@
 package com.mandaptak.android.Agent;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mandaptak.android.Adapter.AgentProfilesAdapter;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.ExtendedEditText;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -45,26 +50,51 @@ public class AgentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context)) {
-                    mApp.show_PDialog(context, "Creating User...");
-                    try {
-                        HashMap<String, Object> params = new HashMap<>();
-                        params.put("mobile", "9856852415");
-                        params.put("agentId", ParseUser.getCurrentUser().getObjectId());
-                        ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
-                            @Override
-                            public void done(Object o, ParseException e) {
-                                mApp.dialog.dismiss();
-                                if (e == null) {
-                                    getProfiles();
+                    final View permissionDialog = View.inflate(context, R.layout.add_permission_dialog, null);
+                    final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                    alertDialog.setView(permissionDialog);
+                    final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
+                    AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+                    final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
+                    etNumber.setPrefix("+91");
+                    relations.setAdapter(ArrayAdapter.createFromResource(context,
+                            R.array.relation_array, R.layout.location_list_item));
+                    giveButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String mobileNumber = etNumber.getText().toString();
+                            if (!mobileNumber.equals("")) {
+                                if (mobileNumber.length() == 10) {
+                                    alertDialog.dismiss();
+                                    if (mApp.isNetworkAvailable(context)) {
+                                        mApp.show_PDialog(context, "Creating User...");
+                                        HashMap<String, Object> params = new HashMap<>();
+                                        params.put("mobile", mobileNumber);
+                                        params.put("agentId", ParseUser.getCurrentUser().getObjectId());
+                                        ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
+                                            @Override
+                                            public void done(Object o, ParseException e) {
+                                                mApp.dialog.dismiss();
+                                                if (e == null) {
+                                                    getProfiles();
+                                                } else {
+                                                    mApp.showToast(context, "Try after some time");
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                    }
                                 } else {
-                                    mApp.showToast(context, "Try after some time");
-                                    e.printStackTrace();
+                                    mApp.showToast(context, "Invalid Mobile Number");
                                 }
+                            } else {
+                                mApp.showToast(context, "Enter Mobile Number");
                             }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                        }
+                    });
+                    alertDialog.show();
+                } else {
+                    mApp.showToast(context, "Internet connection required");
                 }
             }
         });

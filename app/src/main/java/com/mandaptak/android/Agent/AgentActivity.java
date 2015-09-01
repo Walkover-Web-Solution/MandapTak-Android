@@ -50,7 +50,7 @@ public class AgentActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context)) {
-                    final View permissionDialog = View.inflate(context, R.layout.add_permission_dialog, null);
+                    final View permissionDialog = View.inflate(context, R.layout.add_user_dialog, null);
                     final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
                     alertDialog.setView(permissionDialog);
                     final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);

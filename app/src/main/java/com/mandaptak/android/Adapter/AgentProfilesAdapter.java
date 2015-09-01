@@ -43,29 +43,32 @@ public class AgentProfilesAdapter extends BaseAdapter {
             viewholder = new ViewHolder();
             paramView = LayoutInflater.from(context).inflate(R.layout.agent_profile_item, null);
             viewholder.name = (TextView) paramView.findViewById(R.id.name);
-            viewholder.date = ((TextView) paramView.findViewById(R.id.date));
+            viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
             viewholder.status = (TextView) paramView.findViewById(R.id.status);
-            viewholder.image = (ImageView) paramView.findViewById(R.id.image);
+            viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
             paramView.setTag(viewholder);
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
         AgentProfileModel agentProfileModel = list.get(paramInt);
-
-        viewholder.name.setText(agentProfileModel.getName());
-        viewholder.date.setText("Uploaded On: " + agentProfileModel.getCreateDate());
-        if (agentProfileModel.isActive()) {
-            viewholder.status.setTextColor(context.getResources().getColor(R.color.green_500));
-            viewholder.status.setText("Active");
-        } else {
-            viewholder.status.setTextColor(context.getResources().getColor(R.color.red_500));
-            viewholder.status.setText("Deactivated");
+        try {
+            viewholder.name.setText(agentProfileModel.getName());
+            viewholder.date.setText("Uploaded On: " + agentProfileModel.getCreateDate());
+            if (agentProfileModel.isActive()) {
+                viewholder.status.setTextColor(context.getResources().getColor(R.color.green_500));
+                viewholder.status.setText("Active");
+            } else {
+                viewholder.status.setTextColor(context.getResources().getColor(R.color.red_500));
+                viewholder.status.setText("Deactive");
+            }
+            Picasso.with(context)
+                    .load(agentProfileModel.getImageUrl())
+                    .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+                    .error(R.drawable.com_facebook_profile_picture_blank_square)
+                    .into(viewholder.image);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        Picasso.with(context)
-                .load(agentProfileModel.getImageUrl())
-                .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-                .error(R.drawable.com_facebook_profile_picture_blank_square)
-                .into(viewholder.image);
         return paramView;
     }
 

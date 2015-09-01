@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
-        android:text="Enter Mobile Number of Person"
+        android:text="Enter Mobile Number of Bachelor"
         android:textColor="@color/black_light"
         android:textSize="16sp"/>
 

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class Prefs {
 
     public static String PROFILE_ID = "profile_id";
+    public static String PROFILE_TYPE = "profile_type";
     public static String IMAGE_LIST = "image_list";
 
     private static SharedPreferences getPrefs(Context context) {
@@ -29,6 +30,14 @@ public class Prefs {
 
     public static void setImageList(Context context, ArrayList<ImageModel> list) {
         getPrefs(context).edit().putString(IMAGE_LIST, new Gson().toJson(list)).commit();
+    }
+
+    public static String getProfileType(Context context) {
+        return getPrefs(context).getString(PROFILE_TYPE, "");
+    }
+
+    public static void setProfileType(Context context, String value) {
+        getPrefs(context).edit().putString(PROFILE_TYPE, value).commit();
     }
 
     public static String getProfileId(Context context) {

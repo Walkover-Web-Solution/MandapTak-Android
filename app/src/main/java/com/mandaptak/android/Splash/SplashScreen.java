@@ -92,22 +92,32 @@ public class SplashScreen extends AppCompatActivity {
                     query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject parseObject, ParseException e) {
-                            try {
-                                if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
-                                    startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                    SplashScreen.this.finish();
-                                } else {
+                            if (e == null) {
+                                try {
+                                    if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
+                                        startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                        SplashScreen.this.finish();
+                                    } else {
+                                        ParseUser.logOut();
+                                        mApp.showToast(context, "Account Deactivated: Contact Administrator");
+                                        startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                        SplashScreen.this.finish();
+                                    }
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
                                     ParseUser.logOut();
                                     mApp.showToast(context, "Account Deactivated: Contact Administrator");
                                     startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                     SplashScreen.this.finish();
                                 }
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
+                            } else if (e.getCode() == 209) {
+                                //INVALID SESSION TOKEN
                                 ParseUser.logOut();
-                                mApp.showToast(context, "Account Deactivated: Contact Administrator");
                                 startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                 SplashScreen.this.finish();
+                            } else {
+                                e.printStackTrace();
+                                mApp.showToast(context, "Connection Error");
                             }
                         }
                     });

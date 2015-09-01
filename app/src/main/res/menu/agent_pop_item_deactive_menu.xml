@@ -2,4 +2,7 @@
     <item
         android:id="@+id/status"
         android:title="Deactivate"/>
+    <item
+        android:id="@+id/permission"
+        android:title="Give Permission"/>
 </menu>

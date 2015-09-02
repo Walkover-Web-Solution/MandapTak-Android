@@ -33,11 +33,11 @@ import me.iwf.photopicker.utils.Prefs;
 
 public class ChatsFragment extends Fragment implements ConversationQueryAdapter.ConversationClickHandler {
     Common mApp;
-    ListView listViewMatches;
     private View rootView;
     private Context context;
-    private  RecyclerView conversationsView;
+    private RecyclerView conversationsView;
     private ConversationQueryAdapter mConversationsAdapter;
+
     public ChatsFragment() {
         // Required empty public constructor
     }
@@ -53,12 +53,10 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.fragment_chat_layout, container, false);
-        listViewMatches = (ListView) rootView.findViewById(R.id.list);
         //Grab the Recycler View and list all conversation objects in a vertical list
-         conversationsView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        conversationsView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         conversationsView.setLayoutManager(layoutManager);
-
     }
 
     @Override
@@ -67,28 +65,25 @@ public class ChatsFragment extends Fragment implements ConversationQueryAdapter.
         if (!LayerImpl.isAuthenticated()) {
             LayerImpl.authenticateUser();
         }
-//        mConversationsAdapter = new ConversationQueryAdapter(context.getApplicationContext(), LayerImpl.getLayerClient(), this, new QueryAdapter.Callback() {
-//            @Override
-//            public void onItemInserted() {
-//                Log.d("Activity", "Conversation Adapter, new conversation inserted");
-//            }
-//        });
-//
-//        //Attach the Query Adapter to the Recycler View
-//        conversationsView.setAdapter(mConversationsAdapter);
-//
-//        //Execute the Query
-//        mConversationsAdapter.refresh();
-
+        mConversationsAdapter = new ConversationQueryAdapter(context.getApplicationContext(), LayerImpl.getLayerClient(), this, new QueryAdapter.Callback() {
+            @Override
+            public void onItemInserted() {
+                Log.d("Activity", "Conversation Adapter, new conversation inserted");
+            }
+        });
+        //Attach the Query Adapter to the Recycler View
+        conversationsView.setAdapter(mConversationsAdapter);
+        //Execute the Query
+        mConversationsAdapter.refresh();
     }
 
     @Override
     public void onConversationClick(Conversation conversation) {
-    /*    if (conversation != null && conversation.getId() != null && !conversation.isDeleted()) {
+        if (conversation != null && conversation.getId() != null && !conversation.isDeleted()) {
             Intent intent = new Intent(context, MessageActivity.class);
             intent.putExtra("conversation-id", conversation.getId());
             startActivity(intent);
-        }*/
+        }
     }
 
     @Override

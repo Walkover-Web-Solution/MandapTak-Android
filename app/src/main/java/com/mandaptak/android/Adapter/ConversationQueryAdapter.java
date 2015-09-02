@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
@@ -38,10 +37,11 @@ public class ConversationQueryAdapter extends QueryAdapter<Conversation, Convers
 
     //Inflates the view associated with each Conversation object returned by the Query
     private final LayoutInflater mInflater;
-private Common mApp;
+
     //Handle the callbacks when the Conversation item is actually clicked. In this case, the
     // ConversationsActivity class implements the ConversationClickHandler
     private final ConversationClickHandler mConversationClickHandler;
+
     public static interface ConversationClickHandler {
         public void onConversationClick(Conversation conversation);
 
@@ -116,7 +116,7 @@ private Common mApp;
             return;
         }
 
-        Log.e("Activity", "binding conversation: " + conversation.getId() + " with participants: " + conversation.getParticipants().toString());
+        Log.d("Activity", "binding conversation: " + conversation.getId() + " with participants: " + conversation.getParticipants().toString());
 
         //Set the Conversation (so when this item is clicked, we can start a MessageActivity and
         // show all the messages associated with it)
@@ -126,14 +126,14 @@ private Common mApp;
         // handles from Parse
         String participants = "";
         List<String> users = conversation.getParticipants();
-        for(int i = 0; i < users.size(); i++){
-            if(!users.get(i).equals(ParseUser.getCurrentUser().getObjectId())){
+        for (int i = 0; i < users.size(); i++) {
+            if (!users.get(i).equals(ParseUser.getCurrentUser().getObjectId())) {
                 //Format the String so there is a comma after every username
-                if(participants.length() > 0)
+                if (participants.length() > 0)
                     participants += ", ";
+
                 //Add the human readable username to the String
-                //participants += ParseImpl.getUsername(users.get(i));
-                participants += "test";
+                participants += Common.getUsername(users.get(i));
             }
         }
         viewHolder.participants.setText(participants);
@@ -141,8 +141,7 @@ private Common mApp;
         //Grab the last message in the conversation and show it in the format "sender: last message content"
         Message message = conversation.getLastMessage();
         if (message != null) {
-           // viewHolder.lastMsgContent.setText(ParseImpl.getUsername(message.getSender().getUserId()) + ": " + LayerImpl.getMessageText(message));
-            viewHolder.lastMsgContent.setText("test user");
+            viewHolder.lastMsgContent.setText(Common.getUsername(message.getSender().getUserId()) + ": " + LayerImpl.getMessageText(message));
         } else {
             viewHolder.lastMsgContent.setText("");
         }

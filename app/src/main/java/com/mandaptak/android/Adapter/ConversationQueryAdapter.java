@@ -131,7 +131,6 @@ public class ConversationQueryAdapter extends QueryAdapter<Conversation, Convers
                 //Format the String so there is a comma after every username
                 if (participants.length() > 0)
                     participants += ", ";
-
                 //Add the human readable username to the String
                 participants += Common.getUsername(users.get(i));
             }
@@ -145,7 +144,6 @@ public class ConversationQueryAdapter extends QueryAdapter<Conversation, Convers
         } else {
             viewHolder.lastMsgContent.setText("");
         }
-
         //Draw the date the last message was received (downloaded from the server)
         viewHolder.time.setText(LayerImpl.getReceivedAtTime(message));
     }

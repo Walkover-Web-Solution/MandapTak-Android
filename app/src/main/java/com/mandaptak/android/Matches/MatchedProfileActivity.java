@@ -9,7 +9,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.ConversationOptions;
+import com.layer.sdk.query.Predicate;
+import com.layer.sdk.query.Query;
 import com.mandaptak.android.Adapter.MatchesAdapter;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Models.MatchesModel;
@@ -58,8 +61,23 @@ public class MatchedProfileActivity extends AppCompatActivity {
         chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
+                if (mTargetParticipants.size() > 0) {
+                    Intent intent = new Intent(context, MessageActivity.class);
+                    Query query = Query.builder(Conversation.class)
+                            .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.IN, mTargetParticipants))
+                            .build();
 
+                    List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
+                    if (results.size() > 0){
+                        intent.putExtra("conversation-id", results.get(0).getId());
+                    }
+                    else {
+                        intent.putExtra("targetLists", mTargetParticipants);
+
+                    }
+                    startActivity(intent);
+
+                }
             }
         });
         getChatMembers();
@@ -73,15 +91,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
         designation = (TextView) findViewById(R.id.designation);
         traits = (TextView) findViewById(R.id.matching_traits);
         chatButton = (Button) findViewById(R.id.chat_button);
-        chatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, MessageActivity.class);
-                ConversationOptions options = new ConversationOptions().distinct(true);
-                intent.putExtra("conversation-id", LayerImpl.getLayerClient().newConversation(options, mTargetParticipants).getId());
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -106,10 +115,10 @@ public class MatchedProfileActivity extends AppCompatActivity {
                         public void done(List<ParseObject> list, ParseException e) {
                             if (e == null)
                                 if (list.size() > 0) {
-                                    mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+                                    //     mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
                                     for (ParseObject parseObject : list) {
                                         try {
-                                            mTargetParticipants.add(parseObject.fetchIfNeeded().getString("userId"));
+                                            mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
 
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();

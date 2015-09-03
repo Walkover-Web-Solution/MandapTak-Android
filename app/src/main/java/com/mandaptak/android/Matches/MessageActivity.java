@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
 import com.layer.sdk.messaging.MessagePart;
+import com.layer.sdk.query.Query;
 import com.mandaptak.android.Adapter.MessageQueryAdapter;
 import com.mandaptak.android.Adapter.QueryAdapter;
 import com.mandaptak.android.Layer.LayerImpl;
@@ -64,7 +65,7 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_screen);
-
+        mTargetParticipants = new ArrayList<>();
         //View containing all messages in the target Conversastion
         mMessagesView = (RecyclerView) findViewById(R.id.mRecyclerView);
 
@@ -72,7 +73,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
         Button sendButton = (Button) findViewById(R.id.sendButton);
         if (sendButton != null)
             sendButton.setOnClickListener(this);
-
         //If this is a new conversation, we will want to allow the user to add his/her friends
         mAddUserButton = (Button) findViewById(R.id.addParticipants);
         if (mAddUserButton != null)
@@ -99,13 +99,12 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
             Log.e("Not Authenticated ", "Not Authenticated in message");
 
         } else {
-
+            mTargetParticipants = getIntent().getStringArrayListExtra("targetLists");
             //Now check to see if this is a new Conversation, or if the Activity needs to render an
             // existing Conversation
             Uri conversationURI = getIntent().getParcelableExtra("conversation-id");
             if (conversationURI != null)
                 mConversation = LayerImpl.getLayerClient().getConversation(conversationURI);
-
             //This is an existing Conversation, display the messages, otherwise, allow the user to
             // add/remove participants and create a new Conversation
             if (mConversation != null)
@@ -289,8 +288,7 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
         final HashMap<CheckBox, String> allUsers = new HashMap<>();
 
         //Create the list of participants if it hasn't been instantiated
-        if (mTargetParticipants == null)
-            mTargetParticipants = new ArrayList<>();
+
 
         //Go through each friend and create a Checkbox with a human readable name mapped to the
         // Object ID
@@ -345,7 +343,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
         // Create and show the dialog box with list of all participants
         AlertDialog helpDialog = helpBuilder.create();
         helpDialog.show();
-
     }
 
     //When a Conversation has Messages, we disable the ability to Add/Remove participants

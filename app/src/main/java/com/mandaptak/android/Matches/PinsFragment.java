@@ -1,11 +1,13 @@
 package com.mandaptak.android.Matches;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.mandaptak.android.Adapter.MatchesAdapter;
@@ -50,6 +52,15 @@ public class PinsFragment extends Fragment {
         mApp = (Common) context.getApplicationContext();
         rootView = inflater.inflate(R.layout.fragment_matches, container, false);
         listViewMatches = (ListView) rootView.findViewById(R.id.list);
+
+        listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
+                intent.putExtra("profile", matchList.get(i));
+                startActivity(intent);
+            }
+        });
     }
 
     private ArrayList<MatchesModel> getParseData() {
@@ -58,7 +69,7 @@ public class PinsFragment extends Fragment {
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
-                if (e == null){
+                if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
                     query.whereEqualTo("profileId", object);
                     query.findInBackground(new FindCallback<ParseObject>() {

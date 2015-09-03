@@ -44,23 +44,12 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
 
     //The Query Adapter that grabs all Messages and displays them based on their Position
     private MessageQueryAdapter mMessagesAdapter;
-
-    //Once a Conversation is started (ie, the first message is sent) disallow adding/removing
-    // of participants (this is an implementation choice, you can always choose to allow Participants
-    // to add or remove users at any point if you choose)
-    private Button mAddUserButton;
-
-    //Layout view of current participants
-    private LinearLayout mParticipantsList;
-
     //This is the actual view that contains all the messages
     private RecyclerView mMessagesView;
 
     //When starting a new Conversation, we keep a list of all target participants. The Conversation
     // is only created when the first message is sent
     private ArrayList<String> mTargetParticipants;
-
-
     //Grab all the view objects on the message_screen layout when the Activity starts
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,14 +62,7 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
         Button sendButton = (Button) findViewById(R.id.sendButton);
         if (sendButton != null)
             sendButton.setOnClickListener(this);
-        //If this is a new conversation, we will want to allow the user to add his/her friends
-        mAddUserButton = (Button) findViewById(R.id.addParticipants);
-        if (mAddUserButton != null)
-            mAddUserButton.setOnClickListener(this);
 
-        //A view containing a list of all the Participants in the Conversation (not including the
-        // locally authenticated user)
-        mParticipantsList = (LinearLayout) findViewById(R.id.participantList);
 
         //If the soft keyboard changes the size of the mMessagesView, we want to force the scroll to
         // the bottom of the view so the latest message is always displayed
@@ -119,9 +101,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
 
         Log.d("Activity", "Conversation exists, setting up view");
 
-        //Hide the "add users" button
-        hideAddParticipantsButton();
-
         //Create the appropriate RecyclerView
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mMessagesView.setLayoutManager(layoutManager);
@@ -158,7 +137,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
 
         //Uses the helper function to make sure all participant names are appropriately displayed
         // and not cut off due to size constraints
-        populateViewWithWrapping(mParticipantsList, participantList, this);
     }
 
     //If a Conversation ID was not passed into this Activity, we assume that a new Conversation is
@@ -217,16 +195,11 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
                 sendMessage();
                 break;
 
-            case R.id.addParticipants:
-                Log.d("Activity", "Add participant button pressed");
-                showParticipantPicker();
-                break;
         }
     }
 
     //The Authenticated User is actually sending a Message to this Conversation
     private void sendMessage() {
-
         //First Check to see if we have a valid Conversation object
         if (mConversation == null) {
             //Make sure there are valid participants. Since the Authenticated user will always be
@@ -240,7 +213,6 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
                 //Once the Conversation object is created, we don't allow changing the Participant List
                 // Note: this is an implementation choice. It is always possible to add/remove participants
                 // after a Conversation has been created
-                hideAddParticipantsButton();
 
             } else {
                 showAlert("Send Message Error", "You need to specify at least one participant before sending a message.");
@@ -258,97 +230,10 @@ public class MessageActivity extends ActivityBase implements MessageQueryAdapter
             MessagePart part = LayerImpl.getLayerClient().newMessagePart(text);
             Message msg = LayerImpl.getLayerClient().newMessage(part);
             mConversation.send(msg);
-
             input.setText("");
 
         } else {
             showAlert("Send Message Error", "You cannot send an empty message.");
-        }
-    }
-
-    //Shows a list of all users that can be added to the Conversation
-    private void showParticipantPicker() {
-
-        //Update user list from Parse
-        Common.cacheAllUsers();
-
-        //Create a new Dialog Box
-        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this);
-        helpBuilder.setTitle("Select Participants");
-        helpBuilder.setMessage("Add or remove participants from this conversation:\n");
-
-        //The Linear Layout View that will hold all the CheckBox views
-        LinearLayout checkboxList = new LinearLayout(this);
-        checkboxList.setOrientation(LinearLayout.VERTICAL);
-
-        //Grab a list of all friends
-        Set friends = Common.getAllFriends();
-
-        //A Map of the CheckBox with the human readable username and the Parse Object ID
-        final HashMap<CheckBox, String> allUsers = new HashMap<>();
-
-        //Create the list of participants if it hasn't been instantiated
-
-
-        //Go through each friend and create a Checkbox with a human readable name mapped to the
-        // Object ID
-        Iterator itr = friends.iterator();
-        while (itr.hasNext()) {
-            String friendId = (String) itr.next();
-
-            CheckBox friend = new CheckBox(this);
-            friend.setText(Common.getUsername(friendId));
-
-            //If this user is already selected, mark the checkbox
-            if (mTargetParticipants.contains(friendId))
-                friend.setChecked(true);
-
-            checkboxList.addView(friend);
-
-            allUsers.put(friend, friendId);
-        }
-
-        //Add the list of CheckBoxes to the Alert Dialog
-        helpBuilder.setView(checkboxList);
-
-        //When the user is done adding/removing participants, update the list of target users
-        helpBuilder.setPositiveButton("Done",
-                new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
-
-                        //Reset the target user list, and rebuild it based on which checkboxes are selected
-                        mTargetParticipants.clear();
-                        mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
-
-                        Set checkboxes = allUsers.keySet();
-                        Iterator checkItr = checkboxes.iterator();
-                        while (checkItr.hasNext()) {
-                            CheckBox currCheck = (CheckBox) checkItr.next();
-                            if (currCheck != null && currCheck.isChecked()) {
-                                String friendID = allUsers.get(currCheck);
-                                mTargetParticipants.add(friendID);
-                            }
-                        }
-
-                        Log.d("Activity", "Current participants: " + mTargetParticipants.toString());
-
-                        //Draw the list of target users
-                        populateToField(mTargetParticipants);
-                    }
-                });
-
-
-        // Create and show the dialog box with list of all participants
-        AlertDialog helpDialog = helpBuilder.create();
-        helpDialog.show();
-    }
-
-    //When a Conversation has Messages, we disable the ability to Add/Remove participants
-    private void hideAddParticipantsButton() {
-        if (mAddUserButton != null) {
-            mAddUserButton.setVisibility(View.GONE);
         }
     }
 

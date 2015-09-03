@@ -68,12 +68,10 @@ public class MatchedProfileActivity extends AppCompatActivity {
                             .build();
 
                     List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
-                    if (results.size() > 0){
+                    if (results.size() > 0) {
                         intent.putExtra("conversation-id", results.get(0).getId());
-                    }
-                    else {
+                    } else {
                         intent.putExtra("targetLists", mTargetParticipants);
-
                     }
                     startActivity(intent);
 

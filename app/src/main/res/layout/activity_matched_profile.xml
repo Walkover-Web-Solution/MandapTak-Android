@@ -1,13 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingBottom="@dimen/activity_vertical_margin"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:paddingTop="@dimen/activity_vertical_margin"
-                tools:context="com.mandaptak.android.Matches.MatchedProfileActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.mandaptak.android.Matches.MatchedProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             android:gravity="center"
             android:text="You got matched with"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="@dimen/abc_text_size_medium_material" />
 
         <com.mandaptak.android.Views.CircleImageView
             android:id="@+id/image"
@@ -31,7 +31,7 @@
             android:layout_marginTop="16dp"
             app:border_color="@color/red_500"
             app:border_overlay="true"
-            app:border_width="2dp"/>
+            app:border_width="2dp" />
 
         <TextView
             android:id="@+id/display_name"
@@ -41,7 +41,7 @@
             android:layout_marginTop="16dp"
             android:text="Alia Bhaat"
             android:textColor="@color/red_600"
-            android:textSize="@dimen/abc_text_size_large_material"/>
+            android:textSize="@dimen/abc_text_size_large_material" />
 
         <TextView
             android:id="@+id/age"
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="@dimen/abc_text_size_medium_material" />
 
         <TextView
             android:id="@+id/religion"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="@dimen/abc_text_size_medium_material" />
 
         <TextView
             android:id="@+id/designation"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/black_light"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="@dimen/abc_text_size_medium_material" />
 
         <TextView
             android:id="@+id/matching_traits"
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/teal_500"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
+            android:textSize="@dimen/abc_text_size_medium_material" />
     </LinearLayout>
 
     <Button
@@ -86,5 +86,5 @@
         android:padding="8dp"
         android:text="Chat"
         android:textColor="@color/white"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 </RelativeLayout>

@@ -1,5 +1,4 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -11,7 +10,7 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:descendantFocusability="afterDescendants"
-        tools:context="com.mandaptak.android.EditProfile.EditProfileActivity"/>
+        tools:context="com.mandaptak.android.EditProfile.EditProfileActivity" />
 
     <com.getbase.floatingactionbutton.FloatingActionButton
         android:id="@+id/skip_next"
@@ -22,5 +21,5 @@
         fab:fab_addButtonSize="mini"
         fab:fab_colorNormal="@color/grey_400"
         fab:fab_colorPressed="@color/grey_500"
-        fab:fab_icon="@drawable/ic_navigate_next_red"/>
+        fab:fab_icon="@drawable/ic_navigate_next_red" />
 </FrameLayout>

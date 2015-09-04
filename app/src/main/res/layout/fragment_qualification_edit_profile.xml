@@ -1,5 +1,4 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -19,7 +18,7 @@
             android:paddingTop="16dp"
             android:text="Work"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="@dimen/abc_text_size_small_material" />
 
         <LinearLayout
             android:id="@+id/work_layout"
@@ -52,7 +51,7 @@
                     android:textColor="@color/black_dark"
                     android:textColorHint="@color/black_light"
                     android:textCursorDrawable="@drawable/color_cursor"
-                    android:textSize="@dimen/abc_text_size_medium_material"/>
+                    android:textSize="@dimen/abc_text_size_medium_material" />
             </LinearLayout>
 
             <EditText
@@ -65,7 +64,7 @@
                 android:padding="16dp"
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
-                android:textCursorDrawable="@drawable/color_cursor"/>
+                android:textCursorDrawable="@drawable/color_cursor" />
 
             <EditText
                 android:id="@+id/company"
@@ -77,7 +76,7 @@
                 android:padding="16dp"
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
-                android:textCursorDrawable="@drawable/color_cursor"/>
+                android:textCursorDrawable="@drawable/color_cursor" />
 
             <com.mandaptak.android.Views.ExtendedEditText
                 android:id="@+id/current_income"
@@ -90,7 +89,7 @@
                 android:padding="16dp"
                 android:textColor="@color/black_dark"
                 android:textColorHint="@color/black_light"
-                android:textCursorDrawable="@drawable/color_cursor"/>
+                android:textCursorDrawable="@drawable/color_cursor" />
         </LinearLayout>
 
         <TextView
@@ -99,7 +98,7 @@
             android:padding="16dp"
             android:text="Education"
             android:textColor="@color/black_dark"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="@dimen/abc_text_size_small_material" />
 
         <LinearLayout
             android:id="@+id/education_layout_primary"
@@ -118,7 +117,7 @@
                 android:clickable="true"
                 android:padding="16dp"
                 android:text="Degree"
-                android:textColor="@color/black_light"/>
+                android:textColor="@color/black_light" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -127,7 +126,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
-                android:background="@color/black_light"/>
+                android:background="@color/black_light" />
 
             <TextView
                 android:id="@+id/degree_branch"
@@ -136,7 +135,7 @@
                 android:clickable="true"
                 android:padding="16dp"
                 android:text="Specialization"
-                android:textColor="@color/black_light"/>
+                android:textColor="@color/black_light" />
         </LinearLayout>
 
         <LinearLayout
@@ -157,7 +156,7 @@
             android:padding="16dp"
             android:text="+more"
             android:textColor="@color/red_700"
-            android:textSize="@dimen/abc_text_size_button_material"/>
+            android:textSize="@dimen/abc_text_size_button_material" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -172,14 +171,14 @@
                 android:gravity="center|start"
                 android:padding="16dp"
                 android:text="Want to work after marriage?"
-                android:textColor="@color/black_light"/>
+                android:textColor="@color/black_light" />
 
             <Spinner
                 android:id="@+id/work_after_marriage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:spinnerMode="dialog"/>
+                android:spinnerMode="dialog" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

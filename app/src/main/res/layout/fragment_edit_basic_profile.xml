@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="@color/white"
-              android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <EditText
         android:id="@+id/display_name"
@@ -18,13 +18,13 @@
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
         android:textCursorDrawable="@drawable/color_cursor"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 
     <TextView
         android:id="@+id/gender"
@@ -40,13 +40,13 @@
         android:padding="8dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 
     <TextView
         android:id="@+id/date_of_birth"
@@ -62,13 +62,13 @@
         android:padding="8dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 
     <TextView
         android:id="@+id/time_of_birth"
@@ -84,13 +84,13 @@
         android:padding="8dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 
     <TextView
         android:id="@+id/place_of_birth"
@@ -107,13 +107,13 @@
         android:padding="8dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 
     <TextView
         android:id="@+id/current_location"
@@ -130,11 +130,11 @@
         android:padding="8dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"
-        android:textSize="@dimen/abc_text_size_medium_material"/>
+        android:textSize="@dimen/abc_text_size_medium_material" />
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.05dp"
         android:background="@color/black_light"
-        android:contentDescription="@string/divider"/>
+        android:contentDescription="@string/divider" />
 </LinearLayout>

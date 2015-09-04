@@ -106,7 +106,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                 case 1:
                     return new PinsFragment();
                 case 2:
-                    return new ChatsFragment();
+                    return new ConversationFragment();
                 default:
                     return new MatchesFragment();
             }

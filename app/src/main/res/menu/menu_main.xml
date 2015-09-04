@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="com.mandaptak.android.Main.MainActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.mandaptak.android.Main.MainActivity">
     <item
         android:id="@+id/action_matches"
         android:icon="@drawable/ic_dual_heart"
         android:orderInCategory="100"
         android:title="Matches"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 </menu>

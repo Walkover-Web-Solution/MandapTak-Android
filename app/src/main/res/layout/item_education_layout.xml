@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/education_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/education_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="2dp"
@@ -26,7 +26,7 @@
                 android:clickable="true"
                 android:padding="16dp"
                 android:text="Degree"
-                android:textColor="@color/black_light"/>
+                android:textColor="@color/black_light" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -35,7 +35,7 @@
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_marginStart="8dp"
-                android:background="@color/black_light"/>
+                android:background="@color/black_light" />
 
             <TextView
                 android:id="@+id/degree_branch"
@@ -44,7 +44,7 @@
                 android:clickable="true"
                 android:padding="16dp"
                 android:text="Specialization"
-                android:textColor="@color/black_light"/>
+                android:textColor="@color/black_light" />
         </LinearLayout>
 
         <ImageView
@@ -56,6 +56,6 @@
             android:layout_alignParentTop="true"
             android:clickable="true"
             android:padding="8dp"
-            android:src="@drawable/ic_close_grey"/>
+            android:src="@drawable/ic_close_grey" />
     </RelativeLayout>
 </LinearLayout>

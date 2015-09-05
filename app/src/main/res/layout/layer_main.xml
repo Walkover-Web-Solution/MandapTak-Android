@@ -1,7 +1,6 @@
-<RelativeLayout
-    android:id="@+id/mainholder"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainholder"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffffff"
@@ -37,7 +36,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight="0.17"
                 android:src="@drawable/ic_wc_grey"
-                android:visibility="visible"/>
+                android:visibility="visible" />
         </LinearLayout>
 
         <ScrollView
@@ -72,7 +71,7 @@
                 android:id="@+id/typingIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="italic"/>
+                android:textStyle="italic" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -84,13 +83,13 @@
                     android:id="@+id/input"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/send"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Send"/>
+                    android:text="Send" />
             </LinearLayout>
         </LinearLayout>
 

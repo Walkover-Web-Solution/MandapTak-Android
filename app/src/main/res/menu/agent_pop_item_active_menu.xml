@@ -1,8 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/status"
-        android:title="Activate"/>
+        android:title="Activate" />
     <item
         android:id="@+id/permission"
-        android:title="Give Permission"/>
+        android:title="Give Permission" />
 </menu>

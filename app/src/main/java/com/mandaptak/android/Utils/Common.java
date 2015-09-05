@@ -34,7 +34,6 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public class Common extends Application implements LayerCallbacks {
     public static AtlasIdentityProvider identityProvider;
@@ -272,9 +271,6 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.setContext(this);
         cacheAllUsers();
         identityProvider = new AtlasIdentityProvider(this);
-        String LayerAppID = "layer:///apps/staging/3ffe495e-45e8-11e5-9685-919001005125";
-        identityProvider.setAppId(UUID.fromString(LayerAppID.substring(LayerAppID.lastIndexOf("/") + 1)).toString());
-
     }
 
     public String numberToWords(int number) {

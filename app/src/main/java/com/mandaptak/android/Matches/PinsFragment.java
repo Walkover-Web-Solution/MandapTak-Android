@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.mandaptak.android.Adapter.PinsAdapter;
+import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -55,8 +56,11 @@ public class PinsFragment extends Fragment {
         listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
-                intent.putExtra("profile", pinsList.get(i));
+//                Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
+//                intent.putExtra("profile", pinsList.get(i));
+//                startActivity(intent);
+                Intent intent = new Intent(getActivity(), FullProfileActivity.class);
+                intent.putExtra("parseObjectId", pinsList.get(i).getProfileId());
                 startActivity(intent);
             }
         });

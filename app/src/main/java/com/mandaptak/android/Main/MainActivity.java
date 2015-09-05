@@ -395,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
 
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
+        slidingPanel.setEnabled(false);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 
         clickListeners();
@@ -517,6 +518,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMatchesFromFunction() {
+        rippleBackground.startRippleAnimation();
         labelLoading.setText("Finding People...");
         HashMap<String, Object> params = new HashMap<>();
         params.put("oid", Prefs.getProfileId(context));
@@ -530,12 +532,15 @@ public class MainActivity extends AppCompatActivity {
                             if (mApp.isNetworkAvailable(context))
                                 setProfileDetails();
                         } else {
+                            rippleBackground.stopRippleAnimation();
                             labelLoading.setText("No matching results found.");
                         }
                     } else {
+                        rippleBackground.stopRippleAnimation();
                         labelLoading.setText("No matching results found.");
                     }
                 } else {
+                    rippleBackground.stopRippleAnimation();
                     labelLoading.setText("No matching results found.");
                     e.printStackTrace();
                 }
@@ -562,6 +567,7 @@ public class MainActivity extends AppCompatActivity {
     private void setProfileDetails() {
         rippleBackground.setVisibility(View.VISIBLE);
         labelLoading.setText("Loading Profile...");
+        slidingPanel.setEnabled(false);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         try {
             if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != null) {
@@ -590,21 +596,21 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("age") && profileList.get(0).getString("age") != null) {
-                frontHeight.setText(profileList.get(0).getString("age"));
-                slideHeight.setText(profileList.get(0).getString("age"));
+            if (profileList.get(0).containsKey("age") && profileList.get(0).getInt("age") != 0) {
+                frontHeight.setText("" + profileList.get(0).getInt("age"));
+                slideHeight.setText("" + profileList.get(0).getInt("age"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("height") && profileList.get(0).getString("height") != null) {
+            if (profileList.get(0).containsKey("height") && profileList.get(0).getInt("height") != 0) {
                 int[] bases = getResources().getIntArray(R.array.heightCM);
                 String[] values = getResources().getStringArray(R.array.height);
                 Arrays.sort(bases);
                 int index = Arrays.binarySearch(bases, profileList.get(0).getInt("height"));
-                frontHeight.append(" ," + values[index]);
-                slideHeight.append(" ," + values[index]);
+                frontHeight.append(" , " + values[index]);
+                slideHeight.append(" , " + values[index]);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -654,28 +660,28 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("package") && profileList.get(0).getLong("package") != 0) {
-                salary.setText("Rs. " + mApp.numberToWords(profileList.get(0).getInt("package")));
+                salary.setText("Rs. " + mApp.numberToWords(profileList.get(0).getLong("package")));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null && profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name") != null) {
-                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getString("name").replace("null", ""));
+            if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null) {
+                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null && profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name") != null) {
-                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getString("name").replace("null", ""));
+            if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
+                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
-            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null && profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name") != null) {
-                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getString("name").replace("null", ""));
+            if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
+                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -711,6 +717,7 @@ public class MainActivity extends AppCompatActivity {
                                                         @Override
                                                         public void run() {
                                                             rippleBackground.setVisibility(View.GONE);
+                                                            slidingPanel.setEnabled(true);
                                                             slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                                                             blurringView.invalidate();
                                                         }

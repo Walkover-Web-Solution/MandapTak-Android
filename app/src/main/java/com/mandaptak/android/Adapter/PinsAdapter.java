@@ -93,7 +93,7 @@ public class PinsAdapter extends BaseAdapter {
                                             @Override
                                             public void done(ParseObject parseObject, ParseException e) {
                                                 if (e == null) {
-                                                    profileObject.deleteInBackground(new DeleteCallback() {
+                                                    parseObject.deleteInBackground(new DeleteCallback() {
                                                         @Override
                                                         public void done(ParseException e) {
                                                             if (e == null) {

@@ -193,6 +193,9 @@ public class FinalEditProfileFragment extends Fragment {
                     if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
                         mApp.dialog.dismiss();
                         mApp.showToast(context, "Please select a primary profile photo");
+                    } else if (newMinBudget > newMaxBudget) {
+                        mApp.dialog.dismiss();
+                        mApp.showToast(context, "Please select proper budget for marriage");
                     } else {
                         ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
                         queryParseQuery.whereEqualTo("profileId", parseObject);

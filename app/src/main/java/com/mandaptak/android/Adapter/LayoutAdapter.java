@@ -79,7 +79,7 @@ public class LayoutAdapter extends RecyclerView.Adapter<LayoutAdapter.SimpleView
         Glide.with(context)
                 .load(uri)
                 .placeholder(me.iwf.photopicker.R.drawable.com_facebook_profile_picture_blank_portrait)
-                .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
+                .error(me.iwf.photopicker.R.drawable.com_facebook_profile_picture_blank_portrait)
                 .into(holder.image);
 
         holder.image.setOnClickListener(new View.OnClickListener() {

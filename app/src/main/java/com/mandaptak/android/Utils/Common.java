@@ -270,7 +270,7 @@ public class Common extends Application implements LayerCallbacks {
         identityProvider = new AtlasIdentityProvider(this);
     }
 
-    public String numberToWords(int number) {
+    public String numberToWords(long number) {
         if (number == 0) {
             return "zero";
         }

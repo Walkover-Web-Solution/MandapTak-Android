@@ -13,9 +13,7 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
-
 
     private final Map<String, Participant> participantsMap = new HashMap<>();
     private final Context context;
@@ -23,7 +21,6 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
     public AtlasIdentityProvider(Context context) {
         this.context = context;
-
 
     }
 
@@ -68,7 +65,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         ParseUser pu = new ParseUser();
         pu.setObjectId(userId);
-        query.whereEqualTo("userId",pu);
+        query.whereEqualTo("userId", pu);
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
@@ -87,12 +84,11 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
             }
         });
-     //   if (!participantsMap.containsKey(userId))
+        //   if (!participantsMap.containsKey(userId))
         //    participantsMap.put(userId, model);
         Participant participant = model;
         return participant;
     }
-
 
     public class Participant implements Atlas.Participant {
         public String userId;

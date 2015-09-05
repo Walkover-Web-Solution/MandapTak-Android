@@ -37,10 +37,10 @@
             android:id="@+id/front_photo"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:layout_below="@+id/toolbar"
+            android:layout_above="@+id/bottom_layout"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center"
-            android:layout_marginTop="32dp"
+            android:layout_marginBottom="24dp"
             app:border_color="@color/white"
             app:border_overlay="true"
             app:border_width="2dp"/>
@@ -210,8 +210,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|top"
+                    android:layout_toLeftOf="@+id/slide_like"
                     android:orientation="vertical"
-                    android:paddingBottom="10dp">
+                    android:paddingBottom="12dp">
 
                     <TextView
                         android:id="@+id/slide_name"
@@ -221,6 +222,7 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:layout_marginTop="16dp"
+                        android:ellipsize="end"
                         android:paddingTop="8dp"
                         android:textColor="@color/white"
                         android:textSize="@dimen/abc_text_size_title_material"
@@ -264,18 +266,19 @@
                         android:layout_marginBottom="8dp"
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/teal_600"
-                        android:textSize="18sp"/>
+                        android:textSize="18sp"
+                        android:visibility="gone"/>
                 </LinearLayout>
 
                 <ImageButton
-                    android:id="@+id/matches_icon"
+                    android:id="@+id/slide_like"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="@drawable/ic_dual_heart"
+                    android:background="@drawable/ic_like"
                     android:padding="12dp"/>
 
             </RelativeLayout>
@@ -297,55 +300,58 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="10">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="6"
                         android:gravity="center|start"
                         android:paddingLeft="16dp"
-                        android:paddingRight="16dp"
-                        android:paddingTop="16dp"
-                        android:text="Current Location"
+                        android:paddingTop="4dp"
+                        android:text="Current Location: "
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/current_location"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:gravity="center|right"
-                        android:paddingTop="16dp"
+                        android:layout_weight="4"
+                        android:gravity="center|start"
+                        android:paddingTop="4dp"
                         android:singleLine="true"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"/>
+
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:weightSum="10">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="6"
                         android:gravity="center|start"
                         android:paddingLeft="16dp"
-                        android:paddingRight="30dp"
                         android:paddingTop="4dp"
-                        android:text="Weight"
+                        android:text="Weight: "
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"
                         android:textStyle="bold"/>
 
                     <TextView
                         android:id="@+id/weight"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="4"
                         android:gravity="center|start"
-                        android:paddingLeft="45dp"
                         android:paddingTop="4dp"
                         android:singleLine="true"
                         android:textColor="@color/black_dark"
@@ -362,6 +368,36 @@
                     android:text="Work"
                     android:textColor="@color/red_200"
                     android:textSize="@dimen/abc_text_size_small_material"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="10">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="6"
+                        android:gravity="center|start"
+                        android:paddingLeft="16dp"
+                        android:paddingTop="4dp"
+                        android:text="Industry: "
+                        android:textColor="@color/black_dark"
+                        android:textSize="@dimen/abc_text_size_small_material"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/industry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:gravity="center|start"
+                        android:paddingTop="4dp"
+                        android:singleLine="true"
+                        android:textColor="@color/black_dark"
+                        android:textSize="@dimen/abc_text_size_small_material"/>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -457,8 +493,9 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:gravity="center|start"
+                        android:lineSpacingExtra="2dp"
+                        android:maxLines="3"
                         android:paddingTop="4dp"
-                        android:singleLine="true"
                         android:textColor="@color/black_dark"
                         android:textSize="@dimen/abc_text_size_small_material"/>
                 </LinearLayout>

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mandaptak.android.Models.MatchesModel;
@@ -43,6 +44,7 @@ public class MatchesAdapter extends BaseAdapter {
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
             viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
+            viewholder.chatButton = (ImageView) paramView.findViewById(R.id.chat_button);
             viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
             paramView.setTag(viewholder);
         } else {
@@ -55,7 +57,12 @@ public class MatchesAdapter extends BaseAdapter {
         Picasso.with(ctx)
                 .load(matchesModel.getUrl())
                 .into(viewholder.profilePic);
+        viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
         return paramView;
     }
 
@@ -63,6 +70,7 @@ public class MatchesAdapter extends BaseAdapter {
         public TextView tvName;
         public TextView tvReligion;
         public TextView tvWork;
+        public ImageView chatButton;
         public CircleImageView profilePic;
     }
 }

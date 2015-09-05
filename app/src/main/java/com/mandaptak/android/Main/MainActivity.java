@@ -77,10 +77,10 @@ public class MainActivity extends AppCompatActivity {
     TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
     CircleImageView frontPhoto, loadingProfile;
     BlurringView blurringView;
-    TextView salary, designation, company, education, weight, currentLocation, viewFullProfile;
+    TextView salary, industry, designation, company, education, weight, currentLocation, viewFullProfile;
     TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
     RippleBackground rippleBackground;
-    ImageButton matches;
+    ImageButton slideLike;
     Toolbar toolbar;
     ImageView mainLikeButton, mainSkipButton, mainUndoButton;
     UndoModel undoModel;
@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         frontReligion = (TextView) findViewById(R.id.front_religion);
         salary = (TextView) findViewById(R.id.salary);
         designation = (TextView) findViewById(R.id.designation);
+        industry = (TextView) findViewById(R.id.industry);
         company = (TextView) findViewById(R.id.company);
         education = (TextView) findViewById(R.id.education);
         weight = (TextView) findViewById(R.id.weight);
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         mainLikeButton = (ImageView) findViewById(R.id.like_button);
         mainSkipButton = (ImageView) findViewById(R.id.skip_button);
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
-        matches = (ImageButton) findViewById(R.id.matches_icon);
+        slideLike = (ImageButton) findViewById(R.id.slide_like);
         labelLoading = (TextView) findViewById(R.id.label_loading);
         if (mApp.isNetworkAvailable(context)) {
             ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
@@ -358,11 +359,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        matches.setOnClickListener(new View.OnClickListener() {
+        slideLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                MainActivity.this.finish();
+                if (mApp.isNetworkAvailable(context))
+                    try {
+                        mApp.show_PDialog(context, "Liking Profile..");
+                        ParseObject dislikeParseObject = new ParseObject("LikedProfile");
+                        dislikeParseObject.put("likeProfileId", profileList.get(0));
+                        dislikeParseObject.put("profileId", profileObject);
+                        dislikeParseObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                mApp.dialog.dismiss();
+                                if (e == null) {
+                                    slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                                    undoModel.setProfileParseObject(profileList.get(0));
+                                    undoModel.setActionPerformed(1);
+                                    profileList.remove(0);
+                                    if (profileList.size() > 0) {
+                                        setProfileDetails();
+                                    } else {
+                                        rippleBackground.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    e.printStackTrace();
+                                    mApp.showToast(context, e.getMessage());
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        mApp.dialog.dismiss();
+                        e.printStackTrace();
+                        mApp.showToast(context, "Error while liking profile");
+                    }
             }
         });
         rippleBackground.setOnClickListener(new View.OnClickListener() {
@@ -644,11 +674,19 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         try {
+            if (profileList.get(0).containsKey("industryId") && profileList.get(0).getParseObject("industryId") != null) {
+                String indust = profileList.get(0).fetchIfNeeded().getParseObject("industryId").fetchIfNeeded().getString("name");
+                industry.setText(indust);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != null) {
                 String city = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getString("name");
                 String state = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
                 String country = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
-                currentLocation.setText(": " + city);
+                currentLocation.setText(city);
                 currentLocation.append(", " + state);
                 currentLocation.append(", " + country);
             }
@@ -657,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("weight") && profileList.get(0).getInt("weight") != 0) {
-                weight.setText(": " + profileList.get(0).getInt("weight") + " KG");
+                weight.setText(profileList.get(0).getInt("weight") + " KG");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -678,14 +716,14 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
-                education.append("\n " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n" + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
-                education.append("\n " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n" + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();

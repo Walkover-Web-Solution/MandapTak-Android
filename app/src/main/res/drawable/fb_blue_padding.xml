@@ -1,13 +1,13 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <solid android:color="@color/white" />
+            <solid android:color="@color/white"/>
         </shape>
     </item>
     <item>
         <shape>
-            <corners android:radius="8dp" />
-            <solid android:color="@color/com_facebook_blue" />
+            <corners android:radius="8dp"/>
+            <solid android:color="@color/com_facebook_blue"/>
         </shape>
     </item>
 </layer-list>

@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<ImageModel> userProfileImages = new ArrayList<>();
     TwoWayView profileImages;
     UserImagesAdapter userImagesAdapter;
-    Boolean liked = false;
     ArrayList<ParseObject> profileList = new ArrayList<>();
     TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
     CircleImageView frontPhoto, loadingProfile;

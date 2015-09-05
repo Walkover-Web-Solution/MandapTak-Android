@@ -129,6 +129,7 @@ public class AtlasImageView2 extends View {
         super(context, attrs);
         setupPaints();
     }
+
     public AtlasImageView2(Context context) {
         super(context);
         setupPaints();

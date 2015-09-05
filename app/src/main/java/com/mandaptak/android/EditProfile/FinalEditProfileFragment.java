@@ -329,6 +329,7 @@ public class FinalEditProfileFragment extends Fragment {
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject profileObject, ParseException e) {
+                    isStarted = false;
                     if (e == null) {
                         if (profileObject.containsKey("bioData") && profileObject.getParseFile("bioData") != null)
                             newBiodataFileName = profileObject.getParseFile("bioData").getName();
@@ -377,6 +378,11 @@ public class FinalEditProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         isStarted = true;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
     }
 
     @Override

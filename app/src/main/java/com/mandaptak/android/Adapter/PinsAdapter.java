@@ -13,6 +13,7 @@ import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.CircleImageView;
+import com.parse.DeleteCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -51,7 +52,7 @@ public class PinsAdapter extends BaseAdapter {
     public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
         ViewHolder viewholder;
         if (paramView == null) {
-            paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
+            paramView = LayoutInflater.from(ctx).inflate(R.layout.pins_row, null);
             viewholder = new ViewHolder();
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.unpin = (ImageView) paramView.findViewById(R.id.unpin);
@@ -68,6 +69,8 @@ public class PinsAdapter extends BaseAdapter {
         viewholder.tvWork.setText(matchesModel.getWork());
         Picasso.with(ctx)
                 .load(matchesModel.getUrl())
+                .error(R.drawable.com_facebook_profile_picture_blank_square)
+                .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
                 .into(viewholder.profilePic);
         viewholder.unpin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,12 +93,21 @@ public class PinsAdapter extends BaseAdapter {
                                             @Override
                                             public void done(ParseObject parseObject, ParseException e) {
                                                 if (e == null) {
-                                                    mApp.showToast(ctx, "Profile Unpinned");
-                                                    pinsFragment.getParseData();
+                                                    profileObject.deleteInBackground(new DeleteCallback() {
+                                                        @Override
+                                                        public void done(ParseException e) {
+                                                            if (e == null) {
+                                                                pinsFragment.getParseData();
+                                                            } else {
+                                                                mApp.showToast(ctx, e.getMessage());
+                                                            }
+                                                            mApp.dialog.dismiss();
+                                                        }
+                                                    });
                                                 } else {
+                                                    mApp.dialog.dismiss();
                                                     mApp.showToast(ctx, e.getMessage());
                                                 }
-                                                mApp.dialog.dismiss();
                                             }
                                         });
                                     } else {

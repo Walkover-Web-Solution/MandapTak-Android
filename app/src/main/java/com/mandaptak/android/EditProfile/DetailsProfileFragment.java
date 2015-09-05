@@ -285,7 +285,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Religion");
         if (query != null)
-            parseQuery.whereMatches("name", "(?i)^" + query);
+            parseQuery.whereContains("name", "(?i)^" + query);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> list, ParseException e) {
@@ -317,7 +317,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Caste");
         if (query != null)
-            parseQuery.whereMatches("name", "(?i)^" + query);
+            parseQuery.whereContains("name", query);
         parseQuery.whereEqualTo("religionId", newReligion.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -348,7 +348,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Gotra");
         if (query != null)
-            parseQuery.whereMatches("name", "(?i)^" + query);
+            parseQuery.whereContains("name", query);
         parseQuery.whereEqualTo("casteId", newCaste.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -377,6 +377,11 @@ public class DetailsProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         isStarted = true;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
     }
 
     @Override
@@ -397,6 +402,7 @@ public class DetailsProfileFragment extends Fragment {
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
+                    isStarted = false;
                     if (e == null) {
                         try {
                             newHeight = parseObject.getInt("height");
@@ -457,12 +463,10 @@ public class DetailsProfileFragment extends Fragment {
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
-                    if (newReligion != null)
+                    if (newReligion != null && newCaste != null) {
                         parseObject.put("religionId", newReligion.getParseObject());
-                    if (newCaste != null)
                         parseObject.put("casteId", newCaste.getParseObject());
-                    else
-                        parseObject.put("casteId", JSONObject.NULL);
+                    }
                     if (newGotra != null)
                         parseObject.put("gotraId", newGotra.getParseObject());
                     else

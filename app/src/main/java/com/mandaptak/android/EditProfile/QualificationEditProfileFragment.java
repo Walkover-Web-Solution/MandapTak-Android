@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -586,38 +588,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 }
             }
         });
-        company.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                newCompany = editable.toString();
-            }
-        });
-        designation.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                newDesignation = editable.toString();
-            }
-        });
         eduChildClose2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -667,6 +638,7 @@ public class QualificationEditProfileFragment extends Fragment {
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
+                    isStarted = false;
                     if (e == null) {
                         try {
                             mainEducationLayout.removeAllViews();
@@ -700,10 +672,10 @@ public class QualificationEditProfileFragment extends Fragment {
                                 currentIncome.setText(String.valueOf(newCurrentIncome));
                             if (newIndustry != null)
                                 industry.setText(newIndustry.fetchIfNeeded().getString("name"));
-                            if (newCompany != null && !newCompany.equals(""))
-                                company.setText(newCompany);
-                            if (newDesignation != null && !newDesignation.equals(""))
-                                designation.setText(newDesignation);
+                            if (newCompany.trim() != null && !newCompany.trim().equals(""))
+                                company.setText(newCompany.trim());
+                            if (newDesignation.trim() != null && !newDesignation.trim().equals(""))
+                                designation.setText(newDesignation.trim());
                             workAfterMarriage.setSelection(newWorkAfterMarriage);
                         } catch (ParseException e1) {
                             e1.printStackTrace();
@@ -778,12 +750,45 @@ public class QualificationEditProfileFragment extends Fragment {
         eduChildDegreeBranch3 = (TextView) educationLayoutChild3.findViewById(R.id.degree_branch);
         eduChildClose2 = (ImageView) educationLayoutChild2.findViewById(R.id.remove_button);
         eduChildClose3 = (ImageView) educationLayoutChild3.findViewById(R.id.remove_button);
+        company.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    public CharSequence filter(CharSequence src, int start,
+                                               int end, Spanned dst, int dstart, int dend) {
+                        if (src.equals("")) { // for backspace
+                            return src;
+                        }
+                        if (src.toString().matches("[a-zA-Z ]+")) {
+                            return src;
+                        }
+                        return src.toString().replaceAll("[^A-Za-z ]", "");
+                    }
+                }
+        });
+        designation.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    public CharSequence filter(CharSequence src, int start,
+                                               int end, Spanned dst, int dstart, int dend) {
+                        if (src.equals("")) { // for backspace
+                            return src;
+                        }
+                        if (src.toString().matches("[a-zA-Z ]+")) {
+                            return src;
+                        }
+                        return src.toString().replaceAll("[^A-Za-z ]", "");
+                    }
+                }
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
         isStarted = true;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
     }
 
     @Override
@@ -799,15 +804,17 @@ public class QualificationEditProfileFragment extends Fragment {
 
     public void saveInfo() {
         try {
+            newDesignation = designation.getText().toString();
+            newCompany = company.getText().toString();
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (newCurrentIncome != 0)
                         parseObject.put("package", newCurrentIncome);
-                    if (newCompany != null && !newCompany.equals(""))
+                    if (newCompany != null && !newCompany.equals("") && !newCompany.trim().equals(""))
                         parseObject.put("placeOfWork", newCompany);
-                    if (newDesignation != null && !newDesignation.equals(""))
+                    if (newDesignation != null && !newDesignation.equals("") && !newDesignation.trim().equals(""))
                         parseObject.put("designation", newDesignation);
                     if (newIndustry != null)
                         parseObject.put("industryId", newIndustry);

@@ -1,5 +1,4 @@
-<com.mandaptak.android.Views.MyLayout
-    android:id="@+id/layout"
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,79 +6,74 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <RelativeLayout
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+    <com.viewpagerindicator.CirclePageIndicator
+        android:id="@+id/circles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:fillColor="@color/white"
+        app:pageColor="@color/white_alpha"
+        app:strokeColor="@color/transparent"/>
 
-        <com.viewpagerindicator.CirclePageIndicator
-            android:id="@+id/circles"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            app:fillColor="@color/white"
-            app:pageColor="@color/white_alpha"
-            app:strokeColor="@color/transparent"/>
+    <com.mandaptak.android.Views.TypefaceTextView
+        android:id="@+id/label_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/circles"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:padding="16dp"
+        android:text="Enter your number below to get access"
+        android:textColor="@color/white_alpha"
+        android:textSize="@dimen/abc_text_size_medium_material"/>
 
-        <com.mandaptak.android.Views.TypefaceTextView
-            android:id="@+id/label_number"
+    <RelativeLayout
+        android:id="@+id/number_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/login_button"
+        android:layout_centerHorizontal="true">
+
+        <ImageView
+            android:id="@+id/number_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/circles"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/number"
+            android:src="@drawable/ic_call_white"/>
+
+        <com.mandaptak.android.Views.ExtendedEditText
+            android:id="@+id/number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
+            android:layout_marginBottom="16dp"
             android:layout_marginTop="16dp"
-            android:padding="16dp"
-            android:text="Enter your number below to get access"
-            android:textColor="@color/white_alpha"
-            android:textSize="@dimen/abc_text_size_medium_material"/>
-
-        <RelativeLayout
-            android:id="@+id/number_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@+id/login_button"
-            android:layout_centerHorizontal="true">
-
-            <ImageView
-                android:id="@+id/number_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/number"
-                android:src="@drawable/ic_call_white"/>
-
-            <com.mandaptak.android.Views.ExtendedEditText
-                android:id="@+id/number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="16dp"
-                android:layout_marginTop="16dp"
-                android:digits="0123456789"
-                android:hint="xxx-xxx-xxxx "
-                android:imeOptions="actionGo"
-                android:inputType="number"
-                android:maxLength="10"
-                android:padding="8dp"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white_alpha"
-                android:textCursorDrawable="@drawable/color_cursor"/>
-        </RelativeLayout>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/login_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="?android:attr/listPreferredItemHeight"
-            android:background="@color/red_300"
-            android:gravity="center"
-            android:text="Login"
-            android:textColor="@color/white"/>
+            android:digits="0123456789"
+            android:hint="xxx-xxx-xxxx "
+            android:imeOptions="actionGo"
+            android:inputType="number"
+            android:maxLength="10"
+            android:padding="8dp"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white_alpha"
+            android:textCursorDrawable="@drawable/color_cursor"/>
     </RelativeLayout>
-</com.mandaptak.android.Views.MyLayout>
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="?android:attr/listPreferredItemHeight"
+        android:background="@color/red_300"
+        android:gravity="center"
+        android:text="Login"
+        android:textColor="@color/white"/>
+</RelativeLayout>

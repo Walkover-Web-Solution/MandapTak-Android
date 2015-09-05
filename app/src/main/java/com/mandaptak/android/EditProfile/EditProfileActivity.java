@@ -15,15 +15,8 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.MyViewPager;
-import com.parse.GetCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 import java.util.Locale;
-
-import me.iwf.photopicker.utils.Prefs;
 
 public class EditProfileActivity extends AppCompatActivity implements ActionBar.TabListener {
 
@@ -44,24 +37,6 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         context = this;
         mApp = (Common) getApplicationContext();
         init();
-
-        if (mApp.isNetworkAvailable(context)) {
-            mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
-            parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    parseObject.put("isComplete", false);
-                    parseObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            mApp.dialog.dismiss();
-                            basicProfileFragment.getParseData();
-                        }
-                    });
-                }
-            });
-        }
     }
 
     @Override
@@ -129,8 +104,9 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         skipButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mViewPager.getCurrentItem() < 3) {
-                    mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+                int index = mViewPager.getCurrentItem();
+                if (index < 3) {
+                    mViewPager.setCurrentItem(index + 1, true);
                 }
             }
         });

@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,22 +73,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                              Bundle savedInstanceState) {
         init(inflater, container);
 
-        displayName.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                newName = editable.toString();
-            }
-        });
         placeOfBirth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -241,6 +227,20 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         placeOfBirth = (TextView) rootView.findViewById(R.id.place_of_birth);
         currentLocation = (TextView) rootView.findViewById(R.id.current_location);
         displayName = (EditText) rootView.findViewById(R.id.display_name);
+        displayName.setFilters(new InputFilter[]{
+                new InputFilter() {
+                    public CharSequence filter(CharSequence src, int start,
+                                               int end, Spanned dst, int dstart, int dend) {
+                        if (src.equals("")) { // for backspace
+                            return src;
+                        }
+                        if (src.toString().matches("[a-zA-Z ]+")) {
+                            return src;
+                        }
+                        return src.toString().replaceAll("[^A-Za-z ]", "");
+                    }
+                }
+        });
     }
 
     public void getParseData() {
@@ -250,6 +250,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
+                    isStarted = false;
                     if (e == null) {
                         try {
                             newName = parseObject.getString("name");
@@ -311,7 +312,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getPOB(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-        parseQuery.whereMatches("name", "(?i)^" + query);
+        parseQuery.whereContains("name", query);
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -340,7 +341,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getCurrentLocation(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-        parseQuery.whereMatches("name", "(?i)^" + query);
+        parseQuery.whereContains("name", query);
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -370,6 +371,11 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public void onStart() {
         super.onStart();
         isStarted = true;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
     }
 
     @Override
@@ -385,24 +391,23 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     public void saveInfo() {
         try {
+            newName = displayName.getText().toString();
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (newGender != null)
                         parseObject.put("gender", newGender);
-                    if (newName != null)
-                        parseObject.put("name", newName);
-                    if (newTOB != null) {
-                        parseObject.put("tob", newTOB.getTime());
-                    }
-                    if (newDOB != null) {
-                        parseObject.put("dob", newDOB.getTime());
-                    }
+                    if (newName.trim() != null && !newName.trim().equals(""))
+                        parseObject.put("name", newName.trim());
                     if (newPOB != null)
                         parseObject.put("placeOfBirth", newPOB);
                     if (newCurrentLocation != null)
                         parseObject.put("currentLocation", newCurrentLocation);
+                    if (newTOB != null)
+                        parseObject.put("tob", newTOB.getTime());
+                    if (newDOB != null)
+                        parseObject.put("dob", newDOB.getTime());
                     parseObject.saveInBackground();
                 }
             });

@@ -576,7 +576,7 @@ public class UserPreferences extends AppCompatActivity {
         final ArrayList<LocationPreference> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
         if (query != null)
-            parseQuery.whereMatches("name", "(?i)^" + query);
+            parseQuery.whereContains("name", query);
         parseQuery.include("Parent");
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -615,7 +615,7 @@ public class UserPreferences extends AppCompatActivity {
         ParseQuery<ParseObject> parseQuery2 = new ParseQuery<>("State");
         parseQuery2.include("Parent");
         if (query != null)
-            parseQuery2.whereMatches("name", "(?i)^" + query);
+            parseQuery2.whereContains("name", query);
         parseQuery2.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {

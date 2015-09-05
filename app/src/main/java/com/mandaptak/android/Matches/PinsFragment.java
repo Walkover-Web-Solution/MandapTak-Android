@@ -76,6 +76,7 @@ public class PinsFragment extends Fragment {
                         public void done(List<ParseObject> list, ParseException e) {
                             if (e == null)
                                 if (list.size() > 0) {
+                                    pinsList.clear();
                                     for (ParseObject parseObject : list) {
                                         try {
                                             MatchesModel model = new MatchesModel();

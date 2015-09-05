@@ -53,7 +53,6 @@ public class UserPreferences extends AppCompatActivity {
     LocationDataAdapter locationDataAdapter;
     ArrayList<LocationPreference> locationList;
     ArrayList<LocationPreference> parseSavedLocationList = new ArrayList<>();
-    ParseObject profileObject;
     private int newWorkAfterMarriage = 0;
     private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
     private int minHeight = 0, maxHeight = 0;
@@ -436,75 +435,84 @@ public class UserPreferences extends AppCompatActivity {
         }
         if (mValidField)
             if (mApp.isNetworkAvailable(context)) {
-                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Preference");
-                parseQuery.whereEqualTo("profileId", profileObject);
-                parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                     @Override
-                    public void done(ParseObject parseObject, ParseException e) {
+                    public void done(final ParseObject profileObject, ParseException e) {
                         if (e == null) {
-                            if (minHeight != 0)
-                                parseObject.put("minHeight", minHeight);
-                            else
-                                parseObject.put("minHeight", JSONObject.NULL);
-                            if (maxHeight != 0)
-                                parseObject.put("maxHeight", maxHeight);
-                            else
-                                parseObject.put("maxHeight", JSONObject.NULL);
-                            if (minAge != 0)
-                                parseObject.put("ageFrom", minAge);
-                            else
-                                parseObject.put("ageFrom", JSONObject.NULL);
-                            if (maxAge != 0)
-                                parseObject.put("ageTo", maxAge);
-                            else
-                                parseObject.put("ageTo", JSONObject.NULL);
-                            if (minBudget != 0)
-                                parseObject.put("minBudget", minBudget);
-                            else
-                                parseObject.put("minBudget", minBudget);
-                            if (maxBudget != 0)
-                                parseObject.put("maxBudget", maxBudget);
-                            else
-                                parseObject.put("maxBudget", JSONObject.NULL);
-                            if (minIncome != 0)
-                                parseObject.put("minIncome", minIncome);
-                            else
-                                parseObject.put("minIncome", JSONObject.NULL);
+                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Preference");
+                            parseQuery.whereEqualTo("profileId", profileObject);
+                            parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                @Override
+                                public void done(ParseObject parseObject, ParseException e) {
+                                    if (e == null) {
+                                        if (minHeight != 0)
+                                            parseObject.put("minHeight", minHeight);
+                                        else
+                                            parseObject.put("minHeight", JSONObject.NULL);
+                                        if (maxHeight != 0)
+                                            parseObject.put("maxHeight", maxHeight);
+                                        else
+                                            parseObject.put("maxHeight", JSONObject.NULL);
+                                        if (minAge != 0)
+                                            parseObject.put("ageFrom", minAge);
+                                        else
+                                            parseObject.put("ageFrom", JSONObject.NULL);
+                                        if (maxAge != 0)
+                                            parseObject.put("ageTo", maxAge);
+                                        else
+                                            parseObject.put("ageTo", JSONObject.NULL);
+                                        if (minBudget != 0)
+                                            parseObject.put("minBudget", minBudget);
+                                        else
+                                            parseObject.put("minBudget", minBudget);
+                                        if (maxBudget != 0)
+                                            parseObject.put("maxBudget", maxBudget);
+                                        else
+                                            parseObject.put("maxBudget", JSONObject.NULL);
+                                        if (minIncome != 0)
+                                            parseObject.put("minIncome", minIncome);
+                                        else
+                                            parseObject.put("minIncome", JSONObject.NULL);
 
-                            parseObject.put("working", newWorkAfterMarriage);
-                            parseObject.put("manglik", manglik);
-                            parseObject.put("minGunMatch", 0);
-                            parseObject.saveInBackground();
-                            saveLocationData(parseObject);
-                        } else if (e.getCode() == 101) {
-                            ParseObject parseObjectNew = new ParseObject("Preference");
-                            if (minHeight != 0)
-                                parseObjectNew.put("minHeight", minHeight);
-                            if (maxHeight != 0)
-                                parseObjectNew.put("maxHeight", maxHeight);
-                            if (minAge != 0)
-                                parseObjectNew.put("ageFrom", minAge);
-                            if (maxAge != 0)
-                                parseObjectNew.put("ageTo", maxAge);
-                            if (minBudget != 0)
-                                parseObjectNew.put("minBudget", minBudget);
-                            if (maxBudget != 0)
-                                parseObjectNew.put("maxBudget", maxBudget);
-                            if (minIncome != 0)
-                                parseObjectNew.put("minIncome", minIncome);
-                            parseObjectNew.put("working", newWorkAfterMarriage);
-                            parseObjectNew.put("manglik", manglik);
-                            parseObjectNew.put("minGunMatch", 0);
-                            parseObjectNew.put("profileId", profileObject);
-                            parseObjectNew.saveInBackground();
-                            saveLocationData(parseObject);
+                                        parseObject.put("working", newWorkAfterMarriage);
+                                        parseObject.put("manglik", manglik);
+                                        parseObject.put("minGunMatch", 0);
+                                        parseObject.saveInBackground();
+                                        saveLocationData(parseObject);
+                                    } else if (e.getCode() == 101) {
+                                        ParseObject parseObjectNew = new ParseObject("Preference");
+                                        if (minHeight != 0)
+                                            parseObjectNew.put("minHeight", minHeight);
+                                        if (maxHeight != 0)
+                                            parseObjectNew.put("maxHeight", maxHeight);
+                                        if (minAge != 0)
+                                            parseObjectNew.put("ageFrom", minAge);
+                                        if (maxAge != 0)
+                                            parseObjectNew.put("ageTo", maxAge);
+                                        if (minBudget != 0)
+                                            parseObjectNew.put("minBudget", minBudget);
+                                        if (maxBudget != 0)
+                                            parseObjectNew.put("maxBudget", maxBudget);
+                                        if (minIncome != 0)
+                                            parseObjectNew.put("minIncome", minIncome);
+                                        parseObjectNew.put("working", newWorkAfterMarriage);
+                                        parseObjectNew.put("manglik", manglik);
+                                        parseObjectNew.put("minGunMatch", 0);
+                                        parseObjectNew.put("profileId", profileObject);
+                                        parseObjectNew.saveInBackground();
+                                        saveLocationData(parseObject);
+                                    } else {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
                         } else {
-                            e.printStackTrace();
+                            mApp.showToast(context, e.getMessage());
                         }
                     }
                 });
             }
-
     }
 
     private void saveLocationData(ParseObject object) {
@@ -647,80 +655,79 @@ public class UserPreferences extends AppCompatActivity {
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
-                if (e == null)
-                    profileObject = object;
+                if (e == null) {
+                    ParseQuery<ParseObject> query = new ParseQuery<>("Preference");
+                    query.whereEqualTo("profileId", object);
+                    query.getFirstInBackground(new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject parseObject, ParseException e) {
+                            if (e == null) {
+                                try {
+                                    if (parseObject.containsKey("maxHeight") && parseObject.get("maxHeight") != JSONObject.NULL)
+                                        maxHeight = parseObject.getInt("maxHeight");
+                                    if (parseObject.containsKey("minHeight") && parseObject.get("minHeight") != JSONObject.NULL)
+                                        minHeight = parseObject.getInt("minHeight");
+                                    if (parseObject.containsKey("ageFrom") && parseObject.get("ageFrom") != JSONObject.NULL)
+                                        minAge = parseObject.getInt("ageFrom");
+                                    if (parseObject.containsKey("ageTo") && parseObject.get("ageTo") != JSONObject.NULL)
+                                        maxAge = parseObject.getInt("ageTo");
+                                    if (parseObject.containsKey("minBudget") && parseObject.get("minBudget") != JSONObject.NULL)
+                                        minBudget = parseObject.getInt("minBudget");
+                                    if (parseObject.containsKey("maxBudget") && parseObject.get("maxBudget") != JSONObject.NULL)
+                                        maxBudget = parseObject.getInt("maxBudget");
+                                    if (parseObject.containsKey("manglik") && parseObject.get("manglik") != JSONObject.NULL) {
+                                        manglik = parseObject.getInt("manglik");
+                                        manglikStatus.setSelection(manglik);
+                                    }
+                                    if (parseObject.containsKey("minIncome") && parseObject.get("minIncome") != JSONObject.NULL)
+                                        minIncome = parseObject.getInt("minIncome");
+                                    if (parseObject.containsKey("working") && parseObject.get("working") != JSONObject.NULL) {
+                                        newWorkAfterMarriage = parseObject.getInt("working");
+                                        workingPartner.setSelection(newWorkAfterMarriage);
+                                    }
+                                    getLocationData(parseObject);
+                                    if (minIncome != 0)
+                                        etIncome.setText("" + minIncome);
+                                    if (maxHeight != 0) {
+                                        int[] bases = getResources().getIntArray(R.array.heightCM);
+                                        String[] values = getResources().getStringArray(R.array.height);
+                                        Arrays.sort(bases);
+                                        int index = Arrays.binarySearch(bases, maxHeight);
+                                        etMaxHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                                        etMaxHeight.setText(values[index]);
+                                    }
+                                    if (minHeight != 0) {
+                                        int[] bases = getResources().getIntArray(R.array.heightCM);
+                                        String[] values = getResources().getStringArray(R.array.height);
+                                        Arrays.sort(bases);
+                                        int index = Arrays.binarySearch(bases, minHeight);
+                                        etMinHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                                        etMinHeight.setText(values[index]);
+                                    }
+                                    if (minAge != 0 && maxAge != 0) {
+                                        etMinAge.setText("" + minAge);
+                                        etMaxAge.setText("" + maxAge);
+                                    }
+                                    if (maxBudget != 0 && minBudget != 0) {
+                                        etBudgetMin.setText("" + minBudget);
+                                        etBudgetMax.setText("" + maxBudget);
+                                    }
+                                    if (minIncome != 0)
+                                        etIncome.setText("" + minIncome);
+
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            } else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    mApp.showToast(context, e.getMessage());
+                }
             }
         });
-        if (profileObject != null) {
-            ParseQuery<ParseObject> query = new ParseQuery<>("Preference");
-            query.whereEqualTo("profileId", profileObject);
-            query.getFirstInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (e == null) {
-                        try {
-                            if (parseObject.containsKey("maxHeight") && parseObject.get("maxHeight") != JSONObject.NULL)
-                                maxHeight = parseObject.getInt("maxHeight");
-                            if (parseObject.containsKey("minHeight") && parseObject.get("minHeight") != JSONObject.NULL)
-                                minHeight = parseObject.getInt("minHeight");
-                            if (parseObject.containsKey("ageFrom") && parseObject.get("ageFrom") != JSONObject.NULL)
-                                minAge = parseObject.getInt("ageFrom");
-                            if (parseObject.containsKey("ageTo") && parseObject.get("ageTo") != JSONObject.NULL)
-                                maxAge = parseObject.getInt("ageTo");
-                            if (parseObject.containsKey("minBudget") && parseObject.get("minBudget") != JSONObject.NULL)
-                                minBudget = parseObject.getInt("minBudget");
-                            if (parseObject.containsKey("maxBudget") && parseObject.get("maxBudget") != JSONObject.NULL)
-                                maxBudget = parseObject.getInt("maxBudget");
-                            if (parseObject.containsKey("manglik") && parseObject.get("manglik") != JSONObject.NULL) {
-                                manglik = parseObject.getInt("manglik");
-                                manglikStatus.setSelection(manglik);
-                            }
-                            if (parseObject.containsKey("minIncome") && parseObject.get("minIncome") != JSONObject.NULL)
-                                minIncome = parseObject.getInt("minIncome");
-                            if (parseObject.containsKey("working") && parseObject.get("working") != JSONObject.NULL) {
-                                newWorkAfterMarriage = parseObject.getInt("working");
-                                workingPartner.setSelection(newWorkAfterMarriage);
-                            }
-                            getLocationData(parseObject);
-                            if (minIncome != 0)
-                                etIncome.setText("" + minIncome);
-                            if (maxHeight != 0) {
-                                int[] bases = getResources().getIntArray(R.array.heightCM);
-                                String[] values = getResources().getStringArray(R.array.height);
-                                Arrays.sort(bases);
-                                int index = Arrays.binarySearch(bases, maxHeight);
-                                etMaxHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                etMaxHeight.setText(values[index]);
-                            }
-                            if (minHeight != 0) {
-                                int[] bases = getResources().getIntArray(R.array.heightCM);
-                                String[] values = getResources().getStringArray(R.array.height);
-                                Arrays.sort(bases);
-                                int index = Arrays.binarySearch(bases, minHeight);
-                                etMinHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                                etMinHeight.setText(values[index]);
-                            }
-                            if (minAge != 0 && maxAge != 0) {
-                                etMinAge.setText("" + minAge);
-                                etMaxAge.setText("" + maxAge);
-                            }
-                            if (maxBudget != 0 && minBudget != 0) {
-                                etBudgetMin.setText("" + minBudget);
-                                etBudgetMax.setText("" + maxBudget);
-                            }
-                            if (minIncome != 0)
-                                etIncome.setText("" + minIncome);
-
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-        }
     }
 
     private void getLocationData(ParseObject object) {
@@ -750,7 +757,6 @@ public class UserPreferences extends AppCompatActivity {
                                         + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
                                 locationPreference.setLocationType(0);
                                 responseText.append(locationPreference.getLocationName());
-
                             } else {
                                 locationPreference.setParseObject(state);
                                 locationPreference.setIsSelected(true);
@@ -764,6 +770,8 @@ public class UserPreferences extends AppCompatActivity {
                     } catch (ParseException e1) {
                         e1.printStackTrace();
                     }
+                } else {
+                    e.printStackTrace();
                 }
             }
         });

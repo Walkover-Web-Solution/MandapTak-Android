@@ -1,38 +1,16 @@
-/*
- * Copyright (c) 2015 Layer. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.layer.atlas;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.exceptions.LayerException;
@@ -49,21 +27,16 @@ import java.util.ArrayList;
  */
 public class AtlasMessageComposer extends FrameLayout {
     private static final String TAG = AtlasMessageComposer.class.getSimpleName();
-    private static final boolean debug = false;
 
     private EditText messageText;
     private View btnSend;
-    private View btnUpload;
 
     private Listener listener;
     private Conversation conv;
     private LayerClient layerClient;
 
-    private ArrayList<MenuItem> menuItems = new ArrayList<MenuItem>();
-
     // styles
     private int textColor;
-    private float textSize;
     private Typeface typeFace;
     private int textStyle;
 
@@ -109,42 +82,6 @@ public class AtlasMessageComposer extends FrameLayout {
         this.conv = conversation;
 
         LayoutInflater.from(getContext()).inflate(R.layout.atlas_message_composer, this);
-
-        btnUpload = findViewById(R.id.atlas_message_composer_upload);
-        btnUpload.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                final PopupWindow popupWindow = new PopupWindow(v.getContext());
-                popupWindow.setWindowLayoutMode(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                LayoutInflater inflater = LayoutInflater.from(v.getContext());
-                LinearLayout menu = (LinearLayout) inflater.inflate(R.layout.atlas_view_message_composer_menu, null);
-                popupWindow.setContentView(menu);
-
-                for (MenuItem item : menuItems) {
-                    View itemConvert = inflater.inflate(R.layout.atlas_view_message_composer_menu_convert, menu, false);
-                    TextView titleText = ((TextView) itemConvert.findViewById(R.id.altas_view_message_composer_convert_text));
-                    titleText.setText(item.title);
-                    itemConvert.setTag(item);
-                    itemConvert.setOnClickListener(new OnClickListener() {
-                        public void onClick(View v) {
-                            popupWindow.dismiss();
-                            MenuItem item = (MenuItem) v.getTag();
-                            if (item.clickListener != null) {
-                                item.clickListener.onClick(v);
-                            }
-                        }
-                    });
-                    menu.addView(itemConvert);
-                }
-                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                popupWindow.setOutsideTouchable(true);
-                int[] viewXYWindow = new int[2];
-                v.getLocationInWindow(viewXYWindow);
-
-                menu.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-                int menuHeight = menu.getMeasuredHeight();
-                popupWindow.showAtLocation(v, Gravity.NO_GRAVITY, viewXYWindow[0], viewXYWindow[1] - menuHeight);
-            }
-        });
 
         messageText = (EditText) findViewById(R.id.atlas_message_composer_text);
         messageText.addTextChangedListener(new TextWatcher() {
@@ -208,15 +145,6 @@ public class AtlasMessageComposer extends FrameLayout {
         messageText.setTextColor(textColor);
     }
 
-    public void registerMenuItem(String title, OnClickListener clickListener) {
-        if (title == null) throw new NullPointerException("Item title must not be null");
-        MenuItem item = new MenuItem();
-        item.title = title;
-        item.clickListener = clickListener;
-        menuItems.add(item);
-        btnUpload.setVisibility(View.VISIBLE);
-    }
-
     public void setListener(Listener listener) {
         this.listener = listener;
     }
@@ -231,10 +159,5 @@ public class AtlasMessageComposer extends FrameLayout {
 
     public interface Listener {
         boolean beforeSend(Message message);
-    }
-
-    private static class MenuItem {
-        String title;
-        OnClickListener clickListener;
     }
 }

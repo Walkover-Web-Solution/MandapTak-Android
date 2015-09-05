@@ -5,22 +5,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.mandaptak.android.Matches.PinsFragment;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.CircleImageView;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
+import me.iwf.photopicker.utils.Prefs;
+
 public class PinsAdapter extends BaseAdapter {
     Context ctx;
     ArrayList<MatchesModel> list;
+    PinsFragment pinsFragment;
+    Common mApp;
 
-    public PinsAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
+    public PinsAdapter(PinsFragment pinsFragment, ArrayList<MatchesModel> paramArrayList, Context paramContext) {
         this.list = paramArrayList;
         this.ctx = paramContext;
+        this.pinsFragment = pinsFragment;
+        mApp = (Common) ctx.getApplicationContext();
     }
 
     public int getCount() {
@@ -41,6 +54,7 @@ public class PinsAdapter extends BaseAdapter {
             paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
             viewholder = new ViewHolder();
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
+            viewholder.unpin = (ImageView) paramView.findViewById(R.id.unpin);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
             viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
             viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
@@ -48,14 +62,56 @@ public class PinsAdapter extends BaseAdapter {
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
-        MatchesModel matchesModel = list.get(paramInt);
+        final MatchesModel matchesModel = list.get(paramInt);
         viewholder.tvName.setText(matchesModel.getName());
         viewholder.tvReligion.setText(matchesModel.getReligion());
         viewholder.tvWork.setText(matchesModel.getWork());
         Picasso.with(ctx)
                 .load(matchesModel.getUrl())
                 .into(viewholder.profilePic);
-
+        viewholder.unpin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mApp.show_PDialog(ctx, "Unpinning Profile");
+                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(final ParseObject profileObject, ParseException e) {
+                        if (e == null) {
+                            ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                            q1.getInBackground(matchesModel.getProfileId(), new GetCallback<ParseObject>() {
+                                @Override
+                                public void done(ParseObject object, ParseException e) {
+                                    if (e == null) {
+                                        ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+                                        query.whereEqualTo("profileId", profileObject);
+                                        query.whereEqualTo("pinnedProfileId", object);
+                                        query.getFirstInBackground(new GetCallback<ParseObject>() {
+                                            @Override
+                                            public void done(ParseObject parseObject, ParseException e) {
+                                                if (e == null) {
+                                                    mApp.showToast(ctx, "Profile Unpinned");
+                                                    pinsFragment.getParseData();
+                                                } else {
+                                                    mApp.showToast(ctx, e.getMessage());
+                                                }
+                                                mApp.dialog.dismiss();
+                                            }
+                                        });
+                                    } else {
+                                        mApp.dialog.dismiss();
+                                        mApp.showToast(ctx, e.getMessage());
+                                    }
+                                }
+                            });
+                        } else {
+                            mApp.dialog.dismiss();
+                            mApp.showToast(ctx, e.getMessage());
+                        }
+                    }
+                });
+            }
+        });
         return paramView;
     }
 
@@ -64,5 +120,6 @@ public class PinsAdapter extends BaseAdapter {
         public TextView tvReligion;
         public TextView tvWork;
         public CircleImageView profilePic;
+        public ImageView unpin;
     }
 }

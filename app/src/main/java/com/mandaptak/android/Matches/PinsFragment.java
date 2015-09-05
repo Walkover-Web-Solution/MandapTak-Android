@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.mandaptak.android.Adapter.MatchesAdapter;
+import com.mandaptak.android.Adapter.PinsAdapter;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -28,7 +28,7 @@ import me.iwf.photopicker.utils.Prefs;
 public class PinsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
-    ArrayList<MatchesModel> matchList = new ArrayList<>();
+    ArrayList<MatchesModel> pinsList = new ArrayList<>();
     private View rootView;
     private Context context;
 
@@ -56,13 +56,13 @@ public class PinsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
-                intent.putExtra("profile", matchList.get(i));
+                intent.putExtra("profile", pinsList.get(i));
                 startActivity(intent);
             }
         });
     }
 
-    private ArrayList<MatchesModel> getParseData() {
+    public ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -94,22 +94,22 @@ public class PinsFragment extends Fragment {
                                             }
                                             model.setProfileId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").getObjectId());
                                             model.setUserId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("userId").getObjectId());
-                                            matchList.add(model);
+                                            pinsList.add(model);
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();
                                         }
-
                                     }
-                                    listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
+                                    listViewMatches.setAdapter(new PinsAdapter(PinsFragment.this, pinsList, context));
                                 } else
                                     mApp.showToast(context, "No pins");
+                            else
+                                mApp.showToast(context, e.getMessage());
+                            mApp.dialog.dismiss();
                         }
                     });
                 }
             }
         });
-
-        mApp.dialog.dismiss();
-        return matchList;
+        return pinsList;
     }
 }

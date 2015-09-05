@@ -763,7 +763,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         return src.toString().replaceAll("[^A-Za-z ]", "");
                     }
                 }
-        });
+                , new InputFilter.LengthFilter(32)});
         designation.setFilters(new InputFilter[]{
                 new InputFilter() {
                     public CharSequence filter(CharSequence src, int start,
@@ -777,7 +777,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         return src.toString().replaceAll("[^A-Za-z ]", "");
                     }
                 }
-        });
+                , new InputFilter.LengthFilter(32)});
     }
 
     @Override

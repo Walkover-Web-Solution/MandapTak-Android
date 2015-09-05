@@ -240,7 +240,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                         return src.toString().replaceAll("[^A-Za-z ]", "");
                     }
                 }
-        });
+                , new InputFilter.LengthFilter(32)});
     }
 
     public void getParseData() {

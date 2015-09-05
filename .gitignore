@@ -12,6 +12,7 @@
 /app/app.iml
 /gradle.properties
 /slidingMenu/build
+/layer-atlas/layer-atlas.iml
 /layer-atlas/build
 /gradlew.bat
 /cropImage/cropImage.iml

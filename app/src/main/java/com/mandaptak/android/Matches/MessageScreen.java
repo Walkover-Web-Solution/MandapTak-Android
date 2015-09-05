@@ -15,6 +15,7 @@ import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -26,7 +27,6 @@ public class MessageScreen extends AppCompatActivity {
     private AtlasMessageComposer atlasComposer;
     private Conversation conversation;
     private LayerClient layerClient;
-
     private ArrayList<String> userIds;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +38,13 @@ public class MessageScreen extends AppCompatActivity {
             conversation = layerClient.getConversation(id);
         userIds = getIntent().getStringArrayListExtra("participant-map");
         messagesList = (AtlasMessagesList) findViewById(R.id.messageslist);
-        messagesList.init(layerClient, ConversationFragment.participantProvider);
+        messagesList.init(layerClient, Common.getIdentityProvider());
         messagesList.setConversation(conversation);
+
 
         participantPicker = (AtlasParticipantPicker) findViewById(R.id.participantpicker);
         String[] currentUser = {layerClient.getAuthenticatedUserId()};
-        participantPicker.init(currentUser, ConversationFragment.participantProvider);
+        participantPicker.init(currentUser, Common.getIdentityProvider());
         if (conversation != null)
             participantPicker.setVisibility(View.GONE);
         AtlasTypingIndicator typingIndicator = (AtlasTypingIndicator) findViewById(R.id.typingindicator);
@@ -81,4 +82,5 @@ public class MessageScreen extends AppCompatActivity {
         super.onPause();
         layerClient.unregisterEventListener(messagesList);
     }
+
 }

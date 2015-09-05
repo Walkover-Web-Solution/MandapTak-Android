@@ -21,6 +21,7 @@ import com.github.johnpersano.supertoasts.SuperToast;
 import com.layer.sdk.exceptions.LayerException;
 import com.mandaptak.android.Layer.LayerCallbacks;
 import com.mandaptak.android.Layer.LayerImpl;
+import com.mandaptak.android.Matches.AtlasIdentityProvider;
 import com.mandaptak.android.R;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -33,8 +34,10 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class Common extends Application implements LayerCallbacks {
+    public static AtlasIdentityProvider identityProvider;
     private static HashMap<String, ParseUser> allUsers;
     public ProgressDialog dialog;
 
@@ -73,6 +76,10 @@ public class Common extends Application implements LayerCallbacks {
         if (friends.contains(currentUserId))
             friends.remove(currentUserId);
         return friends;
+    }
+
+    public static AtlasIdentityProvider getIdentityProvider() {
+        return identityProvider;
     }
 
     /**
@@ -264,6 +271,9 @@ public class Common extends Application implements LayerCallbacks {
         //Registers the activity so callbacks are executed on the correct class
         LayerImpl.setContext(this);
         cacheAllUsers();
+        identityProvider = new AtlasIdentityProvider(this);
+        String LayerAppID = "layer:///apps/staging/3ffe495e-45e8-11e5-9685-919001005125";
+        identityProvider.setAppId(UUID.fromString(LayerAppID.substring(LayerAppID.lastIndexOf("/") + 1)).toString());
 
     }
 

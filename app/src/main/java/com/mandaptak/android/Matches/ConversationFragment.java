@@ -7,25 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.layer.atlas.Atlas;
 import com.layer.atlas.AtlasConversationsList;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-
-import java.util.HashMap;
-import java.util.Map;
-
-
 public class ConversationFragment extends android.support.v4.app.Fragment {
+    static public LayerClient layerClient;
     Common mApp;
     private View rootView;
     private Context context;
-    static public LayerClient layerClient;
-    static public Atlas.ParticipantProvider participantProvider;
-
     private AtlasConversationsList myConversationList;
 
     @Override
@@ -50,35 +42,14 @@ public class ConversationFragment extends android.support.v4.app.Fragment {
 
 
     public void onUserAuthenticated() {
-        participantProvider = new Atlas.ParticipantProvider() {
-            Map<String, Atlas.Participant> users = new HashMap<>();
-
-            public Map<String, Atlas.Participant> getParticipants(String filter,
-                                                                  Map<String, Atlas.Participant> result) {
-
-                for (Map.Entry<String, Atlas.Participant> entry : users.entrySet()) {
-                    if (entry.getValue().getFirstName().indexOf(filter) > -1)
-                        result.put(entry.getKey(), entry.getValue());
-                }
-
-                return result;
-            }
-
-            public Atlas.Participant getParticipant(String userId) {
-                return users.get(userId);
-            }
-        };
-
         myConversationList = (AtlasConversationsList) rootView.findViewById(R.id.conversationlist);
-        myConversationList.init(layerClient, participantProvider);
+        myConversationList.init(layerClient, Common.getIdentityProvider());
         myConversationList.setClickListener(new AtlasConversationsList.ConversationClickListener() {
             public void onItemClick(Conversation conversation) {
                 startMessagesActivity(conversation);
             }
         });
-
         layerClient.registerEventListener(myConversationList);
-
     }
 
     private void startMessagesActivity(Conversation c) {

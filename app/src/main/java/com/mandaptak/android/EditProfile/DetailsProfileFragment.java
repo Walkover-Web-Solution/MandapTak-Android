@@ -285,7 +285,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Religion");
         if (query != null)
-            parseQuery.whereContains("name", "(?i)^" + query);
+            parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> list, ParseException e) {
@@ -317,7 +317,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Caste");
         if (query != null)
-            parseQuery.whereContains("name", query);
+            parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.whereEqualTo("religionId", newReligion.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -348,7 +348,7 @@ public class DetailsProfileFragment extends Fragment {
         final ArrayList<ParseNameModel> models = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Gotra");
         if (query != null)
-            parseQuery.whereContains("name", query);
+            parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.whereEqualTo("casteId", newCaste.getParseObject());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override

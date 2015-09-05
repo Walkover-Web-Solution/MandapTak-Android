@@ -189,7 +189,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
-                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                            parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -343,7 +343,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
-                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                            parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -497,7 +497,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
-                            parseQuery.whereMatches("name", "(?i)^" + editable.toString());
+                            parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -672,10 +672,12 @@ public class QualificationEditProfileFragment extends Fragment {
                                 currentIncome.setText(String.valueOf(newCurrentIncome));
                             if (newIndustry != null)
                                 industry.setText(newIndustry.fetchIfNeeded().getString("name"));
-                            if (newCompany.trim() != null && !newCompany.trim().equals(""))
-                                company.setText(newCompany.trim());
-                            if (newDesignation.trim() != null && !newDesignation.trim().equals(""))
-                                designation.setText(newDesignation.trim());
+                            if (newCompany != null)
+                                if (newCompany.trim() != null && !newCompany.trim().equals(""))
+                                    company.setText(newCompany.trim());
+                            if (newDesignation != null)
+                                if (newDesignation.trim() != null && !newDesignation.trim().equals(""))
+                                    designation.setText(newDesignation.trim());
                             workAfterMarriage.setSelection(newWorkAfterMarriage);
                         } catch (ParseException e1) {
                             e1.printStackTrace();

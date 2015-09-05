@@ -312,7 +312,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getPOB(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-        parseQuery.whereContains("name", query);
+        parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -341,7 +341,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getCurrentLocation(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-        parseQuery.whereContains("name", query);
+        parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -398,8 +398,9 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 public void done(ParseObject parseObject, ParseException e) {
                     if (newGender != null)
                         parseObject.put("gender", newGender);
-                    if (newName.trim() != null && !newName.trim().equals(""))
-                        parseObject.put("name", newName.trim());
+                    if (newName != null)
+                        if (newName.trim() != null && !newName.trim().equals(""))
+                            parseObject.put("name", newName.trim());
                     if (newPOB != null)
                         parseObject.put("placeOfBirth", newPOB);
                     if (newCurrentLocation != null)

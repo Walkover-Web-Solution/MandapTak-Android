@@ -28,13 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile project(':layer-atlas')
     compile 'com.android.support:multidex:1.0.1'
-    compile project(":viewPagerIndicator")
-    compile project(":slidingMenu")
-    compile project(":photoPick")
-    compile project(":rippleBack")
-    compile project(":twoWayViewLayouts")
     compile 'com.layer.sdk:layer-sdk:0.15.0'
     compile 'org.slf4j:slf4j-nop:1.5.8'
     compile 'com.parse.bolts:bolts-android:1.2.0'
@@ -43,4 +37,10 @@ dependencies {
     compile 'com.android.support:cardview-v7:22.2.1'
     compile 'com.kboyarshinov:autoinflate:0.1.1'
     compile 'com.google.android.gms:play-services-gcm:7.8.0'
+    compile project(":viewPagerIndicator")
+    compile project(":slidingMenu")
+    compile project(":photoPick")
+    compile project(":rippleBack")
+    compile project(":twoWayViewLayouts")
+    compile project(":layer-atlas")
 }

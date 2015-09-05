@@ -1,5 +1,7 @@
 package com.mandaptak.android.Models;
 
+import com.parse.ParseObject;
+
 import java.io.Serializable;
 
 public class MatchesModel implements Serializable {
@@ -8,6 +10,24 @@ public class MatchesModel implements Serializable {
     private String name;
     private String religion;
     private String work;
+    private String userId;
+    private  String profileId;
+
+    public String getProfileId() {
+        return profileId;
+    }
+
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public MatchesModel() {
     }

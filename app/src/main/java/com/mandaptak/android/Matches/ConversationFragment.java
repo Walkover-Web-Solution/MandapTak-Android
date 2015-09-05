@@ -1,7 +1,7 @@
 package com.mandaptak.android.Matches;
 
-import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +11,12 @@ import com.layer.atlas.Atlas;
 import com.layer.atlas.AtlasConversationsList;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
-import com.layer.sdk.query.Predicate;
-import com.layer.sdk.query.Query;
-import com.layer.sdk.query.SortDescriptor;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class ConversationFragment extends android.support.v4.app.Fragment {
@@ -48,17 +48,46 @@ public class ConversationFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    public void onUserAuthenticated() {
-            long monthBeforeMs = System.currentTimeMillis() - (1L * 30 * 24 * 3600 * 1000);
-            Query<Conversation> query = Query.builder(Conversation.class)
-                    .predicate(new Predicate(Conversation.Property.LAST_MESSAGE_RECEIVED_AT, Predicate.Operator.GREATER_THAN, monthBeforeMs))
-                    .sortDescriptor(new SortDescriptor(Conversation.Property.LAST_MESSAGE_RECEIVED_AT, SortDescriptor.Order.DESCENDING))
-                    .build();
-            myConversationList.setQuery(query);
 
-        }
+    public void onUserAuthenticated() {
+        participantProvider = new Atlas.ParticipantProvider() {
+            Map<String, Atlas.Participant> users = new HashMap<>();
+
+            public Map<String, Atlas.Participant> getParticipants(String filter,
+                                                                  Map<String, Atlas.Participant> result) {
+
+                for (Map.Entry<String, Atlas.Participant> entry : users.entrySet()) {
+                    if (entry.getValue().getFirstName().indexOf(filter) > -1)
+                        result.put(entry.getKey(), entry.getValue());
+                }
+
+                return result;
+            }
+
+            public Atlas.Participant getParticipant(String userId) {
+                return users.get(userId);
+            }
+        };
+
+        myConversationList = (AtlasConversationsList) rootView.findViewById(R.id.conversationlist);
+        myConversationList.init(layerClient, participantProvider);
+        myConversationList.setClickListener(new AtlasConversationsList.ConversationClickListener() {
+            public void onItemClick(Conversation conversation) {
+                startMessagesActivity(conversation);
+            }
+        });
+
+        layerClient.registerEventListener(myConversationList);
 
     }
+
+    private void startMessagesActivity(Conversation c) {
+        Intent intent = new Intent(context, MessageScreen.class);
+        if (c != null)
+            intent.putExtra("conversation-id", c.getId());
+        startActivity(intent);
+    }
+}
 
 
 

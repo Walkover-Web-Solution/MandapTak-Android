@@ -93,6 +93,8 @@ public class PinsFragment extends Fragment {
                                             if (url != null) {
                                                 model.setUrl(url);
                                             }
+                                            model.setProfileId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").getObjectId());
+                                            model.setUserId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("userId").getObjectId());
                                             matchList.add(model);
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();

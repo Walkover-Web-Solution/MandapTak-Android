@@ -16,7 +16,7 @@
             android:id="@+id/available_credits"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1000 Credits"
+            android:text="0 Credits"
             android:textColor="@color/red_500"
             android:textSize="@dimen/abc_text_size_large_material"/>
     </LinearLayout>
@@ -28,12 +28,26 @@
         android:layout_below="@+id/top"
         android:background="@color/black_light"/>
 
-    <ListView
-        android:id="@+id/list"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/add_button"
-        android:layout_below="@+id/divider1"/>
+        android:layout_below="@+id/divider1">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/add_button"

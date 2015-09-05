@@ -488,14 +488,12 @@ public class MainActivity extends AppCompatActivity {
                 slidingLayout.setVisibility(View.VISIBLE);
                 slidingLayout.setAlpha(v);
                 bottomLayout.setAlpha(1 - v);
-
             }
 
             @Override
             public void onPanelCollapsed(View view) {
                 slidingLayout.setVisibility(View.GONE);
                 bottomLayout.setVisibility(View.VISIBLE);
-
             }
 
             @Override
@@ -589,16 +587,18 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != null) {
-                frontProfileName.setText(profileList.get(0).getString("name"));
-                slideName.setText(profileList.get(0).getString("name"));
+                String name = profileList.get(0).getString("name");
+                frontProfileName.setText(name);
+                slideName.setText(name);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("age") && profileList.get(0).getInt("age") != 0) {
-                frontHeight.setText("" + profileList.get(0).getInt("age"));
-                slideHeight.setText("" + profileList.get(0).getInt("age"));
+                int age = profileList.get(0).getInt("age");
+                frontHeight.setText("" + age);
+                slideHeight.setText("" + age);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -617,36 +617,40 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != null) {
-                frontReligion.setText(profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name"));
-                slideReligion.setText(profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name"));
+                String religion = profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                frontReligion.setText(religion);
+                slideReligion.setText(religion);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != null) {
-                slideReligion.append(", " + profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name"));
-                frontReligion.append(", " + profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name"));
+                String caste = profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                slideReligion.append(", " + caste);
+                frontReligion.append(", " + caste);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != null) {
-                frontDesignation.setText(profileList.get(0).fetchIfNeeded().getString("designation"));
-                slideDesignation.setText(profileList.get(0).fetchIfNeeded().getString("designation"));
+                String desig = profileList.get(0).fetchIfNeeded().getString("designation");
+                frontDesignation.setText(desig);
+                slideDesignation.setText(desig);
+                designation.setText(desig);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != null) {
-                ParseObject city = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation");
-                ParseObject state = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent");
-                ParseObject country = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
-                currentLocation.setText(": " + city.fetchIfNeeded().getString("name"));
-                currentLocation.append(", " + state.fetchIfNeeded().getString("name"));
-                currentLocation.append(", " + country.fetchIfNeeded().getString("name"));
+                String city = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getString("name");
+                String state = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
+                String country = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
+                currentLocation.setText(": " + city);
+                currentLocation.append(", " + state);
+                currentLocation.append(", " + country);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -674,14 +678,14 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
-                education.append(", " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n " + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
-                education.append(", " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n " + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();

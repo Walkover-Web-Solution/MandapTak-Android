@@ -6,7 +6,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.mandaptak.android.Adapter.AgentProfilesAdapter;
@@ -37,6 +40,7 @@ public class AgentActivity extends AppCompatActivity {
     ArrayList<AgentProfileModel> profileModels = new ArrayList<>();
     TextView addProfile, availableCredits;
     int creditBalance = 0;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,7 @@ public class AgentActivity extends AppCompatActivity {
             getSupportActionBar().setTitle("Agent Home");
         } catch (Exception ignored) {
         }
+        progressBar = (ProgressBar) findViewById(R.id.progress);
         profileList = (ListView) findViewById(R.id.list);
         addProfile = (TextView) findViewById(R.id.add_button);
         availableCredits = (TextView) findViewById(R.id.available_credits);
@@ -61,6 +66,9 @@ public class AgentActivity extends AppCompatActivity {
                         alertDialog.setView(permissionDialog);
                         final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
                         AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+                        final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
+                        relations.setAdapter(ArrayAdapter.createFromResource(context,
+                                R.array.relation_array, R.layout.location_list_item));
                         etNumber.setPrefix("+91");
                         giveButton.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -73,6 +81,7 @@ public class AgentActivity extends AppCompatActivity {
                                             mApp.show_PDialog(context, "Creating User...");
                                             HashMap<String, Object> params = new HashMap<>();
                                             params.put("mobile", mobileNumber);
+                                            params.put("relation", relations.getSelectedItem());
                                             params.put("agentId", ParseUser.getCurrentUser().getObjectId());
                                             ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
                                                 @Override
@@ -112,7 +121,8 @@ public class AgentActivity extends AppCompatActivity {
     }
 
     public void getProfiles() {
-        mApp.show_PDialog(context, "Loading Profiles...");
+        profileList.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
         ParseQuery<ParseObject> balanceQuery = new ParseQuery<>("UserCredits");
         balanceQuery.whereEqualTo("userId", ParseUser.getCurrentUser());
         balanceQuery.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -162,12 +172,18 @@ public class AgentActivity extends AppCompatActivity {
                             }
                         }
                         adapter.notifyDataSetChanged();
+                    } else {
+                        profileList.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
                     }
                 } else {
+                    profileList.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.GONE);
                     mApp.showToast(context, e.getMessage());
                     e.printStackTrace();
                 }
-                mApp.dialog.dismiss();
+                profileList.setVisibility(View.VISIBLE);
+                progressBar.setVisibility(View.GONE);
             }
         });
     }

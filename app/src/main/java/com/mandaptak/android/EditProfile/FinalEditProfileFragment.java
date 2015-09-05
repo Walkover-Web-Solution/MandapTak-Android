@@ -557,16 +557,25 @@ public class FinalEditProfileFragment extends Fragment {
                                                                         @Override
                                                                         public void done(List<ParseObject> list, ParseException e) {
                                                                             if (e == null) {
+                                                                                parsePhotos.clear();
                                                                                 for (int i = 0; i < list.size(); i++) {
-                                                                                    ParseObject parseObject = list.get(i);
-                                                                                    if (i == primaryIndex) {
-                                                                                        parsePhotos.get(i).setIsPrimary(true);
-                                                                                        parseObject.put("isPrimary", true);
-                                                                                        parseObject.saveInBackground();
-                                                                                    } else {
-                                                                                        parsePhotos.get(i).setIsPrimary(false);
-                                                                                        parseObject.put("isPrimary", false);
-                                                                                        parseObject.saveInBackground();
+                                                                                    try {
+                                                                                        ImageModel model = new ImageModel();
+                                                                                        model.setParseObject(list.get(i).getObjectId());
+                                                                                        model.setLink(list.get(i).getParseFile("file").getUrl());
+                                                                                        ParseObject parseObject = list.get(i);
+                                                                                        if (i == primaryIndex) {
+                                                                                            model.setIsPrimary(true);
+                                                                                            parseObject.put("isPrimary", true);
+                                                                                            parseObject.saveInBackground();
+                                                                                        } else {
+                                                                                            model.setIsPrimary(false);
+                                                                                            parseObject.put("isPrimary", false);
+                                                                                            parseObject.saveInBackground();
+                                                                                        }
+                                                                                        parsePhotos.add(model);
+                                                                                    } catch (Exception e1) {
+                                                                                        e1.printStackTrace();
                                                                                     }
                                                                                 }
                                                                                 photoAdapter.notifyDataSetChanged();

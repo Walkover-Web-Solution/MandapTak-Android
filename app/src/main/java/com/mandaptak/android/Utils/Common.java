@@ -228,9 +228,10 @@ public class Common extends Application implements LayerCallbacks {
     public String getNumber() {
         TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String getSimNumber = telemamanger.getLine1Number();
-        if (!getSimNumber.equals("")) {
+        if (getSimNumber != null) {
             getSimNumber.trim();
-            getSimNumber = getSimNumber.replace("+91", "");
+            if (!getSimNumber.equals(""))
+                getSimNumber = getSimNumber.replace("+91", "");
         }
         return getSimNumber;
     }

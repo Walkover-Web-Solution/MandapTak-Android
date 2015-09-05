@@ -83,9 +83,9 @@ public class SettingsActivity extends AppCompatActivity {
                         final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
                         AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
                         final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
-                        etNumber.setPrefix("+91");
                         relations.setAdapter(ArrayAdapter.createFromResource(context,
                                 R.array.relation_array, R.layout.location_list_item));
+                        etNumber.setPrefix("+91");
                         giveButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {

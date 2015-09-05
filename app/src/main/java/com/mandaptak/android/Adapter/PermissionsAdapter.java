@@ -21,11 +21,13 @@ import java.util.HashMap;
 public class PermissionsAdapter extends BaseAdapter {
     SettingsActivity activity;
     ArrayList<PermissionModel> list;
+    boolean isPrimaryUser = false;
     Common mApp;
 
-    public PermissionsAdapter(SettingsActivity activity, ArrayList<PermissionModel> paramArrayList) {
+    public PermissionsAdapter(SettingsActivity activity, ArrayList<PermissionModel> paramArrayList, boolean isPrimaryUser) {
         this.list = paramArrayList;
         this.activity = activity;
+        this.isPrimaryUser = isPrimaryUser;
         mApp = (Common) activity.getApplicationContext();
     }
 
@@ -60,30 +62,34 @@ public class PermissionsAdapter extends BaseAdapter {
         viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
         viewholder.tvRelation.setText(permissionModel.getRelation());
         viewholder.tvDate.setText(permissionModel.getDate());
-        if (permissionModel.isCurrentUser()) {
-            viewholder.deleteButton.setVisibility(View.GONE);
-        } else {
-            viewholder.deleteButton.setVisibility(View.VISIBLE);
-            viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    HashMap<String, Object> params = new HashMap<>();
-                    params.put("mobile", permissionModel.getNumber());
-                    params.put("profileId", permissionModel.getProfileId());
-                    ParseCloud.callFunctionInBackground("deletePermission", params, new FunctionCallback<Object>() {
-                        @Override
-                        public void done(Object o, ParseException e) {
-                            if (e == null) {
-                                mApp.showToast(activity, "Permission Removed");
-                                activity.getExistingPermissions();
-                            } else {
-                                mApp.showToast(activity, e.getMessage());
-                                e.printStackTrace();
+        if (isPrimaryUser) {
+            if (permissionModel.isCurrentUser()) {
+                viewholder.deleteButton.setVisibility(View.GONE);
+            } else {
+                viewholder.deleteButton.setVisibility(View.VISIBLE);
+                viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        HashMap<String, Object> params = new HashMap<>();
+                        params.put("mobile", permissionModel.getNumber());
+                        params.put("profileId", permissionModel.getProfileId());
+                        ParseCloud.callFunctionInBackground("deletePermission", params, new FunctionCallback<Object>() {
+                            @Override
+                            public void done(Object o, ParseException e) {
+                                if (e == null) {
+                                    mApp.showToast(activity, "Permission Removed");
+                                    activity.getExistingPermissions();
+                                } else {
+                                    mApp.showToast(activity, e.getMessage());
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            }
+        } else {
+            viewholder.deleteButton.setVisibility(View.GONE);
         }
         return paramView;
     }

@@ -669,6 +669,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
                         try {
+                            mainEducationLayout.removeAllViews();
                             newWorkAfterMarriage = parseObject.getInt("workAfterMarriage");
                             newCurrentIncome = parseObject.getLong("package");
                             newDesignation = parseObject.getString("designation");

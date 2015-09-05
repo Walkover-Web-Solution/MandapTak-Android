@@ -14,7 +14,8 @@
         android:padding="16dp"
         android:text="+ Give permission to more people"
         android:textColor="@color/red_500"
-        android:textSize="@dimen/abc_text_size_small_material"/>
+        android:textSize="@dimen/abc_text_size_small_material"
+        android:visibility="gone"/>
 
     <ImageView
         android:layout_width="match_parent"
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:visibility="gone">
 
         <TextView
             android:layout_width="match_parent"

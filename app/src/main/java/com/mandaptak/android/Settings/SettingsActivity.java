@@ -44,7 +44,9 @@ public class SettingsActivity extends AppCompatActivity {
     View permissionFooter;
     PermissionsAdapter permissionsAdapter;
     ArrayList<PermissionModel> permissionModels;
-    TextView morePermission;
+    TextView morePermission, availableCredits;
+    boolean isPrimaryUser = false;
+    int creditBalance = 0;
 
     void init() {
         context = this;
@@ -55,10 +57,11 @@ public class SettingsActivity extends AppCompatActivity {
         permissionFooter = View.inflate(context, R.layout.permission_list_footer, null);
         resetButton = (LinearLayout) permissionFooter.findViewById(R.id.reset_profiles_button);
         morePermission = (TextView) permissionFooter.findViewById(R.id.more_permission);
+        availableCredits = (TextView) findViewById(R.id.available_credits);
         permissionList.addFooterView(permissionFooter);
         permissionList.setFooterDividersEnabled(true);
         permissionModels = new ArrayList<>();
-        permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels);
+        permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels, isPrimaryUser);
         permissionList.setAdapter(permissionsAdapter);
     }
 
@@ -72,54 +75,58 @@ public class SettingsActivity extends AppCompatActivity {
         morePermission.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mApp.isNetworkAvailable(context)) {
-                    final View permissionDialog = View.inflate(context, R.layout.add_permission_dialog, null);
-                    final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
-                    alertDialog.setView(permissionDialog);
-                    final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
-                    AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
-                    final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
-                    etNumber.setPrefix("+91");
-                    relations.setAdapter(ArrayAdapter.createFromResource(context,
-                            R.array.relation_array, R.layout.location_list_item));
-                    giveButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String mobileNumber = etNumber.getText().toString();
-                            if (!mobileNumber.equals("")) {
-                                if (mobileNumber.length() == 10) {
-                                    alertDialog.dismiss();
-                                    if (mApp.isNetworkAvailable(context)) {
-                                        mApp.show_PDialog(context, "Giving Permission..");
-                                        HashMap<String, Object> params = new HashMap<>();
-                                        params.put("mobile", mobileNumber);
-                                        params.put("profileId", Prefs.getProfileId(context));
-                                        params.put("relation", relations.getSelectedItem());
+                if (creditBalance >= 10) {
+                    if (mApp.isNetworkAvailable(context)) {
+                        final View permissionDialog = View.inflate(context, R.layout.add_permission_dialog, null);
+                        final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                        alertDialog.setView(permissionDialog);
+                        final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
+                        AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+                        final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
+                        etNumber.setPrefix("+91");
+                        relations.setAdapter(ArrayAdapter.createFromResource(context,
+                                R.array.relation_array, R.layout.location_list_item));
+                        giveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String mobileNumber = etNumber.getText().toString();
+                                if (!mobileNumber.equals("")) {
+                                    if (mobileNumber.length() == 10) {
+                                        alertDialog.dismiss();
+                                        if (mApp.isNetworkAvailable(context)) {
+                                            mApp.show_PDialog(context, "Giving Permission..");
+                                            HashMap<String, Object> params = new HashMap<>();
+                                            params.put("mobile", mobileNumber);
+                                            params.put("profileId", Prefs.getProfileId(context));
+                                            params.put("relation", relations.getSelectedItem());
 
-                                        ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
-                                            @Override
-                                            public void done(Object o, ParseException e) {
-                                                mApp.dialog.dismiss();
-                                                if (e == null) {
-                                                    getExistingPermissions();
-                                                } else {
-                                                    e.printStackTrace();
-                                                    mApp.showToast(context, e.getMessage());
+                                            ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
+                                                @Override
+                                                public void done(Object o, ParseException e) {
+                                                    mApp.dialog.dismiss();
+                                                    if (e == null) {
+                                                        getExistingPermissions();
+                                                    } else {
+                                                        e.printStackTrace();
+                                                        mApp.showToast(context, e.getMessage());
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
+                                        }
+                                    } else {
+                                        mApp.showToast(context, "Invalid Mobile Number");
                                     }
                                 } else {
-                                    mApp.showToast(context, "Invalid Mobile Number");
+                                    mApp.showToast(context, "Enter Mobile Number");
                                 }
-                            } else {
-                                mApp.showToast(context, "Enter Mobile Number");
                             }
-                        }
-                    });
-                    alertDialog.show();
+                        });
+                        alertDialog.show();
+                    } else {
+                        mApp.showToast(context, "Internet connection required");
+                    }
                 } else {
-                    mApp.showToast(context, "Internet connection required");
+                    mApp.showToast(context, "Insufficient Balance");
                 }
             }
         });
@@ -151,6 +158,17 @@ public class SettingsActivity extends AppCompatActivity {
 
     public void getExistingPermissions() {
         mApp.show_PDialog(context, "Loading...");
+        ParseQuery<ParseObject> balanceQuery = new ParseQuery<>("UserCredits");
+        balanceQuery.whereEqualTo("userId", ParseUser.getCurrentUser());
+        balanceQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    creditBalance = parseObject.getInt("credits");
+                    availableCredits.setText("Balance: " + creditBalance + " Credits");
+                }
+            }
+        });
         try {
             ParseQuery<ParseObject> profileQuery = new ParseQuery<>("Profile");
             profileQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -179,6 +197,9 @@ public class SettingsActivity extends AppCompatActivity {
                                                 permissionModel.setDate("Permission given on: " + date);
                                                 permissionModel.setNumber(user.fetchIfNeeded().getUsername());
                                                 if (user == ParseUser.getCurrentUser()) {
+                                                    if (item.getBoolean("isPrimary")) {
+                                                        isPrimaryUser = true;
+                                                    }
                                                     permissionModel.setIsCurrentUser(true);
                                                 } else if (relation.equals("Agent")) {
                                                     permissionModel.setIsCurrentUser(true);
@@ -190,9 +211,13 @@ public class SettingsActivity extends AppCompatActivity {
                                             } catch (ParseException e1) {
                                                 e1.printStackTrace();
                                             }
-                                            permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels);
-                                            permissionList.setAdapter(permissionsAdapter);
                                         }
+                                        if (isPrimaryUser) {
+                                            morePermission.setVisibility(View.VISIBLE);
+                                            resetButton.setVisibility(View.VISIBLE);
+                                        }
+                                        permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels, isPrimaryUser);
+                                        permissionList.setAdapter(permissionsAdapter);
                                     }
                                 } else {
                                     e.printStackTrace();

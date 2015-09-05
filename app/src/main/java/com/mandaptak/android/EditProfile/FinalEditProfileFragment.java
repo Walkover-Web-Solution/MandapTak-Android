@@ -494,16 +494,16 @@ public class FinalEditProfileFragment extends Fragment {
                                                 @Override
                                                 public void done(List<ParseObject> list, ParseException e) {
                                                     if (e == null) {
+                                                        parsePhotos.clear();
                                                         for (int i = 0; i < list.size(); i++) {
-                                                            ParseObject parseObject = list.get(i);
-                                                            if (i == primaryIndex) {
-                                                                parsePhotos.get(i).setIsPrimary(true);
-                                                                parseObject.put("isPrimary", true);
-                                                                parseObject.saveInBackground();
-                                                            } else {
-                                                                parsePhotos.get(i).setIsPrimary(false);
-                                                                parseObject.put("isPrimary", false);
-                                                                parseObject.saveInBackground();
+                                                            try {
+                                                                ImageModel imageModel = new ImageModel();
+                                                                imageModel.setIsPrimary(list.get(i).getBoolean("isPrimary"));
+                                                                imageModel.setLink(list.get(i).fetchIfNeeded().getParseFile("file").getUrl());
+                                                                imageModel.setParseObject(list.get(i).getObjectId());
+                                                                parsePhotos.add(imageModel);
+                                                            } catch (ParseException e1) {
+                                                                e1.printStackTrace();
                                                             }
                                                         }
                                                         photoAdapter.notifyDataSetChanged();

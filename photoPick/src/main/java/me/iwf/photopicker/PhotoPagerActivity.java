@@ -178,7 +178,6 @@ public class PhotoPagerActivity extends AppCompatActivity {
             PhotoPickerActivity.show_PDialog(context, "Loading Photo..");
             final int index = pagerFragment.getCurrentItem();
             downloadFile(pagerFragment.getPaths().get(index).getLink());
-
         }
         return super.onOptionsItemSelected(item);
     }

@@ -15,6 +15,6 @@
         android:layout_gravity="top|end"
         android:layout_margin="16dp"
         android:padding="16dp"
-        android:src="@drawable/ic_account_circle_red"
+        android:src="@android:drawable/star_big_on"
         android:visibility="gone"/>
 </FrameLayout>

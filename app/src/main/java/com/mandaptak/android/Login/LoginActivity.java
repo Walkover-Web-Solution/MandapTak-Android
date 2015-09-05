@@ -216,7 +216,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 if (list.get(i).getBoolean("isPrimary")) {
                                                     parseObject = list.get(i);
                                                     hasPrimary = true;
-                                                } else if (!hasPrimary && size == i - 1) {
+                                                } else if (!hasPrimary && (size - 1) == i) {
                                                     parseObject = list.get(i);
                                                 }
                                             }
@@ -229,7 +229,6 @@ public class LoginActivity extends AppCompatActivity {
                                                 LoginActivity.this.finish();
                                             } else {
                                                 ParseUser.logOut();
-                                                e.printStackTrace();
                                                 mApp.showToast(context, "Error fetching profile");
                                             }
                                         } else {

@@ -54,6 +54,8 @@ public class QualificationEditProfileFragment extends Fragment {
     private TextView eduChildDegree1, eduChildDegree2, eduChildDegree3;
     private TextView eduChildDegreeBranch1, eduChildDegreeBranch2, eduChildDegreeBranch3;
     private Common mApp;
+    private Boolean isStarted = false;
+    private Boolean isVisible = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -659,58 +661,62 @@ public class QualificationEditProfileFragment extends Fragment {
     }
 
     public void getParseData() {
-        mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newWorkAfterMarriage = parseObject.getInt("workAfterMarriage");
-                        newCurrentIncome = parseObject.getLong("package");
-                        newDesignation = parseObject.getString("designation");
-                        newCompany = parseObject.getString("placeOfWork");
-                        newIndustry = parseObject.getParseObject("industryId");
-                        ParseObject tmpEdu1 = parseObject.getParseObject("education1");
-                        ParseObject tmpEdu2 = parseObject.getParseObject("education2");
-                        ParseObject tmpEdu3 = parseObject.getParseObject("education3");
-                        if (tmpEdu1 != null) {
-                            newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), tmpEdu1);
-                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                            eduChildDegree1.setText(newEducationDetail1.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+        try {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        try {
+                            newWorkAfterMarriage = parseObject.getInt("workAfterMarriage");
+                            newCurrentIncome = parseObject.getLong("package");
+                            newDesignation = parseObject.getString("designation");
+                            newCompany = parseObject.getString("placeOfWork");
+                            newIndustry = parseObject.getParseObject("industryId");
+                            ParseObject tmpEdu1 = parseObject.getParseObject("education1");
+                            ParseObject tmpEdu2 = parseObject.getParseObject("education2");
+                            ParseObject tmpEdu3 = parseObject.getParseObject("education3");
+                            if (tmpEdu1 != null) {
+                                newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), tmpEdu1);
+                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                eduChildDegree1.setText(newEducationDetail1.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                            }
+                            if (tmpEdu2 != null) {
+                                mainEducationLayout.addView(educationLayoutChild2);
+                                newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), tmpEdu2);
+                                eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                eduChildDegree2.setText(newEducationDetail2.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                            }
+                            if (tmpEdu3 != null) {
+                                mainEducationLayout.addView(educationLayoutChild3);
+                                educationMoreButton.setVisibility(View.GONE);
+                                newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), tmpEdu3);
+                                eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                eduChildDegree3.setText(newEducationDetail3.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                            }
+                            if (newCurrentIncome != 0)
+                                currentIncome.setText(String.valueOf(newCurrentIncome));
+                            if (newIndustry != null)
+                                industry.setText(newIndustry.fetchIfNeeded().getString("name"));
+                            if (newCompany != null && !newCompany.equals(""))
+                                company.setText(newCompany);
+                            if (newDesignation != null && !newDesignation.equals(""))
+                                designation.setText(newDesignation);
+                            workAfterMarriage.setSelection(newWorkAfterMarriage);
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
-                        if (tmpEdu2 != null) {
-                            mainEducationLayout.addView(educationLayoutChild2);
-                            newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), tmpEdu2);
-                            eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                            eduChildDegree2.setText(newEducationDetail2.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
-                        }
-                        if (tmpEdu3 != null) {
-                            mainEducationLayout.addView(educationLayoutChild3);
-                            educationMoreButton.setVisibility(View.GONE);
-                            newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), tmpEdu3);
-                            eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                            eduChildDegree3.setText(newEducationDetail3.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
-                        }
-                        if (newCurrentIncome != 0)
-                            currentIncome.setText(String.valueOf(newCurrentIncome));
-                        if (newIndustry != null)
-                            industry.setText(newIndustry.fetchIfNeeded().getString("name"));
-                        if (newCompany != null && !newCompany.equals(""))
-                            company.setText(newCompany);
-                        if (newDesignation != null && !newDesignation.equals(""))
-                            designation.setText(newDesignation);
-                        workAfterMarriage.setSelection(newWorkAfterMarriage);
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    } else {
+                        mApp.showToast(context, e.getMessage());
+                        e.printStackTrace();
                     }
-                } else {
-                    mApp.showToast(context, e.getMessage());
-                    e.printStackTrace();
+                    mApp.dialog.dismiss();
                 }
-                mApp.dialog.dismiss();
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void getIndustryList() {
@@ -774,35 +780,49 @@ public class QualificationEditProfileFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        saveInfo();
-        super.onPause();
+    public void onStart() {
+        super.onStart();
+        isStarted = true;
     }
 
-    private void saveInfo() {
-        Log.e("Save Screen", "4");
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (newCurrentIncome != 0)
-                    parseObject.put("package", newCurrentIncome);
-                if (newCompany != null && !newCompany.equals(""))
-                    parseObject.put("placeOfWork", newCompany);
-                if (newDesignation != null && !newDesignation.equals(""))
-                    parseObject.put("designation", newDesignation);
-                if (newIndustry != null)
-                    parseObject.put("industryId", newIndustry);
-                if (newEducationDetail1 != null)
-                    parseObject.put("education1", newEducationDetail1.getParseObject());
-                if (newEducationDetail2 != null)
-                    parseObject.put("education2", newEducationDetail2.getParseObject());
-                if (newEducationDetail3 != null)
-                    parseObject.put("education3", newEducationDetail3.getParseObject());
-                parseObject.put("workAfterMarriage", newWorkAfterMarriage);
-                parseObject.saveInBackground();
-            }
-        });
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isVisible = isVisibleToUser;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
+    }
+
+    public void saveInfo() {
+        try {
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (newCurrentIncome != 0)
+                        parseObject.put("package", newCurrentIncome);
+                    if (newCompany != null && !newCompany.equals(""))
+                        parseObject.put("placeOfWork", newCompany);
+                    if (newDesignation != null && !newDesignation.equals(""))
+                        parseObject.put("designation", newDesignation);
+                    if (newIndustry != null)
+                        parseObject.put("industryId", newIndustry);
+                    if (newEducationDetail1 != null)
+                        parseObject.put("education1", newEducationDetail1.getParseObject());
+                    if (newEducationDetail2 != null)
+                        parseObject.put("education2", newEducationDetail2.getParseObject());
+                    if (newEducationDetail3 != null)
+                        parseObject.put("education3", newEducationDetail3.getParseObject());
+                    parseObject.put("workAfterMarriage", newWorkAfterMarriage);
+                    parseObject.saveInBackground();
+                }
+            });
+            Log.e("Save Screen", "3");
+        } catch (Exception ignored) {
+        }
     }
 
     public class DataAdapter extends ArrayAdapter<ParseNameModel> {

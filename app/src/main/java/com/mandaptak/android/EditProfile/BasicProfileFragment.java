@@ -18,7 +18,6 @@ import android.widget.ArrayAdapter;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -30,6 +29,9 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -57,6 +59,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private Calendar newTOB, newDOB;
     private ParseObject newPOB, newCurrentLocation;
     private Context context;
+    private Boolean isStarted = false;
+    private Boolean isVisible = false;
 
     public BasicProfileFragment() {
         // Required empty public constructor
@@ -94,7 +98,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 final TextView empty = (TextView) locationDialog.findViewById(R.id.empty);
                 EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
                 final ListView listView = (ListView) locationDialog.findViewById(R.id.list);
-                final ProgressBar progressBar = (ProgressBar) locationDialog.findViewById(R.id.progress);
                 title.setText("Place of birth");
                 locationDialog.findViewById(R.id.cancel_button).setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -104,6 +107,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 });
 
                 searchBar.addTextChangedListener(new TextWatcher() {
+
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -116,13 +120,16 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (editable.length() == 0) {
-                            progressBar.setVisibility(View.GONE);
+                        if (editable == null || editable.length() == 0) {
                             empty.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.GONE);
                         } else if (mApp.isNetworkAvailable(context)) {
                             empty.setVisibility(View.GONE);
+                            listView.setVisibility(View.VISIBLE);
                             getPOB(editable.toString(), listView, alertDialog);
+                        } else {
+                            empty.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -150,6 +157,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 });
 
                 searchBar.addTextChangedListener(new TextWatcher() {
+
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -162,13 +170,16 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (editable.length() == 0) {
+                        if (editable == null || editable.length() == 0) {
                             empty.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.GONE);
                         } else if (mApp.isNetworkAvailable(context)) {
-                            mApp.show_PDialog(context, "Loading..");
+                            empty.setVisibility(View.GONE);
+                            listView.setVisibility(View.VISIBLE);
                             getCurrentLocation(editable.toString(), listView, alertDialog);
-                            mApp.dialog.dismiss();
+                        } else {
+                            empty.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.GONE);
                         }
                     }
                 });
@@ -201,7 +212,10 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         datePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DateTime now = DateTime.now(DateTimeZone.forID("Asia/Kolkata"));
+                DateTime ageLimit = now.minusYears(18);
                 DatePickerDialog newFragment = new DatePickerDialog(context, BasicProfileFragment.this, year, month, day);
+                newFragment.getDatePicker().setMaxDate(ageLimit.getMillis());
                 newFragment.show();
             }
         });
@@ -230,65 +244,68 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     public void getParseData() {
-        mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newName = parseObject.getString("name");
-                        newGender = parseObject.getString("gender");
-                        Date tmpDOB = parseObject.getDate("dob");
-                        Date tmpTOB = parseObject.getDate("tob");
-                        if (tmpDOB != null) {
-                            newDOB = Calendar.getInstance();
-                            newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            newDOB.setTime(tmpDOB);
-                        }
-                        if (tmpTOB != null) {
-                            newTOB = Calendar.getInstance();
-                            newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            newTOB.setTime(tmpTOB);
-                        }
-                        newCurrentLocation = parseObject.getParseObject("currentLocation");
-                        newPOB = parseObject.getParseObject("placeOfBirth");
+        try {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        try {
+                            newName = parseObject.getString("name");
+                            newGender = parseObject.getString("gender");
+                            Date tmpDOB = parseObject.getDate("dob");
+                            Date tmpTOB = parseObject.getDate("tob");
+                            if (tmpDOB != null) {
+                                newDOB = Calendar.getInstance();
+                                newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                newDOB.setTime(tmpDOB);
+                            }
+                            if (tmpTOB != null) {
+                                newTOB = Calendar.getInstance();
+                                newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                newTOB.setTime(tmpTOB);
+                            }
+                            newCurrentLocation = parseObject.getParseObject("currentLocation");
+                            newPOB = parseObject.getParseObject("placeOfBirth");
 
-                        if (newName != null) {
-                            displayName.setText(newName);
+                            if (newName != null) {
+                                displayName.setText(newName);
+                            }
+                            if (newGender != null) {
+                                gender.setText(newGender);
+                            }
+                            if (newDOB != null) {
+                                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                String subdateStr = df.format(newDOB.getTime());
+                                datePicker.setText(subdateStr);
+                            }
+                            if (newTOB != null) {
+                                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                String subdateStr = df.format(newTOB.getTime());
+                                timepicker.setText(subdateStr);
+                            }
+                            if (newPOB != null) {
+                                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
+                                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            }
+                            if (newCurrentLocation != null) {
+                                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
+                                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
-                        if (newGender != null) {
-                            gender.setText(newGender);
-                        }
-                        if (newDOB != null) {
-                            DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newDOB.getTime());
-                            datePicker.setText(subdateStr);
-                        }
-                        if (newTOB != null) {
-                            DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                            String subdateStr = df.format(newTOB.getTime());
-                            timepicker.setText(subdateStr);
-                        }
-                        if (newPOB != null) {
-                            placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
-                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                        }
-                        if (newCurrentLocation != null) {
-                            currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
-                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    } else {
+                        e.printStackTrace();
                     }
-                } else {
-                    e.printStackTrace();
+                    mApp.dialog.dismiss();
                 }
-                mApp.dialog.dismiss();
-            }
-        });
+            });
+        } catch (Exception ignored) {
+        }
     }
 
     private ArrayList<Location> getPOB(String query, final ListView listView, final AlertDialog alertDialog) {
@@ -350,34 +367,48 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     @Override
-    public void onPause() {
-        saveInfo();
-        super.onPause();
+    public void onStart() {
+        super.onStart();
+        isStarted = true;
     }
 
-    void saveInfo() {
-        Log.e("Save Screen", "1");
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (newGender != null)
-                    parseObject.put("gender", newGender);
-                if (newName != null)
-                    parseObject.put("name", newName);
-                if (newTOB != null) {
-                    parseObject.put("tob", newTOB.getTime());
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isVisible = isVisibleToUser;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
+    }
+
+    public void saveInfo() {
+        try {
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (newGender != null)
+                        parseObject.put("gender", newGender);
+                    if (newName != null)
+                        parseObject.put("name", newName);
+                    if (newTOB != null) {
+                        parseObject.put("tob", newTOB.getTime());
+                    }
+                    if (newDOB != null) {
+                        parseObject.put("dob", newDOB.getTime());
+                    }
+                    if (newPOB != null)
+                        parseObject.put("placeOfBirth", newPOB);
+                    if (newCurrentLocation != null)
+                        parseObject.put("currentLocation", newCurrentLocation);
+                    parseObject.saveInBackground();
                 }
-                if (newDOB != null) {
-                    parseObject.put("dob", newDOB.getTime());
-                }
-                if (newPOB != null)
-                    parseObject.put("placeOfBirth", newPOB);
-                if (newCurrentLocation != null)
-                    parseObject.put("currentLocation", newCurrentLocation);
-                parseObject.saveInBackground();
-            }
-        });
+            });
+            Log.e("Save Screen", "1");
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

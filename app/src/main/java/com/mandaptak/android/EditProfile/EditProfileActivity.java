@@ -14,6 +14,7 @@ import android.view.View;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.MyViewPager;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -27,7 +28,7 @@ import me.iwf.photopicker.utils.Prefs;
 public class EditProfileActivity extends AppCompatActivity implements ActionBar.TabListener {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
-    ViewPager mViewPager;
+    MyViewPager mViewPager;
     FloatingActionButton skipButton;
     BasicProfileFragment basicProfileFragment;
     DetailsProfileFragment detailsProfileFragment;
@@ -42,6 +43,46 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         setContentView(R.layout.activity_edit_profile);
         context = this;
         mApp = (Common) getApplicationContext();
+        init();
+
+        if (mApp.isNetworkAvailable(context)) {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
+            parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    parseObject.put("isComplete", false);
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            mApp.dialog.dismiss();
+                            basicProfileFragment.getParseData();
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        mApp.showToast(context, "Save profile to go back.");
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        mViewPager.setCurrentItem(tab.getPosition());
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    void init() {
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         actionBar.setDisplayHomeAsUpEnabled(false);
@@ -51,32 +92,20 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (MyViewPager) findViewById(R.id.pager);
         skipButton = (FloatingActionButton) findViewById(R.id.skip_next);
         skipButton.setSize(FloatingActionButton.SIZE_MINI);
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mViewPager.setOffscreenPageLimit(1);
+        mViewPager.setPagingEnabled(false);
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);
-                switch (position) {
-                    case 0:
-                        basicProfileFragment.getParseData();
-                        skipButton.setVisibility(View.VISIBLE);
-                        break;
-                    case 1:
-                        detailsProfileFragment.getParseData();
-                        skipButton.setVisibility(View.VISIBLE);
-                        break;
-                    case 2:
-                        qualificationEditProfileFragment.getParseData();
-                        skipButton.setVisibility(View.VISIBLE);
-                        break;
-                    case 3:
-                        finalEditProfileFragment.getParseData();
-                        skipButton.setVisibility(View.GONE);
-                        break;
+                if (position == 3) {
+                    skipButton.setVisibility(View.GONE);
+                } else {
+                    skipButton.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -105,44 +134,6 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                 }
             }
         });
-        init();
-        if (mApp.isNetworkAvailable(context)) {
-            mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> parseQueryParseQuery = new ParseQuery<>("Profile");
-            parseQueryParseQuery.getInBackground(Prefs.getProfileId(EditProfileActivity.this), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    parseObject.put("isComplete", false);
-                    parseObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            mApp.dialog.dismiss();
-                            basicProfileFragment.getParseData();
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        mViewPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    void init() {
         basicProfileFragment = new BasicProfileFragment();
         detailsProfileFragment = new DetailsProfileFragment();
         qualificationEditProfileFragment = new QualificationEditProfileFragment();

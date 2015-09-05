@@ -33,7 +33,6 @@ import com.parse.ParseUser;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 public class Common extends Application implements LayerCallbacks {
     public static AtlasIdentityProvider identityProvider;
@@ -66,15 +65,6 @@ public class Common extends Application implements LayerCallbacks {
 
         //If the handle can't be found, return whatever value was passed in
         return id;
-    }
-
-    //Returns all users NOT including the currently signed in user
-    public static Set<String> getAllFriends() {
-        Set<String> friends = allUsers.keySet();
-        String currentUserId = ParseUser.getCurrentUser().getObjectId();
-        if (friends.contains(currentUserId))
-            friends.remove(currentUserId);
-        return friends;
     }
 
     public static AtlasIdentityProvider getIdentityProvider() {
@@ -222,10 +212,17 @@ public class Common extends Application implements LayerCallbacks {
     }
 
     public void show_PDialog(Context con, String message) {
-        dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
-        dialog.setMessage(message);
-        dialog.setCancelable(true);
-        dialog.show();
+        try {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
+            dialog.setMessage(message);
+            dialog.setCancelable(true);
+            dialog.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getNumber() {

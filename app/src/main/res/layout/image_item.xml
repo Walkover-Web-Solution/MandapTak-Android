@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/profile_image"
-        android:layout_width="100dp"
-        android:layout_height="120dp"
+        android:layout_width="120dp"
+        android:layout_height="150dp"
         android:clickable="true"
         android:focusable="false"
         android:focusableInTouchMode="false"
@@ -18,7 +18,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:layout_margin="4dp"
-        android:src="@drawable/ic_star_yellow"
+        android:clickable="true"
+        android:padding="12dp"
+        android:src="@drawable/ic_star_outline_yellow"
         android:visibility="visible"/>
 </FrameLayout>

@@ -202,7 +202,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                                                         dialog.dismiss();
                                                         Intent intent = new Intent();
                                                         if (e == null) {
-                                                            PhotoPickerActivity.showToast(context, "Error while uploading photos");
+                                                            PhotoPickerActivity.showToast(context, "Photos Uploaded");
                                                             intent.putExtra(KEY_SELECTED_PHOTOS, true);
                                                         } else {
                                                             e.printStackTrace();
@@ -224,8 +224,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                         }
                         i[0]++;
                         handler.postDelayed(this, 500);
-                    } else {
-                        dialog.dismiss();
                     }
                 }
             }, 1000);

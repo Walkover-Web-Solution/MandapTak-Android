@@ -45,14 +45,11 @@ public class DetailsProfileFragment extends Fragment {
     private View rootView;
     private int newHeight = 0, newWeight = 0, newManglik = 0;
     private ParseNameModel newReligion, newCaste, newGotra;
+    private Boolean isStarted = false;
+    private Boolean isVisible = false;
 
     public DetailsProfileFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -123,7 +120,7 @@ public class DetailsProfileFragment extends Fragment {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        if (editable.length() == 0) {
+                        if (editable == null || editable.length() == 0) {
                             getReligionList(null, listView, alertDialog);
                         } else {
                             listView.setVisibility(View.VISIBLE);
@@ -173,7 +170,7 @@ public class DetailsProfileFragment extends Fragment {
 
                         @Override
                         public void afterTextChanged(final Editable editable) {
-                            if (editable.length() == 0) {
+                            if (editable == null || editable.length() == 0) {
                                 getCasteList(null, listView, alertDialog);
                             } else {
                                 getCasteList(editable.toString(), listView, alertDialog);
@@ -377,92 +374,110 @@ public class DetailsProfileFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        saveInfo();
-        super.onPause();
+    public void onStart() {
+        super.onStart();
+        isStarted = true;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        isVisible = isVisibleToUser;
+        if (isVisible && isStarted) {
+            getParseData();
+        } else if (!isVisible) {
+            saveInfo();
+        }
     }
 
     public void getParseData() {
-        mApp.show_PDialog(context, "Loading..");
-        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-                        newHeight = parseObject.getInt("height");
-                        newWeight = parseObject.getInt("weight");
-                        ParseObject tmpCaste, tmpReligion, tmpGotra;
-                        tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-                        tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-                        tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-                        newManglik = parseObject.getInt("manglik");
-                        manglik.setSelection(newManglik);
-                        if (newHeight != 0) {
-                            if (isAdded()) {
-                                int[] bases = getResources().getIntArray(R.array.heightCM);
-                                String[] values = getResources().getStringArray(R.array.height);
-                                Arrays.sort(bases);
-                                int index = Arrays.binarySearch(bases, newHeight);
-                                height.setText(values[index]);
-                                height.setTextColor(context.getResources().getColor(R.color.black_dark));
+        try {
+            mApp.show_PDialog(context, "Loading..");
+            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        try {
+                            newHeight = parseObject.getInt("height");
+                            newWeight = parseObject.getInt("weight");
+                            ParseObject tmpCaste, tmpReligion, tmpGotra;
+                            tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
+                            tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
+                            tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+                            newManglik = parseObject.getInt("manglik");
+                            manglik.setSelection(newManglik);
+                            if (newHeight != 0) {
+                                if (isAdded()) {
+                                    int[] bases = getResources().getIntArray(R.array.heightCM);
+                                    String[] values = getResources().getStringArray(R.array.height);
+                                    Arrays.sort(bases);
+                                    int index = Arrays.binarySearch(bases, newHeight);
+                                    height.setText(values[index]);
+                                    height.setTextColor(context.getResources().getColor(R.color.black_dark));
+                                }
                             }
+                            if (newWeight != 0) {
+                                weight.setText(String.valueOf(newWeight));
+                                weight.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            }
+                            if (tmpReligion != null) {
+                                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
+                                religion.setText(newReligion.getName());
+                                religion.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            }
+                            if (tmpCaste != null) {
+                                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
+                                caste.setText(newCaste.getName());
+                                caste.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            }
+                            if (tmpGotra != null) {
+                                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
+                                gotra.setText(newGotra.getName());
+                                gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
+                            }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
                         }
-                        if (newWeight != 0) {
-                            weight.setText(String.valueOf(newWeight));
-                            weight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpReligion != null) {
-                            newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
-                            religion.setText(newReligion.getName());
-                            religion.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpCaste != null) {
-                            newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
-                            caste.setText(newCaste.getName());
-                            caste.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                        if (tmpGotra != null) {
-                            newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
-                            gotra.setText(newGotra.getName());
-                            gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    } else {
+                        mApp.showToast(context, e.getMessage());
+                        e.printStackTrace();
                     }
-                } else {
-                    mApp.showToast(context, e.getMessage());
-                    e.printStackTrace();
+                    mApp.dialog.dismiss();
                 }
-                mApp.dialog.dismiss();
-            }
-        });
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    void saveInfo() {
-        Log.e("Save Screen", "2");
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (newReligion != null)
-                    parseObject.put("religionId", newReligion.getParseObject());
-                if (newCaste != null)
-                    parseObject.put("casteId", newCaste.getParseObject());
-                else
-                    parseObject.put("casteId", JSONObject.NULL);
-                if (newGotra != null)
-                    parseObject.put("gotraId", newGotra.getParseObject());
-                else
-                    parseObject.put("gotraId", JSONObject.NULL);
-                if (newHeight != 0)
-                    parseObject.put("height", newHeight);
-                if (newWeight != 0)
-                    parseObject.put("weight", newWeight);
-                parseObject.put("manglik", newManglik);
-                parseObject.saveInBackground();
-            }
-        });
+    public void saveInfo() {
+        try {
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (newReligion != null)
+                        parseObject.put("religionId", newReligion.getParseObject());
+                    if (newCaste != null)
+                        parseObject.put("casteId", newCaste.getParseObject());
+                    else
+                        parseObject.put("casteId", JSONObject.NULL);
+                    if (newGotra != null)
+                        parseObject.put("gotraId", newGotra.getParseObject());
+                    else
+                        parseObject.put("gotraId", JSONObject.NULL);
+                    if (newHeight != 0)
+                        parseObject.put("height", newHeight);
+                    if (newWeight != 0)
+                        parseObject.put("weight", newWeight);
+                    parseObject.put("manglik", newManglik);
+                    parseObject.saveInBackground();
+                }
+            });
+            Log.e("Save Screen", "2");
+        } catch (Exception ignored) {
+        }
     }
 
     private void init() {

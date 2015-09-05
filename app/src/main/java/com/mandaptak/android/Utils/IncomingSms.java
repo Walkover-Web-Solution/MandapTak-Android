@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
-import android.util.Log;
 
 import com.mandaptak.android.Login.LoginActivity;
 
@@ -22,7 +21,6 @@ public class IncomingSms extends BroadcastReceiver {
                     String phoneNumber = currentMessage.getDisplayOriginatingAddress();
                     String senderNum = phoneNumber;
                     String message = currentMessage.getDisplayMessageBody();
-                    Log.e("" + senderNum, "" + message);
                     try {
                         if (senderNum.endsWith("MNDPTK")) {
                             int length = message.length();

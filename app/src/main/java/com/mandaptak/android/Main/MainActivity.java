@@ -669,6 +669,7 @@ public class MainActivity extends AppCompatActivity {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
                     if (list != null && list.size() > 0) {
+                        userProfileImages.clear();
                         for (ParseObject model : list) {
                             try {
                                 ImageModel imageModel = new ImageModel();

@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:layout_weight="10"
-              android:background="@color/white"
-              android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white">
 
     <TextView
         android:id="@+id/label"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="9"
+        android:layout_toLeftOf="@+id/check"
         android:padding="16dp"
         android:singleLine="true"
         android:textColor="@color/black_dark"
@@ -21,8 +18,12 @@
         android:id="@+id/check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_weight="1.5"
-        android:padding="16dp"></CheckBox>
+        android:layout_marginLeft="8dp"
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:paddingRight="8dp"
+        android:paddingTop="16dp"/>
 
-</LinearLayout>
+</RelativeLayout>

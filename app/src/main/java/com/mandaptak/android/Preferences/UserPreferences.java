@@ -63,10 +63,14 @@ public class UserPreferences extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_set_preferences);
+        try {
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle("Preferences");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         init();
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Preferences");
         btnSavePreferences.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,9 +128,7 @@ public class UserPreferences extends AppCompatActivity {
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                             String query = searchBar.getText().toString();
-                            locationList = getCityList(query);
-                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, locationList);
-                            listView.setAdapter(locationDataAdapter);
+                            getCityList(query, listView);
                             return true;
                         }
                         return false;
@@ -145,14 +147,11 @@ public class UserPreferences extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        String query = editable.toString();
-                        if (query == null || query.length() == 0) {
+                        if (editable.length() == 0) {
                             locationDataAdapter = new LocationDataAdapter(UserPreferences.this, parseSavedLocationList);
                             listView.setAdapter(locationDataAdapter);
                         } else {
-                            locationList = getCityList(query);
-                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, locationList);
-                            listView.setAdapter(locationDataAdapter);
+                            getCityList(editable.toString(), listView);
                         }
                     }
                 });
@@ -237,51 +236,60 @@ public class UserPreferences extends AppCompatActivity {
                     }
                 });
                 if (mApp.isNetworkAvailable(context)) {
-                    final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                    listView.setAdapter(new DataAdapter(context, degreeList));
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            alertDialog.dismiss();
-                            mApp.show_PDialog(context, "Loading..");
-                            final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                    context);
-                            conductor.setTitle("Select Specialization");
-                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                @Override
-                                public void done(final List<ParseObject> list, ParseException e) {
-                                    if (list != null && list.size() > 0) {
-                                        ArrayList<String> arrayList = new ArrayList<>();
-                                        for (ParseObject model : list) {
-                                            arrayList.add(model.getString("name"));
-                                        }
-                                        Object[] objectList = arrayList.toArray();
-                                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                        if (stringArray.length > 1) {
-                                            conductor.setItems(stringArray,
-                                                    new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int index) {
-                                                            newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                            etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
-                                                            //  eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                        }
-                                                    });
-                                            AlertDialog alert = conductor.create();
-                                            mApp.dialog.dismiss();
-                                            alert.show();
-                                        } else {
-                                            newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                            etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
-                                            //eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                            mApp.dialog.dismiss();
-                                        }
-                                    }
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null && list.size() > 0) {
+                                final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                                for (ParseObject model : list) {
+                                    ParseNameModel item = new ParseNameModel(model.getString("name"), model);
+                                    degreeList.add(item);
                                 }
-                            });
-
+                                listView.setAdapter(new DataAdapter(context, degreeList));
+                                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                        alertDialog.dismiss();
+                                        mApp.show_PDialog(context, "Loading..");
+                                        final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                context);
+                                        conductor.setTitle("Select Specialization");
+                                        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                            @Override
+                                            public void done(final List<ParseObject> list, ParseException e) {
+                                                if (list != null && list.size() > 0) {
+                                                    ArrayList<String> arrayList = new ArrayList<>();
+                                                    for (ParseObject model : list) {
+                                                        arrayList.add(model.getString("name"));
+                                                    }
+                                                    Object[] objectList = arrayList.toArray();
+                                                    String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                    if (stringArray.length > 1) {
+                                                        conductor.setItems(stringArray,
+                                                                new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog,
+                                                                                        int index) {
+                                                                        newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                        etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                    }
+                                                                });
+                                                        AlertDialog alert = conductor.create();
+                                                        mApp.dialog.dismiss();
+                                                        alert.show();
+                                                    } else {
+                                                        newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                        etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                        mApp.dialog.dismiss();
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            }
                         }
                     });
                 }
@@ -298,50 +306,122 @@ public class UserPreferences extends AppCompatActivity {
 
                     @Override
                     public void afterTextChanged(final Editable editable) {
-                        final ArrayList<ParseNameModel> degreeList = getDegreeList(null);
-                        listView.setAdapter(new DataAdapter(context, degreeList));
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                                alertDialog.dismiss();
-                                mApp.show_PDialog(context, "Loading..");
-                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                        context);
-                                conductor.setTitle("Select Specialization");
-                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
-                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(final List<ParseObject> list, ParseException e) {
-                                        if (list != null && list.size() > 0) {
-                                            ArrayList<String> arrayList = new ArrayList<>();
-                                            for (ParseObject model : list) {
-                                                arrayList.add(model.getString("name"));
-                                            }
-                                            Object[] objectList = arrayList.toArray();
-                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                            if (stringArray.length > 1) {
-                                                conductor.setItems(stringArray,
-                                                        new DialogInterface.OnClickListener() {
-                                                            public void onClick(DialogInterface dialog,
-                                                                                int index) {
-                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
-                                                            }
-                                                        });
-                                                AlertDialog alert = conductor.create();
-                                                mApp.dialog.dismiss();
-                                                alert.show();
-                                            } else {
-                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
-                                                mApp.dialog.dismiss();
-                                            }
+                        if (editable.length() == 0) {
+                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> list, ParseException e) {
+                                    if (list != null && list.size() > 0) {
+                                        final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                                        for (ParseObject model : list) {
+                                            ParseNameModel item = new ParseNameModel(model.getString("name"), model);
+                                            degreeList.add(item);
                                         }
+                                        listView.setAdapter(new DataAdapter(context, degreeList));
+                                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                                alertDialog.dismiss();
+                                                mApp.show_PDialog(context, "Loading..");
+                                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                        context);
+                                                conductor.setTitle("Select Specialization");
+                                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                    @Override
+                                                    public void done(final List<ParseObject> list, ParseException e) {
+                                                        if (list != null && list.size() > 0) {
+                                                            ArrayList<String> arrayList = new ArrayList<>();
+                                                            for (ParseObject model : list) {
+                                                                arrayList.add(model.getString("name"));
+                                                            }
+                                                            Object[] objectList = arrayList.toArray();
+                                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                            if (stringArray.length > 1) {
+                                                                conductor.setItems(stringArray,
+                                                                        new DialogInterface.OnClickListener() {
+                                                                            public void onClick(DialogInterface dialog,
+                                                                                                int index) {
+                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                                etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                            }
+                                                                        });
+                                                                AlertDialog alert = conductor.create();
+                                                                mApp.dialog.dismiss();
+                                                                alert.show();
+                                                            } else {
+                                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                                etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                mApp.dialog.dismiss();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
                                     }
-                                });
-                            }
-                        });
+                                }
+                            });
+                        } else {
+                            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                            parseQuery.whereMatches("name", "(" + editable.length() + ")", "i");
+                            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> list, ParseException e) {
+                                    if (list != null && list.size() > 0) {
+                                        final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
+                                        for (ParseObject model : list) {
+                                            ParseNameModel item = new ParseNameModel(model.getString("name"), model);
+                                            degreeList.add(item);
+                                        }
+                                        listView.setAdapter(new DataAdapter(context, degreeList));
+                                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                            @Override
+                                            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                                                alertDialog.dismiss();
+                                                mApp.show_PDialog(context, "Loading..");
+                                                final AlertDialog.Builder conductor = new AlertDialog.Builder(
+                                                        context);
+                                                conductor.setTitle("Select Specialization");
+                                                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                                parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                                parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                                    @Override
+                                                    public void done(final List<ParseObject> list, ParseException e) {
+                                                        if (list != null && list.size() > 0) {
+                                                            ArrayList<String> arrayList = new ArrayList<>();
+                                                            for (ParseObject model : list) {
+                                                                arrayList.add(model.getString("name"));
+                                                            }
+                                                            Object[] objectList = arrayList.toArray();
+                                                            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+                                                            if (stringArray.length > 1) {
+                                                                conductor.setItems(stringArray,
+                                                                        new DialogInterface.OnClickListener() {
+                                                                            public void onClick(DialogInterface dialog,
+                                                                                                int index) {
+                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
+                                                                                etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                            }
+                                                                        });
+                                                                AlertDialog alert = conductor.create();
+                                                                mApp.dialog.dismiss();
+                                                                alert.show();
+                                                            } else {
+                                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                                etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                mApp.dialog.dismiss();
+                                                            }
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
                     }
                 });
                 alertDialog.show();
@@ -554,103 +634,90 @@ public class UserPreferences extends AppCompatActivity {
         });
     }
 
-    private ArrayList<ParseNameModel> getDegreeList(String query) {
-        final ArrayList<ParseNameModel> models = new ArrayList<>();
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
-        if (query != null)
+    private void getCityList(final String query, final ListView listView) {
+        if (query != null) {
+            final ArrayList<LocationPreference> models = new ArrayList<>();
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
             parseQuery.whereMatches("name", "(" + query + ")", "i");
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject model : list) {
-                        models.add(new ParseNameModel(model.getString("name"), model));
-                    }
-                }
-            }
-        });
-        return models;
-    }
-
-    private ArrayList<LocationPreference> getCityList(String query) {
-        final ArrayList<LocationPreference> models = new ArrayList<>();
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-        if (query != null)
-            parseQuery.whereMatches("name", "(" + query + ")", "i");
-        parseQuery.include("Parent");
-        parseQuery.include("Parent.Parent");
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject city : list) {
-                        LocationPreference locationPreference = new LocationPreference();
-                        locationPreference.setLocationType(0);
-                        try {
-                            ParseObject state = city.fetchIfNeeded().getParseObject("Parent");
-                            ParseObject country = city.fetchIfNeeded().getParseObject("Parent").getParseObject("Parent");
-                            locationPreference.setCountry(country);
-                            locationPreference.setState(state);
-                            locationPreference.setCity(city);
-                            locationPreference.setLocationName(city.getString("name") + ", " + state.getString("name") + ", " + country.getString("name"));
-                            locationPreference.setParseObject(city);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        if (parseSavedLocationList.size() > 0) {
-                            boolean isPresent = false;
-                            for (int i = 0; i < parseSavedLocationList.size(); i++) {
-                                if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(city.getObjectId()))
-                                    isPresent = true;
+            parseQuery.include("Parent");
+            parseQuery.include("Parent.Parent");
+            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list != null && list.size() > 0) {
+                        for (ParseObject city : list) {
+                            LocationPreference locationPreference = new LocationPreference();
+                            locationPreference.setLocationType(0);
+                            try {
+                                ParseObject state = city.fetchIfNeeded().getParseObject("Parent");
+                                ParseObject country = city.fetchIfNeeded().getParseObject("Parent").getParseObject("Parent");
+                                locationPreference.setCountry(country);
+                                locationPreference.setState(state);
+                                locationPreference.setCity(city);
+                                locationPreference.setLocationName(city.getString("name") + ", " + state.getString("name") + ", " + country.getString("name"));
+                                locationPreference.setParseObject(city);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
                             }
-                            if (isPresent)
-                                locationPreference.setIsSelected(true);
-                        }
-                        models.add(locationPreference);
-                    }
-                }
-            }
-        });
-
-        ParseQuery<ParseObject> parseQuery2 = new ParseQuery<>("State");
-        parseQuery2.include("Parent");
-        if (query != null)
-            parseQuery2.whereMatches("name", "(" + query + ")", "i");
-        parseQuery2.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject state : list) {
-                        LocationPreference locationPreference = new LocationPreference();
-                        locationPreference.setLocationType(1);
-                        try {
-                            ParseObject country = state.fetchIfNeeded().getParseObject("Parent");
-                            locationPreference.setCountry(country);
-                            locationPreference.setState(state);
-                            locationPreference.setCity(null);
-                            locationPreference.setLocationName(state.getString("name") + " ," + country.getString("name"));
-                            locationPreference.setParseObject(state);
-                        } catch (Exception e1) {
-                            e1.printStackTrace();
-                        }
-                        if (parseSavedLocationList.size() > 0) {
-                            boolean isPresent = false;
-                            for (int i = 0; i < parseSavedLocationList.size(); i++) {
-                                if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(state.getObjectId()))
-                                    isPresent = true;
+                            if (parseSavedLocationList.size() > 0) {
+                                boolean isPresent = false;
+                                for (int i = 0; i < parseSavedLocationList.size(); i++) {
+                                    if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(city.getObjectId()))
+                                        isPresent = true;
+                                }
+                                if (isPresent)
+                                    locationPreference.setIsSelected(true);
                             }
-                            if (isPresent)
-                                locationPreference.setIsSelected(true);
+                            models.add(locationPreference);
                         }
-                        models.add(locationPreference);
+
                     }
+                    ParseQuery<ParseObject> parseQuery2 = new ParseQuery<>("State");
+                    parseQuery2.include("Parent");
+                    parseQuery2.whereMatches("name", "(" + query + ")", "i");
+                    parseQuery2.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (list != null && list.size() > 0) {
+                                for (ParseObject state : list) {
+                                    LocationPreference locationPreference = new LocationPreference();
+                                    locationPreference.setLocationType(1);
+                                    try {
+                                        ParseObject country = state.fetchIfNeeded().getParseObject("Parent");
+                                        locationPreference.setCountry(country);
+                                        locationPreference.setState(state);
+                                        locationPreference.setCity(null);
+                                        locationPreference.setLocationName(state.getString("name") + " ," + country.getString("name"));
+                                        locationPreference.setParseObject(state);
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                    }
+                                    if (parseSavedLocationList.size() > 0) {
+                                        boolean isPresent = false;
+                                        for (int i = 0; i < parseSavedLocationList.size(); i++) {
+                                            if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(state.getObjectId()))
+                                                isPresent = true;
+                                        }
+                                        if (isPresent)
+                                            locationPreference.setIsSelected(true);
+                                    }
+                                    models.add(locationPreference);
+                                }
+                            }
+                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, models);
+                            listView.setAdapter(locationDataAdapter);
+                        }
+                    });
                 }
-            }
-        });
-        return models;
+            });
+        } else {
+            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, parseSavedLocationList);
+            listView.setAdapter(locationDataAdapter);
+        }
     }
 
     private void getParseData() {
+        mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
@@ -685,7 +752,6 @@ public class UserPreferences extends AppCompatActivity {
                                         newWorkAfterMarriage = parseObject.getInt("working");
                                         workingPartner.setSelection(newWorkAfterMarriage);
                                     }
-                                    getLocationData(parseObject);
                                     if (minIncome != 0)
                                         etIncome.setText("" + minIncome);
                                     if (maxHeight != 0) {
@@ -714,11 +780,13 @@ public class UserPreferences extends AppCompatActivity {
                                     }
                                     if (minIncome != 0)
                                         etIncome.setText("" + minIncome);
-
+                                    getLocationData(parseObject);
                                 } catch (Exception e1) {
+                                    mApp.dialog.dismiss();
                                     e1.printStackTrace();
                                 }
                             } else {
+                                mApp.dialog.dismiss();
                                 e.printStackTrace();
                             }
                         }
@@ -743,28 +811,29 @@ public class UserPreferences extends AppCompatActivity {
                     ParseObject city, state;
                     try {
                         StringBuilder responseText = new StringBuilder();
-                        if (list.size() > 0)
+                        if (list.size() > 0) {
                             parseSavedLocationList.clear();
-                        for (ParseObject parseObject : list) {
-                            city = parseObject.fetchIfNeeded().getParseObject("cityId");
-                            state = parseObject.fetchIfNeeded().getParseObject("stateId");
-                            //     country = parseObject.fetchIfNeeded().getParseObject("countryId");
-                            LocationPreference locationPreference = new LocationPreference();
-                            if (city != null) {
-                                locationPreference.setParseObject(city);
-                                locationPreference.setIsSelected(true);
-                                locationPreference.setLocationName(city.getString("name") + ", "
-                                        + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
-                                locationPreference.setLocationType(0);
-                                responseText.append(locationPreference.getLocationName());
-                            } else {
-                                locationPreference.setParseObject(state);
-                                locationPreference.setIsSelected(true);
-                                locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
-                                locationPreference.setLocationType(1);
-                                responseText.append(locationPreference.getLocationName()).append(" ");
+                            for (ParseObject parseObject : list) {
+                                city = parseObject.fetchIfNeeded().getParseObject("cityId");
+                                state = parseObject.fetchIfNeeded().getParseObject("stateId");
+                                //     country = parseObject.fetchIfNeeded().getParseObject("countryId");
+                                LocationPreference locationPreference = new LocationPreference();
+                                if (city != null) {
+                                    locationPreference.setParseObject(city);
+                                    locationPreference.setIsSelected(true);
+                                    locationPreference.setLocationName(city.getString("name") + ", "
+                                            + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
+                                    locationPreference.setLocationType(0);
+                                    responseText.append(locationPreference.getLocationName());
+                                } else {
+                                    locationPreference.setParseObject(state);
+                                    locationPreference.setIsSelected(true);
+                                    locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
+                                    locationPreference.setLocationType(1);
+                                    responseText.append(locationPreference.getLocationName()).append(" ");
+                                }
+                                parseSavedLocationList.add(locationPreference);
                             }
-                            parseSavedLocationList.add(locationPreference);
                         }
                         etLocation.setText(responseText.toString());
                     } catch (ParseException e1) {
@@ -773,6 +842,7 @@ public class UserPreferences extends AppCompatActivity {
                 } else {
                     e.printStackTrace();
                 }
+                mApp.dialog.dismiss();
             }
         });
     }

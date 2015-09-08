@@ -146,24 +146,32 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     }
                                                     Object[] objectList = arrayList.toArray();
                                                     String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                                                    if (stringArray.length > 1) {
-                                                        conductor.setItems(stringArray,
-                                                                new DialogInterface.OnClickListener() {
-                                                                    public void onClick(DialogInterface dialog,
-                                                                                        int index) {
-                                                                        newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                        eduChildDegree1.setText(list.get(index).getParseObject("degreeId").getString("name"));
-                                                                        eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                                    }
-                                                                });
-                                                        AlertDialog alert = conductor.create();
-                                                        mApp.dialog.dismiss();
-                                                        alert.show();
-                                                    } else {
-                                                        newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                        eduChildDegree1.setText(list.get(0).getParseObject("degreeId").getString("name"));
-                                                        eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                                        mApp.dialog.dismiss();
+                                                    try {
+                                                        if (stringArray.length > 1) {
+                                                            conductor.setItems(stringArray,
+                                                                    new DialogInterface.OnClickListener() {
+                                                                        public void onClick(DialogInterface dialog,
+                                                                                            int index) {
+                                                                            try {
+                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                eduChildDegree1.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                                                                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                                            } catch (ParseException e1) {
+                                                                                e1.printStackTrace();
+                                                                            }
+                                                                        }
+                                                                    });
+                                                            AlertDialog alert = conductor.create();
+                                                            mApp.dialog.dismiss();
+                                                            alert.show();
+                                                        } else {
+                                                            newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                            eduChildDegree1.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                                                            eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                                            mApp.dialog.dismiss();
+                                                        }
+                                                    } catch (Exception e1) {
+                                                        e1.printStackTrace();
                                                     }
                                                 }
                                             }

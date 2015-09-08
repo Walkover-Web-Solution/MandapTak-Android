@@ -638,7 +638,6 @@ public class UserPreferences extends AppCompatActivity {
         if (query != null) {
             final ArrayList<LocationPreference> models = new ArrayList<>();
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             parseQuery.whereMatches("name", "(" + query + ")", "i");
             parseQuery.include("Parent");
             parseQuery.include("Parent.Parent");
@@ -674,7 +673,6 @@ public class UserPreferences extends AppCompatActivity {
 
                     }
                     ParseQuery<ParseObject> parseQuery2 = new ParseQuery<>("State");
-                    parseQuery2.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     parseQuery2.include("Parent");
                     parseQuery2.whereMatches("name", "(" + query + ")", "i");
                     parseQuery2.findInBackground(new FindCallback<ParseObject>() {
@@ -721,13 +719,11 @@ public class UserPreferences extends AppCompatActivity {
     private void getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-      //  q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("Preference");
-              //      query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereEqualTo("profileId", object);
                     query.getFirstInBackground(new GetCallback<ParseObject>() {
                         @Override
@@ -804,7 +800,6 @@ public class UserPreferences extends AppCompatActivity {
 
     private void getLocationData(ParseObject object) {
         ParseQuery<ParseObject> query2 = new ParseQuery<>("LocationPreferences");
-      //  query2.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         query2.whereEqualTo("preferenceId", object);
         query2.include("cityId");
         query2.include("cityId.Parent.Parent");

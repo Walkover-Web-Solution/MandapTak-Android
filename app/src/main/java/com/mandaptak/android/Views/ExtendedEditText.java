@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.widget.EditText;
@@ -40,7 +41,7 @@ public class ExtendedEditText extends EditText {
         mTextPaint.setTextSize(mFontHeight);
         mTextPaint.setTextAlign(Paint.Align.LEFT);
         // Setup the left side
-        setCompoundDrawablesRelative(left, null, null, null);
+        setCompoundDrawablesWithIntrinsicBounds(left, null, null, null);
     }
 
     @Override
@@ -56,16 +57,16 @@ public class ExtendedEditText extends EditText {
 
     public void setPrefix(String s) {
         left.setText(s);
-        setCompoundDrawablesRelative(left, null, null, null);
+        setCompoundDrawablesWithIntrinsicBounds(left, null, null, null);
     }
 
     public void setSuffix(String s) {
         mSuffix = s;
-        setCompoundDrawablesRelative(left, null, null, null);
+        setCompoundDrawablesWithIntrinsicBounds(left, null, null, null);
     }
 
     @Override
-    public void onDraw(Canvas c) {
+    public void onDraw(@NonNull Canvas c) {
         mLine0Baseline = getLineBounds(0, line0bounds);
 
         super.onDraw(c);

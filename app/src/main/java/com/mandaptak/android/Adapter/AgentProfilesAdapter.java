@@ -58,7 +58,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
 
         if (paramView == null) {
             viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(activity).inflate(R.layout.agent_profile_item, null);
+            paramView = LayoutInflater.from(activity).inflate(R.layout.agent_profile_item, paramViewGroup, false);
             viewholder.name = (TextView) paramView.findViewById(R.id.name);
             viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
             viewholder.status = (TextView) paramView.findViewById(R.id.status);
@@ -68,8 +68,8 @@ public class AgentProfilesAdapter extends BaseAdapter {
         } else {
             viewholder = (ViewHolder) paramView.getTag();
         }
-        final AgentProfileModel agentProfileModel = list.get(paramInt);
         try {
+            final AgentProfileModel agentProfileModel = list.get(paramInt);
             viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
             if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
                 viewholder.status.setTextColor(activity.getResources().getColor(R.color.yellow_700));
@@ -163,7 +163,6 @@ public class AgentProfilesAdapter extends BaseAdapter {
                     }
                 });
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }

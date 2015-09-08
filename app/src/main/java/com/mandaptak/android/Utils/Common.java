@@ -23,6 +23,7 @@ import com.mandaptak.android.Layer.LayerCallbacks;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Matches.AtlasIdentityProvider;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
@@ -268,6 +269,16 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.setContext(this);
         cacheAllUsers();
         identityProvider = new AtlasIdentityProvider(this);
+        // Setup handler for uncaught exceptions.
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread thread, Throwable e) {
+                e.printStackTrace();
+                Intent intent = new Intent(getApplicationContext(), SplashScreen.class);
+                startActivity(intent);
+                System.exit(1); // kill off the crashed app
+            }
+        });
     }
 
     public String numberToWords(long number) {

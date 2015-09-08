@@ -2,7 +2,6 @@ package com.mandaptak.android.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -53,7 +52,6 @@ public class MatchesAdapter extends BaseAdapter {
     public View getView(final int paramInt, View paramView, ViewGroup paramViewGroup) {
         ViewHolder viewholder;
         if (paramView == null) {
-            paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
             viewholder = new ViewHolder();
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
@@ -79,14 +77,6 @@ public class MatchesAdapter extends BaseAdapter {
                 .into(viewholder.profilePic);
 
         return paramView;
-    }
-
-    static class ViewHolder {
-        public TextView tvName;
-        public TextView tvReligion;
-        public TextView tvWork;
-        public ImageView chatButton;
-        public CircleImageView profilePic;
     }
 
     private void getChatMembers(String profileId, final String name) {
@@ -136,5 +126,13 @@ public class MatchesAdapter extends BaseAdapter {
                 }
             }
         });
+    }
+
+    static class ViewHolder {
+        public TextView tvName;
+        public TextView tvReligion;
+        public TextView tvWork;
+        public ImageView chatButton;
+        public CircleImageView profilePic;
     }
 }

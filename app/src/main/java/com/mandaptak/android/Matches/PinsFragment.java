@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.mandaptak.android.Adapter.PinsAdapter;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
@@ -30,6 +32,8 @@ public class PinsFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
     ArrayList<MatchesModel> pinsList = new ArrayList<>();
+    TextView empty;
+    ProgressBar progressBar;
     private View rootView;
     private Context context;
 
@@ -41,6 +45,7 @@ public class PinsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         init(inflater, container);
+
         if (mApp.isNetworkAvailable(context)) {
             getParseData();
         }
@@ -50,15 +55,15 @@ public class PinsFragment extends Fragment {
     private void init(LayoutInflater inflater, ViewGroup container) {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
-        rootView = inflater.inflate(R.layout.fragment_matches, container, false);
+        rootView = inflater.inflate(R.layout.fragment_list, container, false);
         listViewMatches = (ListView) rootView.findViewById(R.id.list);
+        empty = (TextView) rootView.findViewById(R.id.empty);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progress);
+        empty.setText("No Pins");
 
         listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
-//                intent.putExtra("profile", pinsList.get(i));
-//                startActivity(intent);
                 Intent intent = new Intent(getActivity(), FullProfileActivity.class);
                 intent.putExtra("parseObjectId", pinsList.get(i).getProfileId());
                 startActivity(intent);
@@ -67,7 +72,8 @@ public class PinsFragment extends Fragment {
     }
 
     public ArrayList<MatchesModel> getParseData() {
-        mApp.show_PDialog(context, "Loading..");
+        progressBar.setVisibility(View.VISIBLE);
+        listViewMatches.setVisibility(View.GONE);
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
@@ -75,12 +81,11 @@ public class PinsFragment extends Fragment {
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
-                  //  query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereEqualTo("profileId", object);
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
-                            if (e == null)
+                            if (e == null) {
                                 if (list.size() > 0) {
                                     pinsList.clear();
                                     for (ParseObject parseObject : list) {
@@ -107,13 +112,21 @@ public class PinsFragment extends Fragment {
                                         }
                                     }
                                     listViewMatches.setAdapter(new PinsAdapter(PinsFragment.this, pinsList, context));
-                                } else
-                                    mApp.showToast(context, "No pins");
-                            else
-                                mApp.showToast(context, e.getMessage());
-                            mApp.dialog.dismiss();
+                                    progressBar.setVisibility(View.GONE);
+                                    listViewMatches.setVisibility(View.VISIBLE);
+                                } else {
+                                    progressBar.setVisibility(View.GONE);
+                                    empty.setVisibility(View.VISIBLE);
+                                }
+                            } else {
+                                progressBar.setVisibility(View.GONE);
+                                empty.setVisibility(View.VISIBLE);
+                            }
                         }
                     });
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    empty.setVisibility(View.VISIBLE);
                 }
             }
         });

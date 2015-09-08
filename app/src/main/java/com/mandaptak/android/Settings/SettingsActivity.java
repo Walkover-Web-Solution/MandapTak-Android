@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import me.iwf.photopicker.utils.Prefs;
 
@@ -185,18 +186,18 @@ public class SettingsActivity extends AppCompatActivity {
                                         permissionModels.clear();
                                         for (ParseObject item : list) {
                                             try {
-                                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy");
+                                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
                                                 String date = sdf.format(item.getCreatedAt());
-                                                ParseUser user = item.fetchIfNeeded().getParseUser("userId");
+                                                ParseUser user = item.fetch().getParseUser("userId");
                                                 PermissionModel permissionModel = new PermissionModel();
-                                                String relation = item.fetchIfNeeded().getString("relation");
+                                                String relation = item.fetch().getString("relation");
                                                 if (relation.equals(""))
                                                     permissionModel.setRelation("Bachelor");
                                                 else
                                                     permissionModel.setRelation(relation);
                                                 permissionModel.setDate("Permission given on: " + date);
-                                                permissionModel.setNumber(user.fetchIfNeeded().getUsername());
-                                                if (user == ParseUser.getCurrentUser()) {
+                                                permissionModel.setNumber(user.fetch().getUsername());
+                                                if (user.getUsername().equalsIgnoreCase(ParseUser.getCurrentUser().getUsername())) {
                                                     if (item.getBoolean("isPrimary")) {
                                                         isPrimaryUser = true;
                                                     }

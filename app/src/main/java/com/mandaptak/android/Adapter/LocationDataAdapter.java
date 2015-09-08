@@ -27,31 +27,29 @@ public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
-            LayoutInflater inflator = userPreferences.getLayoutInflater();
-            convertView = inflator.inflate(R.layout.location_list_row, parent, false);
-            final ViewHolder viewHolder = new ViewHolder();
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.location_list_row, null);
+            viewHolder = new ViewHolder();
             viewHolder.text = (TextView) convertView.findViewById(R.id.label);
             viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.check);
-            convertView.setTag(viewHolder);
-            viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    list.get(position).setIsSelected(isChecked);
-                    if (isChecked)
-                        userPreferences.addLocation((LocationPreference) viewHolder.checkbox.getTag());
-                    else
-                        userPreferences.removeLocation((LocationPreference) viewHolder.checkbox.getTag());
-                }
-            });
             viewHolder.checkbox.setTag(list.get(position));
+            convertView.setTag(viewHolder);
         } else {
-            ((ViewHolder) convertView.getTag()).checkbox.setTag(list.get(position));
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        ViewHolder holder = (ViewHolder) convertView.getTag();
-        holder.text.setText(list.get(position).getLocationName());
-        holder.checkbox.setChecked(list.get(position).isSelected());
-
+        viewHolder.text.setText(list.get(position).getLocationName());
+        viewHolder.checkbox.setChecked(list.get(position).isSelected());
+        viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                list.get(position).setIsSelected(isChecked);
+                if (isChecked)
+                    userPreferences.addLocation(list.get(position));
+                else
+                    userPreferences.removeLocation(list.get(position));
+            }
+        });
         return convertView;
     }
 

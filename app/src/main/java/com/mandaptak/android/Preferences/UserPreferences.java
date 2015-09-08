@@ -51,7 +51,6 @@ public class UserPreferences extends AppCompatActivity {
     Button btnSavePreferences;
     Context context = UserPreferences.this;
     LocationDataAdapter locationDataAdapter;
-    ArrayList<LocationPreference> locationList;
     ArrayList<LocationPreference> parseSavedLocationList = new ArrayList<>();
     private int newWorkAfterMarriage = 0;
     private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
@@ -272,16 +271,24 @@ public class UserPreferences extends AppCompatActivity {
                                                                 new DialogInterface.OnClickListener() {
                                                                     public void onClick(DialogInterface dialog,
                                                                                         int index) {
-                                                                        newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                        etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                        try {
+                                                                            newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                            etDegree.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                                        } catch (Exception e1) {
+                                                                            e1.printStackTrace();
+                                                                        }
                                                                     }
                                                                 });
                                                         AlertDialog alert = conductor.create();
                                                         mApp.dialog.dismiss();
                                                         alert.show();
                                                     } else {
-                                                        newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                        etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                        try {
+                                                            newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
+                                                            etDegree.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                        } catch (Exception e1) {
+                                                            e1.printStackTrace();
+                                                        }
                                                         mApp.dialog.dismiss();
                                                     }
                                                 }
@@ -314,8 +321,12 @@ public class UserPreferences extends AppCompatActivity {
                                     if (list != null && list.size() > 0) {
                                         final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                                         for (ParseObject model : list) {
-                                            ParseNameModel item = new ParseNameModel(model.getString("name"), model);
-                                            degreeList.add(item);
+                                            try {
+                                                ParseNameModel item = new ParseNameModel(model.fetchIfNeeded().getString("name"), model);
+                                                degreeList.add(item);
+                                            } catch (Exception e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
                                         listView.setAdapter(new DataAdapter(context, degreeList));
                                         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -334,7 +345,11 @@ public class UserPreferences extends AppCompatActivity {
                                                         if (list != null && list.size() > 0) {
                                                             ArrayList<String> arrayList = new ArrayList<>();
                                                             for (ParseObject model : list) {
-                                                                arrayList.add(model.getString("name"));
+                                                                try {
+                                                                    arrayList.add(model.fetchIfNeeded().getString("name"));
+                                                                } catch (Exception e1) {
+                                                                    e1.printStackTrace();
+                                                                }
                                                             }
                                                             Object[] objectList = arrayList.toArray();
                                                             String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
@@ -343,16 +358,24 @@ public class UserPreferences extends AppCompatActivity {
                                                                         new DialogInterface.OnClickListener() {
                                                                             public void onClick(DialogInterface dialog,
                                                                                                 int index) {
-                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                                etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                                try {
+                                                                                    newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                    etDegree.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                                                } catch (Exception e) {
+                                                                                    e.printStackTrace();
+                                                                                }
                                                                             }
                                                                         });
                                                                 AlertDialog alert = conductor.create();
                                                                 mApp.dialog.dismiss();
                                                                 alert.show();
                                                             } else {
-                                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                                etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                try {
+                                                                    newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                                    etDegree.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                                } catch (Exception e1) {
+                                                                    e1.printStackTrace();
+                                                                }
                                                                 mApp.dialog.dismiss();
                                                             }
                                                         }
@@ -372,8 +395,12 @@ public class UserPreferences extends AppCompatActivity {
                                     if (list != null && list.size() > 0) {
                                         final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                                         for (ParseObject model : list) {
-                                            ParseNameModel item = new ParseNameModel(model.getString("name"), model);
-                                            degreeList.add(item);
+                                            try {
+                                                ParseNameModel item = new ParseNameModel(model.fetchIfNeeded().getString("name"), model);
+                                                degreeList.add(item);
+                                            } catch (Exception e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
                                         listView.setAdapter(new DataAdapter(context, degreeList));
                                         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -392,7 +419,11 @@ public class UserPreferences extends AppCompatActivity {
                                                         if (list != null && list.size() > 0) {
                                                             ArrayList<String> arrayList = new ArrayList<>();
                                                             for (ParseObject model : list) {
-                                                                arrayList.add(model.getString("name"));
+                                                                try {
+                                                                    arrayList.add(model.fetchIfNeeded().getString("name"));
+                                                                } catch (Exception e1) {
+                                                                    e1.printStackTrace();
+                                                                }
                                                             }
                                                             Object[] objectList = arrayList.toArray();
                                                             String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
@@ -401,16 +432,24 @@ public class UserPreferences extends AppCompatActivity {
                                                                         new DialogInterface.OnClickListener() {
                                                                             public void onClick(DialogInterface dialog,
                                                                                                 int index) {
-                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).getString("name"), list.get(index));
-                                                                                etDegree.setText(list.get(index).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                                try {
+                                                                                    newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                    etDegree.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                                                } catch (Exception e) {
+                                                                                    e.printStackTrace();
+                                                                                }
                                                                             }
                                                                         });
                                                                 AlertDialog alert = conductor.create();
                                                                 mApp.dialog.dismiss();
                                                                 alert.show();
                                                             } else {
-                                                                newEducationDetail1 = new ParseNameModel(list.get(0).getString("name"), list.get(0));
-                                                                etDegree.setText(list.get(0).getParseObject("degreeId").getString("name") + " " + newEducationDetail1.getName());
+                                                                try {
+                                                                    newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                                    etDegree.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " " + newEducationDetail1.getName());
+                                                                } catch (Exception e1) {
+                                                                    e1.printStackTrace();
+                                                                }
                                                                 mApp.dialog.dismiss();
                                                             }
                                                         }
@@ -457,7 +496,6 @@ public class UserPreferences extends AppCompatActivity {
         workingPartner = (Spinner) findViewById(R.id.work_after_marriage);
         manglikStatus = (Spinner) findViewById(R.id.manglik);
         btnSavePreferences = (Button) findViewById(R.id.store_preference);
-        locationList = new ArrayList<>();
         getParseData();
     }
 
@@ -650,11 +688,11 @@ public class UserPreferences extends AppCompatActivity {
                             locationPreference.setLocationType(0);
                             try {
                                 ParseObject state = city.fetchIfNeeded().getParseObject("Parent");
-                                ParseObject country = city.fetchIfNeeded().getParseObject("Parent").getParseObject("Parent");
+                                ParseObject country = city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
                                 locationPreference.setCountry(country);
                                 locationPreference.setState(state);
                                 locationPreference.setCity(city);
-                                locationPreference.setLocationName(city.getString("name") + ", " + state.getString("name") + ", " + country.getString("name"));
+                                locationPreference.setLocationName(city.fetchIfNeeded().getString("name") + ", " + state.fetchIfNeeded().getString("name") + ", " + country.fetchIfNeeded().getString("name"));
                                 locationPreference.setParseObject(city);
                             } catch (Exception e1) {
                                 e1.printStackTrace();
@@ -662,8 +700,12 @@ public class UserPreferences extends AppCompatActivity {
                             if (parseSavedLocationList.size() > 0) {
                                 boolean isPresent = false;
                                 for (int i = 0; i < parseSavedLocationList.size(); i++) {
-                                    if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(city.getObjectId()))
-                                        isPresent = true;
+                                    try {
+                                        if (parseSavedLocationList.get(i).getParseObject().fetchIfNeeded().getObjectId().equalsIgnoreCase(city.fetchIfNeeded().getObjectId()))
+                                            isPresent = true;
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                    }
                                 }
                                 if (isPresent)
                                     locationPreference.setIsSelected(true);
@@ -687,7 +729,7 @@ public class UserPreferences extends AppCompatActivity {
                                         locationPreference.setCountry(country);
                                         locationPreference.setState(state);
                                         locationPreference.setCity(null);
-                                        locationPreference.setLocationName(state.getString("name") + " ," + country.getString("name"));
+                                        locationPreference.setLocationName(state.fetchIfNeeded().getString("name") + " ," + country.fetchIfNeeded().getString("name"));
                                         locationPreference.setParseObject(state);
                                     } catch (Exception e1) {
                                         e1.printStackTrace();
@@ -695,8 +737,12 @@ public class UserPreferences extends AppCompatActivity {
                                     if (parseSavedLocationList.size() > 0) {
                                         boolean isPresent = false;
                                         for (int i = 0; i < parseSavedLocationList.size(); i++) {
-                                            if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(state.getObjectId()))
-                                                isPresent = true;
+                                            try {
+                                                if (parseSavedLocationList.get(i).getParseObject().fetchIfNeeded().getObjectId().equalsIgnoreCase(state.fetchIfNeeded().getObjectId()))
+                                                    isPresent = true;
+                                            } catch (Exception e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
                                         if (isPresent)
                                             locationPreference.setIsSelected(true);
@@ -704,7 +750,10 @@ public class UserPreferences extends AppCompatActivity {
                                     models.add(locationPreference);
                                 }
                             }
-                            locationDataAdapter = new LocationDataAdapter(UserPreferences.this, models);
+                            if (query != null)
+                                locationDataAdapter = new LocationDataAdapter(UserPreferences.this, models);
+                            else
+                                locationDataAdapter = new LocationDataAdapter(UserPreferences.this, parseSavedLocationList);
                             listView.setAdapter(locationDataAdapter);
                         }
                     });
@@ -821,14 +870,14 @@ public class UserPreferences extends AppCompatActivity {
                                 if (city != null) {
                                     locationPreference.setParseObject(city);
                                     locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(city.getString("name") + ", "
-                                            + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
+                                    locationPreference.setLocationName(city.fetchIfNeeded().getString("name") + ", "
+                                            + city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
                                     locationPreference.setLocationType(0);
                                     responseText.append(locationPreference.getLocationName());
                                 } else {
                                     locationPreference.setParseObject(state);
                                     locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
+                                    locationPreference.setLocationName(state.fetchIfNeeded().getString("name") + ", " + state.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
                                     locationPreference.setLocationType(1);
                                     responseText.append(locationPreference.getLocationName()).append(" ");
                                 }

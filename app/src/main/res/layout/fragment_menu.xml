@@ -20,7 +20,6 @@
         android:layout_below="@+id/profile_image"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="Rahul Singhania"
         android:textColor="@color/red_700"
         android:textSize="@dimen/abc_text_size_title_material"/>
 

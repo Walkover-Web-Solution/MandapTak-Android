@@ -32,7 +32,6 @@ import com.mandaptak.android.Views.BitmapTransform;
 import com.mandaptak.android.Views.BlurringView;
 import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -122,20 +121,10 @@ public class MainActivity extends AppCompatActivity {
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
         slideLike = (ImageButton) findViewById(R.id.slide_like);
         labelLoading = (TextView) findViewById(R.id.label_loading);
-        if (mApp.isNetworkAvailable(context)) {
-            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject object, ParseException e) {
-                    if (e == null)
-                        profileObject = object;
-                }
-            });
-        }
+
     }
 
     void clickListeners() {
-
         pinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -145,25 +134,16 @@ public class MainActivity extends AppCompatActivity {
                         ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
                         dislikeParseObject.put("pinnedProfileId", profileList.get(0));
                         dislikeParseObject.put("profileId", profileObject);
-                        dislikeParseObject.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                mApp.dialog.dismiss();
-                                if (e == null) {
-                                    undoModel.setProfileParseObject(profileList.get(0));
-                                    undoModel.setActionPerformed(2);
-                                    profileList.remove(0);
-                                    if (profileList.size() > 0) {
-                                        setProfileDetails();
-                                    } else {
-                                        rippleBackground.setVisibility(View.VISIBLE);
-                                    }
-                                } else {
-                                    e.printStackTrace();
-                                    mApp.showToast(context, "Error while pinning profile");
-                                }
-                            }
-                        });
+                        dislikeParseObject.saveInBackground();
+                        undoModel.setProfileParseObject(profileList.get(0));
+                        undoModel.setActionPerformed(2);
+                        profileList.remove(0);
+                        if (profileList.size() > 0) {
+                            setProfileDetails();
+                        } else {
+                            rippleBackground.stopRippleAnimation();
+                            rippleBackground.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception e) {
                         mApp.dialog.dismiss();
                         e.printStackTrace();
@@ -179,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
                         case 0:
                             if (mApp.isNetworkAvailable(context))
                                 try {
-                                    mApp.show_PDialog(context, "Performing Undo..");
                                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("DislikeProfile");
                                     parseQuery.whereEqualTo("dislikeProfileId", undoModel.getProfileParseObject());
                                     parseQuery.whereEqualTo("profileId", profileObject);
@@ -187,24 +166,13 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void done(ParseObject parseObject, ParseException e) {
                                             if (e == null) {
-                                                parseObject.deleteInBackground(new DeleteCallback() {
-                                                    @Override
-                                                    public void done(ParseException e) {
-                                                        mApp.dialog.dismiss();
-                                                        if (e == null) {
-                                                            profileList.add(0, undoModel.getProfileParseObject());
-                                                            undoModel = new UndoModel();
-                                                            setProfileDetails();
-                                                        } else {
-                                                            mApp.dialog.dismiss();
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                mApp.dialog.dismiss();
+                                                parseObject.deleteInBackground();
                                             }
                                         }
                                     });
+                                    profileList.add(0, undoModel.getProfileParseObject());
+                                    undoModel = new UndoModel();
+                                    setProfileDetails();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -212,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
                         case 1:
                             if (mApp.isNetworkAvailable(context))
                                 try {
-                                    mApp.show_PDialog(context, "Performing Undo..");
                                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LikedProfile");
                                     parseQuery.whereEqualTo("likeProfileId", undoModel.getProfileParseObject());
                                     parseQuery.whereEqualTo("profileId", profileObject);
@@ -220,24 +187,13 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void done(ParseObject parseObject, ParseException e) {
                                             if (e == null) {
-                                                parseObject.deleteInBackground(new DeleteCallback() {
-                                                    @Override
-                                                    public void done(ParseException e) {
-                                                        mApp.dialog.dismiss();
-                                                        if (e == null) {
-                                                            profileList.add(0, undoModel.getProfileParseObject());
-                                                            undoModel = new UndoModel();
-                                                            setProfileDetails();
-                                                        } else {
-                                                            mApp.dialog.dismiss();
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                mApp.dialog.dismiss();
+                                                parseObject.deleteInBackground();
                                             }
                                         }
                                     });
+                                    profileList.add(0, undoModel.getProfileParseObject());
+                                    undoModel = new UndoModel();
+                                    setProfileDetails();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -245,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
                         case 2:
                             if (mApp.isNetworkAvailable(context))
                                 try {
-                                    mApp.show_PDialog(context, "Performing Undo..");
                                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("PinnedProfile");
                                     parseQuery.whereEqualTo("pinnedProfileId", undoModel.getProfileParseObject());
                                     parseQuery.whereEqualTo("profileId", profileObject);
@@ -253,24 +208,13 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void done(ParseObject parseObject, ParseException e) {
                                             if (e == null) {
-                                                parseObject.deleteInBackground(new DeleteCallback() {
-                                                    @Override
-                                                    public void done(ParseException e) {
-                                                        mApp.dialog.dismiss();
-                                                        if (e == null) {
-                                                            profileList.add(0, undoModel.getProfileParseObject());
-                                                            undoModel = new UndoModel();
-                                                            setProfileDetails();
-                                                        } else {
-                                                            mApp.dialog.dismiss();
-                                                        }
-                                                    }
-                                                });
-                                            } else {
-                                                mApp.dialog.dismiss();
+                                                parseObject.deleteInBackground();
                                             }
                                         }
                                     });
+                                    profileList.add(0, undoModel.getProfileParseObject());
+                                    undoModel = new UndoModel();
+                                    setProfileDetails();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 }
@@ -284,29 +228,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context))
                     try {
-                        mApp.show_PDialog(context, "Skipping Profile..");
                         ParseObject dislikeParseObject = new ParseObject("DislikeProfile");
                         dislikeParseObject.put("dislikeProfileId", profileList.get(0));
                         dislikeParseObject.put("profileId", profileObject);
-                        dislikeParseObject.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                mApp.dialog.dismiss();
-                                if (e == null) {
-                                    undoModel.setProfileParseObject(profileList.get(0));
-                                    undoModel.setActionPerformed(0);
-                                    profileList.remove(0);
-                                    if (profileList.size() > 0) {
-                                        setProfileDetails();
-                                    } else {
-                                        rippleBackground.setVisibility(View.VISIBLE);
-                                    }
-                                } else {
-                                    e.printStackTrace();
-                                    mApp.showToast(context, "Error while skipping profile");
-                                }
-                            }
-                        });
+                        dislikeParseObject.saveInBackground();
+                        undoModel.setProfileParseObject(profileList.get(0));
+                        undoModel.setActionPerformed(0);
+                        profileList.remove(0);
+                        if (profileList.size() > 0) {
+                            setProfileDetails();
+                        } else {
+                            rippleBackground.stopRippleAnimation();
+                            rippleBackground.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception e) {
                         mApp.dialog.dismiss();
                         e.printStackTrace();
@@ -319,29 +253,19 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context))
                     try {
-                        mApp.show_PDialog(context, "Liking Profile..");
                         ParseObject dislikeParseObject = new ParseObject("LikedProfile");
                         dislikeParseObject.put("likeProfileId", profileList.get(0));
                         dislikeParseObject.put("profileId", profileObject);
-                        dislikeParseObject.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                mApp.dialog.dismiss();
-                                if (e == null) {
-                                    undoModel.setProfileParseObject(profileList.get(0));
-                                    undoModel.setActionPerformed(1);
-                                    profileList.remove(0);
-                                    if (profileList.size() > 0) {
-                                        setProfileDetails();
-                                    } else {
-                                        rippleBackground.setVisibility(View.VISIBLE);
-                                    }
-                                } else {
-                                    e.printStackTrace();
-                                    mApp.showToast(context, "Error while liking profile");
-                                }
-                            }
-                        });
+                        dislikeParseObject.saveInBackground();
+                        undoModel.setProfileParseObject(profileList.get(0));
+                        undoModel.setActionPerformed(1);
+                        profileList.remove(0);
+                        if (profileList.size() > 0) {
+                            setProfileDetails();
+                        } else {
+                            rippleBackground.stopRippleAnimation();
+                            rippleBackground.setVisibility(View.VISIBLE);
+                        }
                     } catch (Exception e) {
                         mApp.dialog.dismiss();
                         e.printStackTrace();
@@ -364,7 +288,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context))
                     try {
-                        mApp.show_PDialog(context, "Liking Profile..");
                         ParseObject dislikeParseObject = new ParseObject("LikedProfile");
                         dislikeParseObject.put("likeProfileId", profileList.get(0));
                         dislikeParseObject.put("profileId", profileObject);
@@ -434,8 +357,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void getParseData() {
-        setNavigationMenu();
-        getMatchesFromFunction();
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    profileObject = object;
+                    setNavigationMenu();
+                    getMatchesFromFunction();
+                }
+            }
+        });
+
     }
 
     void setNavigationMenu() {

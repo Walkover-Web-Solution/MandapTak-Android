@@ -31,6 +31,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.mandaptak.android.Adapter.LayoutAdapter;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
@@ -85,6 +86,7 @@ public class FinalEditProfileFragment extends Fragment {
     private String albumId;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
+    private Boolean isFirstStart = false;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -158,7 +160,11 @@ public class FinalEditProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_final_edit_profile, container, false);
         init();
-
+        if (getActivity().getIntent() != null) {
+            if (getActivity().getIntent().hasExtra("firstStart")) {
+                isFirstStart = getActivity().getIntent().getBooleanExtra("firstStart", false);
+            }
+        }
         importPhotosButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -269,9 +275,15 @@ public class FinalEditProfileFragment extends Fragment {
                                         public void done(ParseException e) {
                                             if (e == null) {
                                                 try {
-                                                    startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                                    getActivity().finish();
-                                                    mApp.showToast(context, "Profile updated");
+                                                    if (isFirstStart) {
+                                                        startActivity(new Intent(getActivity(), UserPreferences.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                        getActivity().finish();
+                                                        mApp.showToast(context, "Please Set your Preferences");
+                                                    } else {
+                                                        startActivity(new Intent(getActivity(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                        getActivity().finish();
+                                                        mApp.showToast(context, "Profile updated");
+                                                    }
                                                 } catch (Exception e2) {
                                                     mApp.showToast(context, "Error while updating profile");
                                                     e2.printStackTrace();
@@ -703,10 +715,10 @@ public class FinalEditProfileFragment extends Fragment {
                             Log.e("album_response", response.toString());
                             try {
                                 JSONObject jsonObject = new JSONObject(response.toString());
-                              //  JSONObject graphObject = jsonObject.getJSONObject("graphObject");
+                                //  JSONObject graphObject = jsonObject.getJSONObject("graphObject");
                                 JSONArray albumsArr = jsonObject.getJSONArray("data");
-                                jsonObject= (JSONObject) albumsArr.get(0);
-                                albumId=  jsonObject.getString("id");
+                                jsonObject = (JSONObject) albumsArr.get(0);
+                                albumId = jsonObject.getString("id");
                               /*  for (int i = 0; i < albumsArr.length(); i++) {
                                     jsonObject = albumsArr.getJSONObject(i);
                                     if (jsonObject.getString("type").equalsIgnoreCase("profile")) {

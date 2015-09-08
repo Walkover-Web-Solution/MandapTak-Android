@@ -75,7 +75,6 @@ public class PinsFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         listViewMatches.setVisibility(View.GONE);
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-        q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {

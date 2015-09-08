@@ -79,12 +79,12 @@ public class FinalEditProfileFragment extends Fragment {
     LinearLayout budgetMainLayout;
     EditText minBudget, maxBudget;
     long newMinBudget = 0, newMaxBudget = 0;
+    CallbackManager callbackManager;
     private LinearLayout saveProfile;
     private Long fbUserId;
     private String albumId;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
-    CallbackManager callbackManager;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -380,7 +380,6 @@ public class FinalEditProfileFragment extends Fragment {
         try {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-         //   query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject profileObject, ParseException e) {
@@ -405,7 +404,6 @@ public class FinalEditProfileFragment extends Fragment {
                             uploadBiodata.setText(newBiodataFileName);
                         }
                         ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                   //     queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                         queryParseQuery.whereEqualTo("profileId", profileObject);
                         queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
@@ -467,7 +465,6 @@ public class FinalEditProfileFragment extends Fragment {
                 }
             }
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-         //   parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -553,7 +550,6 @@ public class FinalEditProfileFragment extends Fragment {
                                     public void done(ParseObject object, ParseException e) {
                                         if (e == null) {
                                             ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                                  //          queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                                             queryParseQuery.whereEqualTo("profileId", object);
                                             queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override

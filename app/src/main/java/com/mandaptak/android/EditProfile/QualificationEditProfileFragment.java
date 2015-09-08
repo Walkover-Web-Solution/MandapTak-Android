@@ -388,7 +388,6 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                            //          parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                             parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
@@ -699,7 +698,6 @@ public class QualificationEditProfileFragment extends Fragment {
         try {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-            //   query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -762,7 +760,6 @@ public class QualificationEditProfileFragment extends Fragment {
     private void getIndustryList() {
         final ArrayList<ParseNameModel> industryList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Industries");
-        //  parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {

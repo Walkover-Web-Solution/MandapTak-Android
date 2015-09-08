@@ -8,6 +8,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,37 +55,40 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
     @Override
     public Atlas.Participant getParticipant(final String userId) {
-        ParseQuery<ParseObject> q1 = new ParseQuery<>("_User");
+    /*    ParseQuery<ParseObject> q1 = new ParseQuery<>("_User");
         q1.getInBackground(userId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
-                    ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-                    query.whereEqualTo("userId", object);
-                    query.getFirstInBackground(new GetCallback<ParseObject>() {
-                        @Override
-                        public void done(ParseObject parseObject, ParseException e) {
-                            if (e == null) {
-                                try {
 
-                                    String name = parseObject.fetchIfNeeded().getString("name");
-                                    if (name != null)
-                                        model.firstName = (name);
-                                    model.userId = userId;
-
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-
-                        }
-                    });
 
                 }
             }
+        });*/
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+        ParseUser pu = new ParseUser();
+        pu.setObjectId(userId);
+        query.whereEqualTo("userId",pu);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    try {
+
+                        String name = parseObject.fetchIfNeeded().getString("name");
+                        if (name != null)
+                            model.firstName = (name);
+                        model.userId = userId;
+
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+            }
         });
-        if (!participantsMap.containsKey(userId))
-            participantsMap.put(userId, model);
+     //   if (!participantsMap.containsKey(userId))
+        //    participantsMap.put(userId, model);
         Participant participant = model;
         return participant;
     }

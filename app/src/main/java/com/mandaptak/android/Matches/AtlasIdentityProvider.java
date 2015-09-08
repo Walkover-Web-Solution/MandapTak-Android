@@ -1,26 +1,37 @@
 package com.mandaptak.android.Matches;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 
 import com.layer.atlas.Atlas;
+import com.mandaptak.android.Models.MatchesModel;
+import com.mandaptak.android.Models.Participant;
+import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import me.iwf.photopicker.utils.Prefs;
+
 
 public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
-    private final Map<String, Participant> participantsMap = new HashMap<>();
-    private final Context context;
-    Participant model = new Participant();
 
+    private Map<String, Participant> participantsMap = new HashMap<>();
+    private final Context context;
+    ArrayList<ParseObject> profileObjs;
+    ArrayList<MatchesModel> matchList = new ArrayList<>();
+    String name;
     public AtlasIdentityProvider(Context context) {
         this.context = context;
+        getMatchesFromFunction();
 
     }
 
@@ -31,7 +42,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         }
 
         // With no filter, return all Participants
-        if (filter == null) {
+        if (filter == null || filter == "") {
             result.putAll(participantsMap);
             return result;
         }
@@ -52,73 +63,95 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
     @Override
     public Atlas.Participant getParticipant(final String userId) {
-    /*    ParseQuery<ParseObject> q1 = new ParseQuery<>("_User");
-        q1.getInBackground(userId, new GetCallback<ParseObject>() {
+        return participantsMap.get(userId);
+    }
+    private void getMatchesFromFunction() {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("profileId", Prefs.getProfileId(context));
+        ParseCloud.callFunctionInBackground("getMatchedProfile", params, new FunctionCallback<Object>() {
             @Override
-            public void done(ParseObject object, ParseException e) {
+            public void done(Object o, ParseException e) {
                 if (e == null) {
-
-
-                }
-            }
-        });*/
-        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        ParseUser pu = new ParseUser();
-        pu.setObjectId(userId);
-        query.whereEqualTo("userId", pu);
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    try {
-
-                        String name = parseObject.fetchIfNeeded().getString("name");
-                        if (name != null)
-                            model.firstName = (name);
-                        model.userId = userId;
-
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    if (o != null) {
+                        profileObjs = (ArrayList<ParseObject>) o;
+                        if (profileObjs.size() > 0) {
+                            for (ParseObject parseObject : profileObjs) {
+                                try {
+                                    MatchesModel model = new MatchesModel();
+                                    String name = parseObject.fetchIfNeeded().getString("name");
+                                    if (name != null)
+                                        model.setName(name);
+                                    String work = parseObject.fetchIfNeeded().getString("designation");
+                                    if (work != null)
+                                        model.setWork(work);
+                                    String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                    if (religion != null)
+                                        model.setReligion(religion);
+                                    String url = parseObject.fetchIfNeeded().fetchIfNeeded().getParseFile("profilePic").getUrl();
+                                    if (url != null) {
+                                        model.setUrl(url);
+                                    }
+                                    matchList.add(model);
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                            com.mandaptak.android.Utils.Prefs.setMatches(context, matchList);
+                            ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                            q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                                @Override
+                                public void done(ParseObject object, ParseException e) {
+                                    if (e == null) {
+                                        profileObjs.add(object);
+                                        saveMatches();
+                                    }
+                                }
+                            });
+                        } else {
+                        }
+                    } else {
                     }
+                } else {
+                    e.printStackTrace();
                 }
-
             }
         });
-        //   if (!participantsMap.containsKey(userId))
-        //    participantsMap.put(userId, model);
-        Participant participant = model;
-        return participant;
+
+    }
+    private void saveMatches() {
+        final HashMap<String, Participant> usersMap = new HashMap<>();
+        for (ParseObject parseObjectPro : profileObjs) {
+            name = parseObjectPro.getString("name");
+            ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+            query.whereEqualTo("profileId", parseObjectPro);
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (e == null)
+                        if (list.size() > 0) {
+                            for (ParseObject parseObject : list) {
+                                try {
+                                    Participant participant = new Participant();
+                                    participant.userId = parseObject.fetchIfNeeded().getParseObject("userId").getObjectId();
+                                    String relation = parseObject.fetchIfNeeded().getString("relation");
+                                    if (relation.equalsIgnoreCase("Bachelor")) {
+                                        participant.firstName = name;
+                                    } else {
+                                        participant.firstName = relation + " (" + name + ")";
+                                    }
+                                    usersMap.put(participant.userId, participant);
+                                } catch (ParseException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                            com.mandaptak.android.Utils.Prefs.setChatUsers(context, usersMap);
+                            participantsMap = com.mandaptak.android.Utils.Prefs.getChatUsers(context);
+                        }
+
+                }
+            });
+        }
     }
 
-    public class Participant implements Atlas.Participant {
-        public String userId;
-        public String firstName;
-        public String lastName;
-
-        public String getId() {
-            return userId;
-        }
-
-        @Override
-        public String getFirstName() {
-            return firstName;
-        }
-
-        @Override
-        public String getLastName() {
-            return lastName;
-        }
-
-        @Override
-        public Drawable getAvatarDrawable() {
-            return null;
-        }
-
-        public String toString() {
-            StringBuilder builder = new StringBuilder();
-            builder.append("Contact [userId: ").append(userId).append(", firstName: ").append(firstName).append(", lastName: ").append(lastName).append("]");
-            return builder.toString();
-        }
-    }
 
 }

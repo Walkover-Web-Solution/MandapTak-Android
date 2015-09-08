@@ -9,13 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.layer.atlas.Atlas;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Models.MatchesModel;
-import com.mandaptak.android.Models.Participant;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
 import com.parse.FindCallback;
@@ -26,19 +24,15 @@ import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MatchedProfileActivity extends AppCompatActivity {
-    static public Atlas.ParticipantProvider participantProvider;
     Context context;
     MatchesModel model = new MatchesModel();
     TextView name, age, religion, designation, traits;
     Button chatButton;
     CircleImageView image;
     ArrayList<String> mTargetParticipants = new ArrayList<>();
-    HashMap<String, Participant> users = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +57,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (mTargetParticipants.size() > 0) {
-                    initParti();
                     Intent intent = new Intent(context, MessageScreen.class);
                     Query query = Query.builder(Conversation.class)
                             .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
@@ -73,6 +66,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
                         intent.putExtra("conversation-id", results.get(0).getId());
                     } else {
                         intent.putExtra("participant-map", mTargetParticipants);
+                        intent.putExtra("tittle-conv", model.getName());
                     }
                     startActivity(intent);
 
@@ -92,43 +86,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
         chatButton = (Button) findViewById(R.id.chat_button);
     }
 
-    public void initParti() {
-        participantProvider = new Atlas.ParticipantProvider() {
-            @Override
-            public Map<String, Atlas.Participant> getParticipants(String filter, Map<String, Atlas.Participant> result) {
-                if (result == null) {
-                    result = new HashMap<String, Atlas.Participant>();
-                }
-
-                // With no filter, return all Participants
-                if (filter == null) {
-                    result.putAll(users);
-                    return result;
-                }
-
-                // Filter participants by substring matching first- and last- names
-                for (Participant p : users.values()) {
-                    boolean matches = false;
-                    if (p.firstName != null && p.firstName.toLowerCase().contains(filter))
-                        matches = true;
-                    if (!matches && p.lastName != null && p.lastName.toLowerCase().contains(filter))
-                        matches = true;
-                    if (matches) {
-                        result.put(p.getId(), p);
-                    } else {
-                        result.remove(p.getId());
-                    }
-                }
-                return result;
-            }
-
-            @Override
-            public Atlas.Participant getParticipant(String userId) {
-                Participant participant = users.get(userId);
-                return participant;
-            }
-        };
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,23 +110,10 @@ public class MatchedProfileActivity extends AppCompatActivity {
                             if (e == null)
                                 if (list.size() > 0) {
                                     mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
-                                    //mTargetParticipants.add(model.getUserId());
-                                    Participant participant1 = new Participant();
-                                    participant1.setUserId(model.getUserId());
-                                    participant1.setLastName("");
-                                    participant1.setFirstName(model.getName());
-                                    participant1.setAvtatar(image.getDrawable());
-                                    users.put(model.getUserId(), participant1);
                                     for (ParseObject parseObject : list) {
                                         try {
-                                            Participant participant = new Participant();
-                                            participant.setFirstName(parseObject.fetchIfNeeded().getParseObject("profileId").getString("name"));
-                                            participant.setUserId(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-                                            participant.setAvtatar(image.getDrawable());
-                                            participant.setLastName(parseObject.fetchIfNeeded().getString("relation"));
-                                            users.put(participant.getId(), participant);
-                                            mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-
+                                            if (!parseObject.fetchIfNeeded().getString("relation").equalsIgnoreCase("Agent"))
+                                                mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();
                                         }

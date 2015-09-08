@@ -39,7 +39,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
         skipButton = (FloatingActionButton) findViewById(R.id.skip_next);
         skipButton.setVisibility(View.GONE);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setOffscreenPageLimit(1);
         mViewPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

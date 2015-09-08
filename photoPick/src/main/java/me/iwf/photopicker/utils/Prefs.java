@@ -8,12 +8,14 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Prefs {
 
     public static String PROFILE_ID = "profile_id";
     public static String PROFILE_TYPE = "profile_type";
     public static String IMAGE_LIST = "image_list";
+    public static String CHAT_USERS = "chat_users";
 
     private static SharedPreferences getPrefs(Context context) {
         return context.getSharedPreferences("mandapTak", Context.MODE_MULTI_PROCESS);
@@ -30,6 +32,17 @@ public class Prefs {
 
     public static void setImageList(Context context, ArrayList<ImageModel> list) {
         getPrefs(context).edit().putString(IMAGE_LIST, new Gson().toJson(list)).commit();
+    }
+
+    public static ArrayList<ImageModel> getChatUsers(Context context) {
+        String json = getPrefs(context).getString(CHAT_USERS, null);
+        Type type = new TypeToken<HashMap<String,String>>() {
+        }.getType();
+        return new Gson().fromJson(json, type);
+    }
+
+    public static void setChatUsers(Context context, HashMap<String, String> list) {
+        getPrefs(context).edit().putString(CHAT_USERS, new Gson().toJson(list)).commit();
     }
 
     public static String getProfileType(Context context) {

@@ -5,51 +5,25 @@ import android.graphics.drawable.Drawable;
 
 import com.layer.atlas.Atlas;
 
-public class Participant implements Atlas.Participant {
+import java.io.Serializable;
+
+public class Participant implements Atlas.Participant,Serializable {
     public String userId;
     public String firstName;
     public String lastName;
-    public Bitmap avatarImg;
-    public Drawable avtatar;
-
-   /* public Participant(String userId, String firstName, String lastName, Bitmap avatarImg, Drawable avtatar) {
-        this.userId = userId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.avatarImg = avatarImg;
-        this.avtatar = avtatar;
-    }*/
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public void setAvatarImg(Bitmap avatarImg) {
-        this.avatarImg = avatarImg;
-    }
-
-    public void setAvtatar(Drawable avtatar) {
-        this.avtatar = avtatar;
-    }
 
     public String getId() {
         return userId;
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
+    @Override
     public String getLastName() {
         return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     @Override
@@ -57,7 +31,9 @@ public class Participant implements Atlas.Participant {
         return null;
     }
 
-    public Bitmap getAvatarImage() {
-        return avatarImg;
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Contact [userId: ").append(userId).append(", firstName: ").append(firstName).append(", lastName: ").append(lastName).append("]");
+        return builder.toString();
     }
 }

@@ -58,6 +58,7 @@ public class QualificationEditProfileFragment extends Fragment {
     private Common mApp;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
+    private ArrayList<ParseNameModel> industryList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +67,7 @@ public class QualificationEditProfileFragment extends Fragment {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
         init();
-
+        getIndustries();
         workAfterMarriage.setAdapter(ArrayAdapter.createFromResource(getActivity(),
                 R.array.wam_array, R.layout.location_list_item));
         workAfterMarriage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -626,7 +627,7 @@ public class QualificationEditProfileFragment extends Fragment {
         industry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getIndustryList();
+                showIndustryList();
             }
         });
         currentIncome.addTextChangedListener(new TextWatcher() {
@@ -736,10 +737,10 @@ public class QualificationEditProfileFragment extends Fragment {
                             if (newIndustry != null)
                                 industry.setText(newIndustry.fetchIfNeeded().getString("name"));
                             if (newCompany != null)
-                                if (newCompany.trim() != null && !newCompany.trim().equals(""))
+                                if (!newCompany.trim().equals(""))
                                     company.setText(newCompany.trim());
                             if (newDesignation != null)
-                                if (newDesignation.trim() != null && !newDesignation.trim().equals(""))
+                                if (!newDesignation.trim().equals(""))
                                     designation.setText(newDesignation.trim());
                             workAfterMarriage.setSelection(newWorkAfterMarriage);
                         } catch (ParseException e1) {
@@ -757,42 +758,47 @@ public class QualificationEditProfileFragment extends Fragment {
         }
     }
 
-    private void getIndustryList() {
-        final ArrayList<ParseNameModel> industryList = new ArrayList<>();
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Industries");
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                if (list != null && list.size() > 0) {
-                    for (ParseObject model : list) {
-                        industryList.add(new ParseNameModel(model.getString("name"), model));
-                    }
-                    if (industryList != null) {
-                        AlertDialog.Builder conductor = new AlertDialog.Builder(
-                                context);
-                        conductor.setTitle("Select Work Industry");
-                        ArrayList<String> arrayList = new ArrayList<>();
-                        for (ParseNameModel parseNameModel : industryList) {
-                            arrayList.add(parseNameModel.getName());
+    private void getIndustries() {
+        if (mApp.isNetworkAvailable(context)) {
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Industries");
+            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list != null && list.size() > 0) {
+                        for (ParseObject model : list) {
+                            industryList.add(new ParseNameModel(model.getString("name"), model));
                         }
-                        Object[] objectList = arrayList.toArray();
-                        String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-                        conductor.setItems(stringArray,
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int index) {
-                                        newIndustry = industryList.get(index).getParseObject();
-                                        industry.setText(industryList.get(index).getName());
-                                    }
-                                });
-                        AlertDialog alert = conductor.create();
-                        alert.show();
-                    } else {
-                        mApp.showToast(context, "Error loading content");
                     }
                 }
+            });
+        }
+    }
+
+    private void showIndustryList() {
+        if (industryList != null) {
+            AlertDialog.Builder conductor = new AlertDialog.Builder(
+                    context);
+            conductor.setTitle("Select Work Industry");
+            ArrayList<String> arrayList = new ArrayList<>();
+            for (ParseNameModel parseNameModel : industryList) {
+                arrayList.add(parseNameModel.getName());
             }
-        });
+            Object[] objectList = arrayList.toArray();
+            String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
+            conductor.setItems(stringArray,
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,
+                                            int index) {
+                            newIndustry = industryList.get(index).getParseObject();
+                            industry.setText(industryList.get(index).getName());
+                        }
+                    });
+            AlertDialog alert = conductor.create();
+            alert.show();
+        } else {
+            getIndustries();
+            mApp.showToast(context, "Please Try Again");
+        }
     }
 
     void init() {
@@ -849,9 +855,9 @@ public class QualificationEditProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         isStarted = true;
-        if (isVisible && isStarted) {
+        if (isVisible) {
             getParseData();
-        } else if (!isVisible) {
+        } else {
             saveInfo();
         }
     }

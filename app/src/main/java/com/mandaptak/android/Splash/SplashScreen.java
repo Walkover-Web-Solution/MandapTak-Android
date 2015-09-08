@@ -71,7 +71,9 @@ public class SplashScreen extends AppCompatActivity {
                                                         startActivity(new Intent(SplashScreen.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                         SplashScreen.this.finish();
                                                     } else {
-                                                        startActivity(new Intent(SplashScreen.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                        Intent intent = new Intent(SplashScreen.this, EditProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                                        intent.putExtra("firstStart", true);
+                                                        startActivity(intent);
                                                         SplashScreen.this.finish();
                                                     }
                                                 } else {

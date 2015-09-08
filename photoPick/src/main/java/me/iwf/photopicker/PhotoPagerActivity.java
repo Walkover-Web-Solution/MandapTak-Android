@@ -31,7 +31,6 @@ import com.soundcloud.android.crop.Crop;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -311,7 +310,7 @@ public class PhotoPagerActivity extends AppCompatActivity {
                                                     PhotoPickerActivity.dialog.dismiss();
                                                 }
                                             });
-                                        } catch (IOException e1) {
+                                        } catch (Exception e1) {
                                             PhotoPickerActivity.dialog.dismiss();
                                             e1.printStackTrace();
                                         }

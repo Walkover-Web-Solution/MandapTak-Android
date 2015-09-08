@@ -121,7 +121,6 @@ public class MainActivity extends AppCompatActivity {
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
         slideLike = (ImageButton) findViewById(R.id.slide_like);
         labelLoading = (TextView) findViewById(R.id.label_loading);
-
     }
 
     void clickListeners() {
@@ -130,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mApp.isNetworkAvailable(context))
                     try {
-                        mApp.show_PDialog(context, "Pinning Profile..");
                         ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
                         dislikeParseObject.put("pinnedProfileId", profileList.get(0));
                         dislikeParseObject.put("profileId", profileObject);
@@ -145,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
                             rippleBackground.setVisibility(View.VISIBLE);
                         }
                     } catch (Exception e) {
-                        mApp.dialog.dismiss();
                         e.printStackTrace();
                         mApp.showToast(context, "Error while pinning profile");
                     }
@@ -242,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
                             rippleBackground.setVisibility(View.VISIBLE);
                         }
                     } catch (Exception e) {
-                        mApp.dialog.dismiss();
                         e.printStackTrace();
                         mApp.showToast(context, "Error while skipping profile");
                     }
@@ -267,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
                             rippleBackground.setVisibility(View.VISIBLE);
                         }
                     } catch (Exception e) {
-                        mApp.dialog.dismiss();
                         e.printStackTrace();
                         mApp.showToast(context, "Error while liking profile");
                     }
@@ -294,7 +289,6 @@ public class MainActivity extends AppCompatActivity {
                         dislikeParseObject.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
-                                mApp.dialog.dismiss();
                                 if (e == null) {
                                     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
                                     undoModel.setProfileParseObject(profileList.get(0));
@@ -312,7 +306,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                     } catch (Exception e) {
-                        mApp.dialog.dismiss();
                         e.printStackTrace();
                         mApp.showToast(context, "Error while liking profile");
                     }

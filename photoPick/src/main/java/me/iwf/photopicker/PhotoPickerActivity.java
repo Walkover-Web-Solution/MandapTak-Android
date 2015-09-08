@@ -3,6 +3,8 @@ package me.iwf.photopicker;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,9 +24,6 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,31 +71,17 @@ public class PhotoPickerActivity extends AppCompatActivity {
         dialog.setMessage(message);
     }
 
-    public static byte[] read(File file) throws IOException {
-        ByteArrayOutputStream ous = null;
-        InputStream ios = null;
+    public static byte[] read(File file) {
         try {
-            byte[] buffer = new byte[4096];
-            ous = new ByteArrayOutputStream();
-            ios = new FileInputStream(file);
-            int read;
-            while ((read = ios.read(buffer)) != -1) {
-                ous.write(buffer, 0, read);
-            }
-        } finally {
-            try {
-                if (ous != null)
-                    ous.close();
-            } catch (IOException ignored) {
-            }
-
-            try {
-                if (ios != null)
-                    ios.close();
-            } catch (IOException ignored) {
-            }
+            ByteArrayOutputStream ous = new ByteArrayOutputStream();
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, ous);
+            return ous.toByteArray();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return ous.toByteArray();
+        return null;
     }
 
     @Override
@@ -219,7 +204,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
                                 }
                             });
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         i[0]++;

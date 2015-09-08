@@ -8,10 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
-import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.nineoldandroids.view.ViewPropertyAnimator;
@@ -41,26 +39,6 @@ public class ImagePagerFragment extends Fragment {
     private int thumbnailHeight = 0;
     private boolean hasAnim = false;
     private int currentItem = 0;
-
-    public static ImagePagerFragment newInstance(ArrayList<ImageModel> paths, int currentItem) {
-        ImagePagerFragment f = new ImagePagerFragment();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_PATH, paths);
-        args.putInt(ARG_CURRENT_ITEM, currentItem);
-        args.putBoolean(ARG_HAS_ANIM, false);
-        f.setArguments(args);
-        return f;
-    }
-
-    public static ImagePagerFragment newInstance(ArrayList<ImageModel> paths, int currentItem, int[] screenLocation, int thumbnailWidth, int thumbnailHeight) {
-        ImagePagerFragment f = newInstance(paths, currentItem);
-        f.getArguments().putInt(ARG_THUMBNAIL_LEFT, screenLocation[0]);
-        f.getArguments().putInt(ARG_THUMBNAIL_TOP, screenLocation[1]);
-        f.getArguments().putInt(ARG_THUMBNAIL_WIDTH, thumbnailWidth);
-        f.getArguments().putInt(ARG_THUMBNAIL_HEIGHT, thumbnailHeight);
-        f.getArguments().putBoolean(ARG_HAS_ANIM, true);
-        return f;
-    }
 
     public void setPhotos(ArrayList<ImageModel> paths, int currentItem) {
         this.paths.clear();
@@ -190,63 +168,6 @@ public class ImagePagerFragment extends Fragment {
         colorizer.setDuration(duration);
         colorizer.start();
 
-    }
-
-    /**
-     * The exit animation is basically a reverse of the enter animation, except that if
-     * the orientation has changed we simply scale the picture back into the center of
-     * the screen.
-     *
-     * @param endAction This action gets run after the animation completes (this is
-     *                  when we actually switch activities)
-     */
-    public void runExitAnimation(final Runnable endAction) {
-
-        if (!getArguments().getBoolean(ARG_HAS_ANIM, false) || !hasAnim) {
-            endAction.run();
-            return;
-        }
-
-        final long duration = ANIM_DURATION;
-
-        // Animate image back to thumbnail size/location
-        ViewPropertyAnimator.animate(mViewPager)
-                .setDuration(duration)
-                .setInterpolator(new AccelerateInterpolator())
-                .scaleX((float) thumbnailWidth / mViewPager.getWidth())
-                .scaleY((float) thumbnailHeight / mViewPager.getHeight())
-                .translationX(thumbnailLeft)
-                .translationY(thumbnailTop)
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        endAction.run();
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-
-        // Fade out background
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(mViewPager.getBackground(), "alpha", 0);
-        bgAnim.setDuration(duration);
-        bgAnim.start();
-
-        // Animate a color filter to take the image back to grayscale,
-        // in parallel with the image scaling and moving into place.
-        ObjectAnimator colorizer =
-                ObjectAnimator.ofFloat(ImagePagerFragment.this, "saturation", 1, 0);
-        colorizer.setDuration(duration);
-        colorizer.start();
     }
 
     public ViewPager getViewPager() {

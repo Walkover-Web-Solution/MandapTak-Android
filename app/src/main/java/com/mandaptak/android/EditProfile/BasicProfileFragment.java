@@ -373,9 +373,9 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public void onStart() {
         super.onStart();
         isStarted = true;
-        if (isVisible && isStarted) {
+        if (isVisible) {
             getParseData();
-        } else if (!isVisible) {
+        } else {
             saveInfo();
         }
     }

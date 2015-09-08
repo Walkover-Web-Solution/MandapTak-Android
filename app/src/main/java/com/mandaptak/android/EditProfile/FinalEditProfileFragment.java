@@ -432,9 +432,9 @@ public class FinalEditProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         isStarted = true;
-        if (isVisible && isStarted) {
+        if (isVisible) {
             getParseData();
-        } else if (!isVisible) {
+        } else {
             saveInfo();
         }
     }
@@ -483,7 +483,6 @@ public class FinalEditProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
@@ -651,7 +650,7 @@ public class FinalEditProfileFragment extends Fragment {
                                                     mApp.dialog.dismiss();
                                                 }
                                             });
-                                        } catch (IOException e1) {
+                                        } catch (Exception e1) {
                                             mApp.dialog.dismiss();
                                             e1.printStackTrace();
                                         }

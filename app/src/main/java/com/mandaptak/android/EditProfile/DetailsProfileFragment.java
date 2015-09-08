@@ -377,9 +377,9 @@ public class DetailsProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         isStarted = true;
-        if (isVisible && isStarted) {
+        if (isVisible) {
             getParseData();
-        } else if (!isVisible) {
+        } else {
             saveInfo();
         }
     }
@@ -475,6 +475,7 @@ public class DetailsProfileFragment extends Fragment {
                         parseObject.put("height", newHeight);
                     if (newWeight != 0)
                         parseObject.put("weight", newWeight);
+
                     parseObject.put("manglik", newManglik);
                     parseObject.saveInBackground();
                 }

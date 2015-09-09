@@ -78,6 +78,8 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                             for (ParseObject parseObject : profileObjs) {
                                 try {
                                     MatchesModel model = new MatchesModel();
+                                    model.setProfileId(parseObject.getObjectId());
+                                    model.setUserId(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
                                     String name = parseObject.fetchIfNeeded().getString("name");
                                     if (name != null)
                                         model.setName(name);
@@ -123,6 +125,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         for (ParseObject parseObjectPro : profileObjs) {
             name = parseObjectPro.getString("name");
             ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+//            query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.whereEqualTo("profileId", parseObjectPro);
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override

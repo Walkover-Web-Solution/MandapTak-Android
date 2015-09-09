@@ -1,6 +1,7 @@
 package com.mandaptak.android.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,16 +9,29 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.layer.sdk.messaging.Conversation;
+import com.layer.sdk.query.Predicate;
+import com.layer.sdk.query.Query;
+import com.mandaptak.android.Layer.LayerImpl;
+import com.mandaptak.android.Matches.MessageScreen;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MatchesAdapter extends BaseAdapter {
     Context ctx;
     ArrayList<MatchesModel> list;
+    MatchesModel model = new MatchesModel();
+    ArrayList<String> mTargetParticipants = new ArrayList<>();
 
     public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
         this.list = paramArrayList;
@@ -36,7 +50,7 @@ public class MatchesAdapter extends BaseAdapter {
         return paramInt;
     }
 
-    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
+    public View getView(final int paramInt, View paramView, ViewGroup paramViewGroup) {
         ViewHolder viewholder;
         if (paramView == null) {
             paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
@@ -54,15 +68,16 @@ public class MatchesAdapter extends BaseAdapter {
         viewholder.tvName.setText(matchesModel.getName());
         viewholder.tvReligion.setText(matchesModel.getReligion());
         viewholder.tvWork.setText(matchesModel.getWork());
-        Picasso.with(ctx)
-                .load(matchesModel.getUrl())
-                .into(viewholder.profilePic);
         viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                getChatMembers(list.get(paramInt).getProfileId());
             }
         });
+        Picasso.with(ctx)
+                .load(matchesModel.getUrl())
+                .into(viewholder.profilePic);
+
         return paramView;
     }
 
@@ -72,5 +87,52 @@ public class MatchesAdapter extends BaseAdapter {
         public TextView tvWork;
         public ImageView chatButton;
         public CircleImageView profilePic;
+    }
+
+    private void getChatMembers(String profileId) {
+        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+        q1.getInBackground(profileId, new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                    query.whereEqualTo("profileId", object);
+                    query.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> list, ParseException e) {
+                            if (e == null)
+                                if (list.size() > 0) {
+                                    mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+                                    for (ParseObject parseObject : list) {
+                                        try {
+                                            if (!parseObject.fetchIfNeeded().getString("relation").equalsIgnoreCase("Agent"))
+                                                mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
+                                    }
+                                    if (mTargetParticipants.size() > 0) {
+                                        Intent intent = new Intent(ctx, MessageScreen.class);
+                                        Query query = Query.builder(Conversation.class)
+                                                .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
+                                                .build();
+                                        List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
+                                        if (results.size() > 0) {
+                                            intent.putExtra("conversation-id", results.get(0).getId());
+                                        } else {
+                                            intent.putExtra("participant-map", mTargetParticipants);
+                                            intent.putExtra("tittle-conv", model.getName());
+                                        }
+                                        ctx.startActivity(intent);
+
+                                    }
+
+                                }
+
+                        }
+                    });
+                }
+            }
+        });
     }
 }

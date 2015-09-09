@@ -38,7 +38,7 @@ public class MessageScreen extends AppCompatActivity {
         if (id != null)
             conversation = layerClient.getConversation(id);
         userIds = getIntent().getStringArrayListExtra("participant-map");
-        tittleConversation= getIntent().getStringExtra("tittle-conv");
+        tittleConversation = getIntent().getStringExtra("tittle-conv");
         messagesList = (AtlasMessagesList) findViewById(R.id.messageslist);
         messagesList.init(layerClient, Common.getIdentityProvider());
         messagesList.setConversation(conversation);

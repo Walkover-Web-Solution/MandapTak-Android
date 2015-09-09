@@ -20,22 +20,25 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.mandaptak.android.Adapter.LayoutAdapter;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 import com.parse.ProgressCallback;
 import com.parse.SaveCallback;
 import com.soundcloud.android.crop.Crop;
@@ -81,6 +84,7 @@ public class FinalEditProfileFragment extends Fragment {
     private String albumId;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
+    CallbackManager callbackManager;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -106,6 +110,47 @@ public class FinalEditProfileFragment extends Fragment {
         imageList.addItemDecoration(new DividerItemDecoration(ContextCompat.getDrawable(context, R.drawable.divider)));
         photoAdapter = new LayoutAdapter(context, FinalEditProfileFragment.this, parsePhotos);
         imageList.setAdapter(photoAdapter);
+        FacebookSdk.sdkInitialize(context.getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        // If the access token is available already assign it.
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+
+                        GraphRequest.newMeRequest(
+                                loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject me, GraphResponse response) {
+                                        if (response.getError() != null) {
+                                            // handle error
+                                        } else {
+                                            try {
+                                                fbUserId = me.getLong("id");
+                                                getUserPhotos();
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            String email = me.optString("email");
+                                            String id = me.optString("id");
+                                            // send email and id to your web server
+                                        }
+                                    }
+                                }).executeAsync();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        // App code
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        // App code
+                    }
+                });
     }
 
     @Override
@@ -148,6 +193,8 @@ public class FinalEditProfileFragment extends Fragment {
                     public void onClick(View view) {
                         alertDialog.dismiss();
                         //  makeMeRequest();
+                        getFacebookLogin();
+
                     }
                 });
                 alertDialog.show();
@@ -184,6 +231,10 @@ public class FinalEditProfileFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private void getFacebookLogin() {
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email", "user_photos"));
     }
 
     private void validateProfile(final ParseObject parseObject) {
@@ -329,6 +380,7 @@ public class FinalEditProfileFragment extends Fragment {
         try {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+         //   query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject profileObject, ParseException e) {
@@ -353,6 +405,7 @@ public class FinalEditProfileFragment extends Fragment {
                             uploadBiodata.setText(newBiodataFileName);
                         }
                         ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                   //     queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                         queryParseQuery.whereEqualTo("profileId", profileObject);
                         queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
@@ -414,6 +467,7 @@ public class FinalEditProfileFragment extends Fragment {
                 }
             }
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+         //   parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -432,7 +486,8 @@ public class FinalEditProfileFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+        //ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case FILE_SELECT_CODE:
@@ -498,6 +553,7 @@ public class FinalEditProfileFragment extends Fragment {
                                     public void done(ParseObject object, ParseException e) {
                                         if (e == null) {
                                             ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                                  //          queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                                             queryParseQuery.whereEqualTo("profileId", object);
                                             queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
@@ -641,7 +697,6 @@ public class FinalEditProfileFragment extends Fragment {
     }
 
     public void getUserPhotos() {
-        makeMeRequest();
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + fbUserId + "/albums",
@@ -653,15 +708,17 @@ public class FinalEditProfileFragment extends Fragment {
                             Log.e("album_response", response.toString());
                             try {
                                 JSONObject jsonObject = new JSONObject(response.toString());
-                                JSONObject graphObject = jsonObject.getJSONObject("graphObject");
-                                JSONArray albumsArr = graphObject.getJSONArray("data");
-                                for (int i = 0; i < albumsArr.length(); i++) {
+                              //  JSONObject graphObject = jsonObject.getJSONObject("graphObject");
+                                JSONArray albumsArr = jsonObject.getJSONArray("data");
+                                jsonObject= (JSONObject) albumsArr.get(0);
+                                albumId=  jsonObject.getString("id");
+                              /*  for (int i = 0; i < albumsArr.length(); i++) {
                                     jsonObject = albumsArr.getJSONObject(i);
                                     if (jsonObject.getString("type").equalsIgnoreCase("profile")) {
                                         albumId = jsonObject.getString("id");
                                         Log.e("Link", "" + jsonObject.getString("link"));
                                     }
-                                }
+                                }*/
                                 getImageUrls();
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -681,7 +738,7 @@ public class FinalEditProfileFragment extends Fragment {
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
                         if (response != null) {
-                            Log.e("", "" + response.toString());
+                            Log.e("image_response", "" + response.toString());
                         }
                     }
                 }
@@ -689,7 +746,7 @@ public class FinalEditProfileFragment extends Fragment {
 
     }
 
-    private void makeMeRequest() {
+/*    private void makeMeRequest() {
 
         List<String> permissions = Arrays.asList("public_profile", "email", "user_photos");
         // NOTE: for extended permissions, like "user_about_me", your app must be reviewed by the Facebook team
@@ -747,6 +804,6 @@ public class FinalEditProfileFragment extends Fragment {
                 }
             }
         });
-    }
+    }*/
 
 }

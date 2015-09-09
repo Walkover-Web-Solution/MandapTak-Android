@@ -72,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
         label = (TypefaceTextView) findViewById(R.id.label_number);
         numberImage = (ImageView) findViewById(R.id.number_image);
         etNumber.setPrefix("+91 ");
-
         ViewPager pager = (ViewPager) findViewById(R.id.viewPager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
         CirclePageIndicator titleIndicator = (CirclePageIndicator) findViewById(R.id.circles);

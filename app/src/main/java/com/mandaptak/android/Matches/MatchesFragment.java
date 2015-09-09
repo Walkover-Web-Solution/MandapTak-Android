@@ -51,10 +51,11 @@ public class MatchesFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_matches, container, false);
         listViewMatches = (ListView) rootView.findViewById(R.id.list);
         matchList = com.mandaptak.android.Utils.Prefs.getMatches(context);
-        if (matchList.size() == 0)
-            mApp.showToast(context, "No matching results found.");
-        else listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
-
+        if (matchList != null)
+            if (matchList.size() > 0)
+                listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
+            else
+                mApp.showToast(context, "No matching results found.");
     }
 
    /* private void getMatchesFromFunction() {

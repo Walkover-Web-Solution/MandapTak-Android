@@ -71,7 +71,7 @@ public class MatchesAdapter extends BaseAdapter {
         viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getChatMembers(list.get(paramInt).getProfileId());
+                getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName());
             }
         });
         Picasso.with(ctx)
@@ -89,13 +89,15 @@ public class MatchesAdapter extends BaseAdapter {
         public CircleImageView profilePic;
     }
 
-    private void getChatMembers(String profileId) {
+    private void getChatMembers(String profileId, final String name) {
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+        q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         q1.getInBackground(profileId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                    query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereEqualTo("profileId", object);
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
@@ -121,7 +123,7 @@ public class MatchesAdapter extends BaseAdapter {
                                             intent.putExtra("conversation-id", results.get(0).getId());
                                         } else {
                                             intent.putExtra("participant-map", mTargetParticipants);
-                                            intent.putExtra("tittle-conv", model.getName());
+                                            intent.putExtra("tittle-conv", name);
                                         }
                                         ctx.startActivity(intent);
 

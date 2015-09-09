@@ -69,11 +69,13 @@ public class PinsFragment extends Fragment {
     public ArrayList<MatchesModel> getParseData() {
         mApp.show_PDialog(context, "Loading..");
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+        q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+                  //  query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereEqualTo("profileId", object);
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override

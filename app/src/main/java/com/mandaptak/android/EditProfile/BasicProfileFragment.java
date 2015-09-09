@@ -312,6 +312,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getPOB(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -341,6 +342,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private ArrayList<Location> getCurrentLocation(String query, final ListView listView, final AlertDialog alertDialog) {
         final ArrayList<Location> locationArrayList = new ArrayList<>();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -438,7 +440,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.minute = minute;
         newTOB = Calendar.getInstance();
         newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         newTOB.set(92, 0, 1, hourOfDay, minute);
         SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));

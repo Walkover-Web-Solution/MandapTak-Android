@@ -32,6 +32,7 @@ public class BasicProfileInfo extends Fragment {
     private Context context;
     private String parseObjectId;
 
+
     public BasicProfileInfo() {
         // Required empty public constructor
     }
@@ -61,7 +62,6 @@ public class BasicProfileInfo extends Fragment {
         newTOB = Calendar.getInstance();
         newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
         newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-
         rootView = inflater.inflate(R.layout.basic_profile_info, container, false);
         gender = (TextView) rootView.findViewById(R.id.gender);
         datePicker = (TextView) rootView.findViewById(R.id.date_of_birth);
@@ -75,6 +75,7 @@ public class BasicProfileInfo extends Fragment {
         if (parseObjectId != null) {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            //    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {

@@ -44,6 +44,5 @@ public class Prefs {
     public static void setMatches(Context context, ArrayList<MatchesModel> list) {
         getPrefs(context).edit().putString(MATCHES, new Gson().toJson(list)).commit();
     }
-
 }
 

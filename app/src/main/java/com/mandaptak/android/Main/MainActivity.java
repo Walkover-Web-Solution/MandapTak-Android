@@ -669,6 +669,7 @@ public class MainActivity extends AppCompatActivity {
                                 ParseFile file = model.fetchIfNeeded().getParseFile("file");
                                 imageModel.setLink(file.getUrl());
                                 imageModel.setIsPrimary(false);
+                                imageModel.setParseObject(model.getObjectId());
                                 userProfileImages.add(imageModel);
                                 if (model.getBoolean("isPrimary")) {
                                     final int MAX_WIDTH = 512;

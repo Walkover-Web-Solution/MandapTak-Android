@@ -3,6 +3,7 @@ package com.mandaptak.android.Matches;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.layer.atlas.Atlas;
@@ -22,23 +23,25 @@ import java.util.Set;
 
 public class MessageScreen extends AppCompatActivity {
 
+    String titleConversation = "";
     private AtlasMessagesList messagesList;
     private AtlasParticipantPicker participantPicker;
     private AtlasMessageComposer atlasComposer;
     private Conversation conversation;
     private LayerClient layerClient;
     private ArrayList<String> userIds;
-    String tittleConversation = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_view);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         layerClient = LayerImpl.getLayerClient();
         Uri id = getIntent().getParcelableExtra("conversation-id");
         if (id != null)
             conversation = layerClient.getConversation(id);
         userIds = getIntent().getStringArrayListExtra("participant-map");
-        tittleConversation = getIntent().getStringExtra("tittle-conv");
+        titleConversation = getIntent().getStringExtra("title-conv");
         messagesList = (AtlasMessagesList) findViewById(R.id.messageslist);
         messagesList.init(layerClient, Common.getIdentityProvider());
         messagesList.setConversation(conversation);
@@ -46,8 +49,12 @@ public class MessageScreen extends AppCompatActivity {
         participantPicker = (AtlasParticipantPicker) findViewById(R.id.participantpicker);
         String[] currentUser = {layerClient.getAuthenticatedUserId()};
         participantPicker.init(currentUser, Common.getIdentityProvider());
-        if (conversation != null)
+        if (conversation != null) {
             participantPicker.setVisibility(View.GONE);
+            getSupportActionBar().setTitle(Atlas.getTitle(conversation));
+        } else {
+            getSupportActionBar().setTitle(titleConversation);
+        }
         AtlasTypingIndicator typingIndicator = (AtlasTypingIndicator) findViewById(R.id.typingindicator);
         typingIndicator.init(conversation, new AtlasTypingIndicator.Callback() {
             public void onTypingUpdate(AtlasTypingIndicator indicator, Set<String> typingUserIds) {
@@ -63,7 +70,7 @@ public class MessageScreen extends AppCompatActivity {
                     if (userIds.size() > 0) {
                         participantPicker.setVisibility(View.GONE);
                         conversation = layerClient.newConversation(userIds);
-                        Atlas.setTitle(conversation, tittleConversation);
+                        Atlas.setTitle(conversation, titleConversation);
                       /*  Metadata metadata1=conversation.getMetadata();
                         if (metadata1==null){
                             Metadata metadata = Metadata.newInstance();
@@ -98,4 +105,12 @@ public class MessageScreen extends AppCompatActivity {
         layerClient.unregisterEventListener(messagesList);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

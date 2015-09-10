@@ -66,7 +66,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
                         intent.putExtra("conversation-id", results.get(0).getId());
                     } else {
                         intent.putExtra("participant-map", mTargetParticipants);
-                        intent.putExtra("tittle-conv", model.getName());
+                        intent.putExtra("title-conv", model.getName());
                     }
                     startActivity(intent);
 

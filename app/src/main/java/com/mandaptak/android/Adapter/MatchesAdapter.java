@@ -2,6 +2,7 @@ package com.mandaptak.android.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -53,6 +54,7 @@ public class MatchesAdapter extends BaseAdapter {
         ViewHolder viewholder;
         if (paramView == null) {
             viewholder = new ViewHolder();
+            paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
             viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
             viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
             viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
@@ -81,13 +83,11 @@ public class MatchesAdapter extends BaseAdapter {
 
     private void getChatMembers(String profileId, final String name) {
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-        q1.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         q1.getInBackground(profileId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                    query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     query.whereEqualTo("profileId", object);
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
@@ -113,7 +113,7 @@ public class MatchesAdapter extends BaseAdapter {
                                             intent.putExtra("conversation-id", results.get(0).getId());
                                         } else {
                                             intent.putExtra("participant-map", mTargetParticipants);
-                                            intent.putExtra("tittle-conv", name);
+                                            intent.putExtra("title-conv", name);
                                         }
                                         ctx.startActivity(intent);
 

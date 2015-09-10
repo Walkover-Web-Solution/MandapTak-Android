@@ -24,11 +24,11 @@ import me.iwf.photopicker.utils.Prefs;
 public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
 
 
-    private Map<String, Participant> participantsMap = new HashMap<>();
     private final Context context;
     ArrayList<ParseObject> profileObjs;
     ArrayList<MatchesModel> matchList = new ArrayList<>();
     String name;
+    private Map<String, Participant> participantsMap = new HashMap<>();
 
     public AtlasIdentityProvider(Context context) {
         this.context = context;
@@ -127,7 +127,6 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         for (ParseObject parseObjectPro : profileObjs) {
             name = parseObjectPro.getString("name");
             ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-          //  query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.whereEqualTo("profileId", parseObjectPro);
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override

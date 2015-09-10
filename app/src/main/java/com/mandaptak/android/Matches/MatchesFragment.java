@@ -64,6 +64,7 @@ public class MatchesFragment extends Fragment {
             if (matchList.size() > 0) {
                 progressBar.setVisibility(View.GONE);
                 listViewMatches.setAdapter(new MatchesAdapter(matchList, context));
+                listViewMatches.setVisibility(View.VISIBLE);
             } else {
                 progressBar.setVisibility(View.GONE);
                 empty.setVisibility(View.VISIBLE);

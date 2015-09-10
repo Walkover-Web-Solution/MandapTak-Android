@@ -714,8 +714,8 @@ public class FinalEditProfileFragment extends Fragment {
                         if (response != null) {
                             Log.e("album_response", response.toString());
                             try {
-                                JSONObject jsonObject = new JSONObject(response.toString());
-                                //  JSONObject graphObject = jsonObject.getJSONObject("graphObject");
+
+                                JSONObject jsonObject = response.getJSONObject();
                                 JSONArray albumsArr = jsonObject.getJSONArray("data");
                                 jsonObject = (JSONObject) albumsArr.get(0);
                                 albumId = jsonObject.getString("id");
@@ -737,15 +737,34 @@ public class FinalEditProfileFragment extends Fragment {
     }
 
     private void getImageUrls() {
+
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
-                "/" + albumId,
+                "/" + albumId + "/photos",
                 null,
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        if (response != null) {
-                            Log.e("image_response", "" + response.toString());
+                        Log.e("image_response", "" + response.toString());
+                        try {
+                            JSONArray jsonArray = response.getJSONObject().getJSONArray("data");
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                new GraphRequest(
+                                        AccessToken.getCurrentAccessToken(),
+                                        "/" + jsonArray.getJSONObject(i).getString("id")+"/picture",
+                                        null,
+                                        HttpMethod.GET,
+                                        new GraphRequest.Callback() {
+                                            public void onCompleted(GraphResponse response) {
+                                                response.getJSONObject();
+                                                Log.e("image_id", "" + response.getRawResponse());
+                                            }
+                                        }
+                                ).executeAsync();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
                     }
                 }

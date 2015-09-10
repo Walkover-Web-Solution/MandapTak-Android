@@ -84,7 +84,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         final TabPageIndicator iconPageIndicator = (TabPageIndicator) findViewById(R.id.icons);
         iconPageIndicator.setViewPager(mMenuPager);
         circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
-
         mMenuPager.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -197,6 +196,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     }
 
     class ImagePagerAdapter extends PagerAdapter {
+
         LayoutInflater mLayoutInflater;
         ArrayList<ImageModel> list;
 

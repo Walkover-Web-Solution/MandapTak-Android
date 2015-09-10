@@ -1,7 +1,10 @@
 package com.mandaptak.android.FullProfile;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +16,16 @@ import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 public class FinalProfileInfo extends Fragment {
     View rootView;
-    TextView uploadBiodata;
+    TextView downLoadBiodata;
     Context context;
     Common mApp;
     TextView minBudget, maxBudget;
@@ -26,6 +33,7 @@ public class FinalProfileInfo extends Fragment {
     String newBiodataFileName;
     LinearLayout budgetMainLayout;
     private String parseObjectId;
+    ParseFile bioData;
 
     public FinalProfileInfo() {
         // Required empty public constructor
@@ -43,10 +51,42 @@ public class FinalProfileInfo extends Fragment {
     void init() {
         context = getActivity();
         mApp = (Common) context.getApplicationContext();
-        uploadBiodata = (TextView) rootView.findViewById(R.id.download_biodata);
+        downLoadBiodata = (TextView) rootView.findViewById(R.id.download_biodata);
         minBudget = (TextView) rootView.findViewById(R.id.budget_from);
         maxBudget = (TextView) rootView.findViewById(R.id.budget_to);
         budgetMainLayout = (LinearLayout) rootView.findViewById(R.id.budget_layout);
+        downLoadBiodata.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bioData != null)
+                    SaveFile(bioData);
+            }
+        });
+    }
+
+
+    private void SaveFile(ParseFile finalBitmap) {
+        String root = Environment.getExternalStorageDirectory().toString();
+        File myDir = new File(root + "/MandapTak");
+        if (!myDir.exists())
+            myDir.mkdirs();
+        String fname = finalBitmap.getName();
+        File file = new File(myDir, fname);
+        if (file.exists()) file.delete();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            out.write(finalBitmap.getData());
+            out.flush();
+            out.close();
+            mApp.showToast(context, "File downloaded in phone");
+            Intent myIntent = new Intent(android.content.Intent.ACTION_VIEW);
+            String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());
+            String mimetype = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+            myIntent.setDataAndType(Uri.fromFile(file), mimetype);
+            startActivity(myIntent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -56,19 +96,20 @@ public class FinalProfileInfo extends Fragment {
         init();
         if (mApp.isNetworkAvailable(context))
             getParseData();
+        else mApp.showToast(context, "Not available");
         return rootView;
     }
 
     private void getParseData() {
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-     //   query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         query.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    if (parseObject.containsKey("bioData") && parseObject.getParseObject("bioData") != null)
+                    if (parseObject.containsKey("bioData") && parseObject.getParseFile("bioData") != null) {
+                        bioData = parseObject.getParseFile("bioData");
                         newBiodataFileName = parseObject.getParseFile("bioData").getName();
-
+                    }
                     if (!parseObject.containsKey("minMarriageBudget")) {
                         budgetMainLayout.setVisibility(View.GONE);
                     } else {
@@ -82,13 +123,13 @@ public class FinalProfileInfo extends Fragment {
                     }
 
                     if (newBiodataFileName != null) {
-                        uploadBiodata.setText("↓ DOWNLOAD BIODATA (" + newBiodataFileName + ")");
-                        uploadBiodata.setOnClickListener(new View.OnClickListener() {
+                        downLoadBiodata.setText("↓ DOWNLOAD BIODATA (" + newBiodataFileName + ")");
+                    /*    downLoadBiodata.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
 
                             }
-                        });
+                        });*/
                     }
                 } else {
                     e.printStackTrace();

@@ -32,8 +32,8 @@ public class FinalProfileInfo extends Fragment {
     long newMinBudget = 0, newMaxBudget = 0;
     String newBiodataFileName;
     LinearLayout budgetMainLayout;
-    private String parseObjectId;
     ParseFile bioData;
+    private String parseObjectId;
 
     public FinalProfileInfo() {
         // Required empty public constructor
@@ -109,6 +109,8 @@ public class FinalProfileInfo extends Fragment {
                     if (parseObject.containsKey("bioData") && parseObject.getParseFile("bioData") != null) {
                         bioData = parseObject.getParseFile("bioData");
                         newBiodataFileName = parseObject.getParseFile("bioData").getName();
+                    } else {
+                        downLoadBiodata.setVisibility(View.GONE);
                     }
                     if (!parseObject.containsKey("minMarriageBudget")) {
                         budgetMainLayout.setVisibility(View.GONE);

@@ -24,6 +24,8 @@ import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,11 +76,37 @@ public class PhotoPickerActivity extends AppCompatActivity {
     public static byte[] read(File file) {
         try {
             ByteArrayOutputStream ous = new ByteArrayOutputStream();
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), bmOptions);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, ous);
+            Bitmap bitmap = decodeFile(file);
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, ous);
+            }
             return ous.toByteArray();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Bitmap decodeFile(File f) {
+        try {
+            //Decode image size
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+
+            //The new size we want to scale to
+            final float REQUIRED_WIDTH = 612.0f;
+            final float REQUIRED_HIGHT = 816.0f;
+            //Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while (o.outWidth / scale / 2 >= REQUIRED_WIDTH && o.outHeight / scale / 2 >= REQUIRED_HIGHT)
+                scale *= 2;
+
+            //Decode with inSampleSize
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -128,7 +156,7 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 }
 
                 if (total > maxCount) {
-                    PhotoPickerActivity.showToast(context, getString(R.string.over_max_count_tips));
+                    PhotoPickerActivity.showToast(context, "Upto " + maxCount + " photos can be selected");
                     return false;
                 }
                 menuDoneItem.setTitle(getString(R.string.done_with_count, total, maxCount));

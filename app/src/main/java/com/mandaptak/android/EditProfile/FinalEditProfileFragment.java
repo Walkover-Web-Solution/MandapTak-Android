@@ -82,14 +82,14 @@ public class FinalEditProfileFragment extends Fragment {
     EditText minBudget, maxBudget;
     long newMinBudget = 0, newMaxBudget = 0;
     CallbackManager callbackManager;
+    ArrayList<String> fbPhotos = new ArrayList<>();
+    JSONArray jsonArray;
     private LinearLayout saveProfile;
     private Long fbUserId;
     private String albumId;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
     private Boolean isFirstStart = false;
-    ArrayList<String> fbPhotos;
-    JSONArray jsonArray;
 
     public FinalEditProfileFragment() {
         // Required empty public constructor
@@ -733,9 +733,6 @@ public class FinalEditProfileFragment extends Fragment {
 
     private void getImageUrls() {
         mApp.show_PDialog(context, "Please wait");
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-        fbPhotos = new ArrayList<>();
         Bundle params = new Bundle();
         params.putString("url", "{image-url}");
         new GraphRequest(
@@ -745,9 +742,10 @@ public class FinalEditProfileFragment extends Fragment {
                 HttpMethod.GET,
                 new GraphRequest.Callback() {
                     public void onCompleted(GraphResponse response) {
-                        Log.e("image_response", "" + response.toString());
                         try {
                             jsonArray = response.getJSONObject().getJSONArray("data");
+                            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                            StrictMode.setThreadPolicy(policy);
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 Bundle params = new Bundle();
                                 params.putBoolean("redirect", false);
@@ -761,31 +759,31 @@ public class FinalEditProfileFragment extends Fragment {
                                                 public void onCompleted(GraphResponse response) {
                                                     try {
                                                         fbPhotos.add(response.getJSONObject().getJSONObject("data").getString("url"));
-                                                    } catch (JSONException e) {
+                                                    } catch (Exception e) {
                                                         e.printStackTrace();
                                                     }
-                                                    Log.e("image_id", "" + response.getRawResponse());
                                                 }
                                             }
                                     ).executeAndWait();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
+                                if (i == (jsonArray.length() - 1)) {
+                                    mApp.dialog.dismiss();
+                                    Intent intent = new Intent(context, FacebookPhotos.class);
+                                    intent.putStringArrayListExtra("pics-fb", fbPhotos);
+                                    startActivityForResult(intent, REQUEST_CODE);
+                                }
                             }
-
                         } catch (JSONException e) {
+                            mApp.dialog.dismiss();
                             e.printStackTrace();
                         }
-                        mApp.dialog.dismiss();
-                        Intent intent = new Intent(context, FacebookPhotos.class);
-                        intent.putExtra("pics-fb", fbPhotos);
-                        startActivityForResult(intent, REQUEST_CODE);
+
                     }
                 }
         ).executeAsync();
 
-
     }
-
 
 }

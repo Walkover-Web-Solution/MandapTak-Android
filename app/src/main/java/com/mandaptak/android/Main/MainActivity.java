@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
     UndoModel undoModel;
     TextView labelLoading;
     ParseObject profileObject;
+    boolean isLoading = false;
 
     void init() {
         undoModel = new UndoModel();
@@ -314,7 +315,9 @@ public class MainActivity extends AppCompatActivity {
         rippleBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getMatchesFromFunction();
+                if (!isLoading) {
+                    getMatchesFromFunction();
+                }
             }
         });
     }
@@ -365,6 +368,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setNavigationMenu() {
+        isLoading = false;
         navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
         final TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
         final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
@@ -472,6 +476,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMatchesFromFunction() {
+        isLoading = false;
         rippleBackground.startRippleAnimation();
         labelLoading.setText("Finding People...");
         HashMap<String, Object> params = new HashMap<>();
@@ -519,6 +524,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
+        isLoading = true;
         rippleBackground.setVisibility(View.VISIBLE);
         labelLoading.setText("Loading Profile...");
         slidingPanel.setEnabled(false);

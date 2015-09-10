@@ -20,9 +20,7 @@ import java.util.Map;
 
 import me.iwf.photopicker.utils.Prefs;
 
-
 public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
-
 
     private final Context context;
     ArrayList<ParseObject> profileObjs;
@@ -111,9 +109,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                                     }
                                 }
                             });
-                        } else {
                         }
-                    } else {
                     }
                 } else {
                     e.printStackTrace();
@@ -123,7 +119,6 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     }
 
     private void saveMatches() {
-        final HashMap<String, Participant> usersMap = new HashMap<>();
         for (ParseObject parseObjectPro : profileObjs) {
             name = parseObjectPro.getString("name");
             ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
@@ -133,6 +128,10 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                 public void done(List<ParseObject> list, ParseException e) {
                     if (e == null)
                         if (list.size() > 0) {
+                            HashMap<String, Participant> usersMap = new HashMap<>();
+                            if (!com.mandaptak.android.Utils.Prefs.getChatUsers(context).equals("")) {
+                                usersMap = com.mandaptak.android.Utils.Prefs.getChatUsers(context);
+                            }
                             for (ParseObject parseObject : list) {
                                 try {
                                     Participant participant = new Participant();
@@ -149,13 +148,10 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                                 }
                             }
                             com.mandaptak.android.Utils.Prefs.setChatUsers(context, usersMap);
-                            participantsMap = com.mandaptak.android.Utils.Prefs.getChatUsers(context);
+                            participantsMap = usersMap;
                         }
-
                 }
             });
         }
     }
-
-
 }

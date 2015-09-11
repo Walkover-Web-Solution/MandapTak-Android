@@ -9,10 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,8 +20,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.mandaptak.android.Adapter.DegreeDataAdapter;
 import com.mandaptak.android.Adapter.LocationDataAdapter;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Models.Degree;
 import com.mandaptak.android.Models.LocationPreference;
 import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
@@ -34,6 +34,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import org.json.JSONObject;
 
@@ -51,12 +52,14 @@ public class UserPreferences extends AppCompatActivity {
     Button btnSavePreferences;
     Context context = UserPreferences.this;
     LocationDataAdapter locationDataAdapter;
+    DegreeDataAdapter degreeDataAdapter;
     ArrayList<LocationPreference> parseSavedLocationList = new ArrayList<>();
     private int newWorkAfterMarriage = 0;
     private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
     private int minHeight = 0, maxHeight = 0;
     private Common mApp;
     private ParseNameModel newEducationDetail1;
+    ArrayList<Degree> parseSavedDegreeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,7 +221,7 @@ public class UserPreferences extends AppCompatActivity {
             }
         });
 
-        etDegree.setOnClickListener(new View.OnClickListener() {
+/*        etDegree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final View locationDialog = View.inflate(context, R.layout.location_search_dialog, null);
@@ -465,6 +468,66 @@ public class UserPreferences extends AppCompatActivity {
                 });
                 alertDialog.show();
             }
+        });*/
+
+        etDegree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View locationDialog = View.inflate(context, R.layout.location_search_dialog, null);
+                final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+                alertDialog.setView(locationDialog);
+                TextView title = (TextView) locationDialog.findViewById(R.id.title);
+                final EditText searchBar = (EditText) locationDialog.findViewById(R.id.search);
+                final ListView listView = (ListView) locationDialog.findViewById(R.id.list);
+                title.setText("Select Degree");
+                final Button done = (Button) locationDialog.findViewById(R.id.cancel_button);
+                done.setText("DONE");
+                done.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        alertDialog.dismiss();
+                    }
+                });
+                if (mApp.isNetworkAvailable(context)) {
+                    getDegreeList(null, listView);
+                } else {
+                    mApp.showToast(context, "No network");
+                }
+
+                searchBar.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                            String query = searchBar.getText().toString();
+                            getCityList(query, listView);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+                searchBar.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(final Editable editable) {
+                        if (editable.length() == 0) {
+                            getDegreeList(null, listView);
+                        } else {
+                            getDegreeList(editable.toString(), listView);
+                        }
+                    }
+                });
+                alertDialog.show();
+            }
         });
     }
 
@@ -513,7 +576,22 @@ public class UserPreferences extends AppCompatActivity {
         }
     }
 
+    public void addDegree(Degree item) {
+        etDegree.setText(etDegree.getText().toString() + item.getDegreeName() + " ");
+        parseSavedDegreeList.add(item);
+    }
+
+    public void removeDegree(Degree item) {
+        for (int i = 0; i < parseSavedDegreeList.size(); i++) {
+            if (item.getDegreeObj().getObjectId().equalsIgnoreCase(parseSavedDegreeList.get(i).getDegreeObj().getObjectId())) {
+                parseSavedDegreeList.remove(i);
+                etDegree.setText(etDegree.getText().toString().replace(item.getDegreeName() + " ", ""));
+            }
+        }
+    }
+
     public void saveData() {
+        mApp.show_PDialog(context, "Saving Preferences..");
         try {
             if (!etBudgetMin.getText().toString().equals(""))
                 minBudget = Integer.valueOf(etBudgetMin.getText().toString());
@@ -618,8 +696,22 @@ public class UserPreferences extends AppCompatActivity {
                                         parseObjectNew.put("manglik", manglik);
                                         parseObjectNew.put("minGunMatch", 0);
                                         parseObjectNew.put("profileId", profileObject);
-                                        parseObjectNew.saveInBackground();
+                                        parseObjectNew.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                if (e == null)
+                                                    mApp.showToast(context, "Preferences Saved");
+                                                else
+                                                    mApp.showToast(context, e.getMessage());
+                                                mApp.dialog.dismiss();
+                                                Intent intent = new Intent(context, MainActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                                UserPreferences.this.finish();
+                                            }
+                                        });
                                         saveLocationData(parseObject);
+                                        saveDegreeData(parseObject);
                                     } else {
                                         e.printStackTrace();
                                     }
@@ -633,43 +725,105 @@ public class UserPreferences extends AppCompatActivity {
             }
     }
 
-    private void saveLocationData(ParseObject object) {
-        deleteAllLocations(object);
-        if (parseSavedLocationList.size() > 0)
-            for (LocationPreference preference : parseSavedLocationList) {
-                ParseObject parseObjectLocation = new ParseObject("LocationPreferences");
-                if (preference.getLocationType() == 0)
-                    parseObjectLocation.put("cityId", preference.getParseObject());
-                else
-                    parseObjectLocation.put("stateId", preference.getParseObject());
-                parseObjectLocation.put("preferenceId", object);
-                parseObjectLocation.saveEventually();
-            }
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-        UserPreferences.this.finish();
-    }
-
-    private void deleteAllLocations(ParseObject object) {
+    private void saveLocationData(final ParseObject object) {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LocationPreferences");
         parseQuery.whereEqualTo("preferenceId", object);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                if (list.size() > 0)
-                    for (ParseObject parseObject : list) {
-                        parseObject.deleteInBackground(new DeleteCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e != null)
-                                    e.printStackTrace();
-                            }
-                        });
+                if (e == null)
+                    if (list.size() > 0)
+                        for (ParseObject parseObject : list) {
+                            parseObject.deleteInBackground(new DeleteCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e != null)
+                                        e.printStackTrace();
+                                }
+                            });
+                        }
+                if (parseSavedLocationList.size() > 0)
+                    for (LocationPreference preference : parseSavedLocationList) {
+                        ParseObject parseObjectLocation = new ParseObject("LocationPreferences");
+                        if (preference.getLocationType() == 0)
+                            parseObjectLocation.put("cityId", preference.getParseObject());
+                        else
+                            parseObjectLocation.put("stateId", preference.getParseObject());
+                        parseObjectLocation.put("preferenceId", object);
+                        parseObjectLocation.saveEventually();
                     }
             }
         });
+    }
+
+    private void saveDegreeData(final ParseObject object) {
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("DegreePreferences");
+        parseQuery.whereEqualTo("preferenceId", object);
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null)
+                    if (list.size() > 0)
+                        for (ParseObject parseObject : list) {
+                            parseObject.deleteInBackground(new DeleteCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e != null)
+                                        e.printStackTrace();
+
+                                }
+                            });
+                        }
+                if (parseSavedDegreeList.size() > 0)
+                    for (Degree preference : parseSavedDegreeList) {
+                        ParseObject parseObjectLocation = new ParseObject("DegreePreferences");
+                        parseObjectLocation.put("degreeId", preference.getDegreeObj());
+                        parseObjectLocation.put("preferenceId", object);
+                        parseObjectLocation.saveEventually();
+                    }
+
+            }
+        });
+    }
+
+    private void getDegreeList(final String query, final ListView listView) {
+        if (query != null) {
+            final ArrayList<Degree> degreeList = new ArrayList<>();
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+            parseQuery.whereMatches("name", "(" + query + ")", "i");
+            parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list != null && list.size() > 0) {
+                        for (ParseObject model : list) {
+                            Degree item = new Degree(model.getString("name"), model, false);
+                            if (parseSavedDegreeList.size() > 0) {
+                                boolean isPresent = false;
+                                for (int i = 0; i < parseSavedDegreeList.size(); i++) {
+                                    try {
+                                        if (parseSavedDegreeList.get(i).getDegreeObj().fetchIfNeeded().getObjectId().equalsIgnoreCase(model.getObjectId()))
+                                            isPresent = true;
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                    }
+                                }
+                                if (isPresent)
+                                    item.setSelected(true);
+                            }
+                            degreeList.add(item);
+                        }
+                        if (query != null)
+                            degreeDataAdapter = new DegreeDataAdapter(UserPreferences.this, degreeList);
+                        else
+                            degreeDataAdapter = new DegreeDataAdapter(UserPreferences.this, parseSavedDegreeList);
+                        listView.setAdapter(degreeDataAdapter);
+                    }
+                }
+            });
+        } else {
+            degreeDataAdapter = new DegreeDataAdapter(UserPreferences.this, parseSavedDegreeList);
+            listView.setAdapter(degreeDataAdapter);
+        }
     }
 
     private void getCityList(final String query, final ListView listView) {
@@ -830,6 +984,7 @@ public class UserPreferences extends AppCompatActivity {
                                     if (minIncome != 0)
                                         etIncome.setText("" + minIncome);
                                     getLocationData(parseObject);
+                                    getDegreeData(parseObject);
                                 } catch (Exception e1) {
                                     mApp.dialog.dismiss();
                                     e1.printStackTrace();
@@ -891,36 +1046,39 @@ public class UserPreferences extends AppCompatActivity {
                 } else {
                     e.printStackTrace();
                 }
+            }
+        });
+    }
+
+    private void getDegreeData(ParseObject object) {
+        ParseQuery<ParseObject> query2 = new ParseQuery<>("DegreePreferences");
+        query2.whereEqualTo("preferenceId", object);
+        query2.include("degreeId");
+        query2.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null) {
+                    StringBuilder responseText = new StringBuilder();
+                    if (list.size() > 0) {
+                        parseSavedDegreeList.clear();
+                        for (ParseObject parseObject : list) {
+                            try {
+                                Degree degree = new Degree(parseObject.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"), parseObject, true);
+                                parseSavedDegreeList.add(degree);
+                                responseText.append(degree.getDegreeName() + " ");
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                        etDegree.setText(responseText.toString());
+                    }
+                } else {
+                    e.printStackTrace();
+                }
                 mApp.dialog.dismiss();
             }
         });
     }
 
-    public class DataAdapter extends ArrayAdapter<ParseNameModel> {
-        ArrayList<ParseNameModel> models;
 
-        public DataAdapter(Context context, ArrayList<ParseNameModel> models) {
-            super(context, R.layout.location_list_item, models);
-            this.models = models;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder viewHolder;
-            if (convertView == null) {
-                viewHolder = new ViewHolder();
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.location_list_item, parent, false);
-                viewHolder.descriptionTV = (TextView) convertView.findViewById(android.R.id.text1);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-            viewHolder.descriptionTV.setText(models.get(position).getName());
-            return convertView;
-        }
-
-        class ViewHolder {
-            TextView descriptionTV;
-        }
-    }
 }

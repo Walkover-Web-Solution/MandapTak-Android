@@ -719,8 +719,12 @@ public class FinalEditProfileFragment extends Fragment {
                             try {
                                 JSONObject jsonObject = response.getJSONObject();
                                 JSONArray albumsArr = jsonObject.getJSONArray("data");
-                                jsonObject = (JSONObject) albumsArr.get(0);
-                                albumId = jsonObject.getString("id");
+                                for (int i = 0; i < albumsArr.length(); i++) {
+                                    jsonObject = albumsArr.getJSONObject(i);
+                                    if (jsonObject.getString("name").equalsIgnoreCase("Profile Pictures")) {
+                                        albumId = jsonObject.getString("id");
+                                    }
+                                }
                                 getImageUrls();
                             } catch (JSONException e) {
                                 e.printStackTrace();

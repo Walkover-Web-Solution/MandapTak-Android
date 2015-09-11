@@ -29,6 +29,7 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -258,6 +259,12 @@ public class Common extends Application implements LayerCallbacks {
         super.onCreate();
         FacebookSdk.sdkInitialize(getApplicationContext());
         Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");
+       /* ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseInstallation.getCurrentInstallation().setObjectId(ParseUser.getCurrentUser().getObjectId());*/
+        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+        if (ParseUser.getCurrentUser() != null)
+            installation.put("user", ParseUser.getCurrentUser());
+        installation.saveInBackground();
         ParseFacebookUtils.initialize(this);
         ParseACL defaultACL = new ParseACL();
         defaultACL.setPublicReadAccess(true);

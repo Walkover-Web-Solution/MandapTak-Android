@@ -717,7 +717,6 @@ public class FinalEditProfileFragment extends Fragment {
                         if (response != null) {
                             Log.e("album_response", response.toString());
                             try {
-
                                 JSONObject jsonObject = response.getJSONObject();
                                 JSONArray albumsArr = jsonObject.getJSONArray("data");
                                 jsonObject = (JSONObject) albumsArr.get(0);

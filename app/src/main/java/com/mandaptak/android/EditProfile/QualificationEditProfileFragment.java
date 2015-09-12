@@ -895,6 +895,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         parseObject.put("education2", newEducationDetail2.getParseObject());
                     if (newEducationDetail3 != null)
                         parseObject.put("education3", newEducationDetail3.getParseObject());
+                    if (!isVisible && !isStarted)
                     parseObject.put("workAfterMarriage", newWorkAfterMarriage);
                     parseObject.saveInBackground();
                 }

@@ -674,8 +674,22 @@ public class UserPreferences extends AppCompatActivity {
                                         parseObject.put("working", newWorkAfterMarriage);
                                         parseObject.put("manglik", manglik);
                                         parseObject.put("minGunMatch", 0);
-                                        parseObject.saveInBackground();
+                                        parseObject.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                if (e == null)
+                                                    mApp.showToast(context, "Preferences Saved");
+                                                else
+                                                    mApp.showToast(context, e.getMessage());
+                                                mApp.dialog.dismiss();
+                                                Intent intent = new Intent(context, MainActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                startActivity(intent);
+                                                UserPreferences.this.finish();
+                                            }
+                                        });
                                         saveLocationData(parseObject);
+                                        saveDegreeData(parseObject);
                                     } else if (e.getCode() == 101) {
                                         ParseObject parseObjectNew = new ParseObject("Preference");
                                         if (minHeight != 0)

@@ -475,8 +475,8 @@ public class DetailsProfileFragment extends Fragment {
                         parseObject.put("height", newHeight);
                     if (newWeight != 0)
                         parseObject.put("weight", newWeight);
-
-                    parseObject.put("manglik", newManglik);
+                    if (!isVisible && !isStarted)
+                        parseObject.put("manglik", newManglik);
                     parseObject.saveInBackground();
                 }
             });

@@ -31,6 +31,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -39,7 +40,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -379,6 +379,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         if (isVisible) {
             getParseData();
         } else {
+
             saveInfo();
         }
     }
@@ -400,26 +401,30 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (newGender != null)
+                public void done(final ParseObject parseObject, ParseException e) {
+                    if (newGender != null && !newGender.equals(parseObject.getString("gender")))
                         parseObject.put("gender", newGender);
-                    if (newName != null)
+                    if (newName != null && !newGender.equals(parseObject.getString("name")))
                         if (newName.trim() != null && !newName.trim().equals(""))
                             parseObject.put("name", newName.trim());
-                    if (newPOB != null)
+                    if (newPOB != null && !newGender.equals(parseObject.getString("placeOfBirth")))
                         parseObject.put("placeOfBirth", newPOB);
-                    if (newCurrentLocation != null)
+                    if (newCurrentLocation != null && !newGender.equals(parseObject.getString("currentLocation")))
                         parseObject.put("currentLocation", newCurrentLocation);
-                    if (newTOB != null)
+                    if (newTOB != null && !newGender.equals(parseObject.getString("tob")))
                         parseObject.put("tob", newTOB.getTime());
-                    if (newDOB != null)
+                    if (newDOB != null && !newGender.equals(parseObject.getString("dob")))
                         parseObject.put("dob", newDOB.getTime());
-                    
-
-                    if (oldData != parseObject) {
-                        parseObject.saveInBackground();
-                        query.clearCachedResult();
+                    if (parseObject.isDirty()) {
+                        Log.e("changed", "changed");
                     }
+                    parseObject.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (parseObject.isDirty())
+                                query.clearCachedResult();
+                        }
+                    });
                 }
             });
             Log.e("Save Screen", "1");

@@ -531,7 +531,7 @@ public class MainActivity extends AppCompatActivity {
     private void getMatchesFromFunction() {
         isLoading = false;
         rippleBackground.startRippleAnimation();
-        labelLoading.setText("Finding People...");
+        labelLoading.setText("Finding Matches...");
         HashMap<String, Object> params = new HashMap<>();
         params.put("oid", Prefs.getProfileId(context));
         ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
@@ -544,16 +544,19 @@ public class MainActivity extends AppCompatActivity {
                             if (mApp.isNetworkAvailable(context))
                                 setProfileDetails();
                         } else {
-                            rippleBackground.stopRippleAnimation();
-                            labelLoading.setText("No matching results found.");
+                          //  rippleBackground.stopRippleAnimation();
+                          //  labelLoading.setText("No matching results found.");
+                            labelLoading.setText("Coming soon...");
                         }
                     } else {
-                        rippleBackground.stopRippleAnimation();
-                        labelLoading.setText("No matching results found.");
+                        //rippleBackground.stopRippleAnimation();
+                    //    labelLoading.setText("No matching results found.");
+                        labelLoading.setText("Coming soon...");
                     }
                 } else {
-                    rippleBackground.stopRippleAnimation();
-                    labelLoading.setText("No matching results found.");
+                  //  rippleBackground.stopRippleAnimation();
+                 //   labelLoading.setText("No matching results found.");
+                    labelLoading.setText("Coming soon...");
                     e.printStackTrace();
                 }
             }
@@ -799,8 +802,8 @@ public class MainActivity extends AppCompatActivity {
                 menu.toggle();
                 return true;
             case R.id.action_matches:
-                startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                MainActivity.this.finish();
+               /* startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                MainActivity.this.finish();*/
                 return true;
         }
         return super.onOptionsItemSelected(item);

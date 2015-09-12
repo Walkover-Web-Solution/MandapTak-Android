@@ -39,6 +39,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,6 +64,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private Context context;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
+    ParseObject oldData;
+    ParseQuery<ParseObject> query;
 
     public BasicProfileFragment() {
         // Required empty public constructor
@@ -246,13 +249,15 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public void getParseData() {
         try {
             mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+            query = new ParseQuery<>("Profile");
+            query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     isStarted = false;
                     if (e == null) {
                         try {
+                            oldData = parseObject;
                             newName = parseObject.getString("name");
                             newGender = parseObject.getString("gender");
                             Date tmpDOB = parseObject.getDate("dob");
@@ -409,11 +414,17 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                         parseObject.put("tob", newTOB.getTime());
                     if (newDOB != null)
                         parseObject.put("dob", newDOB.getTime());
-                    parseObject.saveInBackground();
+                    
+
+                    if (oldData != parseObject) {
+                        parseObject.saveInBackground();
+                        query.clearCachedResult();
+                    }
                 }
             });
             Log.e("Save Screen", "1");
         } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 

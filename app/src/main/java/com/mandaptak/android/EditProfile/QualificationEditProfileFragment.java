@@ -59,7 +59,6 @@ public class QualificationEditProfileFragment extends Fragment {
     private Boolean isStarted = false;
     private Boolean isVisible = false;
     private ArrayList<ParseNameModel> industryList = new ArrayList<>();
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -862,6 +861,7 @@ public class QualificationEditProfileFragment extends Fragment {
         }
     }
 
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -872,6 +872,7 @@ public class QualificationEditProfileFragment extends Fragment {
             saveInfo();
         }
     }
+
 
     public void saveInfo() {
         try {
@@ -896,7 +897,7 @@ public class QualificationEditProfileFragment extends Fragment {
                     if (newEducationDetail3 != null)
                         parseObject.put("education3", newEducationDetail3.getParseObject());
                     if (!isVisible && !isStarted)
-                    parseObject.put("workAfterMarriage", newWorkAfterMarriage);
+                        parseObject.put("workAfterMarriage", newWorkAfterMarriage);
                     parseObject.saveInBackground();
                 }
             });

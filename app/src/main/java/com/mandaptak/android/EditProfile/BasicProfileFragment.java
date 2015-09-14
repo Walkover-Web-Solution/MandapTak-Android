@@ -31,7 +31,6 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -64,8 +63,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     private Context context;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
-    ParseObject oldData;
-    ParseQuery<ParseObject> query;
 
     public BasicProfileFragment() {
         // Required empty public constructor
@@ -249,15 +246,13 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     public void getParseData() {
         try {
             mApp.show_PDialog(context, "Loading..");
-            query = new ParseQuery<>("Profile");
-            query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     isStarted = false;
                     if (e == null) {
                         try {
-                            oldData = parseObject;
                             newName = parseObject.getString("name");
                             newGender = parseObject.getString("gender");
                             Date tmpDOB = parseObject.getDate("dob");
@@ -379,7 +374,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         if (isVisible) {
             getParseData();
         } else {
-
             saveInfo();
         }
     }
@@ -401,35 +395,25 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
-                public void done(final ParseObject parseObject, ParseException e) {
-                    if (newGender != null && !newGender.equals(parseObject.getString("gender")))
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (newGender != null)
                         parseObject.put("gender", newGender);
-                    if (newName != null && !newGender.equals(parseObject.getString("name")))
+                    if (newName != null)
                         if (newName.trim() != null && !newName.trim().equals(""))
                             parseObject.put("name", newName.trim());
-                    if (newPOB != null && !newGender.equals(parseObject.getString("placeOfBirth")))
+                    if (newPOB != null)
                         parseObject.put("placeOfBirth", newPOB);
-                    if (newCurrentLocation != null && !newGender.equals(parseObject.getString("currentLocation")))
+                    if (newCurrentLocation != null)
                         parseObject.put("currentLocation", newCurrentLocation);
-                    if (newTOB != null && !newGender.equals(parseObject.getString("tob")))
+                    if (newTOB != null)
                         parseObject.put("tob", newTOB.getTime());
-                    if (newDOB != null && !newGender.equals(parseObject.getString("dob")))
+                    if (newDOB != null)
                         parseObject.put("dob", newDOB.getTime());
-                    if (parseObject.isDirty()) {
-                        Log.e("changed", "changed");
-                    }
-                    parseObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (parseObject.isDirty())
-                                query.clearCachedResult();
-                        }
-                    });
+                    parseObject.saveInBackground();
                 }
             });
             Log.e("Save Screen", "1");
         } catch (Exception ignored) {
-            ignored.printStackTrace();
         }
     }
 

@@ -47,7 +47,6 @@ public class DetailsProfileFragment extends Fragment {
     private ParseNameModel newReligion, newCaste, newGotra;
     private Boolean isStarted = false;
     private Boolean isVisible = false;
-
     public DetailsProfileFragment() {
         // Required empty public constructor
     }

@@ -40,7 +40,6 @@ public class Common extends Application implements LayerCallbacks {
     public static AtlasIdentityProvider identityProvider;
     private static HashMap<String, ParseUser> allUsers;
     public ProgressDialog dialog;
-
     public static void cacheAllUsers() {
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.findInBackground(new FindCallback<ParseUser>() {

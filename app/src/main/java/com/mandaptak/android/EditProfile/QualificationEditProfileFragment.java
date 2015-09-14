@@ -3,6 +3,7 @@ package com.mandaptak.android.EditProfile;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
@@ -709,19 +710,76 @@ public class QualificationEditProfileFragment extends Fragment {
                 newEducationDetail2 = profile.getEducation2();
                 newEducationDetail3 = profile.getEducation3();
                 if (newEducationDetail1 != null) {
-                    eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                    eduChildDegree1.setText(ParseObject.createWithoutData(newEducationDetail1.getClassName(), newEducationDetail1.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                    new AsyncTask<Void, Void, Void>() {
+                        String degree = null;
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                degree = ParseObject.createWithoutData(newEducationDetail1.getClassName(), newEducationDetail1.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name");
+                            } catch (ParseException ignored) {
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+                            if (degree != null) {
+                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                                eduChildDegree1.setText(degree);
+                            }
+                        }
+                    }.execute();
                 }
                 if (newEducationDetail2 != null) {
-                    mainEducationLayout.addView(educationLayoutChild2);
-                    eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                    eduChildDegree2.setText(ParseObject.createWithoutData(newEducationDetail2.getClassName(), newEducationDetail2.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                    new AsyncTask<Void, Void, Void>() {
+                        String degree = null;
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                degree = ParseObject.createWithoutData(newEducationDetail2.getClassName(), newEducationDetail2.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name");
+                            } catch (ParseException ignored) {
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+                            if (degree != null) {
+                                mainEducationLayout.addView(educationLayoutChild2);
+                                eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                                eduChildDegree2.setText(degree);
+                            }
+                        }
+                    }.execute();
                 }
                 if (newEducationDetail3 != null) {
-                    mainEducationLayout.addView(educationLayoutChild3);
-                    educationMoreButton.setVisibility(View.GONE);
-                    eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                    eduChildDegree3.setText(ParseObject.createWithoutData(newEducationDetail3.getClassName(), newEducationDetail3.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                    new AsyncTask<Void, Void, Void>() {
+                        String degree = null;
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            try {
+                                degree = ParseObject.createWithoutData(newEducationDetail3.getClassName(), newEducationDetail3.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name");
+                            } catch (ParseException ignored) {
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+                            if (degree != null) {
+                                mainEducationLayout.addView(educationLayoutChild3);
+                                educationMoreButton.setVisibility(View.GONE);
+                                eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                                eduChildDegree3.setText(degree);
+                            }
+                        }
+                    }.execute();
                 }
                 if (newCurrentIncome != -1)
                     currentIncome.setText(String.valueOf(newCurrentIncome));

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class MatchesFragment extends Fragment {
     Common mApp;
     ListView listViewMatches;
-    ArrayList<MatchesModel> matchList = new ArrayList<>();
+    ArrayList<MatchesModel> matchList;
     TextView empty;
     ProgressBar progressBar;
     private View rootView;

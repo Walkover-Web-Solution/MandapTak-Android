@@ -200,71 +200,77 @@ public class LoginActivity extends AppCompatActivity {
                     if (user != null) {
                         try {
                             String role = user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name");
-                            if (role.equals("User")) {
-                                ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                                query.whereEqualTo("userId", user);
-                                query.whereNotEqualTo("relation", "Agent");
-                                query.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(List<ParseObject> list, ParseException e) {
-                                        if (e == null) {
-                                            int size = list.size();
-                                            ParseObject parseObject = null;
-                                            boolean hasPrimary = false;
-                                            for (int i = 0; i < size; i++) {
-                                                if (list.get(i).getBoolean("isPrimary")) {
-                                                    parseObject = list.get(i);
-                                                    hasPrimary = true;
-                                                } else if (!hasPrimary && (size - 1) == i) {
-                                                    parseObject = list.get(i);
+                            switch (role) {
+                                case "User": {
+                                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                                    query.whereEqualTo("userId", user);
+                                    query.whereNotEqualTo("relation", "Agent");
+                                    query.findInBackground(new FindCallback<ParseObject>() {
+                                        @Override
+                                        public void done(List<ParseObject> list, ParseException e) {
+                                            if (e == null) {
+                                                int size = list.size();
+                                                ParseObject parseObject = null;
+                                                boolean hasPrimary = false;
+                                                for (int i = 0; i < size; i++) {
+                                                    if (list.get(i).getBoolean("isPrimary")) {
+                                                        parseObject = list.get(i);
+                                                        hasPrimary = true;
+                                                    } else if (!hasPrimary && (size - 1) == i) {
+                                                        parseObject = list.get(i);
+                                                    }
                                                 }
-                                            }
-                                            if (parseObject != null) {
-                                                if (!LayerImpl.isAuthenticated()) {
-                                                    LayerImpl.authenticateUser();
+                                                if (parseObject != null) {
+                                                    if (!LayerImpl.isAuthenticated()) {
+                                                        LayerImpl.authenticateUser();
+                                                    }
+                                                    Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                                    startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                    LoginActivity.this.finish();
+                                                } else {
+                                                    ParseUser.logOut();
+                                                    mApp.showToast(context, "Error fetching profile");
                                                 }
-                                                Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                                startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                                LoginActivity.this.finish();
                                             } else {
                                                 ParseUser.logOut();
-                                                mApp.showToast(context, "Error fetching profile");
+                                                e.printStackTrace();
+                                                mApp.showToast(context, e.getMessage());
                                             }
-                                        } else {
-                                            ParseUser.logOut();
-                                            e.printStackTrace();
-                                            mApp.showToast(context, e.getMessage());
+                                            mApp.dialog.dismiss();
                                         }
-                                        mApp.dialog.dismiss();
-                                    }
-                                });
-                            } else if (role.equals("Agent")) {
-                                ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                                query.whereEqualTo("userId", user);
-                                query.whereEqualTo("isPrimary", true);
-                                query.getFirstInBackground(new GetCallback<ParseObject>() {
-                                                               @Override
-                                                               public void done(ParseObject parseObject, ParseException e) {
-                                                                   mApp.dialog.dismiss();
-                                                                   if (e == null) {
-                                                                       if (!LayerImpl.isAuthenticated()) {
-                                                                           LayerImpl.authenticateUser();
+                                    });
+                                    break;
+                                }
+                                case "Agent": {
+                                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                                    query.whereEqualTo("userId", user);
+                                    query.whereEqualTo("isPrimary", true);
+                                    query.getFirstInBackground(new GetCallback<ParseObject>() {
+                                                                   @Override
+                                                                   public void done(ParseObject parseObject, ParseException e) {
+                                                                       mApp.dialog.dismiss();
+                                                                       if (e == null) {
+                                                                           if (!LayerImpl.isAuthenticated()) {
+                                                                               LayerImpl.authenticateUser();
+                                                                           }
+                                                                           Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
+                                                                           startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                                                                           LoginActivity.this.finish();
+                                                                       } else {
+                                                                           ParseUser.logOut();
+                                                                           e.printStackTrace();
+                                                                           mApp.showToast(context, "Login Error");
                                                                        }
-                                                                       Prefs.setProfileId(context, parseObject.getParseObject("profileId").getObjectId());
-                                                                       startActivity(new Intent(LoginActivity.this, SplashScreen.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                                                                       LoginActivity.this.finish();
-                                                                   } else {
-                                                                       ParseUser.logOut();
-                                                                       e.printStackTrace();
-                                                                       mApp.showToast(context, "Login Error");
                                                                    }
                                                                }
-                                                           }
-                                );
-                            } else {
-                                ParseUser.logOut();
-                                e.printStackTrace();
-                                mApp.showToast(context, "Admin View: Comming Soon");
+                                    );
+                                    break;
+                                }
+                                default:
+                                    ParseUser.logOut();
+                                    e.printStackTrace();
+                                    mApp.showToast(context, "Admin View: Coming Soon");
+                                    break;
                             }
                         } catch (ParseException e1) {
                             e1.printStackTrace();
@@ -289,17 +295,17 @@ public class LoginActivity extends AppCompatActivity {
         public Fragment getItem(int pos) {
             switch (pos) {
                 case 0:
-                    return WelcomeScreen1.newInstance();
+                    return new WelcomeScreen1();
                 case 1:
-                    return WelcomeScreen2.newInstance();
+                    return new WelcomeScreen2();
                 case 2:
-                    return WelcomeScreen3.newInstance();
+                    return new WelcomeScreen3();
                 case 3:
-                    return WelcomeScreen4.newInstance();
+                    return new WelcomeScreen4();
                 case 4:
-                    return WelcomeScreen5.newInstance();
+                    return new WelcomeScreen5();
                 default:
-                    return WelcomeScreen1.newInstance();
+                    return new WelcomeScreen1();
             }
         }
 

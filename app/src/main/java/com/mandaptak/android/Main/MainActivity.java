@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     void setTraits() {
         try {
             HashMap<String, Object> params = new HashMap<>();
-            if (profileObject.getString("gender").equalsIgnoreCase("Male")) {
+            if (profileObject.fetchIfNeeded().getString("gender").equalsIgnoreCase("Male")) {
                 params.put("boyProfileId", profileObject.getObjectId());
                 params.put("girlProfileId", profileList.get(0).getObjectId());
             } else {
@@ -105,12 +105,21 @@ public class MainActivity extends AppCompatActivity {
                     if (e == null) {
                         if (o != null) {
                             try {
-                                int value = (int) o;
-                                Log.e("", "" + o);
-                                frontTraits.setText(value + "\nTraits\nMatch");
-                                slideTraits.setText(value + " Traits Match");
-                                traitsProgress.setProgress(value);
-                                traitsProgress.showProgress(true);
+                                if (o instanceof Double) {
+                                    Double value = (Double) o;
+                                    Log.e("", "" + o);
+                                    frontTraits.setText(value + "\nTraits\nMatch");
+                                    slideTraits.setText(value + " Traits Match");
+                                    traitsProgress.setProgress(value.intValue());
+                                    traitsProgress.showProgress(true);
+                                } else if (o instanceof Integer) {
+                                    int value = (int) o;
+                                    Log.e("", "" + o);
+                                    frontTraits.setText(value + "\nTraits\nMatch");
+                                    slideTraits.setText(value + " Traits Match");
+                                    traitsProgress.setProgress(value);
+                                    traitsProgress.showProgress(true);
+                                }
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
@@ -142,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                 HashMap<String, Object> params = new HashMap<>();
                 params.put("userProfileId", profileObject.getObjectId());
                 params.put("likeProfileId", likeProfile.getObjectId());
-                params.put("userName", profileObject.getString("name"));
+                params.put("userName", profileObject.fetchIfNeeded().getString("name"));
 
                 ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
                     @Override
@@ -411,18 +420,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void getParseData() {
-        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-        query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    profileObject = object;
-                    setNavigationMenu();
-                    getMatchesFromFunction();
-                }
-            }
-        });
-
+        profileObject = ParseObject.createWithoutData("Profile", Prefs.getProfileId(context));
+        setNavigationMenu();
+        getMatchesFromFunction();
     }
 
     void setNavigationMenu() {
@@ -455,27 +455,25 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
+        if (Prefs.getProfile(context) != null)
+            profileName.setText(Prefs.getProfile(context).getName());
+
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {
-                    try {
-                        ParseFile file = parseObject.getParseFile("profilePic");
-                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
-                        Picasso.with(context)
-                                .load(file.getUrl())
-                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .into(profilePicture);
-                        Picasso.with(context)
-                                .load(file.getUrl())
-                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .into(loadingProfile);
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
+                    ParseFile file = parseObject.getParseFile("profilePic");
+                    Picasso.with(context)
+                            .load(file.getUrl())
+                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .into(profilePicture);
+                    Picasso.with(context)
+                            .load(file.getUrl())
+                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                            .into(loadingProfile);
                 } else if (e.getCode() == 209) {
                     ParseUser.logOutInBackground(new LogOutCallback() {
                         @Override

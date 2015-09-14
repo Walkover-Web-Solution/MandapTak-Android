@@ -14,11 +14,6 @@ public class WelcomeScreen2 extends Fragment {
         // Required empty public constructor
     }
 
-    public static WelcomeScreen2 newInstance() {
-        WelcomeScreen2 fragment = new WelcomeScreen2();
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

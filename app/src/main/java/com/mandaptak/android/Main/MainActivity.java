@@ -22,6 +22,7 @@ import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Login.LoginActivity;
+import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.Models.UndoModel;
 import com.mandaptak.android.Preferences.UserPreferences;
@@ -447,7 +448,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startActivity(new Intent(MainActivity.this, UserPreferences.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 MainActivity.this.finish();
-                mApp.showToast(context, "Coming soon...");
             }
         });
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
@@ -529,7 +529,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMatchesFromFunction() {
-
         isLoading = false;
         rippleBackground.startRippleAnimation();
         labelLoading.setText("Finding Matches...");
@@ -551,7 +550,6 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         rippleBackground.stopRippleAnimation();
                         labelLoading.setText("No matching results found.");
-
                     }
                 } else {
                     rippleBackground.stopRippleAnimation();
@@ -801,8 +799,8 @@ public class MainActivity extends AppCompatActivity {
                 menu.toggle();
                 return true;
             case R.id.action_matches:
-               /* startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                MainActivity.this.finish();*/
+                startActivity(new Intent(context, MatchesActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                MainActivity.this.finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

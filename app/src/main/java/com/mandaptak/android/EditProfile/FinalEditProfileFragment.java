@@ -59,7 +59,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.entity.Profile;
@@ -274,10 +276,14 @@ public class FinalEditProfileFragment extends Fragment {
                                         }
                                     }
                                     if (isPrimarySet) {
+                                        profile.getTimeOfBirth().setTimeZone(TimeZone.getTimeZone("UTC"));
+                                        profile.getDateOfBirth().setTimeZone(TimeZone.getTimeZone("UTC"));
+                                        Date tob = profile.getTimeOfBirth().getTime();
+                                        Date dob = profile.getDateOfBirth().getTime();
                                         parseObject.put("name", profile.getName());
                                         parseObject.put("gender", profile.getGender());
-                                        parseObject.put("dob", profile.getDateOfBirth().getTime());
-                                        parseObject.put("tob", profile.getTimeOfBirth().getTime());
+                                        parseObject.put("dob", dob);
+                                        parseObject.put("tob", tob);
                                         parseObject.put("placeOfBirth", ParseObject.createWithoutData(profile.getPlaceOfBirth().getClassName(), profile.getPlaceOfBirth().getParseObjectId()));
                                         parseObject.put("currentLocation", ParseObject.createWithoutData(profile.getCurrentLocation().getClassName(), profile.getCurrentLocation().getParseObjectId()));
                                         parseObject.put("height", profile.getHeight());

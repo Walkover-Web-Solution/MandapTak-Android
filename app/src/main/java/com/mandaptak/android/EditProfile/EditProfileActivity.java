@@ -290,6 +290,23 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
+                        try {
+                            switch (mViewPager.getCurrentItem()) {
+                                case 0:
+                                    basicProfileFragment.saveInfo();
+                                    break;
+                                case 1:
+                                    detailsProfileFragment.saveInfo();
+                                    break;
+                                case 2:
+                                    qualificationEditProfileFragment.saveInfo();
+                                    break;
+                                case 3:
+                                    finalEditProfileFragment.saveInfo();
+                                    break;
+                            }
+                        } catch (Exception ignored) {
+                        }
                         validateProfile(parseObject);
                     } else {
                         e.printStackTrace();
@@ -384,10 +401,14 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                                         }
                                     }
                                     if (isPrimarySet) {
+                                        profile.getTimeOfBirth().setTimeZone(TimeZone.getTimeZone("UTC"));
+                                        profile.getDateOfBirth().setTimeZone(TimeZone.getTimeZone("UTC"));
+                                        Date tob = profile.getTimeOfBirth().getTime();
+                                        Date dob = profile.getDateOfBirth().getTime();
                                         parseObject.put("name", profile.getName());
                                         parseObject.put("gender", profile.getGender());
-                                        parseObject.put("dob", profile.getDateOfBirth().getTime());
-                                        parseObject.put("tob", profile.getTimeOfBirth().getTime());
+                                        parseObject.put("dob", dob);
+                                        parseObject.put("tob", tob);
                                         parseObject.put("placeOfBirth", ParseObject.createWithoutData(profile.getPlaceOfBirth().getClassName(), profile.getPlaceOfBirth().getParseObjectId()));
                                         parseObject.put("currentLocation", ParseObject.createWithoutData(profile.getCurrentLocation().getClassName(), profile.getCurrentLocation().getParseObjectId()));
                                         parseObject.put("height", profile.getHeight());

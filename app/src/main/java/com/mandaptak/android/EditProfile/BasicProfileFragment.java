@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import me.iwf.photopicker.entity.ParseNameModel;
 import me.iwf.photopicker.entity.Profile;
@@ -392,11 +391,11 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.month = selectedMonth;
         this.day = selectedDay;
         newDOB = Calendar.getInstance();
-        newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         newDOB.set(year, month, day, 0, 0);
         SimpleDateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newDOB.getTime());
         datePicker.setText(subdateStr);
     }
@@ -406,10 +405,10 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         this.hourOfDay = hourOfDay;
         this.minute = minute;
         newTOB = Calendar.getInstance();
-        newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-        newTOB.set(92, 0, 1, hourOfDay, minute);
+//        newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+        newTOB.set(1992, 0, 1, hourOfDay, minute);
         SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//        df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newTOB.getTime());
         timePicker.setText(subdateStr);
     }

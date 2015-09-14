@@ -16,12 +16,10 @@
 /gradle.properties
 /slidingMenu/build/*
 /layer-atlas/layer-atlas.iml
-/layer-atlas/build
+/layer-atlas/build.*
 /gradlew.bat
 /cropImage/cropImage.iml
 /MandapTak.iml
-/photoPick/PhotoPicker-PhotoPicker.iml
-/.gitignore.swp
 /cropImage/build/*
 /.gradle
 /twoWayViewCore/build

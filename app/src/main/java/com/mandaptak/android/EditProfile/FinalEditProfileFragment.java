@@ -449,8 +449,6 @@ public class FinalEditProfileFragment extends Fragment {
         isStarted = true;
         if (isVisible) {
             getParseData();
-        } else {
-            saveInfo();
         }
     }
 

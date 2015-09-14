@@ -67,7 +67,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        mViewPager.setCurrentItem(tab.getPosition());
+        mViewPager.setCurrentItem(tab.getPosition(), false);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             public void onClick(View view) {
                 int index = mViewPager.getCurrentItem();
                 if (index < 3) {
-                    mViewPager.setCurrentItem(index + 1, true);
+                    mViewPager.setCurrentItem(index + 1, false);
                 }
             }
         });

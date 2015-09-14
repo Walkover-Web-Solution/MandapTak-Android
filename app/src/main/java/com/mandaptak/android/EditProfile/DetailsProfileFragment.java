@@ -378,8 +378,6 @@ public class DetailsProfileFragment extends Fragment {
         isStarted = true;
         if (isVisible) {
             getParseData();
-        } else {
-            saveInfo();
         }
     }
 

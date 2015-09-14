@@ -59,6 +59,7 @@ public class QualificationEditProfileFragment extends Fragment {
     private Boolean isStarted = false;
     private Boolean isVisible = false;
     private ArrayList<ParseNameModel> industryList = new ArrayList<>();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -856,11 +857,8 @@ public class QualificationEditProfileFragment extends Fragment {
         isStarted = true;
         if (isVisible) {
             getParseData();
-        } else {
-            saveInfo();
         }
     }
-
 
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
@@ -872,7 +870,6 @@ public class QualificationEditProfileFragment extends Fragment {
             saveInfo();
         }
     }
-
 
     public void saveInfo() {
         try {

@@ -373,8 +373,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         isStarted = true;
         if (isVisible) {
             getParseData();
-        } else {
-            saveInfo();
         }
     }
 

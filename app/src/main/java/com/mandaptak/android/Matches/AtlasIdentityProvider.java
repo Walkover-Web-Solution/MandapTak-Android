@@ -129,7 +129,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                     if (e == null)
                         if (list.size() > 0) {
                             HashMap<String, Participant> usersMap = new HashMap<>();
-                            if (!com.mandaptak.android.Utils.Prefs.getChatUsers(context).equals("")) {
+                            if (com.mandaptak.android.Utils.Prefs.getChatUsers(context) != null) {
                                 usersMap = com.mandaptak.android.Utils.Prefs.getChatUsers(context);
                             }
                             for (ParseObject parseObject : list) {

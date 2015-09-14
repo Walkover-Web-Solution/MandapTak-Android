@@ -10,11 +10,13 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.iwf.photopicker.entity.Profile;
+
 public class Prefs {
 
     public static String PROFILE_ID = "profile_id";
     public static String PROFILE_TYPE = "profile_type";
-    public static String IMAGE_LIST = "image_list";
+    public static String PROFILE = "profile";
     public static String CHAT_USERS = "chat_users";
 
     private static SharedPreferences getPrefs(Context context) {
@@ -23,20 +25,20 @@ public class Prefs {
 
     // -----------------------------------------------------------------------------------------------------------------------------------
 
-    public static ArrayList<ImageModel> getImageList(Context context) {
-        String json = getPrefs(context).getString(IMAGE_LIST, null);
-        Type type = new TypeToken<ArrayList<ImageModel>>() {
+    public static Profile getProfile(Context context) {
+        String json = getPrefs(context).getString(PROFILE, null);
+        Type type = new TypeToken<Profile>() {
         }.getType();
         return new Gson().fromJson(json, type);
     }
 
-    public static void setImageList(Context context, ArrayList<ImageModel> list) {
-        getPrefs(context).edit().putString(IMAGE_LIST, new Gson().toJson(list)).commit();
+    public static void setProfile(Context context, Profile profile) {
+        getPrefs(context).edit().putString(PROFILE, new Gson().toJson(profile)).commit();
     }
 
     public static ArrayList<ImageModel> getChatUsers(Context context) {
         String json = getPrefs(context).getString(CHAT_USERS, null);
-        Type type = new TypeToken<HashMap<String,String>>() {
+        Type type = new TypeToken<HashMap<String, String>>() {
         }.getType();
         return new Gson().fromJson(json, type);
     }

@@ -25,7 +25,6 @@ import com.mandaptak.android.Adapter.LocationDataAdapter;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Models.Degree;
 import com.mandaptak.android.Models.LocationPreference;
-import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.DeleteCallback;
@@ -54,12 +53,11 @@ public class UserPreferences extends AppCompatActivity {
     LocationDataAdapter locationDataAdapter;
     DegreeDataAdapter degreeDataAdapter;
     ArrayList<LocationPreference> parseSavedLocationList = new ArrayList<>();
+    ArrayList<Degree> parseSavedDegreeList = new ArrayList<>();
     private int newWorkAfterMarriage = 0;
     private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
     private int minHeight = 0, maxHeight = 0;
     private Common mApp;
-    private ParseNameModel newEducationDetail1;
-    ArrayList<Degree> parseSavedDegreeList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -1093,6 +1091,5 @@ public class UserPreferences extends AppCompatActivity {
             }
         });
     }
-
 
 }

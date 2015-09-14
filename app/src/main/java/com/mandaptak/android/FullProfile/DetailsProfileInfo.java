@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
@@ -18,6 +17,8 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.Arrays;
+
+import me.iwf.photopicker.entity.ParseNameModel;
 
 public class DetailsProfileInfo extends Fragment {
 
@@ -107,17 +108,17 @@ public class DetailsProfileInfo extends Fragment {
                                 weight.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpReligion != null) {
-                                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), tmpReligion);
+                                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), "Religion", tmpReligion.getObjectId());
                                 religion.setText(newReligion.getName());
                                 religion.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpCaste != null) {
-                                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), tmpCaste);
+                                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), "Caste", tmpCaste.getObjectId());
                                 caste.setText(newCaste.getName());
                                 caste.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpGotra != null) {
-                                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), tmpGotra);
+                                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), "Gotra", tmpGotra.getObjectId());
                                 gotra.setText(newGotra.getName());
                                 gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }

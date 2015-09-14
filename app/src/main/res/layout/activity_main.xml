@@ -59,7 +59,7 @@
                 android:layout_gravity="center"
                 android:color="@color/transparent"
                 android:indeterminate="false"
-                android:max="32"
+                android:max="36"
                 android:src="@color/transparent"
                 android:visibility="visible"
                 app:fbb_autoStart="false"
@@ -75,7 +75,6 @@
                 android:clickable="true"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="24\nTraits\nMatch"
                 android:textColor="@color/white"
                 android:textSize="12sp"/>
 
@@ -303,7 +302,7 @@
                         android:layout_marginLeft="16dp"
                         android:textColor="@color/teal_600"
                         android:textSize="18sp"
-                        android:visibility="gone"/>
+                        android:visibility="visible"/>
                 </LinearLayout>
 
                 <ImageButton

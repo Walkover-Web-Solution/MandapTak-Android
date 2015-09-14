@@ -7,13 +7,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
+import me.iwf.photopicker.entity.ParseNameModel;
 
 public class QualificationInfo extends android.support.v4.app.Fragment {
     private TextView industry, workAfterMarriage, degreeView, currentIncome, company, designation;
@@ -67,16 +68,16 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
                             ParseObject tmpEdu3 = parseObject.getParseObject("education3");
                             StringBuilder stringBuilder = new StringBuilder();
                             if (tmpEdu1 != null) {
-                                newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), tmpEdu1);
-                                stringBuilder.append(newEducationDetail1.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " (" + newEducationDetail1.getName() + ") ");
+                                newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), "Specialization", tmpEdu1.getObjectId());
+                                stringBuilder.append(tmpEdu1.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail1.getName()).append(") ");
                             }
                             if (tmpEdu2 != null) {
-                                newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), tmpEdu2);
-                                stringBuilder.append(newEducationDetail2.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " (" + newEducationDetail2.getName() + ") ");
+                                newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), "Specialization", tmpEdu2.getObjectId());
+                                stringBuilder.append(tmpEdu2.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail2.getName()).append(") ");
                             }
                             if (tmpEdu3 != null) {
-                                newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), tmpEdu3);
-                                stringBuilder.append(newEducationDetail3.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name") + " (" + newEducationDetail3.getName() + ")");
+                                newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), "Specialization", tmpEdu3.getObjectId());
+                                stringBuilder.append(tmpEdu3.getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail3.getName()).append(")");
                             }
                             degreeView.setText(stringBuilder.toString());
                             if (newCurrentIncome != 0)

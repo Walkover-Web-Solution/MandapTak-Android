@@ -62,38 +62,34 @@ import me.iwf.photopicker.utils.Prefs;
 
 public class MainActivity extends AppCompatActivity {
     public final static int REQUEST_CODE = 11;
-    Common mApp;
-    SlidingMenu menu;
-    RelativeLayout slidingLayout;
-    LinearLayout bottomLayout;
-    SlidingUpPanelLayout slidingPanel;
-    ImageView pinButton;
-    View navigationMenu;
-    ImageView backgroundPhoto;
-    Context context;
-    ArrayList<ImageModel> userProfileImages = new ArrayList<>();
-    TwoWayView profileImages;
-    UserImagesAdapter userImagesAdapter;
-    ArrayList<ParseObject> profileList = new ArrayList<>();
-    TextView frontProfileName, frontHeight, frontDesignation, frontReligion, frontTraits;
-    CircleImageView frontPhoto, loadingProfile;
-    BlurringView blurringView;
-    TextView salary, industry, designation, company, education, weight, currentLocation, viewFullProfile;
-    TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
-    RippleBackground rippleBackground;
-    ImageButton slideLike;
-    Toolbar toolbar;
-    ImageView mainLikeButton, mainSkipButton, mainUndoButton;
-    UndoModel undoModel;
-    TextView labelLoading;
-    ParseObject profileObject;
-    FabButton traitsProgress;
-    boolean isLoading = false;
+    private Common mApp;
+    private SlidingMenu menu;
+    private RelativeLayout slidingLayout;
+    private LinearLayout bottomLayout;
+    private SlidingUpPanelLayout slidingPanel;
+    private ImageView pinButton;
+    private ImageView backgroundPhoto;
+    private Context context;
+    private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
+    private TwoWayView profileImages;
+    private UserImagesAdapter userImagesAdapter;
+    private ArrayList<ParseObject> profileList = new ArrayList<>();
+    private TextView frontProfileName, frontHeight, frontDesignation, frontReligion, frontTraits;
+    private CircleImageView frontPhoto, loadingProfile;
+    private BlurringView blurringView;
+    private TextView salary, industry, designation, education, weight, currentLocation, viewFullProfile;
+    private TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
+    private RippleBackground rippleBackground;
+    private ImageButton slideLike;
+    private ImageView mainLikeButton, mainSkipButton, mainUndoButton;
+    private UndoModel undoModel;
+    private TextView labelLoading;
+    private ParseObject profileObject;
+    private FabButton traitsProgress;
+    private boolean isLoading = false;
 
     void setTraits() {
         try {
-            traitsProgress.setProgress(24);
-            traitsProgress.showProgress(true);
             HashMap<String, Object> params = new HashMap<>();
             if (profileObject.getString("gender").equalsIgnoreCase("Male")) {
                 params.put("boyProfileId", profileObject.getObjectId());
@@ -109,7 +105,12 @@ public class MainActivity extends AppCompatActivity {
                     if (e == null) {
                         if (o != null) {
                             try {
+                                int value = (int) o;
                                 Log.e("", "" + o);
+                                frontTraits.setText(value + "\nTraits\nMatch");
+                                slideTraits.setText(value + " Traits Match");
+                                traitsProgress.setProgress(value);
+                                traitsProgress.showProgress(true);
                             } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
@@ -123,6 +124,65 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    void likeProfile() {
+        if (mApp.isNetworkAvailable(context))
+            try {
+                final ParseObject likeProfile = profileList.get(0);
+                profileList.remove(0);
+                if (profileList.size() > 0) {
+                    setProfileDetails();
+                } else {
+                    isLoading = false;
+                    labelLoading.setText("No matching results found.");
+                    rippleBackground.stopRippleAnimation();
+                    rippleBackground.setVisibility(View.VISIBLE);
+                }
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("userProfileId", profileObject.getObjectId());
+                params.put("likeProfileId", likeProfile.getObjectId());
+                params.put("userName", profileObject.getString("name"));
+
+                ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
+                    @Override
+                    public void done(Object o, ParseException e) {
+                        if (e == null) {
+                            if (o != null) {
+                                try {
+                                    slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                                    undoModel.setProfileParseObject(likeProfile);
+                                    undoModel.setActionPerformed(1);
+
+                                    if (o instanceof ParseObject) {
+                                        ParseObject parseObject = (ParseObject) o;
+                                        String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                        String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                                        MatchesModel model = new MatchesModel();
+                                        model.setName(parseObject.fetchIfNeeded().getString("name"));
+                                        model.setProfileId(parseObject.getObjectId());
+                                        model.setReligion(religion + ", " + caste);
+                                        model.setWork(parseObject.getString("designation"));
+                                        model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
+                                        model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
+                                        Intent intent = new Intent();
+                                        startActivity(intent);
+                                    }
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+                        } else {
+                            e.printStackTrace();
+                            mApp.showToast(context, e.getMessage());
+                        }
+                    }
+                });
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                mApp.showToast(context, "Error while liking profile");
+            }
     }
 
     void init() {
@@ -143,11 +203,9 @@ public class MainActivity extends AppCompatActivity {
         frontHeight = (TextView) findViewById(R.id.front_height);
         frontReligion = (TextView) findViewById(R.id.front_religion);
         frontTraits = (TextView) findViewById(R.id.front_traits);
-        traitsProgress = (FabButton) findViewById(R.id.traits_progress);
         salary = (TextView) findViewById(R.id.salary);
         designation = (TextView) findViewById(R.id.designation);
         industry = (TextView) findViewById(R.id.industry);
-        company = (TextView) findViewById(R.id.company);
         education = (TextView) findViewById(R.id.education);
         weight = (TextView) findViewById(R.id.weight);
         currentLocation = (TextView) findViewById(R.id.current_location);
@@ -156,12 +214,13 @@ public class MainActivity extends AppCompatActivity {
         slideName = (TextView) findViewById(R.id.slide_name);
         slideReligion = (TextView) findViewById(R.id.slide_religion);
         slideTraits = (TextView) findViewById(R.id.slide_traits_match);
+        slideLike = (ImageButton) findViewById(R.id.slide_like);
         viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
         mainLikeButton = (ImageView) findViewById(R.id.like_button);
         mainSkipButton = (ImageView) findViewById(R.id.skip_button);
         mainUndoButton = (ImageView) findViewById(R.id.undo_button);
-        slideLike = (ImageButton) findViewById(R.id.slide_like);
         labelLoading = (TextView) findViewById(R.id.label_loading);
+        traitsProgress = (FabButton) findViewById(R.id.traits_progress);
     }
 
     void clickListeners() {
@@ -180,6 +239,8 @@ public class MainActivity extends AppCompatActivity {
                         if (profileList.size() > 0) {
                             setProfileDetails();
                         } else {
+                            isLoading = false;
+                            labelLoading.setText("No matching results found.");
                             rippleBackground.stopRippleAnimation();
                             rippleBackground.setVisibility(View.VISIBLE);
                         }
@@ -276,6 +337,8 @@ public class MainActivity extends AppCompatActivity {
                         if (profileList.size() > 0) {
                             setProfileDetails();
                         } else {
+                            isLoading = false;
+                            labelLoading.setText("No matching results found.");
                             rippleBackground.stopRippleAnimation();
                             rippleBackground.setVisibility(View.VISIBLE);
                         }
@@ -288,56 +351,7 @@ public class MainActivity extends AppCompatActivity {
         mainLikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mApp.isNetworkAvailable(context))
-                    try {
-                        HashMap<String, Object> params = new HashMap<>();
-                        params.put("userProfileId", profileObject.getObjectId());
-                        params.put("likeProfileId", profileList.get(0).getObjectId());
-                        params.put("userName", profileObject.fetchIfNeeded().getString("name"));
-
-                        ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
-                            @Override
-                            public void done(Object o, ParseException e) {
-                                if (e == null) {
-                                    slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                                    undoModel.setProfileParseObject(profileList.get(0));
-                                    undoModel.setActionPerformed(1);
-                                    profileList.remove(0);
-                                    if (profileList.size() > 0) {
-                                        setProfileDetails();
-                                    }
-                                    if (o != null) {
-                                        try {
-                                            if (o instanceof ParseObject) {
-                                                ParseObject parseObject = (ParseObject) o;
-                                                String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
-                                                String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
-                                                MatchesModel model = new MatchesModel();
-                                                model.setName(parseObject.fetchIfNeeded().getString("name"));
-                                                model.setProfileId(parseObject.getObjectId());
-                                                model.setReligion(religion + ", " + caste);
-                                                model.setWork(parseObject.getString("designation"));
-                                                model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                                                model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
-                                                Intent intent = new Intent();
-                                                startActivity(intent);
-                                            } else {
-                                                mApp.showToast(context, (String) o);
-                                            }
-                                        } catch (Exception e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-                                } else {
-                                    e.printStackTrace();
-                                    mApp.showToast(context, e.getMessage());
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        mApp.showToast(context, "Error while liking profile");
-                    }
+                likeProfile();
             }
         });
         viewFullProfile.setOnClickListener(new View.OnClickListener() {
@@ -353,56 +367,7 @@ public class MainActivity extends AppCompatActivity {
         slideLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mApp.isNetworkAvailable(context))
-                    try {
-                        HashMap<String, Object> params = new HashMap<>();
-                        params.put("userProfileId", profileObject);
-                        params.put("likeProfileId", profileList.get(0));
-                        params.put("userName", profileObject.getString("name"));
-
-                        ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
-                            @Override
-                            public void done(Object o, ParseException e) {
-                                if (e == null) {
-                                    if (o != null) {
-                                        try {
-                                            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-                                            undoModel.setProfileParseObject(profileList.get(0));
-                                            undoModel.setActionPerformed(1);
-                                            profileList.remove(0);
-                                            if (profileList.size() > 0) {
-                                                setProfileDetails();
-                                            }
-                                            if (o instanceof ParseObject) {
-                                                ParseObject parseObject = (ParseObject) o;
-                                                String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
-                                                String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
-                                                MatchesModel model = new MatchesModel();
-                                                model.setName(parseObject.fetchIfNeeded().getString("name"));
-                                                model.setProfileId(parseObject.getObjectId());
-                                                model.setReligion(religion + ", " + caste);
-                                                model.setWork(parseObject.getString("designation"));
-                                                model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                                                model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
-                                                Intent intent = new Intent();
-                                                startActivity(intent);
-                                            } else {
-
-                                            }
-                                        } catch (Exception e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-                                } else {
-                                    e.printStackTrace();
-                                    mApp.showToast(context, e.getMessage());
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        mApp.showToast(context, "Error while liking profile");
-                    }
+                likeProfile();
             }
         });
         rippleBackground.setOnClickListener(new View.OnClickListener() {
@@ -422,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
 
         context = this;
         mApp = (Common) context.getApplicationContext();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         try {
             getSupportActionBar().setTitle("Mandap Tak");
@@ -462,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
 
     void setNavigationMenu() {
         isLoading = false;
-        navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
+        View navigationMenu = View.inflate(this, R.layout.fragment_menu, null);
         final TypefaceTextView profileName = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_name);
         final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
         final TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
@@ -643,6 +608,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             if (profileList.get(0).containsKey("name") && profileList.get(0).getString("name") != null) {
                 String name = profileList.get(0).getString("name");
+                Log.e("Profile Name", "" + name);
                 frontProfileName.setText(name);
                 slideName.setText(name);
             }
@@ -753,12 +719,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        frontTraits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setTraits();
-            }
-        });
+        setTraits();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
         parseQuery.findInBackground(new FindCallback<ParseObject>() {

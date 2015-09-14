@@ -11,7 +11,6 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +26,6 @@ import com.mandaptak.android.Models.Location;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -39,30 +37,31 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import me.iwf.photopicker.entity.ParseNameModel;
+import me.iwf.photopicker.entity.Profile;
 import me.iwf.photopicker.utils.Prefs;
 
 public class BasicProfileFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
     Common mApp;
-    private TextView gender, datePicker, timepicker;
+    boolean isStarted = false;
+    boolean isVisible = false;
+    private TextView gender, datePicker, timePicker;
     private TextView placeOfBirth, currentLocation;
     private EditText displayName;
     private View rootView;
     private int year = 1992;
     private int month = 0;
     private int day = 1;
-    private int hourofDay = 0;
+    private int hourOfDay = 0;
     private int minute = 0;
     private String newName, newGender;
     private Calendar newTOB, newDOB;
-    private ParseObject newPOB, newCurrentLocation;
+    private ParseNameModel newPOB, newCurrentLocation;
     private Context context;
-    private Boolean isStarted = false;
-    private Boolean isVisible = false;
 
     public BasicProfileFragment() {
         // Required empty public constructor
@@ -206,10 +205,10 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             }
         });
 
-        timepicker.setOnClickListener(new View.OnClickListener() {
+        timePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                TimePickerDialog newFragment = new TimePickerDialog(context, BasicProfileFragment.this, hourofDay, minute, false);
+                TimePickerDialog newFragment = new TimePickerDialog(context, BasicProfileFragment.this, hourOfDay, minute, false);
                 newFragment.show();
             }
         });
@@ -223,7 +222,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         rootView = inflater.inflate(R.layout.fragment_edit_basic_profile, container, false);
         gender = (TextView) rootView.findViewById(R.id.gender);
         datePicker = (TextView) rootView.findViewById(R.id.date_of_birth);
-        timepicker = (TextView) rootView.findViewById(R.id.time_of_birth);
+        timePicker = (TextView) rootView.findViewById(R.id.time_of_birth);
         placeOfBirth = (TextView) rootView.findViewById(R.id.place_of_birth);
         currentLocation = (TextView) rootView.findViewById(R.id.current_location);
         displayName = (EditText) rootView.findViewById(R.id.display_name);
@@ -244,68 +243,43 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
     }
 
     public void getParseData() {
-        try {
-            mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    isStarted = false;
-                    if (e == null) {
-                        try {
-                            newName = parseObject.getString("name");
-                            newGender = parseObject.getString("gender");
-                            Date tmpDOB = parseObject.getDate("dob");
-                            Date tmpTOB = parseObject.getDate("tob");
-                            if (tmpDOB != null) {
-                                newDOB = Calendar.getInstance();
-                                newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                newDOB.setTime(tmpDOB);
-                            }
-                            if (tmpTOB != null) {
-                                newTOB = Calendar.getInstance();
-                                newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                newTOB.setTime(tmpTOB);
-                            }
-                            newCurrentLocation = parseObject.getParseObject("currentLocation");
-                            newPOB = parseObject.getParseObject("placeOfBirth");
+        if (Prefs.getProfile(context) != null) {
+            Profile profile = Prefs.getProfile(context);
+            try {
+                newName = profile.getName();
+                newGender = profile.getGender();
+                newTOB = profile.getTimeOfBirth();
+                newDOB = profile.getTimeOfBirth();
+                newCurrentLocation = profile.getCurrentLocation();
+                newPOB = profile.getPlaceOfBirth();
 
-                            if (newName != null) {
-                                displayName.setText(newName);
-                            }
-                            if (newGender != null) {
-                                gender.setText(newGender);
-                            }
-                            if (newDOB != null) {
-                                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                String subdateStr = df.format(newDOB.getTime());
-                                datePicker.setText(subdateStr);
-                            }
-                            if (newTOB != null) {
-                                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                String subdateStr = df.format(newTOB.getTime());
-                                timepicker.setText(subdateStr);
-                            }
-                            if (newPOB != null) {
-                                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
-                                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                            }
-                            if (newCurrentLocation != null) {
-                                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
-                                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                            }
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        e.printStackTrace();
-                    }
-                    mApp.dialog.dismiss();
+                if (newName != null) {
+                    displayName.setText(newName);
                 }
-            });
-        } catch (Exception ignored) {
+                if (newGender != null) {
+                    gender.setText(newGender);
+                }
+                if (newDOB != null) {
+                    DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String subdateStr = df.format(newDOB.getTime());
+                    datePicker.setText(subdateStr);
+                }
+                if (newTOB != null) {
+                    DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    String subdateStr = df.format(newTOB.getTime());
+                    timePicker.setText(subdateStr);
+                }
+                if (newPOB != null) {
+                    placeOfBirth.setText(newPOB.getName());
+                }
+                if (newCurrentLocation != null) {
+                    currentLocation.setText(newCurrentLocation.getName());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -327,8 +301,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            newPOB = locationArrayList.get(i).getCityObject();
-                            placeOfBirth.setText(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry());
+                            newPOB = new ParseNameModel(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry(), "City", locationArrayList.get(i).getCityObject().getObjectId());
+                            placeOfBirth.setText(newPOB.getName());
                             alertDialog.dismiss();
                         }
                     });
@@ -356,8 +330,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            currentLocation.setText(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry());
-                            newCurrentLocation = locationArrayList.get(i).getCityObject();
+                            newCurrentLocation = new ParseNameModel(locationArrayList.get(i).getCity() + ", " + locationArrayList.get(i).getState() + ", " + locationArrayList.get(i).getCountry(), "City", locationArrayList.get(i).getCityObject().getObjectId());
+                            currentLocation.setText(newCurrentLocation.getName());
                             alertDialog.dismiss();
                         }
                     });
@@ -367,7 +341,6 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         return locationArrayList;
     }
 
-    @Override
     public void onStart() {
         super.onStart();
         isStarted = true;
@@ -389,29 +362,27 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     public void saveInfo() {
         try {
+            Profile profile = new Profile();
+            if (Prefs.getProfile(context) != null) {
+                profile = Prefs.getProfile(context);
+            }
             newName = displayName.getText().toString();
-            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (newGender != null)
-                        parseObject.put("gender", newGender);
-                    if (newName != null)
-                        if (newName.trim() != null && !newName.trim().equals(""))
-                            parseObject.put("name", newName.trim());
-                    if (newPOB != null)
-                        parseObject.put("placeOfBirth", newPOB);
-                    if (newCurrentLocation != null)
-                        parseObject.put("currentLocation", newCurrentLocation);
-                    if (newTOB != null)
-                        parseObject.put("tob", newTOB.getTime());
-                    if (newDOB != null)
-                        parseObject.put("dob", newDOB.getTime());
-                    parseObject.saveInBackground();
-                }
-            });
-            Log.e("Save Screen", "1");
-        } catch (Exception ignored) {
+            if (newGender != null)
+                profile.setGender(newGender);
+            if (newName != null)
+                if (newName.trim() != null && !newName.trim().equals(""))
+                    profile.setName(newName.trim());
+            if (newPOB != null)
+                profile.setPlaceOfBirth(newPOB);
+            if (newCurrentLocation != null)
+                profile.setCurrentLocation(newCurrentLocation);
+            if (newTOB != null)
+                profile.setTimeOfBirth(newTOB);
+            if (newDOB != null)
+                profile.setDateOfBirth(newDOB);
+            Prefs.setProfile(context, profile);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -432,7 +403,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
 
     @Override
     public void onTimeSet(TimePicker tp, int hourOfDay, int minute) {
-        this.hourofDay = hourOfDay;
+        this.hourOfDay = hourOfDay;
         this.minute = minute;
         newTOB = Calendar.getInstance();
         newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -440,7 +411,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         SimpleDateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
         String subdateStr = df.format(newTOB.getTime());
-        timepicker.setText(subdateStr);
+        timePicker.setText(subdateStr);
     }
 
     public class LocationAdapter extends ArrayAdapter<Location> {

@@ -22,12 +22,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.mandaptak.android.Models.ParseNameModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -36,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import me.iwf.photopicker.entity.ParseNameModel;
+import me.iwf.photopicker.entity.Profile;
 import me.iwf.photopicker.utils.Prefs;
 
 public class QualificationEditProfileFragment extends Fragment {
@@ -48,7 +48,7 @@ public class QualificationEditProfileFragment extends Fragment {
     private View rootView;
     private View educationLayoutChild2, educationLayoutChild3;
     private ImageView eduChildClose2, eduChildClose3;
-    private ParseObject newIndustry;
+    private ParseNameModel newIndustry;
     private int newWorkAfterMarriage = 0;
     private long newCurrentIncome = 0;
     private String newDesignation, newCompany;
@@ -122,7 +122,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         public void done(List<ParseObject> list, ParseException e) {
                             if (list != null && list.size() > 0) {
                                 for (ParseObject model : list) {
-                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                    degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                 }
                                 listView.setAdapter(new DataAdapter(context, degreeList));
                                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -134,7 +134,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
                                             public void done(final List<ParseObject> list, ParseException e) {
@@ -152,7 +152,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                         public void onClick(DialogInterface dialog,
                                                                                             int index) {
                                                                             try {
-                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), "Specialization", list.get(index).getObjectId());
                                                                                 eduChildDegree1.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                                 eduChildDegreeBranch1.setText(newEducationDetail1.getName());
                                                                             } catch (ParseException e1) {
@@ -164,7 +164,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                             mApp.dialog.dismiss();
                                                             alert.show();
                                                         } else {
-                                                            newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                            newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                             eduChildDegree1.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                             eduChildDegreeBranch1.setText(newEducationDetail1.getName());
                                                             mApp.dialog.dismiss();
@@ -204,7 +204,7 @@ public class QualificationEditProfileFragment extends Fragment {
                             public void done(List<ParseObject> list, ParseException e) {
                                 if (list != null && list.size() > 0) {
                                     for (ParseObject model : list) {
-                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                        degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                     }
                                     listView.setAdapter(new DataAdapter(context, degreeList));
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -216,7 +216,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
                                                 public void done(final List<ParseObject> list, ParseException e) {
@@ -233,7 +233,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                         public void onClick(DialogInterface dialog,
                                                                                             int index) {
                                                                             try {
-                                                                                newEducationDetail1 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                                                 eduChildDegree1.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                                 eduChildDegreeBranch1.setText(newEducationDetail1.getName());
                                                                             } catch (ParseException e1) {
@@ -245,7 +245,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                             mApp.dialog.dismiss();
                                                             alert.show();
                                                         } else {
-                                                            newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                            newEducationDetail1 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                             eduChildDegree1.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                             eduChildDegreeBranch1.setText(newEducationDetail1.getName());
                                                             mApp.dialog.dismiss();
@@ -290,7 +290,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         public void done(List<ParseObject> list, ParseException e) {
                             if (list != null && list.size() > 0) {
                                 for (ParseObject model : list) {
-                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                    degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                 }
                                 listView.setAdapter(new DataAdapter(context, degreeList));
                                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -302,7 +302,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
 
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
@@ -324,7 +324,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                     public void onClick(DialogInterface dialog,
                                                                                         int index) {
                                                                         try {
-                                                                            newEducationDetail2 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                            newEducationDetail2 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                                             eduChildDegree2.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                             eduChildDegreeBranch2.setText(newEducationDetail2.getName());
                                                                         } catch (ParseException e1) {
@@ -337,7 +337,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                         alert.show();
                                                     } else {
                                                         try {
-                                                            newEducationDetail2 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                            newEducationDetail2 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                             eduChildDegree2.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                             eduChildDegreeBranch2.setText(newEducationDetail2.getName());
                                                         } catch (Exception e1) {
@@ -377,7 +377,7 @@ public class QualificationEditProfileFragment extends Fragment {
                             public void done(List<ParseObject> list, ParseException e) {
                                 if (list != null && list.size() > 0) {
                                     for (ParseObject model : list) {
-                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                        degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                     }
                                     listView.setAdapter(new DataAdapter(context, degreeList));
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -389,7 +389,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
                                                 public void done(final List<ParseObject> list, ParseException e) {
@@ -410,7 +410,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                         public void onClick(DialogInterface dialog,
                                                                                             int index) {
                                                                             try {
-                                                                                newEducationDetail2 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                newEducationDetail2 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), "Specialization", list.get(index).getObjectId());
                                                                                 eduChildDegree2.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                                 eduChildDegreeBranch2.setText(newEducationDetail2.getName());
                                                                             } catch (ParseException e1) {
@@ -423,7 +423,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                             alert.show();
                                                         } else {
                                                             try {
-                                                                newEducationDetail2 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                                newEducationDetail2 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                                 eduChildDegree2.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                 eduChildDegreeBranch2.setText(newEducationDetail2.getName());
                                                             } catch (Exception e1) {
@@ -469,7 +469,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         public void done(List<ParseObject> list, ParseException e) {
                             if (list != null && list.size() > 0) {
                                 for (ParseObject model : list) {
-                                    degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                    degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                 }
                                 listView.setAdapter(new DataAdapter(context, degreeList));
                                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -481,7 +481,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                        parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                        parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
                                             public void done(final List<ParseObject> list, ParseException e) {
@@ -502,7 +502,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                     public void onClick(DialogInterface dialog,
                                                                                         int index) {
                                                                         try {
-                                                                            newEducationDetail3 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                            newEducationDetail3 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), "Specialization", list.get(index).getObjectId());
                                                                             eduChildDegree3.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                             eduChildDegreeBranch3.setText(newEducationDetail3.getName());
                                                                         } catch (ParseException e1) {
@@ -515,7 +515,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                         alert.show();
                                                     } else {
                                                         try {
-                                                            newEducationDetail3 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                            newEducationDetail3 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                             eduChildDegree3.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                             eduChildDegreeBranch3.setText(newEducationDetail3.getName());
                                                         } catch (Exception e1) {
@@ -555,7 +555,7 @@ public class QualificationEditProfileFragment extends Fragment {
                             public void done(List<ParseObject> list, ParseException e) {
                                 if (list != null && list.size() > 0) {
                                     for (ParseObject model : list) {
-                                        degreeList.add(new ParseNameModel(model.getString("name"), model));
+                                        degreeList.add(new ParseNameModel(model.getString("name"), "Degree", model.getObjectId()));
                                     }
                                     listView.setAdapter(new DataAdapter(context, degreeList));
                                     listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -567,7 +567,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
-                                            parseQuery.whereEqualTo("degreeId", degreeList.get(i).getParseObject());
+                                            parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
                                                 public void done(final List<ParseObject> list, ParseException e) {
@@ -588,7 +588,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                                         public void onClick(DialogInterface dialog,
                                                                                             int index) {
                                                                             try {
-                                                                                newEducationDetail3 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), list.get(index));
+                                                                                newEducationDetail3 = new ParseNameModel(list.get(index).fetchIfNeeded().getString("name"), "Specialization", list.get(index).getObjectId());
                                                                                 eduChildDegree3.setText(list.get(index).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                                 eduChildDegreeBranch3.setText(newEducationDetail3.getName());
                                                                             } catch (ParseException e1) {
@@ -601,7 +601,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                             alert.show();
                                                         } else {
                                                             try {
-                                                                newEducationDetail3 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), list.get(0));
+                                                                newEducationDetail3 = new ParseNameModel(list.get(0).fetchIfNeeded().getString("name"), "Specialization", list.get(0).getObjectId());
                                                                 eduChildDegree3.setText(list.get(0).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                                                                 eduChildDegreeBranch3.setText(newEducationDetail3.getName());
                                                             } catch (Exception e1) {
@@ -696,65 +696,47 @@ public class QualificationEditProfileFragment extends Fragment {
     }
 
     public void getParseData() {
-        try {
-            mApp.show_PDialog(context, "Loading..");
-            ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-            query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    isStarted = false;
-                    if (e == null) {
-                        try {
-                            mainEducationLayout.removeAllViews();
-                            newWorkAfterMarriage = parseObject.getInt("workAfterMarriage");
-                            newCurrentIncome = parseObject.getLong("package");
-                            newDesignation = parseObject.getString("designation");
-                            newCompany = parseObject.getString("placeOfWork");
-                            newIndustry = parseObject.getParseObject("industryId");
-                            ParseObject tmpEdu1 = parseObject.getParseObject("education1");
-                            ParseObject tmpEdu2 = parseObject.getParseObject("education2");
-                            ParseObject tmpEdu3 = parseObject.getParseObject("education3");
-                            if (tmpEdu1 != null) {
-                                newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), tmpEdu1);
-                                eduChildDegreeBranch1.setText(newEducationDetail1.getName());
-                                eduChildDegree1.setText(newEducationDetail1.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
-                            }
-                            if (tmpEdu2 != null) {
-                                mainEducationLayout.addView(educationLayoutChild2);
-                                newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), tmpEdu2);
-                                eduChildDegreeBranch2.setText(newEducationDetail2.getName());
-                                eduChildDegree2.setText(newEducationDetail2.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
-                            }
-                            if (tmpEdu3 != null) {
-                                mainEducationLayout.addView(educationLayoutChild3);
-                                educationMoreButton.setVisibility(View.GONE);
-                                newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), tmpEdu3);
-                                eduChildDegreeBranch3.setText(newEducationDetail3.getName());
-                                eduChildDegree3.setText(newEducationDetail3.getParseObject().fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
-                            }
-                            if (newCurrentIncome != 0)
-                                currentIncome.setText(String.valueOf(newCurrentIncome));
-                            if (newIndustry != null)
-                                industry.setText(newIndustry.fetchIfNeeded().getString("name"));
-                            if (newCompany != null)
-                                if (!newCompany.trim().equals(""))
-                                    company.setText(newCompany.trim());
-                            if (newDesignation != null)
-                                if (!newDesignation.trim().equals(""))
-                                    designation.setText(newDesignation.trim());
-                            workAfterMarriage.setSelection(newWorkAfterMarriage);
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-                    } else {
-                        mApp.showToast(context, e.getMessage());
-                        e.printStackTrace();
-                    }
-                    mApp.dialog.dismiss();
+        if (Prefs.getProfile(context) != null) {
+            Profile profile = Prefs.getProfile(context);
+            try {
+                mainEducationLayout.removeAllViews();
+                newWorkAfterMarriage = profile.getWorkAfterMarriage();
+                newCurrentIncome = profile.getIncome();
+                newDesignation = profile.getDesignation();
+                newCompany = profile.getCompany();
+                newIndustry = profile.getIndustry();
+                newEducationDetail1 = profile.getEducation1();
+                newEducationDetail2 = profile.getEducation2();
+                newEducationDetail3 = profile.getEducation3();
+                if (newEducationDetail1 != null) {
+                    eduChildDegreeBranch1.setText(newEducationDetail1.getName());
+                    eduChildDegree1.setText(ParseObject.createWithoutData(newEducationDetail1.getClassName(), newEducationDetail1.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                 }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
+                if (newEducationDetail2 != null) {
+                    mainEducationLayout.addView(educationLayoutChild2);
+                    eduChildDegreeBranch2.setText(newEducationDetail2.getName());
+                    eduChildDegree2.setText(ParseObject.createWithoutData(newEducationDetail2.getClassName(), newEducationDetail2.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                }
+                if (newEducationDetail3 != null) {
+                    mainEducationLayout.addView(educationLayoutChild3);
+                    educationMoreButton.setVisibility(View.GONE);
+                    eduChildDegreeBranch3.setText(newEducationDetail3.getName());
+                    eduChildDegree3.setText(ParseObject.createWithoutData(newEducationDetail3.getClassName(), newEducationDetail3.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                }
+                if (newCurrentIncome != 0)
+                    currentIncome.setText(String.valueOf(newCurrentIncome));
+                if (newIndustry != null)
+                    industry.setText(newIndustry.getName());
+                if (newCompany != null)
+                    if (!newCompany.trim().equals(""))
+                        company.setText(newCompany.trim());
+                if (newDesignation != null)
+                    if (!newDesignation.trim().equals(""))
+                        designation.setText(newDesignation.trim());
+                workAfterMarriage.setSelection(newWorkAfterMarriage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -766,7 +748,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 public void done(List<ParseObject> list, ParseException e) {
                     if (list != null && list.size() > 0) {
                         for (ParseObject model : list) {
-                            industryList.add(new ParseNameModel(model.getString("name"), model));
+                            industryList.add(new ParseNameModel(model.getString("name"), "Industries", model.getObjectId()));
                         }
                     }
                 }
@@ -789,8 +771,8 @@ public class QualificationEditProfileFragment extends Fragment {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog,
                                             int index) {
-                            newIndustry = industryList.get(index).getParseObject();
-                            industry.setText(industryList.get(index).getName());
+                            newIndustry = industryList.get(index);
+                            industry.setText(newIndustry.getName());
                         }
                     });
             AlertDialog alert = conductor.create();
@@ -875,29 +857,26 @@ public class QualificationEditProfileFragment extends Fragment {
         try {
             newDesignation = designation.getText().toString();
             newCompany = company.getText().toString();
-            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (newCurrentIncome != 0)
-                        parseObject.put("package", newCurrentIncome);
-                    if (newCompany != null && !newCompany.equals("") && !newCompany.trim().equals(""))
-                        parseObject.put("placeOfWork", newCompany);
-                    if (newDesignation != null && !newDesignation.equals("") && !newDesignation.trim().equals(""))
-                        parseObject.put("designation", newDesignation);
-                    if (newIndustry != null)
-                        parseObject.put("industryId", newIndustry);
-                    if (newEducationDetail1 != null)
-                        parseObject.put("education1", newEducationDetail1.getParseObject());
-                    if (newEducationDetail2 != null)
-                        parseObject.put("education2", newEducationDetail2.getParseObject());
-                    if (newEducationDetail3 != null)
-                        parseObject.put("education3", newEducationDetail3.getParseObject());
-                    if (!isVisible && !isStarted)
-                        parseObject.put("workAfterMarriage", newWorkAfterMarriage);
-                    parseObject.saveInBackground();
-                }
-            });
+            Profile profile = new Profile();
+            if (Prefs.getProfile(context) != null) {
+                profile = Prefs.getProfile(context);
+            }
+            if (newCurrentIncome != 0)
+                profile.setIncome(newCurrentIncome);
+            if (newCompany != null && !newCompany.equals("") && !newCompany.trim().equals(""))
+                profile.setCompany(newCompany);
+            if (newDesignation != null && !newDesignation.equals("") && !newDesignation.trim().equals(""))
+                profile.setDesignation(newDesignation);
+            if (newIndustry != null)
+                profile.setIndustry(newIndustry);
+            if (newEducationDetail1 != null)
+                profile.setEducation1(newEducationDetail1);
+            if (newEducationDetail2 != null)
+                profile.setEducation2(newEducationDetail1);
+            if (newEducationDetail3 != null)
+                profile.setEducation3(newEducationDetail1);
+            profile.setWorkAfterMarriage(newWorkAfterMarriage);
+            Prefs.setProfile(context, profile);
             Log.e("Save Screen", "3");
         } catch (Exception ignored) {
         }

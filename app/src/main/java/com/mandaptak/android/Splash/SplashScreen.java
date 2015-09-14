@@ -78,6 +78,7 @@ public class SplashScreen extends AppCompatActivity {
                                                     }
                                                 } else {
                                                     ParseUser.logOut();
+                                                    com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                                     mApp.showToast(context, "Account Deactivated: Contact Agent");
                                                     startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                     SplashScreen.this.finish();
@@ -85,6 +86,7 @@ public class SplashScreen extends AppCompatActivity {
                                             } catch (Exception e1) {
                                                 e1.printStackTrace();
                                                 ParseUser.logOut();
+                                                com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                                 mApp.showToast(context, "Account Deactivated: Contact Agent");
                                                 startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                 SplashScreen.this.finish();
@@ -92,6 +94,7 @@ public class SplashScreen extends AppCompatActivity {
                                         } else if (e.getCode() == 209) {
                                             //INVALID SESSION TOKEN
                                             ParseUser.logOut();
+                                            com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                             startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                             SplashScreen.this.finish();
                                         } else {
@@ -112,6 +115,7 @@ public class SplashScreen extends AppCompatActivity {
                                                     SplashScreen.this.finish();
                                                 } else {
                                                     ParseUser.logOut();
+                                                    com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                                     mApp.showToast(context, "Account Deactivated: Contact Administrator");
                                                     startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                     SplashScreen.this.finish();
@@ -119,6 +123,7 @@ public class SplashScreen extends AppCompatActivity {
                                             } catch (ParseException e1) {
                                                 e1.printStackTrace();
                                                 ParseUser.logOut();
+                                                com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                                 mApp.showToast(context, "Account Deactivated: Contact Administrator");
                                                 startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                                 SplashScreen.this.finish();
@@ -126,6 +131,7 @@ public class SplashScreen extends AppCompatActivity {
                                         } else if (e.getCode() == 209) {
                                             //INVALID SESSION TOKEN
                                             ParseUser.logOut();
+                                            com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                             startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                             SplashScreen.this.finish();
                                         } else {
@@ -136,6 +142,7 @@ public class SplashScreen extends AppCompatActivity {
                                 });
                             } else {
                                 ParseUser.logOut();
+                                com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                                 mApp.showToast(context, "Admin Comming Soon");
                                 startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                                 SplashScreen.this.finish();
@@ -146,6 +153,7 @@ public class SplashScreen extends AppCompatActivity {
                 } catch (Exception e) {
                     //INVALID SESSION TOKEN
                     ParseUser.logOut();
+                    com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                     startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                     SplashScreen.this.finish();
                     e.printStackTrace();

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
 
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     TwoWayView profileImages;
     UserImagesAdapter userImagesAdapter;
     ArrayList<ParseObject> profileList = new ArrayList<>();
-    TextView frontProfileName, frontHeight, frontDesignation, frontReligion;
+    TextView frontProfileName, frontHeight, frontDesignation, frontReligion, frontTraits;
     CircleImageView frontPhoto, loadingProfile;
     BlurringView blurringView;
     TextView salary, industry, designation, company, education, weight, currentLocation, viewFullProfile;
@@ -85,7 +87,43 @@ public class MainActivity extends AppCompatActivity {
     UndoModel undoModel;
     TextView labelLoading;
     ParseObject profileObject;
+    FabButton traitsProgress;
     boolean isLoading = false;
+
+    void setTraits() {
+        try {
+            traitsProgress.setProgress(24);
+            traitsProgress.showProgress(true);
+            HashMap<String, Object> params = new HashMap<>();
+            if (profileObject.getString("gender").equalsIgnoreCase("Male")) {
+                params.put("boyProfileId", profileObject.getObjectId());
+                params.put("girlProfileId", profileList.get(0).getObjectId());
+            } else {
+                params.put("boyProfileId", profileList.get(0).getObjectId());
+                params.put("girlProfileId", profileObject.getObjectId());
+            }
+
+            ParseCloud.callFunctionInBackground("matchKundli", params, new FunctionCallback<Object>() {
+                @Override
+                public void done(Object o, ParseException e) {
+                    if (e == null) {
+                        if (o != null) {
+                            try {
+                                Log.e("", "" + o);
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    } else {
+                        e.printStackTrace();
+                        mApp.showToast(context, e.getMessage());
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     void init() {
         undoModel = new UndoModel();
@@ -104,6 +142,8 @@ public class MainActivity extends AppCompatActivity {
         frontDesignation = (TextView) findViewById(R.id.front_designation);
         frontHeight = (TextView) findViewById(R.id.front_height);
         frontReligion = (TextView) findViewById(R.id.front_religion);
+        frontTraits = (TextView) findViewById(R.id.front_traits);
+        traitsProgress = (FabButton) findViewById(R.id.traits_progress);
         salary = (TextView) findViewById(R.id.salary);
         designation = (TextView) findViewById(R.id.designation);
         industry = (TextView) findViewById(R.id.industry);
@@ -713,7 +753,12 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        frontTraits.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setTraits();
+            }
+        });
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
         parseQuery.findInBackground(new FindCallback<ParseObject>() {

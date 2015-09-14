@@ -24,6 +24,7 @@
             android:clipChildren="false"
             android:scaleType="centerCrop"/>
 
+
         <com.mandaptak.android.Views.BlurringView
             android:id="@+id/blurring_view"
             android:layout_width="match_parent"
@@ -44,6 +45,41 @@
             app:border_color="@color/white"
             app:border_overlay="true"
             app:border_width="2dp"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toolbar"
+            android:layout_margin="16dp">
+
+            <mbanje.kurt.fabbutton.FabButton
+                android:id="@+id/traits_progress"
+                android:layout_width="?listPreferredItemHeightLarge"
+                android:layout_height="?listPreferredItemHeightLarge"
+                android:layout_gravity="center"
+                android:color="@color/transparent"
+                android:indeterminate="false"
+                android:max="32"
+                android:src="@color/transparent"
+                android:visibility="visible"
+                app:fbb_autoStart="false"
+                app:fbb_progressColor="@color/teal_400"
+                app:fbb_progressWidthRatio="0.1"
+                app:fbb_showEndBitmap="false"/>
+
+            <TextView
+                android:id="@+id/front_traits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="24\nTraits\nMatch"
+                android:textColor="@color/white"
+                android:textSize="12sp"/>
+
+        </FrameLayout>
 
         <LinearLayout
             android:id="@+id/bottom_layout"

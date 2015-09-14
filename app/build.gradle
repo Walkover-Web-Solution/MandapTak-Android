@@ -49,4 +49,5 @@ dependencies {
     compile project(":rippleBack")
     compile project(":twoWayViewLayouts")
     compile project(":layer-atlas")
+    compile project(":fabButton")
 }

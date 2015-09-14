@@ -401,7 +401,8 @@ public class DetailsProfileFragment extends Fragment {
                 newCaste = profile.getCaste();
                 newGotra = profile.getGotra();
                 newManglik = profile.getManglik();
-                manglik.setSelection(newManglik);
+                if (newManglik != -1)
+                    manglik.setSelection(newManglik);
                 if (newHeight != 0) {
                     if (isAdded()) {
                         int[] bases = getResources().getIntArray(R.array.heightCM);

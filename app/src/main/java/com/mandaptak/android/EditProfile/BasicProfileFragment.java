@@ -261,13 +261,13 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 }
                 if (newDOB != null) {
                     DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String subdateStr = df.format(newDOB.getTime());
                     datePicker.setText(subdateStr);
                 }
                 if (newTOB != null) {
                     DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//                    df.setTimeZone(TimeZone.getTimeZone("UTC"));
                     String subdateStr = df.format(newTOB.getTime());
                     timePicker.setText(subdateStr);
                 }

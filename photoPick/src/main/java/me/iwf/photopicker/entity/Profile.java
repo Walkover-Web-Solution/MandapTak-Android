@@ -10,23 +10,23 @@ public class Profile implements Serializable {
     private Calendar timeOfBirth;
     private ParseNameModel placeOfBirth;
     private ParseNameModel currentLocation;
-    private int weight;
-    private int height;
+    private int weight = 0;
+    private int height = 0;
     private ParseNameModel religion;
     private ParseNameModel caste;
     private ParseNameModel gotra;
-    private int manglik;
+    private int manglik = -1;
     private ParseNameModel industry;
     private String designation;
     private String company;
-    private long income;
+    private long income = -1;
     private ParseNameModel education1;
     private ParseNameModel education2;
     private ParseNameModel education3;
-    private int workAfterMarriage;
+    private int workAfterMarriage = -1;
     private String biodata;
-    private long minBudget;
-    private long maxBudget;
+    private long minBudget = -1;
+    private long maxBudget = -1;
 
     public Profile() {
     }

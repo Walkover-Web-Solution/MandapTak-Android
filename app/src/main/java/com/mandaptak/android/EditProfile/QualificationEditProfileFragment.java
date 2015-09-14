@@ -50,7 +50,7 @@ public class QualificationEditProfileFragment extends Fragment {
     private ImageView eduChildClose2, eduChildClose3;
     private ParseNameModel newIndustry;
     private int newWorkAfterMarriage = 0;
-    private long newCurrentIncome = 0;
+    private long newCurrentIncome = -1;
     private String newDesignation, newCompany;
     private ParseNameModel newEducationDetail1, newEducationDetail2, newEducationDetail3;
     private TextView eduChildDegree1, eduChildDegree2, eduChildDegree3;
@@ -644,7 +644,7 @@ public class QualificationEditProfileFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() == 0) {
-                    newCurrentIncome = 0;
+                    newCurrentIncome = -1;
                     currentIncome.setPrefix("");
                 } else {
                     currentIncome.setPrefix("Rs. ");
@@ -723,7 +723,7 @@ public class QualificationEditProfileFragment extends Fragment {
                     eduChildDegreeBranch3.setText(newEducationDetail3.getName());
                     eduChildDegree3.setText(ParseObject.createWithoutData(newEducationDetail3.getClassName(), newEducationDetail3.getParseObjectId()).fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
                 }
-                if (newCurrentIncome != 0)
+                if (newCurrentIncome != -1)
                     currentIncome.setText(String.valueOf(newCurrentIncome));
                 if (newIndustry != null)
                     industry.setText(newIndustry.getName());
@@ -861,7 +861,7 @@ public class QualificationEditProfileFragment extends Fragment {
             if (Prefs.getProfile(context) != null) {
                 profile = Prefs.getProfile(context);
             }
-            if (newCurrentIncome != 0)
+            if (newCurrentIncome != -1)
                 profile.setIncome(newCurrentIncome);
             if (newCompany != null && !newCompany.equals("") && !newCompany.trim().equals(""))
                 profile.setCompany(newCompany);

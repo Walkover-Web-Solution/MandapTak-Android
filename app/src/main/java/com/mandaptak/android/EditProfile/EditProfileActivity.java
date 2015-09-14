@@ -17,6 +17,7 @@ import android.view.View;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.MyViewPager;
@@ -193,6 +194,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                                     pob.setName(newPOB.fetchIfNeeded().getString("name")
                                             + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
                                     pob.setParseObjectId(newPOB.getObjectId());
+                                    pob.setClassName("City");
                                     profile.setPlaceOfBirth(pob);
                                 }
                                 if (newCurrentLocation != null) {
@@ -200,6 +202,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                                     currentLocation.setName(newCurrentLocation.fetchIfNeeded().getString("name")
                                             + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
                                     currentLocation.setParseObjectId(newCurrentLocation.getObjectId());
+                                    currentLocation.setClassName("City");
                                     profile.setCurrentLocation(currentLocation);
                                 }
 
@@ -300,52 +303,52 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean checkFieldsTab1(ParseObject parseObject) {
-        if (!parseObject.containsKey("name") || parseObject.get("name").equals(JSONObject.NULL)) {
+    private boolean checkFieldsTab1(Profile profile) {
+        if (profile.getName() == null) {
             return false;
-        } else if (!parseObject.containsKey("gender") || parseObject.get("gender").equals(JSONObject.NULL)) {
+        } else if (profile.getGender() == null) {
             return false;
-        } else if (!parseObject.containsKey("dob") || parseObject.get("dob").equals(JSONObject.NULL)) {
+        } else if (profile.getDateOfBirth() == null) {
             return false;
-        } else if (!parseObject.containsKey("tob") || parseObject.get("tob").equals(JSONObject.NULL)) {
+        } else if (profile.getTimeOfBirth() == null) {
             return false;
-        } else if (!parseObject.containsKey("currentLocation") || parseObject.get("currentLocation").equals(JSONObject.NULL)) {
+        } else if (profile.getCurrentLocation() == null) {
             return false;
-        } else if (!parseObject.containsKey("placeOfBirth") || parseObject.get("placeOfBirth").equals(JSONObject.NULL)) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean checkFieldsTab2(ParseObject parseObject) {
-        if (!parseObject.containsKey("height") || parseObject.get("height").equals(JSONObject.NULL)) {
-            return false;
-        } else if (!parseObject.has("weight") || parseObject.get("weight").equals(JSONObject.NULL)) {
-            return false;
-        } else if (!parseObject.has("religionId") || parseObject.get("religionId").equals(JSONObject.NULL)) {
-            return false;
-        } else if (!parseObject.has("casteId") || parseObject.get("casteId").equals(JSONObject.NULL)) {
-            return false;
-        } else if (!parseObject.containsKey("manglik") || parseObject.get("manglik").equals(JSONObject.NULL)) {
+        } else if (profile.getPlaceOfBirth() == null) {
             return false;
         } else {
             return true;
         }
     }
 
-    private boolean checkFieldsTab3(ParseObject parseObject) {
-        if (!parseObject.containsKey("workAfterMarriage") || parseObject.get("workAfterMarriage").equals(JSONObject.NULL)) {
+    private boolean checkFieldsTab2(Profile profile) {
+        if (profile.getHeight() == 0) {
             return false;
-        } else if (!parseObject.has("package") || parseObject.get("package").equals(JSONObject.NULL)) {
+        } else if (profile.getWeight() == 0) {
             return false;
-        } else if (!parseObject.has("designation") || parseObject.get("designation").equals(JSONObject.NULL)) {
+        } else if (profile.getReligion() == null) {
             return false;
-        } else if (!parseObject.has("placeOfWork") || parseObject.get("placeOfWork").equals(JSONObject.NULL)) {
+        } else if (profile.getCaste() == null) {
             return false;
-        } else if (!parseObject.has("industryId") || parseObject.get("industryId").equals(JSONObject.NULL)) {
+        } else if (profile.getManglik() == -1) {
             return false;
-        } else if (!parseObject.containsKey("education1") || parseObject.get("education1").equals(JSONObject.NULL)) {
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkFieldsTab3(Profile profile) {
+        if (profile.getWorkAfterMarriage() == -1) {
+            return false;
+        } else if (profile.getIncome() == -1) {
+            return false;
+        } else if (profile.getDesignation() == null) {
+            return false;
+        } else if (profile.getPlaceOfBirth() == null) {
+            return false;
+        } else if (profile.getIndustry() == null) {
+            return false;
+        } else if (profile.getEducation1() == null) {
             return false;
         } else {
             return true;
@@ -355,73 +358,107 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     private boolean checkFieldsTab4(ParseObject parseObject) {
         if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
             return false;
-        } else if (!parseObject.has("package") || parseObject.get("package").equals(JSONObject.NULL)) {
-            return false;
         } else {
             return true;
         }
     }
 
     private void validateProfile(final ParseObject parseObject) {
-        if (checkFieldsTab1(parseObject)) {
-            if (checkFieldsTab2(parseObject)) {
-                if (checkFieldsTab3(parseObject)) {
-                    if (checkFieldsTab4(parseObject)) {
-                        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                        queryParseQuery.whereEqualTo("profileId", parseObject);
-                        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> list, ParseException e) {
-                                boolean isPrimarySet = false;
-                                if (list != null) {
-                                    for (ParseObject item : list) {
-                                        if (item.getBoolean("isPrimary")) {
-                                            isPrimarySet = true;
+        if (Prefs.getProfile(context) != null) {
+            final Profile profile = Prefs.getProfile(context);
+            if (checkFieldsTab1(profile)) {
+                if (checkFieldsTab2(profile)) {
+                    if (checkFieldsTab3(profile)) {
+                        if (checkFieldsTab4(parseObject)) {
+                            ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                            queryParseQuery.whereEqualTo("profileId", parseObject);
+                            queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                @Override
+                                public void done(List<ParseObject> list, ParseException e) {
+                                    boolean isPrimarySet = false;
+                                    if (list != null) {
+                                        for (ParseObject item : list) {
+                                            if (item.getBoolean("isPrimary")) {
+                                                isPrimarySet = true;
+                                            }
                                         }
                                     }
-                                }
-                                if (isPrimarySet) {
-                                    parseObject.put("isComplete", true);
-                                    parseObject.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            if (e == null) {
-                                                try {
-                                                    startActivity(new Intent(EditProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                                    EditProfileActivity.this.finish();
-                                                    mApp.showToast(context, "Profile updated");
-                                                } catch (Exception e2) {
-                                                    mApp.showToast(context, "Error while updating profile");
-                                                    e2.printStackTrace();
-                                                }
-                                            } else {
-                                                mApp.showToast(context, "Error while updating profile");
-                                                e.printStackTrace();
-                                            }
-                                            mApp.dialog.dismiss();
+                                    if (isPrimarySet) {
+                                        parseObject.put("name", profile.getName());
+                                        parseObject.put("gender", profile.getGender());
+                                        parseObject.put("dob", profile.getDateOfBirth().getTime());
+                                        parseObject.put("tob", profile.getTimeOfBirth().getTime());
+                                        parseObject.put("placeOfBirth", ParseObject.createWithoutData(profile.getPlaceOfBirth().getClassName(), profile.getPlaceOfBirth().getParseObjectId()));
+                                        parseObject.put("currentLocation", ParseObject.createWithoutData(profile.getCurrentLocation().getClassName(), profile.getCurrentLocation().getParseObjectId()));
+                                        parseObject.put("height", profile.getHeight());
+                                        parseObject.put("weight", profile.getWeight());
+                                        parseObject.put("religionId", ParseObject.createWithoutData(profile.getReligion().getClassName(), profile.getReligion().getParseObjectId()));
+                                        parseObject.put("casteId", ParseObject.createWithoutData(profile.getCaste().getClassName(), profile.getCaste().getParseObjectId()));
+                                        if (profile.getGotra() != null) {
+                                            parseObject.put("gotraId", ParseObject.createWithoutData(profile.getGotra().getClassName(), profile.getGotra().getParseObjectId()));
                                         }
-                                    });
-                                } else {
-                                    mApp.dialog.dismiss();
-                                    mApp.showToast(context, "Please select a primary profile photo");
+                                        parseObject.put("manglik", profile.getManglik());
+                                        parseObject.put("industryId", ParseObject.createWithoutData(profile.getIndustry().getClassName(), profile.getIndustry().getParseObjectId()));
+                                        parseObject.put("designation", profile.getDesignation());
+                                        if (profile.getCompany() != null)
+                                            parseObject.put("placeOfWork", profile.getCompany());
+                                        parseObject.put("package", profile.getIncome());
+
+                                        parseObject.put("education1", ParseObject.createWithoutData(profile.getEducation1().getClassName(), profile.getEducation1().getParseObjectId()));
+                                        if (profile.getEducation2() != null)
+                                            parseObject.put("education2", ParseObject.createWithoutData(profile.getEducation2().getClassName(), profile.getEducation2().getParseObjectId()));
+                                        if (profile.getEducation3() != null)
+                                            parseObject.put("education3", ParseObject.createWithoutData(profile.getEducation3().getClassName(), profile.getEducation3().getParseObjectId()));
+                                        parseObject.put("workAfterMarriage", profile.getWorkAfterMarriage());
+
+                                        parseObject.put("isComplete", true);
+                                        parseObject.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                mApp.dialog.dismiss();
+                                                if (e == null) {
+                                                    try {
+                                                        if (isFirstStart) {
+                                                            startActivity(new Intent(EditProfileActivity.this, UserPreferences.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                            EditProfileActivity.this.finish();
+                                                            mApp.showToast(context, "Please Set your Preferences");
+                                                        } else {
+                                                            startActivity(new Intent(EditProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                                            EditProfileActivity.this.finish();
+                                                            mApp.showToast(context, "Profile updated");
+                                                        }
+                                                    } catch (Exception e2) {
+                                                        mApp.showToast(context, "Error while updating profile");
+                                                        e2.printStackTrace();
+                                                    }
+                                                } else {
+                                                    mApp.showToast(context, "Error while updating profile");
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        });
+                                    } else {
+                                        mApp.dialog.dismiss();
+                                        mApp.showToast(context, "Please select a primary profile photo");
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
+                    } else {
+                        mApp.dialog.dismiss();
+                        mApp.showToast(context, "Please fill all details");
+                        mViewPager.setCurrentItem(2);
                     }
                 } else {
                     mApp.dialog.dismiss();
                     mApp.showToast(context, "Please fill all details");
-                    mViewPager.setCurrentItem(2);
+                    mViewPager.setCurrentItem(1);
                 }
             } else {
                 mApp.dialog.dismiss();
                 mApp.showToast(context, "Please fill all details");
-                mViewPager.setCurrentItem(1);
+                mViewPager.setCurrentItem(0);
             }
-        } else {
-            mApp.dialog.dismiss();
-            mApp.showToast(context, "Please fill all details");
-            mViewPager.setCurrentItem(0);
         }
     }
 

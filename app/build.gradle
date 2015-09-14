@@ -8,8 +8,7 @@ android {
         applicationId "com.mandaptak.android"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 2
-        versionName "1.1"
+
         multiDexEnabled true
         renderscriptTargetApi 22
         renderscriptSupportModeEnabled true

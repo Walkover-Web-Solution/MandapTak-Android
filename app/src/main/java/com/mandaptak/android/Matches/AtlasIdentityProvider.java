@@ -119,39 +119,48 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     }
 
     private void saveMatches() {
-        for (ParseObject parseObjectPro : profileObjs) {
-            name = parseObjectPro.getString("name");
+        final ArrayList<ParseObject> relatives = new ArrayList<>();
+        for (int i = 0; i < profileObjs.size(); i++) {
             ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-            query.whereEqualTo("profileId", parseObjectPro);
+            query.whereEqualTo("profileId", profileObjs.get(i));
+            final int finalI = i;
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> list, ParseException e) {
                     if (e == null)
                         if (list.size() > 0) {
-                            HashMap<String, Participant> usersMap = new HashMap<>();
-                            if (com.mandaptak.android.Utils.Prefs.getChatUsers(context) != null) {
-                                usersMap = com.mandaptak.android.Utils.Prefs.getChatUsers(context);
+                            relatives.addAll(list);
+                            if (finalI == profileObjs.size() - 1) {
+                                saveinfo(relatives);
                             }
-                            for (ParseObject parseObject : list) {
-                                try {
-                                    Participant participant = new Participant();
-                                    participant.userId = parseObject.fetchIfNeeded().getParseObject("userId").getObjectId();
-                                    String relation = parseObject.fetchIfNeeded().getString("relation");
-                                    if (relation.equalsIgnoreCase("Bachelor")) {
-                                        participant.firstName = name;
-                                    } else {
-                                        participant.firstName = relation + " (" + name + ")";
-                                    }
-                                    usersMap.put(participant.userId, participant);
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                            com.mandaptak.android.Utils.Prefs.setChatUsers(context, usersMap);
-                            participantsMap = usersMap;
                         }
                 }
             });
         }
+
     }
+
+
+    void saveinfo(ArrayList<ParseObject> relatives) {
+        for (ParseObject parseObject : relatives) {
+            try {
+                name = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("name");
+                //    name = parseObjectPro.getString("name");
+                Participant participant = new Participant();
+                participant.userId = parseObject.fetchIfNeeded().getParseObject("userId").getObjectId();
+                String relation = parseObject.fetchIfNeeded().getString("relation");
+                if (relation.equalsIgnoreCase("Bachelor")) {
+                    participant.firstName = name;
+                } else {
+                    participant.firstName = relation + " (" + name + ")";
+                }
+                if (!participantsMap.containsKey(participant.userId))
+                    participantsMap.put(participant.userId, participant);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
+        com.mandaptak.android.Utils.Prefs.setChatUsers(context, participantsMap);
+    }
+
 }

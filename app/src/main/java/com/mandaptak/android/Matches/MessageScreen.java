@@ -45,7 +45,6 @@ public class MessageScreen extends AppCompatActivity {
         messagesList = (AtlasMessagesList) findViewById(R.id.messageslist);
         messagesList.init(layerClient, Common.getIdentityProvider());
         messagesList.setConversation(conversation);
-
         participantPicker = (AtlasParticipantPicker) findViewById(R.id.participantpicker);
         String[] currentUser = {layerClient.getAuthenticatedUserId()};
         participantPicker.init(currentUser, Common.getIdentityProvider());

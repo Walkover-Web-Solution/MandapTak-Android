@@ -63,7 +63,7 @@
                 android:src="@color/transparent"
                 android:visibility="visible"
                 app:fbb_autoStart="false"
-                app:fbb_progressColor="@color/teal_400"
+                app:fbb_progressColor="@color/teal_600"
                 app:fbb_progressWidthRatio="0.1"
                 app:fbb_showEndBitmap="false"/>
 

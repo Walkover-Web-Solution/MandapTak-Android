@@ -2,6 +2,7 @@ package com.mandaptak.android.EditProfile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -66,7 +67,14 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             }
         }
         init();
-        getParseData();
+        if (Prefs.getProfile(context) != null) {
+            Log.e("", "Profile Found in Shared Prefs");
+        } else {
+            try {
+                getParseData();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     @Override
@@ -153,122 +161,128 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     }
 
     void getParseData() {
-        if (Prefs.getProfile(context) != null) {
-            Log.e("", "Profile Found in Shared Prefs");
-        } else {
-            try {
+        new AsyncTask<Void, Void, Void>() {
+            ParseObject parseObject = null;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
                 mApp.show_PDialog(context, "Loading..");
-                ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
-                query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject parseObject, ParseException e) {
-                        if (e == null) {
-                            try {
-                                String newName = parseObject.getString("name");
-                                String newGender = parseObject.getString("gender");
-                                Date tmpDOB = parseObject.getDate("dob");
-                                Date tmpTOB = parseObject.getDate("tob");
-                                if (tmpDOB != null) {
-                                    Calendar newDOB = Calendar.getInstance();
-                                    newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                    newDOB.setTime(tmpDOB);
-                                    profile.setDateOfBirth(newDOB);
-                                }
-                                if (tmpTOB != null) {
-                                    Calendar newTOB = Calendar.getInstance();
-                                    newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                    newTOB.setTime(tmpTOB);
-                                    profile.setTimeOfBirth(newTOB);
-                                }
-                                ParseObject newCurrentLocation = parseObject.getParseObject("currentLocation");
-                                ParseObject newPOB = parseObject.getParseObject("placeOfBirth");
-
-                                if (newName != null) {
-                                    profile.setName(newName);
-                                }
-                                if (newGender != null) {
-                                    profile.setGender(newGender);
-                                }
-                                if (newPOB != null) {
-                                    ParseNameModel pob = new ParseNameModel();
-                                    pob.setName(newPOB.fetchIfNeeded().getString("name")
-                                            + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                                    pob.setParseObjectId(newPOB.getObjectId());
-                                    pob.setClassName("City");
-                                    profile.setPlaceOfBirth(pob);
-                                }
-                                if (newCurrentLocation != null) {
-                                    ParseNameModel currentLocation = new ParseNameModel();
-                                    currentLocation.setName(newCurrentLocation.fetchIfNeeded().getString("name")
-                                            + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
-                                    currentLocation.setParseObjectId(newCurrentLocation.getObjectId());
-                                    currentLocation.setClassName("City");
-                                    profile.setCurrentLocation(currentLocation);
-                                }
-
-                                ParseObject tmpCaste, tmpReligion, tmpGotra;
-                                tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-                                tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-                                tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
-                                profile.setManglik(parseObject.getInt("manglik"));
-                                profile.setHeight(parseObject.getInt("height"));
-                                profile.setWeight(parseObject.getInt("weight"));
-                                if (tmpReligion != null) {
-                                    ParseNameModel newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), "Religion", tmpReligion.getObjectId());
-                                    profile.setReligion(newReligion);
-                                }
-                                if (tmpCaste != null) {
-                                    ParseNameModel newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), "Caste", tmpCaste.getObjectId());
-                                    profile.setCaste(newCaste);
-                                }
-                                if (tmpGotra != null) {
-                                    ParseNameModel newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), "Gotra", tmpGotra.getObjectId());
-                                    profile.setGotra(newGotra);
-                                }
-                                profile.setWorkAfterMarriage(parseObject.getInt("workAfterMarriage"));
-                                profile.setIncome(parseObject.getLong("package"));
-                                String newDesignation = parseObject.getString("designation");
-                                String newCompany = parseObject.getString("placeOfWork");
-                                ParseObject newIndustry = parseObject.getParseObject("industryId");
-                                ParseObject tmpEdu1 = parseObject.getParseObject("education1");
-                                ParseObject tmpEdu2 = parseObject.getParseObject("education2");
-                                ParseObject tmpEdu3 = parseObject.getParseObject("education3");
-                                if (tmpEdu1 != null) {
-                                    ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), "Specialization", tmpEdu1.getObjectId());
-                                    profile.setEducation1(newEducationDetail1);
-                                }
-                                if (tmpEdu2 != null) {
-                                    ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), "Specialization", tmpEdu2.getObjectId());
-                                    profile.setEducation1(newEducationDetail2);
-                                }
-                                if (tmpEdu3 != null) {
-                                    ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), "Specialization", tmpEdu3.getObjectId());
-                                    profile.setEducation1(newEducationDetail3);
-                                }
-                                if (newIndustry != null) {
-                                    ParseNameModel industry = new ParseNameModel(newIndustry.fetchIfNeeded().getString("name"), "Industries", newIndustry.getObjectId());
-                                    profile.setIndustry(industry);
-                                }
-                                if (newCompany != null)
-                                    if (!newCompany.trim().equals(""))
-                                        profile.setCompany(newCompany.trim());
-                                if (newDesignation != null)
-                                    if (!newDesignation.trim().equals(""))
-                                        profile.setDesignation(newDesignation.trim());
-                                Prefs.setProfile(context, profile);
-                                basicProfileFragment.setUserVisibleHint(true);
-                            } catch (ParseException e1) {
-                                e1.printStackTrace();
-                            }
-                        } else {
-                            e.printStackTrace();
-                        }
-                        mApp.dialog.dismiss();
-                    }
-                });
-            } catch (Exception ignored) {
             }
-        }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+                    parseObject = query.get(Prefs.getProfileId(context));
+                    if (parseObject != null) {
+                        String newName = parseObject.getString("name");
+                        String newGender = parseObject.getString("gender");
+                        Date tmpDOB = parseObject.getDate("dob");
+                        Date tmpTOB = parseObject.getDate("tob");
+                        if (tmpDOB != null) {
+                            Calendar newDOB = Calendar.getInstance();
+                            newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            newDOB.setTime(tmpDOB);
+                            profile.setDateOfBirth(newDOB);
+                        }
+                        if (tmpTOB != null) {
+                            Calendar newTOB = Calendar.getInstance();
+                            newTOB.setTimeZone(TimeZone.getTimeZone("UTC"));
+                            newTOB.setTime(tmpTOB);
+                            profile.setTimeOfBirth(newTOB);
+                        }
+                        ParseObject newCurrentLocation = parseObject.getParseObject("currentLocation");
+                        ParseObject newPOB = parseObject.getParseObject("placeOfBirth");
+
+                        if (newName != null) {
+                            profile.setName(newName);
+                        }
+                        if (newGender != null) {
+                            profile.setGender(newGender);
+                        }
+                        if (newPOB != null) {
+                            ParseNameModel pob = new ParseNameModel();
+                            pob.setName(newPOB.fetchIfNeeded().getString("name")
+                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            pob.setParseObjectId(newPOB.getObjectId());
+                            pob.setClassName("City");
+                            profile.setPlaceOfBirth(pob);
+                        }
+                        if (newCurrentLocation != null) {
+                            ParseNameModel currentLocation = new ParseNameModel();
+                            currentLocation.setName(newCurrentLocation.fetchIfNeeded().getString("name")
+                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            currentLocation.setParseObjectId(newCurrentLocation.getObjectId());
+                            currentLocation.setClassName("City");
+                            profile.setCurrentLocation(currentLocation);
+                        }
+
+                        ParseObject tmpCaste, tmpReligion, tmpGotra;
+                        tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
+                        tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
+                        tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+                        profile.setManglik(parseObject.getInt("manglik"));
+                        profile.setHeight(parseObject.getInt("height"));
+                        profile.setWeight(parseObject.getInt("weight"));
+                        if (tmpReligion != null) {
+                            ParseNameModel newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), "Religion", tmpReligion.getObjectId());
+                            profile.setReligion(newReligion);
+                        }
+                        if (tmpCaste != null) {
+                            ParseNameModel newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), "Caste", tmpCaste.getObjectId());
+                            profile.setCaste(newCaste);
+                        }
+                        if (tmpGotra != null) {
+                            ParseNameModel newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), "Gotra", tmpGotra.getObjectId());
+                            profile.setGotra(newGotra);
+                        }
+                        profile.setWorkAfterMarriage(parseObject.getInt("workAfterMarriage"));
+                        profile.setIncome(parseObject.getLong("package"));
+                        String newDesignation = parseObject.getString("designation");
+                        String newCompany = parseObject.getString("placeOfWork");
+                        ParseObject newIndustry = parseObject.getParseObject("industryId");
+                        ParseObject tmpEdu1 = parseObject.getParseObject("education1");
+                        ParseObject tmpEdu2 = parseObject.getParseObject("education2");
+                        ParseObject tmpEdu3 = parseObject.getParseObject("education3");
+                        if (tmpEdu1 != null) {
+                            ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), "Specialization", tmpEdu1.getObjectId());
+                            profile.setEducation1(newEducationDetail1);
+                        }
+                        if (tmpEdu2 != null) {
+                            ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), "Specialization", tmpEdu2.getObjectId());
+                            profile.setEducation1(newEducationDetail2);
+                        }
+                        if (tmpEdu3 != null) {
+                            ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), "Specialization", tmpEdu3.getObjectId());
+                            profile.setEducation1(newEducationDetail3);
+                        }
+                        if (newIndustry != null) {
+                            ParseNameModel industry = new ParseNameModel(newIndustry.fetchIfNeeded().getString("name"), "Industries", newIndustry.getObjectId());
+                            profile.setIndustry(industry);
+                        }
+                        if (newCompany != null)
+                            if (!newCompany.trim().equals(""))
+                                profile.setCompany(newCompany.trim());
+                        if (newDesignation != null)
+                            if (!newDesignation.trim().equals(""))
+                                profile.setDesignation(newDesignation.trim());
+                        Prefs.setProfile(context, profile);
+                    }
+                } catch (Exception ignored) {
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mApp.dialog.dismiss();
+                if (parseObject != null)
+                    basicProfileFragment.setUserVisibleHint(true);
+            }
+        }.execute();
+
     }
 
     @Override

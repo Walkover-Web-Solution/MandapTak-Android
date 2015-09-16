@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:weightSum="2"
-    android:orientation="horizontal">
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:weightSum="2">
 
     <TextView
         android:id="@android:id/text1"
@@ -15,17 +15,17 @@
         android:singleLine="true"
         android:text="132fhfhfhfhfkvxvjhxbfhbbffghfnfngvjhxvgxkhgvdkjfhdkjdghdhfhf321"
         android:textColor="@color/black_dark"
-        android:textSize="@dimen/abc_text_size_medium_material" />
+        android:textSize="@dimen/abc_text_size_medium_material"/>
 
     <ImageView
         android:id="@android:id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight=".5"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/ic_wc_grey"
         android:layout_gravity="center|end"
+        android:layout_marginRight="16dp"
+        android:layout_weight=".5"
+        android:background="@drawable/ic_wc_grey"
         android:padding="16dp"
-        android:text="132321" />
+        android:text="132321"/>
 
 </LinearLayout>

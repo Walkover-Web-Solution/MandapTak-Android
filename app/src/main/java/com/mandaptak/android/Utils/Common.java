@@ -1,13 +1,11 @@
 package com.mandaptak.android.Utils;
 
+import android.annotation.TargetApi;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,7 +15,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
-import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
@@ -37,8 +34,6 @@ import com.parse.ParseInstallation;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -46,6 +41,7 @@ public class Common extends Application implements LayerCallbacks {
     public static AtlasIdentityProvider identityProvider;
     private static HashMap<String, ParseUser> allUsers;
     public ProgressDialog dialog;
+
     public static void cacheAllUsers() {
         ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
         userQuery.findInBackground(new FindCallback<ParseUser>() {
@@ -85,8 +81,8 @@ public class Common extends Application implements LayerCallbacks {
      *
      * @param context The context.
      * @param uri     The Uri to query.
-     * @author paulburke
      */
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     public String getPath(final Context context, final Uri uri) {
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
         // DocumentProvider
@@ -235,7 +231,7 @@ public class Common extends Application implements LayerCallbacks {
         TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String getSimNumber = telemamanger.getLine1Number();
         if (getSimNumber != null) {
-            getSimNumber.trim();
+            getSimNumber = getSimNumber.trim();
             if (!getSimNumber.equals(""))
                 getSimNumber = getSimNumber.replace("+91", "");
         }
@@ -249,7 +245,7 @@ public class Common extends Application implements LayerCallbacks {
 
     public void showToast(Context context, String message) {
         SuperToast superToast = new SuperToast(context);
-        superToast.cancelAllSuperToasts();
+        SuperToast.cancelAllSuperToasts();
         superToast.setAnimations(SuperToast.Animations.POPUP);
         superToast.setDuration(SuperToast.Duration.MEDIUM);
         superToast.setText(" " + message);
@@ -291,7 +287,6 @@ public class Common extends Application implements LayerCallbacks {
             }
         });
 
-
     }
 
     public String numberToWords(long number) {
@@ -319,7 +314,7 @@ public class Common extends Application implements LayerCallbacks {
             number %= 100;
         }
         if (number > 0) {
-            if (words != "") {
+            if (!words.equals("")) {
                 words += "and ";
             }
             if (number < 20) {

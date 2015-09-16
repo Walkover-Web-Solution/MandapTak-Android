@@ -68,12 +68,12 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     private void getMatchesFromFunction() {
         HashMap<String, Object> params = new HashMap<>();
         params.put("profileId", Prefs.getProfileId(context));
-        ParseCloud.callFunctionInBackground("getMatchedProfile", params, new FunctionCallback<Object>() {
+        ParseCloud.callFunctionInBackground("getMatchedProfile", params, new FunctionCallback<ArrayList<ParseObject>>() {
             @Override
-            public void done(Object o, ParseException e) {
+            public void done(ArrayList<ParseObject> o, ParseException e) {
                 if (e == null) {
                     if (o != null) {
-                        profileObjs = (ArrayList<ParseObject>) o;
+                        profileObjs = o;
                         if (profileObjs.size() > 0) {
                             for (ParseObject parseObject : profileObjs) {
                                 try {
@@ -139,7 +139,6 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         }
 
     }
-
 
     void saveinfo(ArrayList<ParseObject> relatives) {
         for (ParseObject parseObject : relatives) {

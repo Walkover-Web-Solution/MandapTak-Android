@@ -15,7 +15,6 @@ import java.util.Map;
 
 public class Prefs {
 
-
     public static String CHAT_USERS = "chat_users";
     public static String MATCHES = "matches";
 

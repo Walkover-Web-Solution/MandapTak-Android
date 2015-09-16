@@ -1,6 +1,5 @@
 package com.mandaptak.android.Models;
 
-
 import com.parse.ParseObject;
 
 public class Degree {
@@ -8,18 +7,18 @@ public class Degree {
     Boolean selected;
     ParseObject degreeObj;
 
+    public Degree(String name, ParseObject parseObject, Boolean selected) {
+        this.degreeName = name;
+        this.degreeObj = parseObject;
+        this.selected = selected;
+    }
+
     public ParseObject getDegreeObj() {
         return degreeObj;
     }
 
     public void setDegreeObj(ParseObject degreeObj) {
         this.degreeObj = degreeObj;
-    }
-
-    public Degree(String name, ParseObject parseObject, Boolean selected) {
-        this.degreeName = name;
-        this.degreeObj = parseObject;
-        this.selected = selected;
     }
 
     public String getDegreeName() {

@@ -9,7 +9,6 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.mandaptak.android.Models.Degree;
-import com.mandaptak.android.Models.LocationPreference;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 

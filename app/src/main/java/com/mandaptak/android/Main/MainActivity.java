@@ -455,37 +455,39 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.finish();
             }
         });
-        if (Prefs.getProfile(context) != null)
-            profileName.setText(Prefs.getProfile(context).getName());
 
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
         query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    ParseFile file = parseObject.getParseFile("profilePic");
-                    Picasso.with(context)
-                            .load(file.getUrl())
-                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .into(profilePicture);
-                    Picasso.with(context)
-                            .load(file.getUrl())
-                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .into(loadingProfile);
-                } else if (e.getCode() == 209) {
-                    ParseUser.logOutInBackground(new LogOutCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                startActivity(new Intent(MainActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-                                MainActivity.this.finish();
+                try {
+                    if (e == null) {
+                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
+                        ParseFile file = parseObject.fetchIfNeeded().getParseFile("profilePic");
+                        Picasso.with(context)
+                                .load(file.getUrl())
+                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .into(profilePicture);
+                        Picasso.with(context)
+                                .load(file.getUrl())
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                                .into(loadingProfile);
+                    } else if (e.getCode() == 209) {
+                        ParseUser.logOutInBackground(new LogOutCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    startActivity(new Intent(MainActivity.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                                    MainActivity.this.finish();
+                                }
                             }
-                        }
-                    });
-                } else {
-                    e.printStackTrace();
+                        });
+                    } else {
+                        e.printStackTrace();
+                    }
+                } catch (Exception ignored) {
                 }
             }
         });
@@ -537,12 +539,12 @@ public class MainActivity extends AppCompatActivity {
         labelLoading.setText("Finding Matches...");
         HashMap<String, Object> params = new HashMap<>();
         params.put("oid", Prefs.getProfileId(context));
-        ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<Object>() {
+        ParseCloud.callFunctionInBackground("filterProfileLive", params, new FunctionCallback<ArrayList<ParseObject>>() {
             @Override
-            public void done(Object o, ParseException e) {
+            public void done(ArrayList<ParseObject> o, ParseException e) {
                 if (e == null) {
                     if (o != null) {
-                        profileList = (ArrayList<ParseObject>) o;
+                        profileList = o;
                         if (profileList.size() > 0) {
                             if (mApp.isNetworkAvailable(context))
                                 setProfileDetails();

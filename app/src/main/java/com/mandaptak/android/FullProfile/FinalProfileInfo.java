@@ -64,7 +64,6 @@ public class FinalProfileInfo extends Fragment {
         });
     }
 
-
     private void SaveFile(ParseFile finalBitmap) {
         String root = Environment.getExternalStorageDirectory().toString();
         File myDir = new File(root + "/MandapTak");

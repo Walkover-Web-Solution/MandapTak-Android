@@ -1,13 +1,12 @@
 package com.mandaptak.android.Models;
 
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import com.layer.atlas.Atlas;
 
 import java.io.Serializable;
 
-public class Participant implements Atlas.Participant,Serializable {
+public class Participant implements Atlas.Participant, Serializable {
     public String userId;
     public String firstName;
     public String lastName;

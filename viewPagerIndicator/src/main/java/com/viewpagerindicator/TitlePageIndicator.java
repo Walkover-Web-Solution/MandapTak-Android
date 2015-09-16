@@ -94,9 +94,11 @@ public class TitlePageIndicator extends View implements PageIndicator {
     private int mActivePointerId = INVALID_POINTER;
     private boolean mIsDragging;
     private OnCenterItemClickListener mCenterItemClickListener;
+
     public TitlePageIndicator(Context context) {
         this(context, null);
     }
+
     public TitlePageIndicator(Context context, AttributeSet attrs) {
         this(context, attrs, R.attr.vpiTitlePageIndicatorStyle);
     }

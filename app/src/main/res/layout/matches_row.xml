@@ -10,16 +10,16 @@
         android:layout_height="?listPreferredItemHeight"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_margin="16dp"
         android:layout_centerVertical="true"
+        android:layout_margin="16dp"
         android:src="@drawable/com_facebook_profile_picture_blank_square"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/thumbnail"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/chat_button"
+        android:layout_toRightOf="@+id/thumbnail"
         android:orientation="vertical"
         android:weightSum="3">
 
@@ -28,9 +28,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:ellipsize="marquee"
             android:gravity="bottom|start"
             android:singleLine="true"
-            android:ellipsize="marquee"
             android:textColor="@color/black_dark"
             android:textSize="@dimen/abc_text_size_medium_material"/>
 
@@ -39,9 +39,9 @@
             android:layout_width="fill_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:ellipsize="marquee"
             android:gravity="bottom|start"
             android:singleLine="true"
-            android:ellipsize="marquee"
             android:textColor="@color/black_light"
             android:textSize="@dimen/abc_text_size_small_material"/>
 

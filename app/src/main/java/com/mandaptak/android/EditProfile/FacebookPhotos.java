@@ -14,7 +14,6 @@ import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -99,7 +98,6 @@ public class FacebookPhotos extends AppCompatActivity {
         if (getIntent() != null) {
             if (getIntent().hasExtra("pics-fb")) {
                 images = getIntent().getStringArrayListExtra("pics-fb");
-                Log.e("", "" + images.get(0));
                 facebookPhotoGridAdapter = new FacebookPhotoGridAdapter(context, images);
                 recyclerView.setAdapter(facebookPhotoGridAdapter);
             }
@@ -107,9 +105,7 @@ public class FacebookPhotos extends AppCompatActivity {
         facebookPhotoGridAdapter.setOnItemCheckListener(new OnFacebookItemCheckListener() {
             @Override
             public boolean OnItemCheck(int position, String photo, final boolean isCheck, int selectedItemCount) {
-
                 int total = selectedItemCount + (isCheck ? -1 : 1);
-
                 if (total > 4) {
                     PhotoPickerActivity.showToast(context, "Upto " + 4 + " photos can be selected");
                     return false;

@@ -31,7 +31,6 @@ import me.iwf.photopicker.utils.MediaStoreHelper;
 import static android.app.Activity.RESULT_OK;
 import static me.iwf.photopicker.utils.MediaStoreHelper.INDEX_ALL_PHOTOS;
 
-
 public class PhotoPickerFragment extends Fragment {
 
     private ImageCaptureManager captureManager;

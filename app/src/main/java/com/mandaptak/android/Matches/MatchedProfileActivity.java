@@ -86,7 +86,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
         chatButton = (Button) findViewById(R.id.chat_button);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

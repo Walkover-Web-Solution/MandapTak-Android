@@ -59,7 +59,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
                 if (mTargetParticipants.size() > 0) {
                     Intent intent = new Intent(context, MessageScreen.class);
                     Query query = Query.builder(Conversation.class)
-                            .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
+                            .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.IN, mTargetParticipants))
                             .build();
                     List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
                     if (results.size() > 0) {

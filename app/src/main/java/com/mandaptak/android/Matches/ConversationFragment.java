@@ -42,7 +42,6 @@ public class ConversationFragment extends android.support.v4.app.Fragment {
     }
 
     public void onUserAuthenticated() {
-        myConversationList = (AtlasConversationsList) rootView.findViewById(R.id.conversationlist);
         myConversationList.init(layerClient, Common.getIdentityProvider());
         myConversationList.setClickListener(new AtlasConversationsList.ConversationClickListener() {
             public void onItemClick(Conversation conversation) {

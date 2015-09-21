@@ -50,7 +50,9 @@ public class LayerImpl {
     public static void initialize(Context context) {
         if (mLayerClient == null) {
             LayerClient.enableLogging(context);
-            mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID);
+            LayerClient.Options options = new LayerClient.Options();
+            options.googleCloudMessagingSenderId("240895070475");
+            mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID, options);
         }
 
         if (mLayerClient != null) {
@@ -66,6 +68,8 @@ public class LayerImpl {
             if (!mLayerClient.isConnected())
                 mLayerClient.connect();
         }
+
+
     }
 
     //Connects to the Layer service

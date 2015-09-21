@@ -16,6 +16,7 @@
 /gradle.properties
 /slidingMenu/build/*
 /layer-atlas/layer-atlas.iml
+/layer-atlas/build/**
 /layer-atlas/build.*
 /gradlew.bat
 /cropImage/cropImage.iml
@@ -24,6 +25,8 @@
 /.gradle
 /twoWayViewCore/build
 /.idea
+**/.DS_Store
+
 /photoPick/build/tmp
 /photoPick/build/intermediates
 /photoPick/build/outputs

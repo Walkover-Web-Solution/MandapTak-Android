@@ -14,7 +14,10 @@ import com.layer.atlas.AtlasTypingIndicator;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
+import com.layer.sdk.messaging.MessageOptions;
+import com.layer.sdk.messaging.MessagePart;
 import com.mandaptak.android.Layer.LayerImpl;
+import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 
@@ -34,8 +37,11 @@ public class MessageScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_view);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar()!=null){
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         layerClient = LayerImpl.getLayerClient();
         Uri id = getIntent().getParcelableExtra("conversation-id");
         if (id != null)
@@ -70,19 +76,6 @@ public class MessageScreen extends AppCompatActivity {
                         participantPicker.setVisibility(View.GONE);
                         conversation = layerClient.newConversation(userIds);
                         Atlas.setTitle(conversation, titleConversation);
-                      /*  Metadata metadata1=conversation.getMetadata();
-                        if (metadata1==null){
-                            Metadata metadata = Metadata.newInstance();
-                            metadata.put("title", "My Conversation");
-                            Metadata theme = Metadata.newInstance();
-                            theme.put("background_color", "333333");
-                            theme.put("text_color", "F8F8EC");
-                            theme.put("link_color", "21AAE1");
-                            metadata.put("theme", theme);
-                            metadata.put("created_at", "Dec, 01, 2014");
-                            metadata.put("img_url", "/path/to/img/url");
-                          //  mConversation.putMetadata(metadata, false);
-                        }*/
                         messagesList.setConversation(conversation);
                         atlasComposer.setConversation(conversation);
                     } else {

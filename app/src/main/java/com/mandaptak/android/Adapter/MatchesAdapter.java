@@ -27,10 +27,11 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.iwf.photopicker.utils.Prefs;
+
 public class MatchesAdapter extends BaseAdapter {
     Context ctx;
     ArrayList<MatchesModel> list;
-    MatchesModel model = new MatchesModel();
     ArrayList<String> mTargetParticipants = new ArrayList<>();
 
     public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
@@ -71,7 +72,14 @@ public class MatchesAdapter extends BaseAdapter {
         viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName());
+                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+                q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject parseObject, ParseException e) {
+                        getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName(), parseObject);
+
+                    }
+                });
             }
         });
         Picasso.with(ctx)
@@ -81,14 +89,16 @@ public class MatchesAdapter extends BaseAdapter {
         return paramView;
     }
 
-    private void getChatMembers(String profileId, final String name) {
+    private void getChatMembers(String profileId, final String name, final ParseObject myProfofile) {
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
         q1.getInBackground(profileId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+                    query.whereEqualTo("profileId", myProfofile);
                     query.whereEqualTo("profileId", object);
+                    query.whereNotEqualTo("relation", "Agent");
                     query.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
@@ -97,8 +107,7 @@ public class MatchesAdapter extends BaseAdapter {
                                     mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
                                     for (ParseObject parseObject : list) {
                                         try {
-                                            if (!parseObject.fetchIfNeeded().getString("relation").equalsIgnoreCase("Agent"))
-                                                mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
+                                            mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
                                         } catch (ParseException e1) {
                                             e1.printStackTrace();
                                         }
@@ -113,7 +122,11 @@ public class MatchesAdapter extends BaseAdapter {
                                             intent.putExtra("conversation-id", results.get(0).getId());
                                         } else {
                                             intent.putExtra("participant-map", mTargetParticipants);
-                                            intent.putExtra("title-conv", name);
+                                            try {
+                                                intent.putExtra("title-conv", name + " " + myProfofile.fetchIfNeeded().getString("name"));
+                                            } catch (ParseException e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
                                         ctx.startActivity(intent);
 

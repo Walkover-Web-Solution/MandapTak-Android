@@ -284,6 +284,7 @@ public class DetailsProfileFragment extends Fragment {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Religion");
         if (query != null)
             parseQuery.whereMatches("name", "(" + query + ")", "i");
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> list, ParseException e) {
@@ -317,6 +318,7 @@ public class DetailsProfileFragment extends Fragment {
         if (query != null)
             parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.whereEqualTo("religionId", ParseObject.createWithoutData(newReligion.getClassName(), newReligion.getParseObjectId()));
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {

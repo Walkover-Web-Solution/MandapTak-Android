@@ -118,6 +118,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 if (mApp.isNetworkAvailable(context)) {
                     final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
@@ -200,6 +201,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
                             parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
+                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -286,6 +288,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 if (mApp.isNetworkAvailable(context)) {
                     final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
@@ -373,6 +376,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
                             parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
+                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -465,6 +469,7 @@ public class QualificationEditProfileFragment extends Fragment {
                 if (mApp.isNetworkAvailable(context)) {
                     final ArrayList<ParseNameModel> degreeList = new ArrayList<>();
                     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
+                    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     parseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
@@ -551,6 +556,7 @@ public class QualificationEditProfileFragment extends Fragment {
                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Degree");
                         if (editable.length() != 0)
                             parseQuery.whereMatches("name", "(" + editable.toString() + ")", "i");
+                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> list, ParseException e) {
@@ -868,10 +874,10 @@ public class QualificationEditProfileFragment extends Fragment {
                         if (src.equals("")) { // for backspace
                             return src;
                         }
-                        if (src.toString().matches("[a-zA-Z ]+")) {
+                        if (src.toString().matches("[a-zA-Z0-9]+")) {
                             return src;
                         }
-                        return src.toString().replaceAll("[^A-Za-z ]", "");
+                        return src.toString().replaceAll("[^A-Za-z0-9 ]", "");
                     }
                 }
                 , new InputFilter.LengthFilter(32)});

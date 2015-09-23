@@ -287,6 +287,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
         parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> list, ParseException e) {
@@ -316,6 +317,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("City");
         parseQuery.whereMatches("name", "(" + query + ")", "i");
         parseQuery.include("Parent.Parent");
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(final List<ParseObject> list, ParseException e) {

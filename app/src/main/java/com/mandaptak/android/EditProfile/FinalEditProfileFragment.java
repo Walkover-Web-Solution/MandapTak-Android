@@ -432,6 +432,7 @@ public class FinalEditProfileFragment extends Fragment {
         try {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+            query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
             query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject profileObject, ParseException e) {

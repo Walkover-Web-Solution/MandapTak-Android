@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                             loginButton.setText("VERIFY");
                             label.setText("Enter the verification code you received");
                         } else {
-                            mApp.showToast(context, e.getMessage());
+                            mApp.showToast(context, "Please contact your nearest agent");
                             e.printStackTrace();
                         }
                     }

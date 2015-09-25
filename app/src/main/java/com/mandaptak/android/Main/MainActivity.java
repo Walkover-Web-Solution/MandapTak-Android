@@ -23,6 +23,7 @@ import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Login.LoginActivity;
+import com.mandaptak.android.Matches.MatchedProfileActivity;
 import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.Models.UndoModel;
@@ -162,9 +163,9 @@ public class MainActivity extends AppCompatActivity {
                                     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
                                     undoModel.setProfileParseObject(likeProfile);
                                     undoModel.setActionPerformed(1);
-
                                     if (o instanceof ParseObject) {
-                                        ParseObject parseObject = (ParseObject) o;
+                                        ParseObject parseObject = likeProfile;
+                                        //ParseObject parseObject = (ParseObject) o;
                                         String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
                                         String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
                                         MatchesModel model = new MatchesModel();
@@ -173,8 +174,9 @@ public class MainActivity extends AppCompatActivity {
                                         model.setReligion(religion + ", " + caste);
                                         model.setWork(parseObject.getString("designation"));
                                         model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                                        model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
-                                        Intent intent = new Intent();
+                                        // model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
+                                        Intent intent = new Intent(context, MatchedProfileActivity.class);
+                                        intent.putExtra("profile", model);
                                         startActivity(intent);
                                     }
                                 } catch (Exception e1) {

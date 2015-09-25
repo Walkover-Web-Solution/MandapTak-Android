@@ -18,6 +18,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.facebook.FacebookSdk;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.layer.sdk.exceptions.LayerException;
@@ -259,7 +260,8 @@ public class Common extends Application implements LayerCallbacks {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");
        /* ParseInstallation.getCurrentInstallation().saveInBackground();

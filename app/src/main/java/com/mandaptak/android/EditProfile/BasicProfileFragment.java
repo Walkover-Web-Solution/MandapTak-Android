@@ -248,7 +248,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
                 newName = profile.getName();
                 newGender = profile.getGender();
                 newTOB = profile.getTimeOfBirth();
-                newDOB = profile.getTimeOfBirth();
+                newDOB = profile.getDateOfBirth();
                 newCurrentLocation = profile.getCurrentLocation();
                 newPOB = profile.getPlaceOfBirth();
 

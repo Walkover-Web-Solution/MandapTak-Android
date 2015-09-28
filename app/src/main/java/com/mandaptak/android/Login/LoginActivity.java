@@ -28,11 +28,14 @@ import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
+import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import java.util.HashMap;
@@ -199,6 +202,18 @@ public class LoginActivity extends AppCompatActivity {
                 public void done(final ParseUser user, ParseException e) {
                     if (user != null) {
                         try {
+                            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                            installation.put("user", user);
+                            installation.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        HashMap<String, Object> params = new HashMap<>();
+                                        params.put("userId", user.getObjectId());
+                                        ParseCloud.callFunctionInBackground("deleteDuplicateInstallations", params);
+                                    }
+                                }
+                            });
                             String role = user.fetchIfNeeded().getParseObject("roleId").fetchIfNeeded().getString("name");
                             switch (role) {
                                 case "User": {

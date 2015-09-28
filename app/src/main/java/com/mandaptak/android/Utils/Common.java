@@ -18,7 +18,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.facebook.FacebookSdk;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.layer.sdk.exceptions.LayerException;
@@ -27,51 +26,18 @@ import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Matches.AtlasIdentityProvider;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Splash.SplashScreen;
-import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseInstallation;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import io.fabric.sdk.android.Fabric;
-import java.util.HashMap;
-import java.util.List;
+import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
+import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
 
 public class Common extends Application implements LayerCallbacks {
     public static AtlasIdentityProvider identityProvider;
-    private static HashMap<String, ParseUser> allUsers;
     public ProgressDialog dialog;
 
-    public static void cacheAllUsers() {
-        ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-        userQuery.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> results, ParseException e) {
-                if (e == null) {
-                    allUsers = new HashMap<>();
-                    for (int i = 0; i < results.size(); i++) {
-                        allUsers.put(results.get(i).getObjectId(), results.get(i));
-                    }
-                }
-            }
-        });
-    }
-
-    //Takes a ParseObject id and returns the associated username (handle) for display purposes
-    public static String getUsername(String id) {
-        //Does this id appear in the "all users" list?
-        if (id != null && allUsers != null && allUsers.containsKey(id) && allUsers.get(id) != null)
-            return allUsers.get(id).getUsername();
-
-        //Does this id belong to the currently signed in user?
-        if (id != null && ParseUser.getCurrentUser() != null && id.equals(ParseUser.getCurrentUser().getObjectId()))
-            return ParseUser.getCurrentUser().getUsername();
-
-        //If the handle can't be found, return whatever value was passed in
-        return id;
-    }
 
     public static AtlasIdentityProvider getIdentityProvider() {
         return identityProvider;
@@ -260,17 +226,9 @@ public class Common extends Application implements LayerCallbacks {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
-
+        Fabric.with(this, new Crashlytics());
         FacebookSdk.sdkInitialize(getApplicationContext());
         Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");
-       /* ParseInstallation.getCurrentInstallation().saveInBackground();
-        ParseInstallation.getCurrentInstallation().setObjectId(ParseUser.getCurrentUser().getObjectId());*/
-        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-        if (ParseUser.getCurrentUser() != null)
-            installation.put("user", ParseUser.getCurrentUser());
-        installation.saveInBackground();
-        ParseFacebookUtils.initialize(this);
         ParseACL defaultACL = new ParseACL();
         defaultACL.setPublicReadAccess(true);
         defaultACL.setPublicWriteAccess(false);
@@ -279,7 +237,11 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.initialize(getApplicationContext());
         //Registers the activity so callbacks are executed on the correct class
         LayerImpl.setContext(this);
-        cacheAllUsers();
+        RaygunUserInfo user = new RaygunUserInfo();
+        ParseUser parseUser = ParseUser.getCurrentUser();
+        user.FirstName = parseUser.getUsername();
+        user.Uuid = parseUser.getObjectId();
+        RaygunClient.SetUser(user);
         identityProvider = new AtlasIdentityProvider(this);
         // Setup handler for uncaught exceptions.
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {

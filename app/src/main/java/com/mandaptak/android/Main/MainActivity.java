@@ -57,6 +57,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;

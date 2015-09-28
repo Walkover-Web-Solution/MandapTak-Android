@@ -367,6 +367,7 @@ public class AtlasConversationsList extends FrameLayout implements LayerChangeEv
         updateValues();
     }
 
+    @SuppressWarnings("unchecked")
     public void updateValues() {
         if (conversationsAdapter == null) return; // never initialized
 

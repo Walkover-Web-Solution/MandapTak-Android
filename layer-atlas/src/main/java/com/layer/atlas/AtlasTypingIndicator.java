@@ -218,7 +218,7 @@ public class AtlasTypingIndicator extends FrameLayout implements LayerTypingIndi
             for (Atlas.Participant typist : typists) {
                 names[i++] = Atlas.getFullName(typist);
             }
-            indicator.setText(String.format(string, names));
+            indicator.setText(String.format(string, (Object[])names));
             indicator.setVisibility(VISIBLE);
         }
     }

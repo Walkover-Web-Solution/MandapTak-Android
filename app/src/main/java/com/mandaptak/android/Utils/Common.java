@@ -227,8 +227,8 @@ public class Common extends Application implements LayerCallbacks {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
-        FacebookSdk.sdkInitialize(getApplicationContext());
         Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");
+        FacebookSdk.sdkInitialize(getApplicationContext());
         ParseACL defaultACL = new ParseACL();
         defaultACL.setPublicReadAccess(true);
         defaultACL.setPublicWriteAccess(false);
@@ -253,7 +253,6 @@ public class Common extends Application implements LayerCallbacks {
                 System.exit(1); // kill off the crashed app
             }
         });
-
     }
 
     public String numberToWords(long number) {

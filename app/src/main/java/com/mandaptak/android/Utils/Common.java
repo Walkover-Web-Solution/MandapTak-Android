@@ -42,7 +42,7 @@ import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
 public class Common extends Application implements LayerCallbacks {
   public static AtlasIdentityProvider identityProvider;
   public ProgressDialog dialog;
-
+  private AppComponent appComponent;
 
   public static AtlasIdentityProvider getIdentityProvider() {
     return identityProvider;
@@ -289,7 +289,12 @@ public class Common extends Application implements LayerCallbacks {
         System.exit(1); // kill off the crashed app
       }
     });
+    initializeDagger();
+  }
 
+  private void initializeDagger() {
+    appComponent = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
+    appComponent.inject(this);
   }
 
   public String numberToWords(long number) {

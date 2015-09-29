@@ -239,9 +239,11 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.setContext(this);
         RaygunUserInfo user = new RaygunUserInfo();
         ParseUser parseUser = ParseUser.getCurrentUser();
-        user.FirstName = parseUser.getUsername();
-        user.Uuid = parseUser.getObjectId();
-        RaygunClient.SetUser(user);
+        if (parseUser!=null){
+            user.FirstName = parseUser.getUsername();
+            user.Uuid = parseUser.getObjectId();
+            RaygunClient.SetUser(user);
+        }
         identityProvider = new AtlasIdentityProvider(this);
         // Setup handler for uncaught exceptions.
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {

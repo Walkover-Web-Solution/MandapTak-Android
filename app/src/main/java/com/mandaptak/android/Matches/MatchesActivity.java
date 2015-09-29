@@ -46,7 +46,7 @@ public class MatchesActivity extends AppCompatActivity implements ActionBar.TabL
                 return false;
             }
         });
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 actionBar.setSelectedNavigationItem(position);

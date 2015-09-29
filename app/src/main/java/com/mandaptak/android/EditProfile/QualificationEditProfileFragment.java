@@ -136,6 +136,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                         parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
@@ -219,6 +220,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                             parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
@@ -306,6 +308,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                         parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
 
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -394,6 +397,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                             parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
@@ -487,6 +491,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                 context);
                                         conductor.setTitle("Select Specialization");
                                         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                         parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                         parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
@@ -574,6 +579,7 @@ public class QualificationEditProfileFragment extends Fragment {
                                                     context);
                                             conductor.setTitle("Select Specialization");
                                             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Specialization");
+                                            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                                             parseQuery.whereEqualTo("degreeId", ParseObject.createWithoutData(degreeList.get(i).getClassName(), degreeList.get(i).getParseObjectId()));
                                             parseQuery.findInBackground(new FindCallback<ParseObject>() {
                                                 @Override
@@ -936,9 +942,9 @@ public class QualificationEditProfileFragment extends Fragment {
             if (newEducationDetail1 != null)
                 profile.setEducation1(newEducationDetail1);
             if (newEducationDetail2 != null)
-                profile.setEducation2(newEducationDetail1);
+                profile.setEducation2(newEducationDetail2);
             if (newEducationDetail3 != null)
-                profile.setEducation3(newEducationDetail1);
+                profile.setEducation3(newEducationDetail3);
             profile.setWorkAfterMarriage(newWorkAfterMarriage);
             Prefs.setProfile(context, profile);
             Log.e("Save Screen", "3");

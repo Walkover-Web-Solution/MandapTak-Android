@@ -128,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else {
                         e.printStackTrace();
+                        RaygunClient.Send(new Throwable(e.getMessage() + " traits_function"));
                         mApp.showToast(context, e.getMessage());
                     }
                 }
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
+                RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
                 mApp.showToast(context, "Error while liking profile");
             }
     }

@@ -12,6 +12,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -165,6 +166,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
                 public void done(ParseObject parseObject, ParseException e) {
                     likeParseObject = parseObject;
                     ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                    queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     queryParseQuery.whereEqualTo("profileId", parseObject);
                     queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -201,6 +203,7 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
 
         @Override
         public Fragment getItem(int position) {
+            Log.e("position", String.valueOf(position));
             switch (position) {
                 case 0:
                     return new BasicProfileInfo();

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -49,6 +48,7 @@ import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 import org.lucasr.twowayview.widget.TwoWayView;
 
@@ -333,6 +333,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             break;
                     }
+                } else {
+                    mApp.showToast(context, "undo not available");
                 }
             }
         });
@@ -411,14 +413,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
         init();
-
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
         slidingPanel.setEnabled(false);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-
         clickListeners();
         if (mApp.isNetworkAvailable(context))
             getParseData();
@@ -587,6 +586,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
+
         isLoading = true;
         rippleBackground.setVisibility(View.VISIBLE);
         labelLoading.setText("Loading Profile...");
@@ -594,30 +594,23 @@ public class MainActivity extends AppCompatActivity {
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         try {
             if (profileList.get(0).containsKey("profilePic") && profileList.get(0).getParseFile("profilePic") != null) {
-                Picasso.with(context)
-                        .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
+                Picasso mPicasso = Picasso.with(context);
+                mPicasso.setIndicatorsEnabled(true);
+                RequestCreator profilePic = mPicasso
+                        .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl()).noFade();
+
+                profilePic
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
-                final int MAX_WIDTH = 512;
-                final int MAX_HEIGHT = 334;
-
-                Picasso.with(context)
-                        .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
-                        .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
+                profilePic
+                        .transform(new BitmapTransform(512, 334))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                         .into(backgroundPhoto, new Callback() {
                             @Override
                             public void onSuccess() {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        slidingPanel.setEnabled(true);
-                                        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                                        blurringView.invalidate();
-                                    }
-                                }, 0);
+                                blurringView.invalidate();
                             }
 
                             @Override
@@ -626,6 +619,7 @@ public class MainActivity extends AppCompatActivity {
                                 setProfileDetails();
                             }
                         });
+                rippleBackground.setVisibility(View.GONE);
 
             } else {
                 Picasso.with(context)
@@ -634,6 +628,7 @@ public class MainActivity extends AppCompatActivity {
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -768,12 +763,12 @@ public class MainActivity extends AppCompatActivity {
                                 imageModel.setIsPrimary(false);
                                 imageModel.setParseObject(model.getObjectId());
                                 userProfileImages.add(imageModel);
-                                if (model.getBoolean("isPrimary")) {
+//                                if (model.getBoolean("isPrimary")) {
 //                                    final int MAX_WIDTH = 512;
 //                                    final int MAX_HEIGHT = 334;
 //
 //                                    Picasso.with(context)
-//                                            .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
+//                                            .load(file.getUrl())
 //                                            .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
 //                                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
 //                                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
@@ -783,11 +778,12 @@ public class MainActivity extends AppCompatActivity {
 //                                                    new Handler().postDelayed(new Runnable() {
 //                                                        @Override
 //                                                        public void run() {
+//                                                            rippleBackground.setVisibility(View.GONE);
 //                                                            slidingPanel.setEnabled(true);
 //                                                            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 //                                                            blurringView.invalidate();
 //                                                        }
-//                                                    }, 0);
+//                                                    }, 800);
 //                                                }
 //
 //                                                @Override
@@ -796,13 +792,15 @@ public class MainActivity extends AppCompatActivity {
 //                                                    setProfileDetails();
 //                                                }
 //                                            });
-                                }
+//                                }
                             } catch (ParseException e1) {
                                 e1.printStackTrace();
                             }
                         }
                         userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
                         profileImages.setAdapter(userImagesAdapter);
+                        slidingPanel.setEnabled(true);
+                        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     } else {
                         Picasso.with(context)
                                 .load(Uri.EMPTY)
@@ -821,8 +819,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        rippleBackground.setVisibility(View.GONE);
-
     }
 
     @Override

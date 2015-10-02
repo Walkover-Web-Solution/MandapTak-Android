@@ -3,6 +3,7 @@ package com.mandaptak.android.FullProfile;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class DetailsProfileInfo extends Fragment {
     private int newHeight = 0, newWeight = 0, newManglik = 0;
     private ParseNameModel newReligion, newCaste, newGotra;
     private String parseObjectId;
+    private boolean isVisible = false;
 
     public DetailsProfileInfo() {
         // Required empty public constructor
@@ -66,7 +68,14 @@ public class DetailsProfileInfo extends Fragment {
         manglikStatus = (TextView) rootView.findViewById(R.id.manglik);
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.isVisible = isVisibleToUser;
+    }
+
     private void getParseData() {
+        Log.e("getParseDate details profile", parseObjectId);
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);

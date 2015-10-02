@@ -2,6 +2,7 @@ package com.mandaptak.android.FullProfile;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
     private ParseNameModel newEducationDetail1, newEducationDetail2, newEducationDetail3;
     private Common mApp;
     private String parseObjectId;
+    private boolean isVisible = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +52,15 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
             getActivity().finish();
     }
 
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.isVisible = isVisibleToUser;
+
+    }
+
     private void getParseData() {
+        Log.e("getParseDate qualification profile", parseObjectId);
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);

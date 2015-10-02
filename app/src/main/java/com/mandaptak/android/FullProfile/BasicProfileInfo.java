@@ -3,6 +3,7 @@ package com.mandaptak.android.FullProfile;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class BasicProfileInfo extends Fragment {
     private ParseObject newPOB, newCurrentLocation;
     private Context context;
     private String parseObjectId;
+    private Boolean isVisible = false;
 
     public BasicProfileInfo() {
         // Required empty public constructor
@@ -39,6 +41,7 @@ public class BasicProfileInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.e("oncreateView",""+this.isVisible);
         init(inflater, container);
         if (mApp.isNetworkAvailable(context))
             getParseData();
@@ -52,6 +55,13 @@ public class BasicProfileInfo extends Fragment {
             parseObjectId = getActivity().getIntent().getStringExtra("parseObjectId");
         else
             getActivity().finish();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        this.isVisible = isVisibleToUser;
+        Log.e("setvisisblity hint",""+this.isVisible);
     }
 
     private void init(LayoutInflater inflater, ViewGroup container) {
@@ -71,6 +81,8 @@ public class BasicProfileInfo extends Fragment {
     }
 
     private void getParseData() {
+
+        Log.e("getParseDate basic profile", parseObjectId);
         if (parseObjectId != null) {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");

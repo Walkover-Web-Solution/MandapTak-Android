@@ -101,6 +101,7 @@ public class FinalProfileInfo extends Fragment {
 
     private void getParseData() {
         ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+        query.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         query.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {

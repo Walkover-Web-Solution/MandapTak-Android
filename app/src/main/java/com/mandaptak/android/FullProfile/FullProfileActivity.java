@@ -23,34 +23,46 @@ import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Matches.MatchedProfileActivity;
+import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Utils.Prefs;
+import com.mandaptak.android.Views.MyViewPager;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.IconPagerAdapter;
 import com.viewpagerindicator.TabPageIndicator;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.ImageModel;
 
 public class FullProfileActivity extends AppCompatActivity implements ActionBar.TabListener {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ImagePagerAdapter imagePagerAdapter;
-    ViewPager mMenuPager, mImagesPager;
+    ViewPager mImagesPager;
+    MyViewPager mMenuPager;
     CirclePageIndicator circlePageIndicator;
     ArrayList<ImageModel> parsePhotos = new ArrayList<>();
-    ImageButton backButton;
+    ImageButton backButton, likeButton;
     String parseObjectId;
     Context context;
+    ParseObject likeParseObject, userProfileObject;
     Common mApp;
+    private Boolean isLiked = false;
 
     @Override
     public void onBackPressed() {
@@ -74,14 +86,26 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         } catch (Exception ignored) {
         }
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        if (mApp.isNetworkAvailable(context))
+        if (mApp.isNetworkAvailable(context)) {
             getImages();
-        mMenuPager = (ViewPager) findViewById(R.id.pager_menu);
+            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            parseQuery.getInBackground(me.iwf.photopicker.utils.Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    userProfileObject = parseObject;
+                }
+            });
+        }
+        mMenuPager = (MyViewPager) findViewById(R.id.pager_menu);
         mImagesPager = (ViewPager) findViewById(R.id.pager_images);
         backButton = (ImageButton) findViewById(R.id.home);
+        likeButton = (ImageButton) findViewById(R.id.like_profile);
         mMenuPager.setAdapter(mSectionsPagerAdapter);
         mMenuPager.setOffscreenPageLimit(1);
+        mMenuPager.setPagingEnabled(false);
         final TabPageIndicator iconPageIndicator = (TabPageIndicator) findViewById(R.id.icons);
+        iconPageIndicator.setSmoothScrollingEnabled(false);
         iconPageIndicator.setViewPager(mMenuPager);
         circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
         mMenuPager.setOnTouchListener(new View.OnTouchListener() {
@@ -100,6 +124,12 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+        likeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                likeProfile();
             }
         });
     }
@@ -129,11 +159,14 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
     private void getImages() {
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
+                    likeParseObject = parseObject;
                     ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
                     queryParseQuery.whereEqualTo("profileId", parseObject);
+                    queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                         @Override
                         public void done(List<ParseObject> list, ParseException e) {
@@ -238,5 +271,63 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((LinearLayout) object);
         }
+    }
+
+    void likeProfile() {
+        if (mApp.isNetworkAvailable(context))
+            if (!isLiked) {
+                isLiked = true;
+                likeButton.setImageResource(R.drawable.like);
+                if (mApp.isNetworkAvailable(context))
+                    try {
+                        HashMap<String, Object> params = new HashMap<>();
+                        params.put("userProfileId", userProfileObject.getObjectId());
+                        params.put("likeProfileId", likeParseObject.getObjectId());
+                        params.put("userName", userProfileObject.fetchIfNeeded().getString("name"));
+
+                        ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
+                            @Override
+                            public void done(Object o, ParseException e) {
+                                if (e == null) {
+                                    if (o != null) {
+                                        try {
+                                            if (o instanceof ParseObject) {
+                                                ParseObject parseObject = likeParseObject;
+                                                String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                                String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                                                MatchesModel model = new MatchesModel();
+                                                model.setName(parseObject.fetchIfNeeded().getString("name"));
+                                                model.setProfileId(parseObject.getObjectId());
+                                                model.setReligion(religion + ", " + caste);
+                                                model.setWork(parseObject.getString("designation"));
+                                                model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
+                                                Intent intent = new Intent(context, MatchedProfileActivity.class);
+                                                intent.putExtra("profile", model);
+                                                startActivity(intent);
+                                            } else {
+                                                onBackPressed();
+                                            }
+                                        } catch (Exception e1) {
+                                            e1.printStackTrace();
+                                        }
+                                    }
+                                } else {
+                                    e.printStackTrace();
+                                    mApp.showToast(context, e.getMessage());
+                                }
+                            }
+                        });
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
+                        mApp.showToast(context, "Error while liking profile");
+                    }
+
+
+            } else {
+                isLiked = false;
+                likeButton.setImageResource(R.drawable.ic_like);
+            }
     }
 }

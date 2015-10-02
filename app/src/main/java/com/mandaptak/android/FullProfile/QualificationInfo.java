@@ -63,7 +63,7 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
         Log.e("getParseDate qualification profile", parseObjectId);
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {

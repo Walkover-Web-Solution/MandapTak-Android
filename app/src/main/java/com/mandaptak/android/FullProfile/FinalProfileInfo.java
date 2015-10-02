@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ public class FinalProfileInfo extends Fragment {
     LinearLayout budgetMainLayout;
     ParseFile bioData;
     private String parseObjectId;
-    private boolean isVisible = true;
 
     public FinalProfileInfo() {
         // Required empty public constructor
@@ -101,17 +99,10 @@ public class FinalProfileInfo extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        this.isVisible = isVisibleToUser;
-
-    }
-
     private void getParseData() {
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
-        parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
+        ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+        query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+        query.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject parseObject, ParseException e) {
                 if (e == null) {

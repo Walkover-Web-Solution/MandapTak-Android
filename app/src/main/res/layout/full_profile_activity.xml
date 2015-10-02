@@ -58,29 +58,50 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="3"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.viewpagerindicator.TabPageIndicator
-            android:id="@+id/icons"
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/tab_selector"
-            android:gravity="center"
-            android:paddingBottom="14dp"
-            android:paddingLeft="22dp"
-            android:paddingTop="14dp"
-            app:fillColor="@color/white" />
+           >
 
-        <com.mandaptak.android.Views.MyViewPager
-            android:id="@+id/pager_menu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white"
-            android:descendantFocusability="afterDescendants"
-            tools:context="com.mandaptak.android.FullProfile.FullProfileActivity" />
+            <RadioGroup
+                android:id="@+id/radio_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="60dp"
+                android:background="@color/red_200"
+                android:orientation="horizontal">
 
+                <RadioButton
+                    android:id="@+id/basic"
+                    style="@style/navbar_button"
+                    android:drawableTop="@drawable/ic_tab1" />
+
+                <RadioButton
+                    android:id="@+id/detail"
+                    style="@style/navbar_button"
+                    android:layout_marginLeft="5dp"
+                    android:drawableTop="@drawable/ic_tab2" />
+
+                <RadioButton
+                    android:id="@+id/qualification"
+                    style="@style/navbar_button"
+                    android:layout_marginLeft="5dp"
+                    android:drawableTop="@drawable/ic_tab3" />
+
+                <RadioButton
+                    android:id="@+id/final_pic"
+                    style="@style/navbar_button"
+                    android:layout_marginLeft="5dp"
+                    android:drawableTop="@drawable/ic_tab4" />
+            </RadioGroup>
+
+            <RelativeLayout
+                android:id="@+id/fragment_place"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/radio_parent"/>
+        </RelativeLayout>
     </LinearLayout>
 </LinearLayout>
 

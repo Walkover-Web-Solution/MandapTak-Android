@@ -49,5 +49,13 @@
         <item name="colorPrimary">#00FF00</item>
     </style>
 
-
+    <style name="navbar_button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:button">@null</item>
+        <item name="android:layout_gravity">center_horizontal|center_vertical</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">12dp</item>
+    </style>
 </resources>

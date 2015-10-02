@@ -12,15 +12,16 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 
 import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
@@ -50,12 +51,10 @@ import java.util.List;
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.ImageModel;
 
-public class FullProfileActivity extends AppCompatActivity implements ActionBar.TabListener {
+public class FullProfileActivity extends AppCompatActivity {
 
-    SectionsPagerAdapter mSectionsPagerAdapter;
     ImagePagerAdapter imagePagerAdapter;
     ViewPager mImagesPager;
-    MyViewPager mMenuPager;
     CirclePageIndicator circlePageIndicator;
     ArrayList<ImageModel> parsePhotos = new ArrayList<>();
     ImageButton backButton, likeButton;
@@ -77,6 +76,11 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         setContentView(R.layout.full_profile_activity);
         mApp = (Common) getApplicationContext();
         context = this;
+        android.support.v4.app.Fragment fragment = new BasicProfileInfo();
+        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+        android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+        transaction.replace(R.id.fragment_place, fragment);
+        transaction.commit();
         if (getIntent() != null) {
             parseObjectId = getIntent().getStringExtra("parseObjectId");
         } else {
@@ -86,7 +90,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
             getSupportActionBar().hide();
         } catch (Exception ignored) {
         }
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         if (mApp.isNetworkAvailable(context)) {
             getImages();
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
@@ -98,29 +101,10 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
                 }
             });
         }
-        mMenuPager = (MyViewPager) findViewById(R.id.pager_menu);
         mImagesPager = (ViewPager) findViewById(R.id.pager_images);
         backButton = (ImageButton) findViewById(R.id.home);
         likeButton = (ImageButton) findViewById(R.id.like_profile);
-        mMenuPager.setAdapter(mSectionsPagerAdapter);
-        mMenuPager.setOffscreenPageLimit(1);
-        mMenuPager.setPagingEnabled(false);
-        final TabPageIndicator iconPageIndicator = (TabPageIndicator) findViewById(R.id.icons);
-        iconPageIndicator.setSmoothScrollingEnabled(false);
-        iconPageIndicator.setViewPager(mMenuPager);
         circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
-        mMenuPager.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                return false;
-            }
-        });
-        mMenuPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                iconPageIndicator.setCurrentItem(position);
-            }
-        });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,6 +117,56 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
                 likeProfile();
             }
         });
+        CompoundButton.OnCheckedChangeListener btnNavBarOnCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    switch (buttonView.getId()) {
+                        case R.id.basic:
+//                            buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected, null), null, null);
+                            android.support.v4.app.Fragment fragment = new BasicProfileInfo();
+                            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
+                            android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
+                            transaction.replace(R.id.fragment_place, fragment);
+                            transaction.commit();
+                            break;
+                        case R.id.detail:
+                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
+                            android.support.v4.app.Fragment fragment2 = new DetailsProfileInfo();
+                            android.support.v4.app.FragmentManager fm2 = getSupportFragmentManager();
+                            android.support.v4.app.FragmentTransaction transaction2 = fm2.beginTransaction();
+                            transaction2.replace(R.id.fragment_place, fragment2);
+                            transaction2.commit();
+                            break;
+                        case R.id.qualification:
+                            android.support.v4.app.Fragment fragment3 = new QualificationInfo();
+                            android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
+                            android.support.v4.app.FragmentTransaction transaction3 = fm3.beginTransaction();
+                            transaction3.replace(R.id.fragment_place, fragment3);
+                            transaction3.commit();
+                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
+                            break;
+                        case R.id.final_pic:
+                            android.support.v4.app.Fragment fragment4 = new FinalProfileInfo();
+                            android.support.v4.app.FragmentManager fm4 = getSupportFragmentManager();
+                            android.support.v4.app.FragmentTransaction transaction4 = fm4.beginTransaction();
+                            transaction4.replace(R.id.fragment_place, fragment4);
+                            transaction4.commit();
+                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
+                            break;
+                    }
+                }
+            }
+        };
+        RadioButton radioButton;
+        radioButton = (RadioButton) findViewById(R.id.basic);
+        radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+        radioButton = (RadioButton) findViewById(R.id.detail);
+        radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+        radioButton = (RadioButton) findViewById(R.id.qualification);
+        radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+        radioButton = (RadioButton) findViewById(R.id.final_pic);
+        radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+
     }
 
     @Override
@@ -144,18 +178,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        mMenuPager.setCurrentItem(tab.getPosition());
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
-
-    @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
 
     private void getImages() {
         if (parseObjectId != null) {
@@ -166,7 +188,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
                 public void done(ParseObject parseObject, ParseException e) {
                     likeParseObject = parseObject;
                     ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                    queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
                     queryParseQuery.whereEqualTo("profileId", parseObject);
                     queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -186,47 +207,6 @@ public class FullProfileActivity extends AppCompatActivity implements ActionBar.
             });
         } else {
             this.finish();
-        }
-    }
-
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter implements IconPagerAdapter {
-        private final int[] ICONS = new int[]{
-                R.drawable.ic_tab1,
-                R.drawable.ic_tab2,
-                R.drawable.ic_tab3,
-                R.drawable.ic_tab4,
-        };
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Log.e("position", String.valueOf(position));
-            switch (position) {
-                case 0:
-                    return new BasicProfileInfo();
-                case 1:
-                    return new DetailsProfileInfo();
-                case 2:
-                    return new QualificationInfo();
-                case 3:
-                    return new FinalProfileInfo();
-                default:
-                    return new BasicProfileInfo();
-            }
-        }
-
-        @Override
-        public int getIconResId(int index) {
-            return ICONS[index];
-        }
-
-        @Override
-        public int getCount() {
-            // Show 4 total pages.
-            return 4;
         }
     }
 

@@ -333,8 +333,6 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             break;
                     }
-                } else {
-                    mApp.showToast(context, "undo not available");
                 }
             }
         });
@@ -400,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         context = this;
         mApp = (Common) context.getApplicationContext();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -412,11 +411,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
+
         init();
+
         blurringView.setBlurredView(backgroundPhoto);
         rippleBackground.startRippleAnimation();
         slidingPanel.setEnabled(false);
         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+
         clickListeners();
         if (mApp.isNetworkAvailable(context))
             getParseData();
@@ -585,7 +587,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
-
         isLoading = true;
         rippleBackground.setVisibility(View.VISIBLE);
         labelLoading.setText("Loading Profile...");
@@ -598,9 +599,12 @@ public class MainActivity extends AppCompatActivity {
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
+                final int MAX_WIDTH = 512;
+                final int MAX_HEIGHT = 334;
+
                 Picasso.with(context)
                         .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
-                        .transform(new BitmapTransform(512, 334))
+                        .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
                         .into(backgroundPhoto, new Callback() {
@@ -609,10 +613,11 @@ public class MainActivity extends AppCompatActivity {
                                 new Handler().postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
+                                        slidingPanel.setEnabled(true);
+                                        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                                         blurringView.invalidate();
-                                        rippleBackground.setVisibility(View.GONE);
                                     }
-                                }, 800);
+                                }, 0);
                             }
 
                             @Override
@@ -621,6 +626,7 @@ public class MainActivity extends AppCompatActivity {
                                 setProfileDetails();
                             }
                         });
+
             } else {
                 Picasso.with(context)
                         .load(Uri.EMPTY)
@@ -628,7 +634,6 @@ public class MainActivity extends AppCompatActivity {
                         .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
                         .into(frontPhoto);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -763,12 +768,12 @@ public class MainActivity extends AppCompatActivity {
                                 imageModel.setIsPrimary(false);
                                 imageModel.setParseObject(model.getObjectId());
                                 userProfileImages.add(imageModel);
-//                                if (model.getBoolean("isPrimary")) {
+                                if (model.getBoolean("isPrimary")) {
 //                                    final int MAX_WIDTH = 512;
 //                                    final int MAX_HEIGHT = 334;
 //
 //                                    Picasso.with(context)
-//                                            .load(file.getUrl())
+//                                            .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl())
 //                                            .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
 //                                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
 //                                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
@@ -778,12 +783,11 @@ public class MainActivity extends AppCompatActivity {
 //                                                    new Handler().postDelayed(new Runnable() {
 //                                                        @Override
 //                                                        public void run() {
-//                                                            rippleBackground.setVisibility(View.GONE);
 //                                                            slidingPanel.setEnabled(true);
 //                                                            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
 //                                                            blurringView.invalidate();
 //                                                        }
-//                                                    }, 800);
+//                                                    }, 0);
 //                                                }
 //
 //                                                @Override
@@ -792,15 +796,13 @@ public class MainActivity extends AppCompatActivity {
 //                                                    setProfileDetails();
 //                                                }
 //                                            });
-//                                }
+                                }
                             } catch (ParseException e1) {
                                 e1.printStackTrace();
                             }
                         }
                         userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
                         profileImages.setAdapter(userImagesAdapter);
-                        slidingPanel.setEnabled(true);
-                        slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     } else {
                         Picasso.with(context)
                                 .load(Uri.EMPTY)
@@ -819,6 +821,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        rippleBackground.setVisibility(View.GONE);
+
     }
 
     @Override

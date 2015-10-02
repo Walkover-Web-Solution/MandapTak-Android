@@ -383,6 +383,7 @@ public class UserPreferences extends AppCompatActivity {
         }
         if (mValidField)
             if (mApp.isNetworkAvailable(context)) {
+                btnSavePreferences.setEnabled(false);
                 ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
                 q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
                     @Override
@@ -484,6 +485,7 @@ public class UserPreferences extends AppCompatActivity {
                                 }
                             });
                         } else {
+                            btnSavePreferences.setEnabled(true);
                             mApp.showToast(context, e.getMessage());
                         }
                     }

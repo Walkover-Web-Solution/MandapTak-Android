@@ -599,26 +599,32 @@ public class MainActivity extends AppCompatActivity {
                 RequestCreator profilePic = mPicasso
                         .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl()).noFade();
 
-                profilePic
-                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                        .into(frontPhoto);
-                profilePic
-                        .transform(new BitmapTransform(512, 334))
-                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-                        .into(backgroundPhoto, new Callback() {
-                            @Override
-                            public void onSuccess() {
-                                blurringView.invalidate();
-                            }
 
-                            @Override
-                            public void onError() {
-                                blurringView.invalidate();
-                                setProfileDetails();
-                            }
-                        });
+                profilePic.placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                .into(frontPhoto);
+
+                profilePic
+                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+//                .transform(new BitmapTransform(512, 334))
+                .into(backgroundPhoto, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        blurringView.invalidate();
+                    }
+
+                    @Override
+                    public void onError() {
+                        try {
+                            Log.e("error in loading image",profileList.get(0).fetchIfNeeded().getString("name"));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        blurringView.invalidate();
+                        setProfileDetails();
+                    }
+                });
                 rippleBackground.setVisibility(View.GONE);
 
             } else {
@@ -802,20 +808,29 @@ public class MainActivity extends AppCompatActivity {
                         slidingPanel.setEnabled(true);
                         slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                     } else {
-                        Picasso.with(context)
-                                .load(Uri.EMPTY)
-                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                                .into(backgroundPhoto);
-                        blurringView.invalidate();
+                        //This has to be handled proper this happens when there is no entry in the photo
+                        //table for this profile.
+                        Log.e("Error form Photo table list is null",profileList.get(0).getObjectId());
+
+//                        Picasso.with(context)
+//                                .load(Uri.EMPTY)
+//                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//                                .into(backgroundPhoto);
+//                        blurringView.invalidate();
                     }
                 } else {
-                    Picasso.with(context)
-                            .load(Uri.EMPTY)
-                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                            .into(backgroundPhoto);
-                    blurringView.invalidate();
+                    //this also has to be handled as per condition till then wait...
+                    e.printStackTrace();
+                    Log.e("Error form Photo table query mail activity","handle the else part for exception");
+
+
+//                    Picasso.with(context)
+//                            .load(Uri.EMPTY)
+//                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//                            .into(backgroundPhoto);
+//                    blurringView.invalidate();
                 }
             }
         });

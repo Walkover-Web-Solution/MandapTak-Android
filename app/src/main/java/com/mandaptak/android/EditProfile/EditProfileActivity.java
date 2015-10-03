@@ -174,6 +174,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             protected Void doInBackground(Void... params) {
                 try {
                     ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+                    query.include("currentLocation.Parent.Parent");
+                    query.include("placeOfBirth.Parent.Parent");
+                    query.include("casteId");
+                    query.include("religionId");
+                    query.include("gotraId");
+                    query.include("education1.degreeId");
+                    query.include("education2.degreeId");
+                    query.include("education3.degreeId");
+                    query.include("industryId");
                     parseObject = query.get(Prefs.getProfileId(context));
                     if (parseObject != null) {
                         String newName = parseObject.getString("name");
@@ -203,38 +212,38 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                         }
                         if (newPOB != null) {
                             ParseNameModel pob = new ParseNameModel();
-                            pob.setName(newPOB.fetchIfNeeded().getString("name")
-                                    + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            pob.setName(newPOB.getString("name")
+                                    + ", " + newPOB.getParseObject("Parent").getString("name") + ", " + newPOB.getParseObject("Parent").getParseObject("Parent").getString("name"));
                             pob.setParseObjectId(newPOB.getObjectId());
                             pob.setClassName("City");
                             profile.setPlaceOfBirth(pob);
                         }
                         if (newCurrentLocation != null) {
                             ParseNameModel currentLocation = new ParseNameModel();
-                            currentLocation.setName(newCurrentLocation.fetchIfNeeded().getString("name")
-                                    + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                            currentLocation.setName(newCurrentLocation.getString("name")
+                                    + ", " + newCurrentLocation.getParseObject("Parent").getString("name") + ", " + newCurrentLocation.getParseObject("Parent").getParseObject("Parent").getString("name"));
                             currentLocation.setParseObjectId(newCurrentLocation.getObjectId());
                             currentLocation.setClassName("City");
                             profile.setCurrentLocation(currentLocation);
                         }
 
                         ParseObject tmpCaste, tmpReligion, tmpGotra;
-                        tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-                        tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-                        tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+                        tmpReligion = parseObject.getParseObject("religionId");
+                        tmpCaste = parseObject.getParseObject("casteId");
+                        tmpGotra = parseObject.getParseObject("gotraId");
                         profile.setManglik(parseObject.getInt("manglik"));
                         profile.setHeight(parseObject.getInt("height"));
                         profile.setWeight(parseObject.getInt("weight"));
                         if (tmpReligion != null) {
-                            ParseNameModel newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), "Religion", tmpReligion.getObjectId());
+                            ParseNameModel newReligion = new ParseNameModel(tmpReligion.getString("name"), "Religion", tmpReligion.getObjectId());
                             profile.setReligion(newReligion);
                         }
                         if (tmpCaste != null) {
-                            ParseNameModel newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), "Caste", tmpCaste.getObjectId());
+                            ParseNameModel newCaste = new ParseNameModel(tmpCaste.getString("name"), "Caste", tmpCaste.getObjectId());
                             profile.setCaste(newCaste);
                         }
                         if (tmpGotra != null) {
-                            ParseNameModel newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), "Gotra", tmpGotra.getObjectId());
+                            ParseNameModel newGotra = new ParseNameModel(tmpGotra.getString("name"), "Gotra", tmpGotra.getObjectId());
                             profile.setGotra(newGotra);
                         }
                         profile.setWorkAfterMarriage(parseObject.getInt("workAfterMarriage"));
@@ -246,19 +255,19 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
                         ParseObject tmpEdu2 = parseObject.getParseObject("education2");
                         ParseObject tmpEdu3 = parseObject.getParseObject("education3");
                         if (tmpEdu1 != null) {
-                            ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), "Specialization", tmpEdu1.getObjectId());
+                            ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.getString("name"), "Specialization", tmpEdu1.getObjectId());
                             profile.setEducation1(newEducationDetail1);
                         }
                         if (tmpEdu2 != null) {
-                            ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), "Specialization", tmpEdu2.getObjectId());
+                            ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.getString("name"), "Specialization", tmpEdu2.getObjectId());
                             profile.setEducation1(newEducationDetail2);
                         }
                         if (tmpEdu3 != null) {
-                            ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), "Specialization", tmpEdu3.getObjectId());
+                            ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.getString("name"), "Specialization", tmpEdu3.getObjectId());
                             profile.setEducation1(newEducationDetail3);
                         }
                         if (newIndustry != null) {
-                            ParseNameModel industry = new ParseNameModel(newIndustry.fetchIfNeeded().getString("name"), "Industries", newIndustry.getObjectId());
+                            ParseNameModel industry = new ParseNameModel(newIndustry.getString("name"), "Industries", newIndustry.getObjectId());
                             profile.setIndustry(industry);
                         }
                         if (newCompany != null)

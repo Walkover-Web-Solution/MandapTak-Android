@@ -167,7 +167,6 @@ public class MainActivity extends AppCompatActivity {
                                     undoModel.setActionPerformed(1);
                                     if (o instanceof ParseObject) {
                                         ParseObject parseObject = likeProfile;
-                                        //ParseObject parseObject = (ParseObject) o;
                                         String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
                                         String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
                                         MatchesModel model = new MatchesModel();
@@ -466,8 +465,8 @@ public class MainActivity extends AppCompatActivity {
             public void done(ParseObject parseObject, ParseException e) {
                 try {
                     if (e == null) {
-                        profileName.setText(parseObject.fetchIfNeeded().getString("name"));
-                        ParseFile file = parseObject.fetchIfNeeded().getParseFile("profilePic");
+                        profileName.setText(parseObject.getString("name"));
+                        ParseFile file = parseObject.getParseFile("profilePic");
                         Picasso.with(context)
                                 .load(file.getUrl())
                                 .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
@@ -586,7 +585,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setProfileDetails() {
-
         isLoading = true;
         rippleBackground.setVisibility(View.VISIBLE);
         labelLoading.setText("Loading Profile...");
@@ -597,34 +595,32 @@ public class MainActivity extends AppCompatActivity {
                 Picasso mPicasso = Picasso.with(context);
                 mPicasso.setIndicatorsEnabled(true);
                 RequestCreator profilePic = mPicasso
-                        .load(profileList.get(0).fetchIfNeeded().getParseFile("profilePic").getUrl()).noFade();
-
-
+                        .load(profileList.get(0).getParseFile("profilePic").getUrl()).noFade();
                 profilePic.placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-                .into(frontPhoto);
+                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+                        .into(frontPhoto);
 
                 profilePic
-                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                        .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
+                        .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
 //                .transform(new BitmapTransform(512, 334))
-                .into(backgroundPhoto, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        blurringView.invalidate();
-                    }
+                        .into(backgroundPhoto, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                blurringView.invalidate();
+                            }
 
-                    @Override
-                    public void onError() {
-                        try {
-                            Log.e("error in loading image",profileList.get(0).fetchIfNeeded().getString("name"));
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                        blurringView.invalidate();
-                        setProfileDetails();
-                    }
-                });
+                            @Override
+                            public void onError() {
+                                try {
+                                    Log.e("error in loading image", profileList.get(0).getString("name"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                blurringView.invalidate();
+                                setProfileDetails();
+                            }
+                        });
                 rippleBackground.setVisibility(View.GONE);
 
             } else {
@@ -671,7 +667,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("religionId") && profileList.get(0).getParseObject("religionId") != null) {
-                String religion = profileList.get(0).fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                String religion = profileList.get(0).getParseObject("religionId").getString("name");
                 frontReligion.setText(religion);
                 slideReligion.setText(religion);
             }
@@ -680,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("casteId") && profileList.get(0).getParseObject("casteId") != null) {
-                String caste = profileList.get(0).fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                String caste = profileList.get(0).getParseObject("casteId").getString("name");
                 slideReligion.append(", " + caste);
                 frontReligion.append(", " + caste);
             }
@@ -689,7 +685,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("designation") && profileList.get(0).getString("designation") != null) {
-                String desig = profileList.get(0).fetchIfNeeded().getString("designation");
+                String desig = profileList.get(0).getString("designation");
                 frontDesignation.setText(desig);
                 slideDesignation.setText(desig);
                 designation.setText(desig);
@@ -699,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("industryId") && profileList.get(0).getParseObject("industryId") != null) {
-                String indust = profileList.get(0).fetchIfNeeded().getParseObject("industryId").fetchIfNeeded().getString("name");
+                String indust = profileList.get(0).getParseObject("industryId").getString("name");
                 industry.setText(indust);
             }
         } catch (Exception e) {
@@ -707,9 +703,9 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("currentLocation") && profileList.get(0).getParseObject("currentLocation") != null) {
-                String city = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getString("name");
-                String state = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
-                String country = profileList.get(0).fetchIfNeeded().getParseObject("currentLocation").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name");
+                String city = profileList.get(0).getParseObject("currentLocation").getString("name");
+                String state = profileList.get(0).getParseObject("currentLocation").getParseObject("Parent").getString("name");
+                String country = profileList.get(0).getParseObject("currentLocation").getParseObject("Parent").getParseObject("Parent").getString("name");
                 currentLocation.setText(city);
                 currentLocation.append(", " + state);
                 currentLocation.append(", " + country);
@@ -733,21 +729,21 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             if (profileList.get(0).containsKey("education1") && profileList.get(0).getParseObject("education1") != null) {
-                education.setText(profileList.get(0).getParseObject("education1").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.setText(profileList.get(0).getParseObject("education1").getParseObject("degreeId").getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("education2") && profileList.get(0).getParseObject("education2") != null) {
-                education.append("\n" + profileList.get(0).getParseObject("education2").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n" + profileList.get(0).getParseObject("education2").getParseObject("degreeId").getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         try {
             if (profileList.get(0).containsKey("education3") && profileList.get(0).getParseObject("education3") != null) {
-                education.append("\n" + profileList.get(0).getParseObject("education3").fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"));
+                education.append("\n" + profileList.get(0).getParseObject("education3").getParseObject("degreeId").getString("name"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -755,6 +751,7 @@ public class MainActivity extends AppCompatActivity {
         setTraits();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
         parseQuery.whereEqualTo("profileId", profileList.get(0));
+        parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -764,42 +761,13 @@ public class MainActivity extends AppCompatActivity {
                         for (ParseObject model : list) {
                             try {
                                 ImageModel imageModel = new ImageModel();
-                                ParseFile file = model.fetchIfNeeded().getParseFile("file");
+                                ParseFile file = model.getParseFile("file");
                                 imageModel.setLink(file.getUrl());
                                 imageModel.setIsPrimary(false);
                                 imageModel.setParseObject(model.getObjectId());
                                 userProfileImages.add(imageModel);
-//                                if (model.getBoolean("isPrimary")) {
-//                                    final int MAX_WIDTH = 512;
-//                                    final int MAX_HEIGHT = 334;
-//
-//                                    Picasso.with(context)
-//                                            .load(file.getUrl())
-//                                            .transform(new BitmapTransform(MAX_WIDTH, MAX_HEIGHT))
-//                                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-//                                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-//                                            .into(backgroundPhoto, new Callback() {
-//                                                @Override
-//                                                public void onSuccess() {
-//                                                    new Handler().postDelayed(new Runnable() {
-//                                                        @Override
-//                                                        public void run() {
-//                                                            rippleBackground.setVisibility(View.GONE);
-//                                                            slidingPanel.setEnabled(true);
-//                                                            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-//                                                            blurringView.invalidate();
-//                                                        }
-//                                                    }, 800);
-//                                                }
-//
-//                                                @Override
-//                                                public void onError() {
-//                                                    blurringView.invalidate();
-//                                                    setProfileDetails();
-//                                                }
-//                                            });
-//                                }
-                            } catch (ParseException e1) {
+
+                            } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }
@@ -810,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         //This has to be handled proper this happens when there is no entry in the photo
                         //table for this profile.
-                        Log.e("Error form Photo table list is null",profileList.get(0).getObjectId());
+                        Log.e("Error form Photo table list is null", profileList.get(0).getObjectId());
 
 //                        Picasso.with(context)
 //                                .load(Uri.EMPTY)
@@ -822,7 +790,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     //this also has to be handled as per condition till then wait...
                     e.printStackTrace();
-                    Log.e("Error form Photo table query mail activity","handle the else part for exception");
+                    Log.e("Error form Photo table query mail activity", "handle the else part for exception");
 
 
 //                    Picasso.with(context)

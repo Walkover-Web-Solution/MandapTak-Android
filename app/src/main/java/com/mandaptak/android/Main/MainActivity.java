@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(context, FullProfileActivity.class);
         intent.putExtra("parseObjectId", profileList.get(0).getObjectId());
         startActivity(intent);
-        MainActivity.this.finish();
+      //  MainActivity.this.finish();
       }
     });
 

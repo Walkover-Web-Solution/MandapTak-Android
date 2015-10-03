@@ -60,8 +60,9 @@ public class FullProfileActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-    startActivity(new Intent(FullProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-    FullProfileActivity.this.finish();
+//    startActivity(new Intent(FullProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+//    FullProfileActivity.this.finish();
+    super.onBackPressed();
   }
 
   @Override
@@ -283,7 +284,9 @@ public class FullProfileActivity extends AppCompatActivity {
                         intent.putExtra("profile", model);
                         startActivity(intent);
                       } else {
-                        onBackPressed();
+                        mApp.showToast(context, "profile liked");
+                        startActivity(new Intent(FullProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
+                        FullProfileActivity.this.finish();
                       }
                     } catch (Exception e1) {
                       e1.printStackTrace();

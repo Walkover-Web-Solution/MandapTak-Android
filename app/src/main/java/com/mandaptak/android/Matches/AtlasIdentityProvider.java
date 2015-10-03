@@ -79,22 +79,22 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
                 try {
                   MatchesModel model = new MatchesModel();
                   model.setProfileId(parseObject.getObjectId());
-                  model.setUserId(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-                  String name = parseObject.fetchIfNeeded().getString("name");
+                  model.setUserId(parseObject.getParseObject("userId").getObjectId());
+                  String name = parseObject.getString("name");
                   if (name != null)
                     model.setName(name);
-                  String work = parseObject.fetchIfNeeded().getString("designation");
+                  String work = parseObject.getString("designation");
                   if (work != null)
                     model.setWork(work);
-                  String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                  String religion = parseObject.getParseObject("religionId").getString("name");
                   if (religion != null)
                     model.setReligion(religion);
-                  String url = parseObject.fetchIfNeeded().fetchIfNeeded().getParseFile("profilePic").getUrl();
+                  String url = parseObject.getParseFile("profilePic").getUrl();
                   if (url != null) {
                     model.setUrl(url);
                   }
                   matchList.add(model);
-                } catch (ParseException e1) {
+                } catch (Exception e1) {
                   e1.printStackTrace();
                 }
               }
@@ -122,6 +122,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
     final ArrayList<ParseObject> relatives = new ArrayList<>();
     for (int i = 0; i < profileObjs.size(); i++) {
       ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+      query.include("profileId");
       query.whereEqualTo("profileId", profileObjs.get(i));
       final int finalI = i;
       query.findInBackground(new FindCallback<ParseObject>() {
@@ -143,11 +144,11 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
   void saveinfo(ArrayList<ParseObject> relatives) {
     for (ParseObject parseObject : relatives) {
       try {
-        name = parseObject.fetchIfNeeded().getParseObject("profileId").fetchIfNeeded().getString("name");
+        name = parseObject.getParseObject("profileId").getString("name");
         //    name = parseObjectPro.getString("name");
         Participant participant = new Participant();
-        participant.userId = parseObject.fetchIfNeeded().getParseObject("userId").getObjectId();
-        String relation = parseObject.fetchIfNeeded().getString("relation");
+        participant.userId = parseObject.getParseObject("userId").getObjectId();
+        String relation = parseObject.getString("relation");
         if (relation.equalsIgnoreCase("Bachelor")) {
           participant.firstName = name;
         } else {
@@ -155,7 +156,7 @@ public class AtlasIdentityProvider implements Atlas.ParticipantProvider {
         }
         if (!participantsMap.containsKey(participant.userId))
           participantsMap.put(participant.userId, participant);
-      } catch (ParseException e1) {
+      } catch (Exception e1) {
         e1.printStackTrace();
       }
     }

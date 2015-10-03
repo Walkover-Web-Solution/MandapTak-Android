@@ -570,7 +570,7 @@ public class UserPreferences extends AppCompatActivity {
                                 boolean isPresent = false;
                                 for (int i = 0; i < parseSavedDegreeList.size(); i++) {
                                     try {
-                                        if (parseSavedDegreeList.get(i).getDegreeObj().fetchIfNeeded().getObjectId().equalsIgnoreCase(model.getObjectId()))
+                                        if (parseSavedDegreeList.get(i).getDegreeObj().getObjectId().equalsIgnoreCase(model.getObjectId()))
                                             isPresent = true;
                                     } catch (Exception e1) {
                                         e1.printStackTrace();
@@ -611,12 +611,12 @@ public class UserPreferences extends AppCompatActivity {
                             LocationPreference locationPreference = new LocationPreference();
                             locationPreference.setLocationType(0);
                             try {
-                                ParseObject state = city.fetchIfNeeded().getParseObject("Parent");
-                                ParseObject country = city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent");
+                                ParseObject state = city.getParseObject("Parent");
+                                ParseObject country = city.getParseObject("Parent").getParseObject("Parent");
                                 locationPreference.setCountry(country);
                                 locationPreference.setState(state);
                                 locationPreference.setCity(city);
-                                locationPreference.setLocationName(city.fetchIfNeeded().getString("name") + ", " + state.fetchIfNeeded().getString("name") + ", " + country.fetchIfNeeded().getString("name"));
+                                locationPreference.setLocationName(city.getString("name") + ", " + state.getString("name") + ", " + country.getString("name"));
                                 locationPreference.setParseObject(city);
                             } catch (Exception e1) {
                                 e1.printStackTrace();
@@ -625,7 +625,7 @@ public class UserPreferences extends AppCompatActivity {
                                 boolean isPresent = false;
                                 for (int i = 0; i < parseSavedLocationList.size(); i++) {
                                     try {
-                                        if (parseSavedLocationList.get(i).getParseObject().fetchIfNeeded().getObjectId().equalsIgnoreCase(city.fetchIfNeeded().getObjectId()))
+                                        if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(city.getObjectId()))
                                             isPresent = true;
                                     } catch (Exception e1) {
                                         e1.printStackTrace();
@@ -649,11 +649,11 @@ public class UserPreferences extends AppCompatActivity {
                                     LocationPreference locationPreference = new LocationPreference();
                                     locationPreference.setLocationType(1);
                                     try {
-                                        ParseObject country = state.fetchIfNeeded().getParseObject("Parent");
+                                        ParseObject country = state.getParseObject("Parent");
                                         locationPreference.setCountry(country);
                                         locationPreference.setState(state);
                                         locationPreference.setCity(null);
-                                        locationPreference.setLocationName(state.fetchIfNeeded().getString("name") + " ," + country.fetchIfNeeded().getString("name"));
+                                        locationPreference.setLocationName(state.getString("name") + " ," + country.getString("name"));
                                         locationPreference.setParseObject(state);
                                     } catch (Exception e1) {
                                         e1.printStackTrace();
@@ -662,7 +662,7 @@ public class UserPreferences extends AppCompatActivity {
                                         boolean isPresent = false;
                                         for (int i = 0; i < parseSavedLocationList.size(); i++) {
                                             try {
-                                                if (parseSavedLocationList.get(i).getParseObject().fetchIfNeeded().getObjectId().equalsIgnoreCase(state.fetchIfNeeded().getObjectId()))
+                                                if (parseSavedLocationList.get(i).getParseObject().getObjectId().equalsIgnoreCase(state.getObjectId()))
                                                     isPresent = true;
                                             } catch (Exception e1) {
                                                 e1.printStackTrace();
@@ -790,21 +790,21 @@ public class UserPreferences extends AppCompatActivity {
                         if (list.size() > 0) {
                             parseSavedLocationList.clear();
                             for (ParseObject parseObject : list) {
-                                city = parseObject.fetchIfNeeded().getParseObject("cityId");
-                                state = parseObject.fetchIfNeeded().getParseObject("stateId");
+                                city = parseObject.getParseObject("cityId");
+                                state = parseObject.getParseObject("stateId");
                                 //     country = parseObject.fetchIfNeeded().getParseObject("countryId");
                                 LocationPreference locationPreference = new LocationPreference();
                                 if (city != null) {
                                     locationPreference.setParseObject(city);
                                     locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(city.fetchIfNeeded().getString("name") + ", "
-                                            + city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + city.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                                    locationPreference.setLocationName(city.getString("name") + ", "
+                                            + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
                                     locationPreference.setLocationType(0);
                                     responseText.append(locationPreference.getLocationName());
                                 } else {
                                     locationPreference.setParseObject(state);
                                     locationPreference.setIsSelected(true);
-                                    locationPreference.setLocationName(state.fetchIfNeeded().getString("name") + ", " + state.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                                    locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
                                     locationPreference.setLocationType(1);
                                     responseText.append(locationPreference.getLocationName()).append(" ");
                                 }
@@ -812,7 +812,7 @@ public class UserPreferences extends AppCompatActivity {
                             }
                         }
                         etLocation.setText(responseText.toString());
-                    } catch (ParseException e1) {
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
                 } else {
@@ -836,10 +836,10 @@ public class UserPreferences extends AppCompatActivity {
                         parseSavedDegreeList.clear();
                         for (ParseObject parseObject : list) {
                             try {
-                                Degree degree = new Degree(parseObject.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name"), parseObject, true);
+                                Degree degree = new Degree(parseObject.getParseObject("degreeId").getString("name"), parseObject, true);
                                 parseSavedDegreeList.add(degree);
                                 responseText.append(degree.getDegreeName() + " ");
-                            } catch (ParseException e1) {
+                            } catch (Exception e1) {
                                 e1.printStackTrace();
                             }
                         }

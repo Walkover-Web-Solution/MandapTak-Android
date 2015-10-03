@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
                                         model.setReligion(religion + ", " + caste);
                                         model.setWork(parseObject.getString("designation"));
                                         model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                                        // model.setUserId(parseObject.fetchIfNeeded().getParseUser("userId").getUsername());
                                         Intent intent = new Intent(context, MatchedProfileActivity.class);
                                         intent.putExtra("profile", model);
                                         startActivity(intent);

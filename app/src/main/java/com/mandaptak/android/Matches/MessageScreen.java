@@ -14,10 +14,7 @@ import com.layer.atlas.AtlasTypingIndicator;
 import com.layer.sdk.LayerClient;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.messaging.Message;
-import com.layer.sdk.messaging.MessageOptions;
-import com.layer.sdk.messaging.MessagePart;
 import com.mandaptak.android.Layer.LayerImpl;
-import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 
@@ -37,7 +34,7 @@ public class MessageScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_view);
-        if (getSupportActionBar()!=null){
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeButtonEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }

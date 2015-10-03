@@ -173,7 +173,7 @@ public class SettingsActivity extends AppCompatActivity {
         try {
 
             ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-            query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile",Prefs.getProfileId(context)));
+            query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
             query.include("userId");
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override

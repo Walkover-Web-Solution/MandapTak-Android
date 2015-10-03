@@ -11,7 +11,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
 import com.mandaptak.android.Profile.Religion.Listener.ReligionOnClickListener;
 import com.mandaptak.android.Profile.Religion.ReligionController;
 import com.mandaptak.android.Profile.Religion.ReligionParseFindCallback;
@@ -22,13 +28,14 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import me.iwf.photopicker.entity.ParseNameModel;
-import me.iwf.photopicker.entity.Profile;
-import me.iwf.photopicker.utils.Prefs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import me.iwf.photopicker.entity.ParseNameModel;
+import me.iwf.photopicker.entity.Profile;
+import me.iwf.photopicker.utils.Prefs;
 
 public class DetailsProfileFragment extends Fragment implements ReligionController {
     private static final String GOTRA = "Gotra";

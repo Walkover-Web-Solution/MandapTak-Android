@@ -239,7 +239,7 @@ public class Common extends Application implements LayerCallbacks {
         LayerImpl.setContext(this);
         RaygunUserInfo user = new RaygunUserInfo();
         ParseUser parseUser = ParseUser.getCurrentUser();
-        if (parseUser!=null){
+        if (parseUser != null) {
             user.FirstName = parseUser.getUsername();
             user.Uuid = parseUser.getObjectId();
             RaygunClient.SetUser(user);

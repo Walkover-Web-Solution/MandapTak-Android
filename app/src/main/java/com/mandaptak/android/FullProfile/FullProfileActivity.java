@@ -4,17 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
@@ -30,8 +24,6 @@ import com.mandaptak.android.Matches.MatchedProfileActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Utils.Prefs;
-import com.mandaptak.android.Views.MyViewPager;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -39,10 +31,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.IconPagerAdapter;
-import com.viewpagerindicator.TabPageIndicator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +50,7 @@ public class FullProfileActivity extends AppCompatActivity {
     ImageButton backButton, likeButton;
     String parseObjectId;
     Context context;
-    ParseObject likeParseObject, userProfileObject;
+    ParseObject userProfileObject;
     Common mApp;
     BasicProfileInfo basicProfileInfo = null;
     DetailsProfileInfo detailsProfileInfo = null;
@@ -196,7 +185,7 @@ public class FullProfileActivity extends AppCompatActivity {
     private void getImages() {
         if (parseObjectId != null) {
             ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-            queryParseQuery.whereEqualTo("profileId",ParseObject.createWithoutData("Profile",parseObjectId));
+            queryParseQuery.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", parseObjectId));
             queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                 @Override
@@ -271,7 +260,7 @@ public class FullProfileActivity extends AppCompatActivity {
                     try {
                         HashMap<String, Object> params = new HashMap<>();
                         params.put("userProfileId", userProfileObject.getObjectId());
-                        params.put("likeProfileId", likeParseObject.getObjectId());
+                        params.put("likeProfileId", parseObjectId);
                         params.put("userName", userProfileObject.fetchIfNeeded().getString("name"));
 
                         ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
@@ -281,7 +270,7 @@ public class FullProfileActivity extends AppCompatActivity {
                                     if (o != null) {
                                         try {
                                             if (o instanceof ParseObject) {
-                                                ParseObject parseObject = likeParseObject;
+                                                ParseObject parseObject = ParseObject.createWithoutData("Profile", parseObjectId);
                                                 String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
                                                 String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
                                                 MatchesModel model = new MatchesModel();

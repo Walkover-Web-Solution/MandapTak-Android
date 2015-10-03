@@ -30,7 +30,6 @@ import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Settings.SettingsActivity;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.BitmapTransform;
 import com.mandaptak.android.Views.BlurringView;
 import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;

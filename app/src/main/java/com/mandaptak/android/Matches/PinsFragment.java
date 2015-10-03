@@ -85,6 +85,8 @@ public class PinsFragment extends Fragment {
                 protected Void doInBackground(Void... params) {
                     try {
                         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+                        query.include("pinnedProfileId.religionId");
+                        query.include("pinnedProfileId.userId");
                         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
                         list = query.find();
                         if (list != null)
@@ -93,21 +95,21 @@ public class PinsFragment extends Fragment {
                                 for (ParseObject parseObject : list) {
                                     try {
                                         MatchesModel model = new MatchesModel();
-                                        String name = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("name");
+                                        String name = parseObject.getParseObject("pinnedProfileId").getString("name");
                                         if (name != null)
                                             model.setName(name);
-                                        String work = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getString("designation");
+                                        String work = parseObject.getParseObject("pinnedProfileId").getString("designation");
                                         if (work != null)
                                             model.setWork(work);
-                                        String religion = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                                        String religion = parseObject.getParseObject("pinnedProfileId").getParseObject("religionId").fetchIfNeeded().getString("name");
                                         if (religion != null)
                                             model.setReligion(religion);
-                                        String url = parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseFile("profilePic").getUrl();
+                                        String url = parseObject.getParseObject("pinnedProfileId").getParseFile("profilePic").getUrl();
                                         if (url != null) {
                                             model.setUrl(url);
                                         }
-                                        model.setProfileId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").getObjectId());
-                                        model.setUserId(parseObject.fetchIfNeeded().getParseObject("pinnedProfileId").fetchIfNeeded().getParseObject("userId").getObjectId());
+                                        model.setProfileId(parseObject.getParseObject("pinnedProfileId").getObjectId());
+                                        model.setUserId(parseObject.getParseObject("pinnedProfileId").getParseObject("userId").getObjectId());
                                         pinsList.add(model);
                                     } catch (ParseException e1) {
                                         e1.printStackTrace();

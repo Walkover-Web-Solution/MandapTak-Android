@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
@@ -62,6 +63,10 @@ public class FullProfileActivity extends AppCompatActivity {
     Context context;
     ParseObject likeParseObject, userProfileObject;
     Common mApp;
+    BasicProfileInfo basicProfileInfo = null;
+    DetailsProfileInfo detailsProfileInfo = null;
+    QualificationInfo qualificationInfo = null;
+    FinalProfileInfo finalProfileInfo = null;
     private Boolean isLiked = false;
 
     @Override
@@ -76,11 +81,6 @@ public class FullProfileActivity extends AppCompatActivity {
         setContentView(R.layout.full_profile_activity);
         mApp = (Common) getApplicationContext();
         context = this;
-        android.support.v4.app.Fragment fragment = new BasicProfileInfo();
-        android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-        android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
-        transaction.replace(R.id.fragment_place, fragment);
-        transaction.commit();
         if (getIntent() != null) {
             parseObjectId = getIntent().getStringExtra("parseObjectId");
         } else {
@@ -122,36 +122,16 @@ public class FullProfileActivity extends AppCompatActivity {
                 if (isChecked) {
                     switch (buttonView.getId()) {
                         case R.id.basic:
-//                            buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected, null), null, null);
-                            android.support.v4.app.Fragment fragment = new BasicProfileInfo();
-                            android.support.v4.app.FragmentManager fm = getSupportFragmentManager();
-                            android.support.v4.app.FragmentTransaction transaction = fm.beginTransaction();
-                            transaction.replace(R.id.fragment_place, fragment);
-                            transaction.commit();
+                            loadBasicInfo();
                             break;
                         case R.id.detail:
-                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
-                            android.support.v4.app.Fragment fragment2 = new DetailsProfileInfo();
-                            android.support.v4.app.FragmentManager fm2 = getSupportFragmentManager();
-                            android.support.v4.app.FragmentTransaction transaction2 = fm2.beginTransaction();
-                            transaction2.replace(R.id.fragment_place, fragment2);
-                            transaction2.commit();
+                            loadDetailInfo();
                             break;
                         case R.id.qualification:
-                            android.support.v4.app.Fragment fragment3 = new QualificationInfo();
-                            android.support.v4.app.FragmentManager fm3 = getSupportFragmentManager();
-                            android.support.v4.app.FragmentTransaction transaction3 = fm3.beginTransaction();
-                            transaction3.replace(R.id.fragment_place, fragment3);
-                            transaction3.commit();
-                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
+                            loadQualificationsInfo();
                             break;
                         case R.id.final_pic:
-                            android.support.v4.app.Fragment fragment4 = new FinalProfileInfo();
-                            android.support.v4.app.FragmentManager fm4 = getSupportFragmentManager();
-                            android.support.v4.app.FragmentTransaction transaction4 = fm4.beginTransaction();
-                            transaction4.replace(R.id.fragment_place, fragment4);
-                            transaction4.commit();
-                            // buttonView.setCompoundDrawables(null, context.getResources().getDrawable(R.drawable.ic_tab1_selected,null), null, null);
+                            loadFinalProfileInfo();
                             break;
                     }
                 }
@@ -166,7 +146,41 @@ public class FullProfileActivity extends AppCompatActivity {
         radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
         radioButton = (RadioButton) findViewById(R.id.final_pic);
         radioButton.setOnCheckedChangeListener(btnNavBarOnCheckedChangeListener);
+        loadBasicInfo();
+        RadioGroup menuGroup = (RadioGroup) findViewById(R.id.radio_parent);
+        menuGroup.check(R.id.basic);
+    }
 
+    void loadBasicInfo() {
+        if (basicProfileInfo == null) {
+            basicProfileInfo = new BasicProfileInfo();
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_place, basicProfileInfo).commit();
+    }
+
+    void loadDetailInfo() {
+        if (detailsProfileInfo == null) {
+            detailsProfileInfo = new DetailsProfileInfo();
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_place, detailsProfileInfo).commit();
+    }
+
+    void loadQualificationsInfo() {
+        if (qualificationInfo == null) {
+            qualificationInfo = new QualificationInfo();
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_place, qualificationInfo).commit();
+    }
+
+    void loadFinalProfileInfo() {
+        if (finalProfileInfo == null) {
+            finalProfileInfo = new FinalProfileInfo();
+        }
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_place, finalProfileInfo).commit();
     }
 
     @Override
@@ -181,28 +195,20 @@ public class FullProfileActivity extends AppCompatActivity {
 
     private void getImages() {
         if (parseObjectId != null) {
-            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-            parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
+            ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+            queryParseQuery.whereEqualTo("profileId",ParseObject.createWithoutData("Profile",parseObjectId));
+            queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
                 @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    likeParseObject = parseObject;
-                    ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                    queryParseQuery.whereEqualTo("profileId", parseObject);
-                    queryParseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-                    queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                            if (list != null) {
-                                for (ParseObject item : list) {
-                                    parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
-                                }
-                                imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
-                                mImagesPager.setAdapter(imagePagerAdapter);
-                                circlePageIndicator.setViewPager(mImagesPager);
-                            }
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (list != null) {
+                        for (ParseObject item : list) {
+                            parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
                         }
-                    });
+                        imagePagerAdapter = new ImagePagerAdapter(parsePhotos);
+                        mImagesPager.setAdapter(imagePagerAdapter);
+                        circlePageIndicator.setViewPager(mImagesPager);
+                    }
                 }
             });
         } else {

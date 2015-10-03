@@ -75,10 +75,13 @@ public class DetailsProfileInfo extends Fragment {
     }
 
     private void getParseData() {
-        Log.e("getParseDate details profile", parseObjectId);
+        Log.e(" details profile", parseObjectId);
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            parseQuery.include("casteId");
+            parseQuery.include("religionId");
+            parseQuery.include("gotraId");
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -87,9 +90,9 @@ public class DetailsProfileInfo extends Fragment {
                             newHeight = parseObject.getInt("height");
                             newWeight = parseObject.getInt("weight");
                             ParseObject tmpCaste, tmpReligion, tmpGotra;
-                            tmpReligion = parseObject.fetchIfNeeded().getParseObject("religionId");
-                            tmpCaste = parseObject.fetchIfNeeded().getParseObject("casteId");
-                            tmpGotra = parseObject.fetchIfNeeded().getParseObject("gotraId");
+                            tmpReligion = parseObject.getParseObject("religionId");
+                            tmpCaste = parseObject.getParseObject("casteId");
+                            tmpGotra = parseObject.getParseObject("gotraId");
                             newManglik = parseObject.getInt("manglik");
                             switch (newManglik) {
                                 case 0:
@@ -118,21 +121,21 @@ public class DetailsProfileInfo extends Fragment {
                                 weight.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpReligion != null) {
-                                newReligion = new ParseNameModel(tmpReligion.fetchIfNeeded().getString("name"), "Religion", tmpReligion.getObjectId());
+                                newReligion = new ParseNameModel(tmpReligion.getString("name"), "Religion", tmpReligion.getObjectId());
                                 religion.setText(newReligion.getName());
                                 religion.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpCaste != null) {
-                                newCaste = new ParseNameModel(tmpCaste.fetchIfNeeded().getString("name"), "Caste", tmpCaste.getObjectId());
+                                newCaste = new ParseNameModel(tmpCaste.getString("name"), "Caste", tmpCaste.getObjectId());
                                 caste.setText(newCaste.getName());
                                 caste.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
                             if (tmpGotra != null) {
-                                newGotra = new ParseNameModel(tmpGotra.fetchIfNeeded().getString("name"), "Gotra", tmpGotra.getObjectId());
+                                newGotra = new ParseNameModel(tmpGotra.getString("name"), "Gotra", tmpGotra.getObjectId());
                                 gotra.setText(newGotra.getName());
                                 gotra.setTextColor(context.getResources().getColor(R.color.black_dark));
                             }
-                        } catch (ParseException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     } else {

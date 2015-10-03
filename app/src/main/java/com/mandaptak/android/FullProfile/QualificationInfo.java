@@ -60,10 +60,14 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
     }
 
     private void getParseData() {
-        Log.e("getParseDate qualification profile", parseObjectId);
+        Log.e(" qualification profile", parseObjectId);
         if (parseObjectId != null) {
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+            parseQuery.include("education1.degreeId");
+            parseQuery.include("education2.degreeId");
+            parseQuery.include("education3.degreeId");
+            parseQuery.include("industryId");
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -79,22 +83,22 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
                             ParseObject tmpEdu3 = parseObject.getParseObject("education3");
                             StringBuilder stringBuilder = new StringBuilder();
                             if (tmpEdu1 != null) {
-                                newEducationDetail1 = new ParseNameModel(tmpEdu1.fetchIfNeeded().getString("name"), "Specialization", tmpEdu1.getObjectId());
-                                stringBuilder.append(tmpEdu1.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail1.getName()).append(") ");
+                                newEducationDetail1 = new ParseNameModel(tmpEdu1.getString("name"), "Specialization", tmpEdu1.getObjectId());
+                                stringBuilder.append(tmpEdu1.getParseObject("degreeId").getString("name")).append(" (").append(newEducationDetail1.getName()).append(") ");
                             }
                             if (tmpEdu2 != null) {
-                                newEducationDetail2 = new ParseNameModel(tmpEdu2.fetchIfNeeded().getString("name"), "Specialization", tmpEdu2.getObjectId());
-                                stringBuilder.append(tmpEdu2.fetchIfNeeded().getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail2.getName()).append(") ");
+                                newEducationDetail2 = new ParseNameModel(tmpEdu2.getString("name"), "Specialization", tmpEdu2.getObjectId());
+                                stringBuilder.append(tmpEdu2.getParseObject("degreeId").getString("name")).append(" (").append(newEducationDetail2.getName()).append(") ");
                             }
                             if (tmpEdu3 != null) {
-                                newEducationDetail3 = new ParseNameModel(tmpEdu3.fetchIfNeeded().getString("name"), "Specialization", tmpEdu3.getObjectId());
-                                stringBuilder.append(tmpEdu3.getParseObject("degreeId").fetchIfNeeded().getString("name")).append(" (").append(newEducationDetail3.getName()).append(")");
+                                newEducationDetail3 = new ParseNameModel(tmpEdu3.getString("name"), "Specialization", tmpEdu3.getObjectId());
+                                stringBuilder.append(tmpEdu3.getParseObject("degreeId").getString("name")).append(" (").append(newEducationDetail3.getName()).append(")");
                             }
                             degreeView.setText(stringBuilder.toString());
                             if (newCurrentIncome != 0)
                                 currentIncome.setText(String.valueOf(newCurrentIncome));
                             if (newIndustry != null)
-                                industry.setText(newIndustry.fetchIfNeeded().getString("name"));
+                                industry.setText(newIndustry.getString("name"));
                             if (newCompany != null)
                                 company.setText(newCompany);
                             if (newDesignation != null)
@@ -110,7 +114,7 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
                                     workAfterMarriage.setText("Maybe");
                                     break;
                             }
-                        } catch (ParseException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     } else {

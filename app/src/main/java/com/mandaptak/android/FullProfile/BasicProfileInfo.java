@@ -41,7 +41,7 @@ public class BasicProfileInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.e("oncreateView",""+this.isVisible);
+        Log.e("oncreateView", "" + this.isVisible);
         init(inflater, container);
         if (mApp.isNetworkAvailable(context))
             getParseData();
@@ -61,7 +61,7 @@ public class BasicProfileInfo extends Fragment {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         this.isVisible = isVisibleToUser;
-        Log.e("setvisisblity hint",""+this.isVisible);
+        Log.e("setvisisblity hint", "" + this.isVisible);
     }
 
     private void init(LayoutInflater inflater, ViewGroup container) {
@@ -82,10 +82,12 @@ public class BasicProfileInfo extends Fragment {
 
     private void getParseData() {
 
-        Log.e("getParseDate basic profile", parseObjectId);
+        Log.e("basic profile", parseObjectId);
         if (parseObjectId != null) {
             mApp.show_PDialog(context, "Loading..");
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+            parseQuery.include("currentLocation.Parent.Parent");
+            parseQuery.include("placeOfBirth.Parent.Parent");
             parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
             parseQuery.getInBackground(parseObjectId, new GetCallback<ParseObject>() {
                 @Override
@@ -98,7 +100,6 @@ public class BasicProfileInfo extends Fragment {
                             newTOB.setTime(parseObject.getDate("tob"));
                             newCurrentLocation = parseObject.getParseObject("currentLocation");
                             newPOB = parseObject.getParseObject("placeOfBirth");
-
                             if (newName != null) {
                                 displayName.setText(newName);
                             }
@@ -118,14 +119,14 @@ public class BasicProfileInfo extends Fragment {
                                 timepicker.setText(subdateStr);
                             }
                             if (newPOB != null) {
-                                placeOfBirth.setText(newPOB.fetchIfNeeded().getString("name")
-                                        + ", " + newPOB.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newPOB.getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                                placeOfBirth.setText(newPOB.getString("name")
+                                        + ", " + newPOB.getParseObject("Parent").getString("name") + ", " + newPOB.getParseObject("Parent").getParseObject("Parent").getString("name"));
                             }
                             if (newCurrentLocation != null) {
-                                currentLocation.setText(newCurrentLocation.fetchIfNeeded().getString("name")
-                                        + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name") + ", " + newCurrentLocation.fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getParseObject("Parent").fetchIfNeeded().getString("name"));
+                                currentLocation.setText(newCurrentLocation.getString("name")
+                                        + ", " + newCurrentLocation.getParseObject("Parent").getString("name") + ", " + newCurrentLocation.getParseObject("Parent").getParseObject("Parent").getString("name"));
                             }
-                        } catch (ParseException e1) {
+                        } catch (Exception e1) {
                             e1.printStackTrace();
                         }
                     } else {

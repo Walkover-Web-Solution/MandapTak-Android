@@ -30,122 +30,122 @@ import java.util.List;
 import me.iwf.photopicker.utils.Prefs;
 
 public class MatchesAdapter extends BaseAdapter {
-    Context ctx;
-    ArrayList<MatchesModel> list;
-    ArrayList<String> mTargetParticipants = new ArrayList<>();
+  Context ctx;
+  ArrayList<MatchesModel> list;
+  ArrayList<String> mTargetParticipants = new ArrayList<>();
 
-    public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
-        this.list = paramArrayList;
-        this.ctx = paramContext;
+  public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
+    this.list = paramArrayList;
+    this.ctx = paramContext;
+  }
+
+  public int getCount() {
+    return this.list.size();
+  }
+
+  public Object getItem(int paramInt) {
+    return this.list.get(paramInt);
+  }
+
+  public long getItemId(int paramInt) {
+    return paramInt;
+  }
+
+  public View getView(final int paramInt, View paramView, ViewGroup paramViewGroup) {
+    ViewHolder viewholder;
+    if (paramView == null) {
+      viewholder = new ViewHolder();
+      paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
+      viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
+      viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
+      viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
+      viewholder.chatButton = (ImageView) paramView.findViewById(R.id.chat_button);
+      viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
+      paramView.setTag(viewholder);
+    } else {
+      viewholder = (ViewHolder) paramView.getTag();
     }
-
-    public int getCount() {
-        return this.list.size();
-    }
-
-    public Object getItem(int paramInt) {
-        return this.list.get(paramInt);
-    }
-
-    public long getItemId(int paramInt) {
-        return paramInt;
-    }
-
-    public View getView(final int paramInt, View paramView, ViewGroup paramViewGroup) {
-        ViewHolder viewholder;
-        if (paramView == null) {
-            viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(ctx).inflate(R.layout.matches_row, null);
-            viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
-            viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
-            viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
-            viewholder.chatButton = (ImageView) paramView.findViewById(R.id.chat_button);
-            viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
-            paramView.setTag(viewholder);
-        } else {
-            viewholder = (ViewHolder) paramView.getTag();
-        }
-        MatchesModel matchesModel = list.get(paramInt);
-        viewholder.tvName.setText(matchesModel.getName());
-        viewholder.tvReligion.setText(matchesModel.getReligion());
-        viewholder.tvWork.setText(matchesModel.getWork());
-        viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-                q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject parseObject, ParseException e) {
-                        getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName(), parseObject);
-
-                    }
-                });
-            }
-        });
-        Picasso.with(ctx)
-                .load(matchesModel.getUrl())
-                .into(viewholder.profilePic);
-
-        return paramView;
-    }
-
-    private void getChatMembers(String profileId, final String name, final ParseObject myProfofile) {
+    MatchesModel matchesModel = list.get(paramInt);
+    viewholder.tvName.setText(matchesModel.getName());
+    viewholder.tvReligion.setText(matchesModel.getReligion());
+    viewholder.tvWork.setText(matchesModel.getWork());
+    viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
         ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-        q1.getInBackground(profileId, new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                    query.whereEqualTo("profileId", myProfofile);
-                    query.whereEqualTo("profileId", object);
-                    query.whereNotEqualTo("relation", "Agent");
-                    query.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                            if (e == null)
-                                if (list.size() > 0) {
-                                    mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
-                                    for (ParseObject parseObject : list) {
-                                        try {
-                                            mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-                                        } catch (ParseException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-                                    if (mTargetParticipants.size() > 0) {
-                                        Intent intent = new Intent(ctx, MessageScreen.class);
-                                        Query query = Query.builder(Conversation.class)
-                                                .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
-                                                .build();
-                                        List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
-                                        if (results.size() > 0) {
-                                            intent.putExtra("conversation-id", results.get(0).getId());
-                                        } else {
-                                            intent.putExtra("participant-map", mTargetParticipants);
-                                            try {
-                                                intent.putExtra("title-conv", name + " " + myProfofile.fetchIfNeeded().getString("name"));
-                                            } catch (ParseException e1) {
-                                                e1.printStackTrace();
-                                            }
-                                        }
-                                        ctx.startActivity(intent);
+        q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
+          @Override
+          public void done(ParseObject parseObject, ParseException e) {
+            getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName(), parseObject);
 
-                                    }
-
-                                }
-
-                        }
-                    });
-                }
-            }
+          }
         });
-    }
+      }
+    });
+    Picasso.with(ctx)
+        .load(matchesModel.getUrl())
+        .into(viewholder.profilePic);
 
-    static class ViewHolder {
-        public TextView tvName;
-        public TextView tvReligion;
-        public TextView tvWork;
-        public ImageView chatButton;
-        public CircleImageView profilePic;
-    }
+    return paramView;
+  }
+
+  private void getChatMembers(String profileId, final String name, final ParseObject myProfofile) {
+    ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
+    q1.getInBackground(profileId, new GetCallback<ParseObject>() {
+      @Override
+      public void done(ParseObject object, ParseException e) {
+        if (e == null) {
+          ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+          query.whereEqualTo("profileId", myProfofile);
+          query.whereEqualTo("profileId", object);
+          query.whereNotEqualTo("relation", "Agent");
+          query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+              if (e == null)
+                if (list.size() > 0) {
+                  mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+                  for (ParseObject parseObject : list) {
+                    try {
+                      mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
+                    } catch (ParseException e1) {
+                      e1.printStackTrace();
+                    }
+                  }
+                  if (mTargetParticipants.size() > 0) {
+                    Intent intent = new Intent(ctx, MessageScreen.class);
+                    Query query = Query.builder(Conversation.class)
+                        .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
+                        .build();
+                    List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
+                    if (results.size() > 0) {
+                      intent.putExtra("conversation-id", results.get(0).getId());
+                    } else {
+                      intent.putExtra("participant-map", mTargetParticipants);
+                      try {
+                        intent.putExtra("title-conv", name + " " + myProfofile.fetchIfNeeded().getString("name"));
+                      } catch (ParseException e1) {
+                        e1.printStackTrace();
+                      }
+                    }
+                    ctx.startActivity(intent);
+
+                  }
+
+                }
+
+            }
+          });
+        }
+      }
+    });
+  }
+
+  static class ViewHolder {
+    public TextView tvName;
+    public TextView tvReligion;
+    public TextView tvWork;
+    public ImageView chatButton;
+    public CircleImageView profilePic;
+  }
 }

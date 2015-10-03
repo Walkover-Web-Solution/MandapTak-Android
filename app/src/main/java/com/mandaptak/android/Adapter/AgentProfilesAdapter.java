@@ -30,202 +30,202 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AgentProfilesAdapter extends BaseAdapter {
-    AgentActivity activity;
-    ArrayList<AgentProfileModel> list;
-    Common mApp;
+  AgentActivity activity;
+  ArrayList<AgentProfileModel> list;
+  Common mApp;
 
-    public AgentProfilesAdapter(AgentActivity activity, ArrayList<AgentProfileModel> paramArrayList) {
-        this.list = paramArrayList;
-        this.activity = activity;
-        mApp = (Common) activity.getApplicationContext();
+  public AgentProfilesAdapter(AgentActivity activity, ArrayList<AgentProfileModel> paramArrayList) {
+    this.list = paramArrayList;
+    this.activity = activity;
+    mApp = (Common) activity.getApplicationContext();
+  }
+
+  public int getCount() {
+
+    return this.list.size();
+  }
+
+  public Object getItem(int paramInt) {
+    return this.list.get(paramInt);
+  }
+
+  public long getItemId(int paramInt) {
+    return paramInt;
+  }
+
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
+    ViewHolder viewholder;
+
+    if (paramView == null) {
+      viewholder = new ViewHolder();
+      paramView = LayoutInflater.from(activity).inflate(R.layout.agent_profile_item, paramViewGroup, false);
+      viewholder.name = (TextView) paramView.findViewById(R.id.name);
+      viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
+      viewholder.status = (TextView) paramView.findViewById(R.id.status);
+      viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
+      viewholder.more = (ImageView) paramView.findViewById(R.id.more);
+      paramView.setTag(viewholder);
+    } else {
+      viewholder = (ViewHolder) paramView.getTag();
     }
-
-    public int getCount() {
-
-        return this.list.size();
-    }
-
-    public Object getItem(int paramInt) {
-        return this.list.get(paramInt);
-    }
-
-    public long getItemId(int paramInt) {
-        return paramInt;
-    }
-
-    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-        ViewHolder viewholder;
-
-        if (paramView == null) {
-            viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(activity).inflate(R.layout.agent_profile_item, paramViewGroup, false);
-            viewholder.name = (TextView) paramView.findViewById(R.id.name);
-            viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
-            viewholder.status = (TextView) paramView.findViewById(R.id.status);
-            viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
-            viewholder.more = (ImageView) paramView.findViewById(R.id.more);
-            paramView.setTag(viewholder);
-        } else {
-            viewholder = (ViewHolder) paramView.getTag();
-        }
-        try {
-            final AgentProfileModel agentProfileModel = list.get(paramInt);
-            viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
-            if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
-                viewholder.status.setTextColor(activity.getResources().getColor(R.color.yellow_700));
-                viewholder.status.setText("Profile Incomplete");
-            } else if (!agentProfileModel.isActive()) {
-                viewholder.status.setTextColor(activity.getResources().getColor(R.color.red_500));
-                viewholder.status.setText("Deactive");
-            } else {
-                viewholder.status.setTextColor(activity.getResources().getColor(R.color.green_500));
-                viewholder.status.setText("Active");
-            }
-            if (agentProfileModel.isComplete()) {
-                viewholder.name.setText(agentProfileModel.getName());
-                Picasso.with(activity)
-                        .load(agentProfileModel.getImageUrl())
-                        .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-                        .error(R.drawable.com_facebook_profile_picture_blank_square)
-                        .into(viewholder.image);
-            } else {
-                viewholder.name.setText("+91" + agentProfileModel.getName());
-                Picasso.with(activity)
-                        .load(Uri.parse(agentProfileModel.getImageUrl()))
-                        .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-                        .error(R.drawable.com_facebook_profile_picture_blank_square)
-                        .into(viewholder.image);
-            }
-            if (agentProfileModel.isActive()) {
-                viewholder.more.setOnClickListener(new View.OnClickListener() {
+    try {
+      final AgentProfileModel agentProfileModel = list.get(paramInt);
+      viewholder.date.setText("Updated On: " + agentProfileModel.getCreateDate());
+      if (!agentProfileModel.isComplete() && agentProfileModel.isActive()) {
+        viewholder.status.setTextColor(activity.getResources().getColor(R.color.yellow_700));
+        viewholder.status.setText("Profile Incomplete");
+      } else if (!agentProfileModel.isActive()) {
+        viewholder.status.setTextColor(activity.getResources().getColor(R.color.red_500));
+        viewholder.status.setText("Deactive");
+      } else {
+        viewholder.status.setTextColor(activity.getResources().getColor(R.color.green_500));
+        viewholder.status.setText("Active");
+      }
+      if (agentProfileModel.isComplete()) {
+        viewholder.name.setText(agentProfileModel.getName());
+        Picasso.with(activity)
+            .load(agentProfileModel.getImageUrl())
+            .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+            .error(R.drawable.com_facebook_profile_picture_blank_square)
+            .into(viewholder.image);
+      } else {
+        viewholder.name.setText("+91" + agentProfileModel.getName());
+        Picasso.with(activity)
+            .load(Uri.parse(agentProfileModel.getImageUrl()))
+            .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
+            .error(R.drawable.com_facebook_profile_picture_blank_square)
+            .into(viewholder.image);
+      }
+      if (agentProfileModel.isActive()) {
+        viewholder.more.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            PopupMenu popup = new PopupMenu(activity, view);
+            popup.getMenuInflater().inflate(R.menu.agent_pop_item_deactive_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+              public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.status) {
+                  mApp.show_PDialog(activity, "Deactivating Profile..");
+                  ParseObject parseObject = agentProfileModel.getProfileObject();
+                  parseObject.put("isActive", false);
+                  parseObject.saveInBackground(new SaveCallback() {
                     @Override
-                    public void onClick(View view) {
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.agent_pop_item_deactive_menu, popup.getMenu());
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getItemId() == R.id.status) {
-                                    mApp.show_PDialog(activity, "Deactivating Profile..");
-                                    ParseObject parseObject = agentProfileModel.getProfileObject();
-                                    parseObject.put("isActive", false);
-                                    parseObject.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            mApp.dialog.dismiss();
-                                            if (e == null) {
-                                                mApp.showToast(activity, "Profile Deactivated");
-                                                activity.getProfiles();
-                                            } else {
-                                                mApp.showToast(activity, e.getMessage());
-                                            }
-                                        }
-                                    });
-                                } else if (item.getItemId() == R.id.permission) {
-                                    givePermission(agentProfileModel.getProfileObject().getObjectId());
-                                }
-                                return true;
-                            }
-                        });
-                        popup.show();
+                    public void done(ParseException e) {
+                      mApp.dialog.dismiss();
+                      if (e == null) {
+                        mApp.showToast(activity, "Profile Deactivated");
+                        activity.getProfiles();
+                      } else {
+                        mApp.showToast(activity, e.getMessage());
+                      }
                     }
-                });
-            } else {
-                viewholder.more.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        PopupMenu popup = new PopupMenu(activity, view);
-                        popup.getMenuInflater().inflate(R.menu.agent_pop_item_active_menu, popup.getMenu());
-                        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                            public boolean onMenuItemClick(MenuItem item) {
-                                if (item.getItemId() == R.id.status) {
-                                    mApp.show_PDialog(activity, "Activating Profile..");
-                                    ParseObject parseObject = agentProfileModel.getProfileObject();
-                                    parseObject.put("isActive", true);
-                                    parseObject.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            mApp.dialog.dismiss();
-                                            if (e == null) {
-                                                mApp.showToast(activity, "Profile Activated");
-                                                activity.getProfiles();
-                                            } else {
-                                                mApp.showToast(activity, e.getMessage());
-                                            }
-                                        }
-                                    });
-                                } else if (item.getItemId() == R.id.permission) {
-                                    givePermission(agentProfileModel.getProfileObject().getObjectId());
-                                }
-                                return true;
-                            }
-                        });
-                        popup.show();
-                    }
-                });
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return paramView;
-    }
-
-    void givePermission(final String profileId) {
-        if (mApp.isNetworkAvailable(activity)) {
-            final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
-            final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-            alertDialog.setView(permissionDialog);
-            final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
-            AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
-            final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
-            etNumber.setPrefix("+91");
-            relations.setAdapter(ArrayAdapter.createFromResource(activity,
-                    R.array.relation_array, R.layout.location_list_item));
-            giveButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String mobileNumber = etNumber.getText().toString();
-                    if (!mobileNumber.equals("")) {
-                        if (mobileNumber.length() == 10) {
-                            alertDialog.dismiss();
-                            if (mApp.isNetworkAvailable(activity)) {
-                                mApp.show_PDialog(activity, "Giving Permission..");
-                                HashMap<String, Object> params = new HashMap<>();
-                                params.put("mobile", mobileNumber);
-                                params.put("profileId", profileId);
-                                params.put("relation", relations.getSelectedItem());
-
-                                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
-                                    @Override
-                                    public void done(Object o, ParseException e) {
-                                        mApp.dialog.dismiss();
-                                        if (e == null) {
-                                            mApp.showToast(activity, "Permission Given");
-                                        } else {
-                                            e.printStackTrace();
-                                            mApp.showToast(activity, e.getMessage());
-                                        }
-                                    }
-                                });
-                            }
-                        } else {
-                            mApp.showToast(activity, "Invalid Mobile Number");
-                        }
-                    } else {
-                        mApp.showToast(activity, "Enter Mobile Number");
-                    }
+                  });
+                } else if (item.getItemId() == R.id.permission) {
+                  givePermission(agentProfileModel.getProfileObject().getObjectId());
                 }
+                return true;
+              }
             });
-            alertDialog.show();
-        } else {
-            mApp.showToast(activity, "Internet connection required");
-        }
+            popup.show();
+          }
+        });
+      } else {
+        viewholder.more.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            PopupMenu popup = new PopupMenu(activity, view);
+            popup.getMenuInflater().inflate(R.menu.agent_pop_item_active_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+              public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.status) {
+                  mApp.show_PDialog(activity, "Activating Profile..");
+                  ParseObject parseObject = agentProfileModel.getProfileObject();
+                  parseObject.put("isActive", true);
+                  parseObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                      mApp.dialog.dismiss();
+                      if (e == null) {
+                        mApp.showToast(activity, "Profile Activated");
+                        activity.getProfiles();
+                      } else {
+                        mApp.showToast(activity, e.getMessage());
+                      }
+                    }
+                  });
+                } else if (item.getItemId() == R.id.permission) {
+                  givePermission(agentProfileModel.getProfileObject().getObjectId());
+                }
+                return true;
+              }
+            });
+            popup.show();
+          }
+        });
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+    return paramView;
+  }
 
-    static class ViewHolder {
-        private TextView name;
-        private TextView date;
-        private TextView status;
-        private ImageView image;
-        private ImageView more;
+  void givePermission(final String profileId) {
+    if (mApp.isNetworkAvailable(activity)) {
+      final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
+      final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+      alertDialog.setView(permissionDialog);
+      final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
+      AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+      final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
+      etNumber.setPrefix("+91");
+      relations.setAdapter(ArrayAdapter.createFromResource(activity,
+          R.array.relation_array, R.layout.location_list_item));
+      giveButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          String mobileNumber = etNumber.getText().toString();
+          if (!mobileNumber.equals("")) {
+            if (mobileNumber.length() == 10) {
+              alertDialog.dismiss();
+              if (mApp.isNetworkAvailable(activity)) {
+                mApp.show_PDialog(activity, "Giving Permission..");
+                HashMap<String, Object> params = new HashMap<>();
+                params.put("mobile", mobileNumber);
+                params.put("profileId", profileId);
+                params.put("relation", relations.getSelectedItem());
+
+                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
+                  @Override
+                  public void done(Object o, ParseException e) {
+                    mApp.dialog.dismiss();
+                    if (e == null) {
+                      mApp.showToast(activity, "Permission Given");
+                    } else {
+                      e.printStackTrace();
+                      mApp.showToast(activity, e.getMessage());
+                    }
+                  }
+                });
+              }
+            } else {
+              mApp.showToast(activity, "Invalid Mobile Number");
+            }
+          } else {
+            mApp.showToast(activity, "Enter Mobile Number");
+          }
+        }
+      });
+      alertDialog.show();
+    } else {
+      mApp.showToast(activity, "Internet connection required");
     }
+  }
+
+  static class ViewHolder {
+    private TextView name;
+    private TextView date;
+    private TextView status;
+    private ImageView image;
+    private ImageView more;
+  }
 }

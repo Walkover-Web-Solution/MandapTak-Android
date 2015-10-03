@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import me.iwf.photopicker.entity.ParseNameModel;
 
 public interface ReligionController {
-    void fetchReligionList(String query, final ListView listView, final AlertDialog alertDialog);
+  void fetchReligionList(String query, final ListView listView, final AlertDialog alertDialog);
 
-    void prepareReligionListView(int i, ArrayList<ParseNameModel> models, AlertDialog alertDialog);
+  void prepareReligionListView(int i, ArrayList<ParseNameModel> models, AlertDialog alertDialog);
 }

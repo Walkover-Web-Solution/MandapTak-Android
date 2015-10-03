@@ -19,85 +19,85 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class PermissionsAdapter extends BaseAdapter {
-    SettingsActivity activity;
-    ArrayList<PermissionModel> list;
-    boolean isPrimaryUser = false;
-    Common mApp;
+  SettingsActivity activity;
+  ArrayList<PermissionModel> list;
+  boolean isPrimaryUser = false;
+  Common mApp;
 
-    public PermissionsAdapter(SettingsActivity activity, ArrayList<PermissionModel> paramArrayList, boolean isPrimaryUser) {
-        this.list = paramArrayList;
-        this.activity = activity;
-        this.isPrimaryUser = isPrimaryUser;
-        mApp = (Common) activity.getApplicationContext();
+  public PermissionsAdapter(SettingsActivity activity, ArrayList<PermissionModel> paramArrayList, boolean isPrimaryUser) {
+    this.list = paramArrayList;
+    this.activity = activity;
+    this.isPrimaryUser = isPrimaryUser;
+    mApp = (Common) activity.getApplicationContext();
+  }
+
+  public int getCount() {
+
+    return this.list.size();
+  }
+
+  public Object getItem(int paramInt) {
+    return this.list.get(paramInt);
+  }
+
+  public long getItemId(int paramInt) {
+    return paramInt;
+  }
+
+  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
+    ViewHolder viewholder;
+
+    if (paramView == null) {
+      viewholder = new ViewHolder();
+      paramView = LayoutInflater.from(activity).inflate(R.layout.permission_item, null);
+      viewholder.tvNumber = (TextView) paramView.findViewById(R.id.number);
+      viewholder.tvRelation = ((TextView) paramView.findViewById(R.id.relation));
+      viewholder.tvDate = (TextView) paramView.findViewById(R.id.date);
+      viewholder.deleteButton = (ImageView) paramView.findViewById(R.id.delete);
+      paramView.setTag(viewholder);
+    } else {
+      viewholder = (ViewHolder) paramView.getTag();
     }
-
-    public int getCount() {
-
-        return this.list.size();
+    final PermissionModel permissionModel = list.get(paramInt);
+    viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
+    viewholder.tvRelation.setText(permissionModel.getRelation());
+    viewholder.tvDate.setText(permissionModel.getDate());
+    if (isPrimaryUser) {
+      if (permissionModel.isCurrentUser()) {
+        viewholder.deleteButton.setVisibility(View.GONE);
+      } else {
+        viewholder.deleteButton.setVisibility(View.VISIBLE);
+        viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+            HashMap<String, Object> params = new HashMap<>();
+            params.put("mobile", permissionModel.getNumber());
+            params.put("profileId", permissionModel.getProfileId());
+            ParseCloud.callFunctionInBackground("deletePermission", params, new FunctionCallback<Object>() {
+              @Override
+              public void done(Object o, ParseException e) {
+                if (e == null) {
+                  mApp.showToast(activity, "Permission Removed");
+                  activity.getExistingPermissions();
+                } else {
+                  mApp.showToast(activity, e.getMessage());
+                  e.printStackTrace();
+                }
+              }
+            });
+          }
+        });
+      }
+    } else {
+      viewholder.deleteButton.setVisibility(View.GONE);
     }
+    return paramView;
+  }
 
-    public Object getItem(int paramInt) {
-        return this.list.get(paramInt);
-    }
-
-    public long getItemId(int paramInt) {
-        return paramInt;
-    }
-
-    public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-        ViewHolder viewholder;
-
-        if (paramView == null) {
-            viewholder = new ViewHolder();
-            paramView = LayoutInflater.from(activity).inflate(R.layout.permission_item, null);
-            viewholder.tvNumber = (TextView) paramView.findViewById(R.id.number);
-            viewholder.tvRelation = ((TextView) paramView.findViewById(R.id.relation));
-            viewholder.tvDate = (TextView) paramView.findViewById(R.id.date);
-            viewholder.deleteButton = (ImageView) paramView.findViewById(R.id.delete);
-            paramView.setTag(viewholder);
-        } else {
-            viewholder = (ViewHolder) paramView.getTag();
-        }
-        final PermissionModel permissionModel = list.get(paramInt);
-        viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
-        viewholder.tvRelation.setText(permissionModel.getRelation());
-        viewholder.tvDate.setText(permissionModel.getDate());
-        if (isPrimaryUser) {
-            if (permissionModel.isCurrentUser()) {
-                viewholder.deleteButton.setVisibility(View.GONE);
-            } else {
-                viewholder.deleteButton.setVisibility(View.VISIBLE);
-                viewholder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        HashMap<String, Object> params = new HashMap<>();
-                        params.put("mobile", permissionModel.getNumber());
-                        params.put("profileId", permissionModel.getProfileId());
-                        ParseCloud.callFunctionInBackground("deletePermission", params, new FunctionCallback<Object>() {
-                            @Override
-                            public void done(Object o, ParseException e) {
-                                if (e == null) {
-                                    mApp.showToast(activity, "Permission Removed");
-                                    activity.getExistingPermissions();
-                                } else {
-                                    mApp.showToast(activity, e.getMessage());
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-        } else {
-            viewholder.deleteButton.setVisibility(View.GONE);
-        }
-        return paramView;
-    }
-
-    static class ViewHolder {
-        private TextView tvNumber;
-        private TextView tvRelation;
-        private TextView tvDate;
-        private ImageView deleteButton;
-    }
+  static class ViewHolder {
+    private TextView tvNumber;
+    private TextView tvRelation;
+    private TextView tvDate;
+    private ImageView deleteButton;
+  }
 }

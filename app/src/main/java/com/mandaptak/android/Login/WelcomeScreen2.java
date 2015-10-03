@@ -10,13 +10,13 @@ import com.mandaptak.android.R;
 
 public class WelcomeScreen2 extends Fragment {
 
-    public WelcomeScreen2() {
-        // Required empty public constructor
-    }
+  public WelcomeScreen2() {
+    // Required empty public constructor
+  }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_welcome_screen2, container, false);
-    }
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    return inflater.inflate(R.layout.fragment_welcome_screen2, container, false);
+  }
 }

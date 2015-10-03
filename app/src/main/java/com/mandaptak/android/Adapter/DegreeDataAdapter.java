@@ -16,45 +16,45 @@ import java.util.ArrayList;
 
 public class DegreeDataAdapter extends ArrayAdapter<Degree> {
 
-    private final ArrayList<Degree> list;
-    private final UserPreferences userPreferences;
+  private final ArrayList<Degree> list;
+  private final UserPreferences userPreferences;
 
-    public DegreeDataAdapter(UserPreferences userPreferences, ArrayList<Degree> list) {
-        super(userPreferences, R.layout.location_list_row, list);
-        this.userPreferences = userPreferences;
-        this.list = list;
-    }
+  public DegreeDataAdapter(UserPreferences userPreferences, ArrayList<Degree> list) {
+    super(userPreferences, R.layout.location_list_row, list);
+    this.userPreferences = userPreferences;
+    this.list = list;
+  }
 
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.location_list_row, null);
-            viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) convertView.findViewById(R.id.label);
-            viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.check);
-            viewHolder.checkbox.setTag(list.get(position));
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-        viewHolder.text.setText(list.get(position).getDegreeName());
-        viewHolder.checkbox.setChecked(list.get(position).getSelected());
-        viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                list.get(position).setSelected(isChecked);
-                if (isChecked)
-                    userPreferences.addDegree(list.get(position));
-                else
-                    userPreferences.removeDegree(list.get(position));
-            }
-        });
-        return convertView;
+  @Override
+  public View getView(final int position, View convertView, ViewGroup parent) {
+    ViewHolder viewHolder;
+    if (convertView == null) {
+      convertView = LayoutInflater.from(getContext()).inflate(R.layout.location_list_row, null);
+      viewHolder = new ViewHolder();
+      viewHolder.text = (TextView) convertView.findViewById(R.id.label);
+      viewHolder.checkbox = (CheckBox) convertView.findViewById(R.id.check);
+      viewHolder.checkbox.setTag(list.get(position));
+      convertView.setTag(viewHolder);
+    } else {
+      viewHolder = (ViewHolder) convertView.getTag();
     }
+    viewHolder.text.setText(list.get(position).getDegreeName());
+    viewHolder.checkbox.setChecked(list.get(position).getSelected());
+    viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      @Override
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        list.get(position).setSelected(isChecked);
+        if (isChecked)
+          userPreferences.addDegree(list.get(position));
+        else
+          userPreferences.removeDegree(list.get(position));
+      }
+    });
+    return convertView;
+  }
 
-    static class ViewHolder {
-        protected TextView text;
-        protected CheckBox checkbox;
-    }
+  static class ViewHolder {
+    protected TextView text;
+    protected CheckBox checkbox;
+  }
 }

@@ -9,9 +9,9 @@ import android.widget.AutoCompleteTextView;
  */
 public class PlacesAutoCompleteTextView extends AutoCompleteTextView {
 
-    public PlacesAutoCompleteTextView(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public PlacesAutoCompleteTextView(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
 //    /**
 //     * Returns the place description corresponding to the selected item

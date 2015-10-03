@@ -171,65 +171,52 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         try {
-            ParseQuery<ParseObject> profileQuery = new ParseQuery<>("Profile");
-            profileQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+
+            ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+            query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile",Prefs.getProfileId(context)));
+            query.include("userId");
+            query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
-                public void done(final ParseObject profileObject, ParseException e) {
+                public void done(List<ParseObject> list, ParseException e) {
                     if (e == null) {
-                        ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-                        query.whereEqualTo("profileId", profileObject);
-                        query.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> list, ParseException e) {
-                                if (e == null) {
-                                    if (list.size() > 0) {
-                                        permissionModels.clear();
-                                        for (ParseObject item : list) {
-                                            try {
-                                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-                                                String date = sdf.format(item.getCreatedAt());
-                                                ParseUser user = item.fetch().getParseUser("userId");
-                                                PermissionModel permissionModel = new PermissionModel();
-                                                String relation = item.fetch().getString("relation");
-                                                if (relation.equals(""))
-                                                    permissionModel.setRelation("Bachelor");
-                                                else
-                                                    permissionModel.setRelation(relation);
-                                                permissionModel.setDate("Permission given on: " + date);
-                                                permissionModel.setNumber(user.fetch().getUsername());
-                                                if (user.getUsername().equalsIgnoreCase(ParseUser.getCurrentUser().getUsername())) {
-                                                    if (item.getBoolean("isPrimary")) {
-                                                        isPrimaryUser = true;
-                                                    }
-                                                    permissionModel.setIsCurrentUser(true);
-                                                } else if (relation.equals("Agent")) {
-                                                    permissionModel.setIsCurrentUser(true);
-                                                } else {
-                                                    permissionModel.setIsCurrentUser(false);
-                                                }
-                                                permissionModel.setProfileId(profileObject.getObjectId());
-                                                permissionModels.add(permissionModel);
-                                            } catch (ParseException e1) {
-                                                e1.printStackTrace();
-                                            }
-                                        }
-                                        if (isPrimaryUser) {
-                                            morePermission.setVisibility(View.VISIBLE);
-                                            resetButton.setVisibility(View.VISIBLE);
-                                        }
-                                        permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels, isPrimaryUser);
-                                        permissionList.setAdapter(permissionsAdapter);
+                        if (list.size() > 0) {
+                            permissionModels.clear();
+                            for (ParseObject item : list) {
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+                                String date = sdf.format(item.getCreatedAt());
+                                ParseUser user = item.getParseUser("userId");
+                                PermissionModel permissionModel = new PermissionModel();
+                                String relation = item.getString("relation");
+                                if (relation.equals(""))
+                                    permissionModel.setRelation("Bachelor");
+                                else
+                                    permissionModel.setRelation(relation);
+                                permissionModel.setDate("Permission given on: " + date);
+                                permissionModel.setNumber(user.getUsername());
+                                if (user.getUsername().equalsIgnoreCase(ParseUser.getCurrentUser().getUsername())) {
+                                    if (item.getBoolean("isPrimary")) {
+                                        isPrimaryUser = true;
                                     }
+                                    permissionModel.setIsCurrentUser(true);
+                                } else if (relation.equals("Agent")) {
+                                    permissionModel.setIsCurrentUser(true);
                                 } else {
-                                    e.printStackTrace();
+                                    permissionModel.setIsCurrentUser(false);
                                 }
-                                mApp.dialog.dismiss();
+//                                    permissionModel.setProfileId(profileObject.getObjectId());
+                                permissionModels.add(permissionModel);
                             }
-                        });
+                            if (isPrimaryUser) {
+                                morePermission.setVisibility(View.VISIBLE);
+                                resetButton.setVisibility(View.VISIBLE);
+                            }
+                            permissionsAdapter = new PermissionsAdapter(SettingsActivity.this, permissionModels, isPrimaryUser);
+                            permissionList.setAdapter(permissionsAdapter);
+                        }
                     } else {
-                        mApp.dialog.dismiss();
                         e.printStackTrace();
                     }
+                    mApp.dialog.dismiss();
                 }
             });
         } catch (Exception e) {

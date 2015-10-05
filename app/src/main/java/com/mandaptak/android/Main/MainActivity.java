@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
   private SlidingUpPanelLayout slidingPanel;
   private ImageView pinButton;
   private ImageView backgroundPhoto;
-  private Context context;
+  public Context context;
   private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
   private TwoWayView profileImages;
   private UserImagesAdapter userImagesAdapter;
@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
     traitsProgress = (FabButton) findViewById(R.id.traits_progress);
   }
 
-  public void clickListeners() {
+  public void setupClickListeners() {
     pinButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -444,13 +444,14 @@ public class MainActivity extends AppCompatActivity {
     rippleBackground.startRippleAnimation();
     slidingPanel.setEnabled(false);
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-    clickListeners();
+    setupClickListeners();
     if (mApp.isNetworkAvailable(context))
       getParseData();
   }
 
   public void getParseData() {
-    profileObject = ParseObject.createWithoutData("Profile", Prefs.getProfileId(context));
+    String profileId = Prefs.getProfileId(context);
+    profileObject = ParseObject.createWithoutData("Profile", profileId);
     setNavigationMenu();
     getMatchesFromFunction();
   }
@@ -614,13 +615,6 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    if (mApp.isNetworkAvailable(context))
-      setNavigationMenu();
-  }
-
   private void setProfileDetails() {
     isLoading = true;
     rippleBackground.setVisibility(View.VISIBLE);
@@ -651,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
               e.printStackTrace();
             }
             blurringView.invalidate();
-            setProfileDetails();
+//            setProfileDetails();
           }
         });
         rippleBackground.setVisibility(View.GONE);

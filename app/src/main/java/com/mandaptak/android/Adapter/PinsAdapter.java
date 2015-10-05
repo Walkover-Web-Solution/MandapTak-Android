@@ -87,7 +87,7 @@ public class PinsAdapter extends BaseAdapter {
                 public void done(ParseObject object, ParseException e) {
                   if (e == null) {
                     ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
-                    query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+                    //query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
                     query.whereEqualTo("profileId", profileObject);
                     query.whereEqualTo("pinnedProfileId", object);
                     query.getFirstInBackground(new GetCallback<ParseObject>() {

@@ -317,8 +317,14 @@ public class DetailsProfileFragment extends Fragment implements ReligionControll
       }
       if (newGotra != null)
         profile.setCaste(newCaste);
-      profile.setHeight(newHeight);
-      profile.setWeight(newWeight);
+      if (newHeight != 0) {
+        profile.setWeight(newWeight);
+
+      }
+      if (newHeight != 0) {
+        profile.setHeight(newHeight);
+
+      }
       profile.setManglik(newManglik);
       Prefs.setProfile(context, profile);
       Log.e("Save Screen", "2");

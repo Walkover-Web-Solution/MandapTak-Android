@@ -138,9 +138,12 @@ public class BlurringView extends View {
         if (mBitmapToBlur == null) {
           return false;
         }
-
-        mBlurredBitmap = Bitmap.createBitmap(scaledWidth, scaledHeight,
-            Bitmap.Config.ARGB_8888);
+        try {
+          mBlurredBitmap = Bitmap.createBitmap(scaledWidth, scaledHeight,
+              Bitmap.Config.ARGB_8888);
+        } catch (OutOfMemoryError error) {
+          error.printStackTrace();
+        }
         if (mBlurredBitmap == null) {
           return false;
         }

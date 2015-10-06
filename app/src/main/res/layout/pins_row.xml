@@ -58,6 +58,16 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/dislike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/unpin"
+        android:clickable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_dislike_pin"/>
+
+    <ImageView
         android:id="@+id/unpin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

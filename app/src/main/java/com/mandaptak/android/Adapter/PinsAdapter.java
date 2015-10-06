@@ -18,6 +18,7 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -49,13 +50,14 @@ public class PinsAdapter extends BaseAdapter {
     return paramInt;
   }
 
-  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
+  public View getView(final int paramInt, View paramView, ViewGroup paramViewGroup) {
     ViewHolder viewholder;
     if (paramView == null) {
       paramView = LayoutInflater.from(ctx).inflate(R.layout.pins_row, null);
       viewholder = new ViewHolder();
       viewholder.tvName = (TextView) paramView.findViewById(R.id.title);
       viewholder.unpin = (ImageView) paramView.findViewById(R.id.unpin);
+      viewholder.dislikeprofile = (ImageView) paramView.findViewById(R.id.dislike);
       viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
       viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
       viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
@@ -75,46 +77,23 @@ public class PinsAdapter extends BaseAdapter {
     viewholder.unpin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        mApp.show_PDialog(ctx, "Unpinning Profile");
-        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-        q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
+        mApp.show_PDialog(ctx, "Unpinning profile");
+        ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+        query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
+        query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
           @Override
-          public void done(final ParseObject profileObject, ParseException e) {
+          public void done(ParseObject parseObject, ParseException e) {
             if (e == null) {
-              ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-              q1.getInBackground(matchesModel.getProfileId(), new GetCallback<ParseObject>() {
+              parseObject.deleteInBackground(new DeleteCallback() {
                 @Override
-                public void done(ParseObject object, ParseException e) {
+                public void done(ParseException e) {
                   if (e == null) {
-                    ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
-                    //query.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-                    query.whereEqualTo("profileId", profileObject);
-                    query.whereEqualTo("pinnedProfileId", object);
-                    query.getFirstInBackground(new GetCallback<ParseObject>() {
-                      @Override
-                      public void done(ParseObject parseObject, ParseException e) {
-                        if (e == null) {
-                          parseObject.deleteInBackground(new DeleteCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                              if (e == null) {
-                                pinsFragment.getParseData();
-                              } else {
-                                mApp.showToast(ctx, e.getMessage());
-                              }
-                              mApp.dialog.dismiss();
-                            }
-                          });
-                        } else {
-                          mApp.dialog.dismiss();
-                          mApp.showToast(ctx, e.getMessage());
-                        }
-                      }
-                    });
+                    pinsFragment.getParseData();
                   } else {
-                    mApp.dialog.dismiss();
                     mApp.showToast(ctx, e.getMessage());
                   }
+                  mApp.dialog.dismiss();
                 }
               });
             } else {
@@ -125,6 +104,47 @@ public class PinsAdapter extends BaseAdapter {
         });
       }
     });
+    viewholder.dislikeprofile.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        mApp.show_PDialog(ctx, "Please wait");
+        ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+        query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
+        query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+          @Override
+          public void done(ParseObject parseObject, ParseException e) {
+            if (e == null) {
+              parseObject.deleteInBackground(new DeleteCallback() {
+                @Override
+                public void done(ParseException e) {
+                  if (e == null) {
+                    ParseObject dislikeParseObject = new ParseObject("DislikeProfile");
+                    dislikeParseObject.put("dislikeProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
+                    dislikeParseObject.put("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
+                    dislikeParseObject.saveInBackground(new SaveCallback() {
+                      @Override
+                      public void done(ParseException e) {
+                        pinsFragment.getParseData();
+                      }
+                    });
+
+                  } else {
+                    mApp.showToast(ctx, e.getMessage());
+                  }
+                  mApp.dialog.dismiss();
+                }
+              });
+            } else {
+              mApp.dialog.dismiss();
+              mApp.showToast(ctx, e.getMessage());
+            }
+          }
+        });
+      }
+
+
+    });
     return paramView;
   }
 
@@ -134,5 +154,6 @@ public class PinsAdapter extends BaseAdapter {
     public TextView tvWork;
     public CircleImageView profilePic;
     public ImageView unpin;
+    public ImageView dislikeprofile;
   }
 }

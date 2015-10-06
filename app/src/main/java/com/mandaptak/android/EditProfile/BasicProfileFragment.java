@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -160,7 +161,12 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             } else if (mApp.isNetworkAvailable(context)) {
               empty.setVisibility(View.GONE);
               listView.setVisibility(View.VISIBLE);
-              getCurrentLocation(editable.toString(), listView, alertDialog);
+              new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                  getCurrentLocation(editable.toString(), listView, alertDialog);
+                }
+              }, 300);
             } else {
               empty.setVisibility(View.VISIBLE);
               listView.setVisibility(View.GONE);

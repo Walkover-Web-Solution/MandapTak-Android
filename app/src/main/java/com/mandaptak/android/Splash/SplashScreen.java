@@ -12,6 +12,7 @@ import com.mandaptak.android.Login.LoginActivity;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.newrelic.agent.android.NewRelic;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -32,6 +33,11 @@ public class SplashScreen extends AppCompatActivity {
     setContentView(R.layout.activity_splash_screen);
     RaygunClient.Init(getApplicationContext());
     RaygunClient.AttachExceptionHandler();
+
+    NewRelic.withApplicationToken(
+        "AAd924f7e633707509ecc9ea1e4e19d226cbc1463b"
+    ).start(this.getApplication());
+
     context = this;
     mApp = (Common) getApplicationContext();
     try {

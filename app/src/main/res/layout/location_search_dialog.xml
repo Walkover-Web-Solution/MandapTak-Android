@@ -36,6 +36,7 @@
         android:drawablePadding="8dp"
         android:drawableStart="@drawable/ic_search_grey"
         android:hint="Search"
+        android:inputType="textNoSuggestions"
         android:imeOptions="actionSearch"
         android:maxLines="1"
         android:padding="12dp"

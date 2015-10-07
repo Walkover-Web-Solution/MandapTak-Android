@@ -111,7 +111,12 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
             } else if (mApp.isNetworkAvailable(context)) {
               empty.setVisibility(View.GONE);
               listView.setVisibility(View.VISIBLE);
-              getPOB(editable.toString(), listView, alertDialog);
+              new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                  getPOB(editable.toString(), listView, alertDialog);
+                }
+              }, 300);
             } else {
               empty.setVisibility(View.VISIBLE);
               listView.setVisibility(View.GONE);

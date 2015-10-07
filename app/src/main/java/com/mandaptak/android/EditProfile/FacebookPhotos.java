@@ -121,7 +121,7 @@ public class FacebookPhotos extends AppCompatActivity {
     if (!menuIsInflated) {
       getMenuInflater().inflate(me.iwf.photopicker.R.menu.menu_picker, menu);
       menuDoneItem = menu.findItem(me.iwf.photopicker.R.id.done);
-      menuDoneItem.setEnabled(false);
+      // menuDoneItem.setEnabled(false);
       menuIsInflated = true;
       return true;
     }
@@ -135,7 +135,7 @@ public class FacebookPhotos extends AppCompatActivity {
       return true;
     }
 
-    if (item.getItemId() == me.iwf.photopicker.R.id.done) {
+    if (item.getItemId() == me.iwf.photopicker.R.id.done && facebookPhotoGridAdapter.getSelectedPhotoPaths().size() > 0) {
       final ArrayList<String> photoPaths = facebookPhotoGridAdapter.getSelectedPhotoPaths();
       PhotoPickerActivity.show_PDialog(context, "Uploading Image..");
       final int[] i = {1};
@@ -191,6 +191,8 @@ public class FacebookPhotos extends AppCompatActivity {
         }
       }, 1000);
       return true;
+    } else {
+      PhotoPickerActivity.showToast(context, "Please select photo");
     }
     return super.onOptionsItemSelected(item);
   }

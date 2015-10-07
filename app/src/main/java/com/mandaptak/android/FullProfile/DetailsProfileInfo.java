@@ -3,6 +3,7 @@ package com.mandaptak.android.FullProfile;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,6 +66,8 @@ public class DetailsProfileInfo extends Fragment {
     caste = (TextView) rootView.findViewById(R.id.caste);
     gotra = (TextView) rootView.findViewById(R.id.gotra);
     weight = (ExtendedEditText) rootView.findViewById(R.id.weight);
+    weight.setSuffix(" KG");
+    weight.setInputType(InputType.TYPE_NULL);
     manglikStatus = (TextView) rootView.findViewById(R.id.manglik);
   }
 

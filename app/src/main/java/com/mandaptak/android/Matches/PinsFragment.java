@@ -62,9 +62,7 @@ public class PinsFragment extends Fragment {
       public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent = new Intent(getActivity(), FullProfileActivity.class);
         intent.putExtra("parseObjectId", pinsList.get(i).getProfileId());
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        getActivity().finish();
       }
     });
   }

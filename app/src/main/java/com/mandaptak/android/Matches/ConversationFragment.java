@@ -1,8 +1,10 @@
 package com.mandaptak.android.Matches;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +41,26 @@ public class ConversationFragment extends android.support.v4.app.Fragment {
     } else {
       onUserAuthenticated();
     }
+    myConversationList.setLongClickListener(new AtlasConversationsList.ConversationLongClickListener() {
+      @Override
+      public void onItemLongClick(final Conversation conversation) {
+        new AlertDialog.Builder(context)
+            .setTitle("Delete chat")
+            .setMessage("Are you sure you want to delete this conversation?")
+            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                conversation.delete(LayerClient.DeletionMode.ALL_PARTICIPANTS);
+              }
+            })
+            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+              public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+              }
+            })
+            .setIcon(R.drawable.ic_delete_red)
+            .show();
+      }
+    });
   }
 
   public void onUserAuthenticated() {

@@ -16,7 +16,7 @@
             android:digits="0123456789"
             android:hint="Weight (kg)"
             android:imeOptions="actionNext"
-            android:inputType="number"
+            android:inputType="none"
             android:maxLength="3"
             android:padding="16dp"
             android:textColor="@color/black_dark"

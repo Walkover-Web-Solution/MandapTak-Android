@@ -35,7 +35,7 @@ public class SplashScreen extends AppCompatActivity {
     RaygunClient.AttachExceptionHandler();
 
     NewRelic.withApplicationToken(
-        "AA863ea88b5da2518a6e6f3dc992ad4512477b480c"
+        "AA6833492f59e6f89eb326bf32f91ae9dc50062702"
     ).start(this.getApplication());
 
     context = this;

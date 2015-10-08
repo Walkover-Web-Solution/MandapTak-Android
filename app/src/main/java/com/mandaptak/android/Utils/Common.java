@@ -6,9 +6,6 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,10 +15,8 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
-import android.util.Base64;
 import android.util.Log;
 
-import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.github.johnpersano.supertoasts.SuperToast;
 import com.layer.sdk.exceptions.LayerException;
@@ -34,10 +29,6 @@ import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseUser;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import io.fabric.sdk.android.Fabric;
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
 
@@ -233,7 +224,7 @@ public class Common extends Application implements LayerCallbacks {
   @Override
   public void onCreate() {
     super.onCreate();
-    Fabric.with(this, new Crashlytics());
+
     Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");
     FacebookSdk.sdkInitialize(getApplicationContext());
     ParseACL defaultACL = new ParseACL();

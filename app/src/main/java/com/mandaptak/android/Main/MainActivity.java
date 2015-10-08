@@ -771,7 +771,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
           //this also has to be handled as per condition till then wait...
           e.printStackTrace();
-          Log.e("Error form Photo table query mail activity", "handle the else part for exception");
+          Log.e("Error form query mainclass", "handle the el prt for excp");
 
 
 //                    Picasso.with(context)

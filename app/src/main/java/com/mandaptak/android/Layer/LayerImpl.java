@@ -51,7 +51,7 @@ public class LayerImpl {
     if (mLayerClient == null) {
       LayerClient.enableLogging(context);
       LayerClient.Options options = new LayerClient.Options();
-      options.googleCloudMessagingSenderId("240895070475");
+      options.googleCloudMessagingSenderId("238940149064");
       mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID, options);
     }
 

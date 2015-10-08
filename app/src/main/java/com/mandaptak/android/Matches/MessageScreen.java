@@ -79,6 +79,7 @@ public class MessageScreen extends AppCompatActivity {
             return false;
           }
         }
+        message.getOptions().pushNotificationMessage("Test notify");
         return true;
       }
     });

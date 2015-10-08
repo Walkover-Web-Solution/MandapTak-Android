@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<manifest
     package="com.mandaptak.android"
-    android:versionCode="13"
-    android:versionName="1.110">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:versionCode="14"
+    android:versionName="1.111">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
 
     <permission
         android:name="com.mandaptak.android.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="com.mandaptak.android.permission.C2D_MESSAGE" />
+        android:protectionLevel="signature"/>
 
+    <uses-permission android:name="com.mandaptak.android.permission.C2D_MESSAGE"/>
 
-    <permission
-        android:name="com.mandaptak.android.permission.LAYER_PUSH"
-        android:protectionLevel="signature" />
-    <uses-permission android:name="com.mandaptak.android.permission.LAYER_PUSH" />
-    <!-- LayerClient.sendLogs() permissions -->
-    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_LOGS"/>
 
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="true" />
+        android:required="true"/>
 
     <application
         android:name=".Utils.Common"
@@ -45,153 +42,155 @@
         //-------------------Facebook INIT ---------------------------
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+            android:value="@string/facebook_app_id"/>
 
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
         //-------------------Facebook INIT ---------------------------
         <activity
             android:name=".Preferences.UserPreferences"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
             android:name="com.soundcloud.android.crop.CropImageActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name="me.iwf.photopicker.PhotoPickerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name="me.iwf.photopicker.PhotoViewerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".EditProfile.FacebookPhotos"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name="me.iwf.photopicker.PhotoPagerActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <activity
             android:name=".Login.LoginActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".Main.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainActivityTheme" />
+            android:theme="@style/MainActivityTheme"/>
         <activity
             android:name=".EditProfile.EditProfileActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".FullProfile.FullProfileActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Matches.MatchesActivity"
             android:label="Matches"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Matches.MatchedProfileActivity"
             android:label="@string/title_activity_matched_profile"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Matches.MessageScreen"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-
-        <receiver android:name="com.layer.sdk.services.LayerReceiver">
-            <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.intent.action.ANY_DATA_STATE" />
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.layer.sdk.services.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="com.layer.quick_start_android" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".Layer.LayerPushReceiver">
-            <intent-filter>
-                <action android:name="com.layer.sdk.PUSH" />
-
-                <category android:name="com.mandaptak.android" />
-            </intent-filter>
-        </receiver>
-
-        <!-- For GCM Push Notifications -->
-        <service android:name="com.layer.sdk.services.GcmIntentService" />
-
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity
+            android:name=".Utils.InternetConnectionError"
+            android:label="@string/title_activity_internet_connection_error"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Agent.AgentActivity"
+            android:label="@string/title_activity_agent"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".Splash.SplashScreen"
             android:label="@string/title_activity_splash_screen"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Utils.InternetConnectionError"
-            android:label="@string/title_activity_internet_connection_error"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Agent.AgentActivity"
-            android:label="@string/title_activity_agent"
-            android:screenOrientation="portrait" />
 
-        <service android:name="com.parse.PushService" />
 
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.parse.ParsePushBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.parse.push.intent.RECEIVE" />
-                <action android:name="com.parse.push.intent.DELETE" />
-                <action android:name="com.parse.push.intent.OPEN" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name="com.parse.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter android:priority="950">
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+        <!--<service android:name="com.parse.PushService"/>-->
 
-                <category android:name="com.mandaptak.android" />
-            </intent-filter>
-        </receiver>
+        <!--<receiver android:name="com.parse.ParseBroadcastReceiver">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="android.intent.action.BOOT_COMPLETED"/>-->
+        <!--<action android:name="android.intent.action.USER_PRESENT"/>-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!--<receiver-->
+        <!--android:name="com.parse.ParsePushBroadcastReceiver"-->
+        <!--android:exported="false">-->
+        <!--<intent-filter>-->
+        <!--<action android:name="com.parse.push.intent.RECEIVE"/>-->
+        <!--<action android:name="com.parse.push.intent.DELETE"/>-->
+        <!--<action android:name="com.parse.push.intent.OPEN"/>-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+        <!--<receiver-->
+        <!--android:name="com.parse.GcmBroadcastReceiver"-->
+        <!--android:permission="com.google.android.c2dm.permission.SEND">-->
+        <!--<intent-filter android:priority="950">-->
+        <!--<action android:name="com.google.android.c2dm.intent.RECEIVE"/>-->
+        <!--<action android:name="com.google.android.c2dm.intent.REGISTRATION"/>-->
 
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="43ed4cc2dd186161187c6eb5e25cfb0867993881" />
+        <!--<category android:name="com.mandaptak.android"/>-->
+        <!--</intent-filter>-->
+        <!--</receiver>-->
+
+
         <service
             android:name="main.java.com.mindscapehq.android.raygun4android.RaygunPostService"
             android:exported="false"
-            android:process=":raygunpostservice" />
+            android:process=":raygunpostservice"/>
         <meta-data
             android:name="com.mindscapehq.android.raygun4android.apikey"
-            android:value="FmwFxRVKP/T932mxk9zzEA==" />
+            android:value="FmwFxRVKP/T932mxk9zzEA=="/>
+
+
+        <receiver android:name="com.layer.sdk.services.LayerReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.ANY_DATA_STATE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.layer.sdk.services.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <category android:name="com.mandaptak.android"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".Layer.LayerPushReceiver">
+            <intent-filter>
+                <action android:name="com.layer.sdk.PUSH"/>
+                <category android:name="com.mandaptak.android"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <category android:name="com.mandaptak.android"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- For GCM Push Notifications -->
+        <service android:name="com.layer.sdk.services.GcmIntentService"/>
     </application>
 
 </manifest>

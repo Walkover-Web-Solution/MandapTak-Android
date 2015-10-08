@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
-import com.mandaptak.android.Matches.MatchesActivity;
+import com.mandaptak.android.Matches.MessageScreen;
 import com.mandaptak.android.R;
 
 public class LayerPushReceiver extends BroadcastReceiver {
@@ -18,7 +18,7 @@ public class LayerPushReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
 
     //Don't show a notification on boot
-    if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED))
+    if (intent.getAction() == Intent.ACTION_BOOT_COMPLETED)
       return;
 
     // Get notification content
@@ -43,9 +43,9 @@ public class LayerPushReceiver extends BroadcastReceiver {
         .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE);
 
     // Set the action to take when a user taps the notification
-    Intent resultIntent = new Intent(context, MatchesActivity.class);
+    Intent resultIntent = new Intent(context, MessageScreen.class);
     resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    resultIntent.putExtra("layer-conversation-id", conversationId);
+    resultIntent.putExtra("conversation-id", conversationId);
     PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
     mBuilder.setContentIntent(resultPendingIntent);
 

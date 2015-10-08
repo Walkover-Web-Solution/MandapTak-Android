@@ -22,7 +22,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/gender"
@@ -38,7 +38,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/date_of_birth"
@@ -54,7 +54,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
 
         <TextView
@@ -71,7 +71,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/place_of_birth"
@@ -88,7 +88,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
         <TextView
             android:id="@+id/current_location"
@@ -105,7 +105,7 @@
             android:padding="8dp"
             android:textColor="@color/black_dark"
             android:textColorHint="@color/black_light"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="14sp"/>
 
 
     </LinearLayout>

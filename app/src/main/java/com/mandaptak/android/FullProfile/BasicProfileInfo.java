@@ -8,9 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.mandaptak.android.R;
-import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Utils.CommonUtils;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -23,7 +22,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class BasicProfileInfo extends Fragment {
-  Common mApp;
+  CommonUtils mApp;
   private TextView gender, datePicker, timepicker, displayName;
   private TextView placeOfBirth, currentLocation;
   private View rootView;
@@ -32,7 +31,7 @@ public class BasicProfileInfo extends Fragment {
   private ParseObject newPOB, newCurrentLocation;
   private Context context;
   private String parseObjectId;
-  private Boolean isVisible = false;
+  protected Boolean isVisible = false;
 
   public BasicProfileInfo() {
     // Required empty public constructor
@@ -43,7 +42,7 @@ public class BasicProfileInfo extends Fragment {
                            Bundle savedInstanceState) {
     Log.e("oncreateView", "" + this.isVisible);
     init(inflater, container);
-    if (mApp.isNetworkAvailable(context))
+    if (mApp.isNetworkAvailable())
       getParseData();
     return rootView;
   }
@@ -66,7 +65,7 @@ public class BasicProfileInfo extends Fragment {
 
   private void init(LayoutInflater inflater, ViewGroup container) {
     context = getActivity();
-    mApp = (Common) context.getApplicationContext();
+    mApp = new CommonUtils(context);
     newDOB = Calendar.getInstance();
     newTOB = Calendar.getInstance();
     newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -81,10 +80,9 @@ public class BasicProfileInfo extends Fragment {
   }
 
   private void getParseData() {
-
     Log.e("basic profile", parseObjectId);
     if (parseObjectId != null) {
-      mApp.show_PDialog(context, "Loading..");
+      mApp.show_PDialog("Loading..");
       ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
       parseQuery.include("currentLocation.Parent.Parent");
       parseQuery.include("placeOfBirth.Parent.Parent");

@@ -17,15 +17,31 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/upload_biodata"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center|start"
-                android:padding="16dp"
-                android:text="+ UPLOAD BIODATA"
-                android:textColor="@color/red_500"
-                android:textSize="@dimen/abc_text_size_button_material"/>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/upload_biodata"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|start"
+                    android:maxLength="36"
+                    android:padding="16dp"
+                    android:singleLine="true"
+                    android:text="+ UPLOAD BIODATA"
+                    android:textColor="@color/red_500"
+                    android:textSize="@dimen/abc_text_size_button_material"/>
+
+                <ImageView
+                    android:id="@+id/delete_biodata"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_delete_red"
+                    android:visibility="gone"/>
+            </FrameLayout>
 
             <ImageView
                 android:layout_width="match_parent"

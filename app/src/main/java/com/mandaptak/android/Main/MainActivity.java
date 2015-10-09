@@ -754,35 +754,22 @@ public class MainActivity extends AppCompatActivity {
             }
             userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
             profileImages.setAdapter(userImagesAdapter);
-            slidingPanel.setEnabled(true);
-            slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+
           } else {
             //This has to be handled proper this happens when there is no entry in the photo
             //table for this profile.
             Log.e("Error form Photo table list is null", parseProfileObject.getObjectId());
-
-//                        Picasso.with(context)
-//                                .load(Uri.EMPTY)
-//                                .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//                                .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//                                .into(backgroundPhoto);
-//                        blurringView.invalidate();
           }
         } else {
           //this also has to be handled as per condition till then wait...
           e.printStackTrace();
           Log.e("Error form query mainclass", "handle the el prt for excp");
 
-
-//                    Picasso.with(context)
-//                            .load(Uri.EMPTY)
-//                            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//                            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//                            .into(backgroundPhoto);
-//                    blurringView.invalidate();
         }
       }
     });
+    slidingPanel.setEnabled(true);
+    slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
   }
 
   @Override

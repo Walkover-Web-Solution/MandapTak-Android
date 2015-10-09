@@ -38,19 +38,19 @@
         <item>Other</item>
     </string-array>
     <string-array name="wam_array">
-        <item>No</item>
-        <item>Yes</item>
         <item>Maybe</item>
+        <item>Yes</item>
+        <item>No</item>
     </string-array>
     <string-array name="manglik_status_array">
-        <item>No</item>
-        <item>Yes</item>
         <item>Both</item>
+        <item>Yes</item>
+        <item>No</item>
     </string-array>
     <string-array name="manglik_array">
-        <item>No</item>
+        <item>Maybe</item>
         <item>Yes</item>
-        <item>Aanshik</item>
+        <item>No</item>
     </string-array>
     <string-array name="height">
         <item>4ft 5in - 134cm</item>

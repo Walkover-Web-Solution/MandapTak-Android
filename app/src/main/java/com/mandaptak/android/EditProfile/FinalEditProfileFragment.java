@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -93,6 +94,7 @@ public class FinalEditProfileFragment extends Fragment {
   private Boolean isStarted = false;
   private Boolean isVisible = false;
   private Boolean isFirstStart = false;
+  private ImageView deleteBioData;
 
   public FinalEditProfileFragment() {
     // Required empty public constructor
@@ -111,6 +113,7 @@ public class FinalEditProfileFragment extends Fragment {
     uploadBiodata = (TextView) rootView.findViewById(R.id.upload_biodata);
     minBudget = (EditText) rootView.findViewById(R.id.budget_from);
     maxBudget = (EditText) rootView.findViewById(R.id.budget_to);
+    deleteBioData = (ImageView) rootView.findViewById(R.id.delete_biodata);
     saveProfile = (LinearLayout) rootView.findViewById(R.id.save_profile);
     imageList.setOrientation(TwoWayLayoutManager.Orientation.HORIZONTAL);
     imageList.setHasFixedSize(true);
@@ -219,7 +222,12 @@ public class FinalEditProfileFragment extends Fragment {
         showFileChooser();
       }
     });
-
+    deleteBioData.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        deleteBioDataFile();
+      }
+    });
     saveProfile.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -247,6 +255,36 @@ public class FinalEditProfileFragment extends Fragment {
 
   private void getFacebookLogin() {
     LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email", "user_photos"));
+  }
+
+  private void deleteBioDataFile() {
+    mApp.show_PDialog(context, "Removing...");
+    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+    parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+      @Override
+      public void done(final ParseObject parseObject, ParseException e) {
+        if (e == null) {
+          parseObject.put("bioData", JSONObject.NULL);
+          parseObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+              if (e == null) {
+                uploadBiodata.setTextColor(getResources().getColor(R.color.red_500));
+                uploadBiodata.setText("+ UPLOAD BIODATA");
+                mApp.dialog.dismiss();
+                mApp.showToast(context, "Biodata Removed");
+                deleteBioData.setVisibility(View.GONE);
+              } else {
+                e.printStackTrace();
+                mApp.showToast(context, e.getMessage());
+                mApp.dialog.dismiss();
+              }
+
+            }
+          });
+        }
+      }
+    });
   }
 
   private void validateProfile(final ParseObject parseObject) {
@@ -455,6 +493,7 @@ public class FinalEditProfileFragment extends Fragment {
             if (newBiodataFileName != null) {
               uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
               uploadBiodata.setText(newBiodataFileName);
+              deleteBioData.setVisibility(View.VISIBLE);
             }
             ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
             queryParseQuery.whereEqualTo("profileId", profileObject);
@@ -538,11 +577,11 @@ public class FinalEditProfileFragment extends Fragment {
     if (resultCode == Activity.RESULT_OK) {
       switch (requestCode) {
         case FILE_SELECT_CODE:
+          mApp.show_PDialog(context, "Uploading..");
           Uri uri = data.getData();
           String path = mApp.getPath(context, uri);
           if (path != null) {
             final File file = new File(path);
-            mApp.show_PDialog(context, "Uploading..");
             ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
             parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
               @Override
@@ -558,12 +597,15 @@ public class FinalEditProfileFragment extends Fragment {
                           if (e == null) {
                             uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
                             uploadBiodata.setText(file.getName());
+                            mApp.dialog.dismiss();
+                            deleteBioData.setVisibility(View.VISIBLE);
                             mApp.showToast(context, "Biodata Uploaded");
                           } else {
                             e.printStackTrace();
                             mApp.showToast(context, e.getMessage());
+                            mApp.dialog.dismiss();
                           }
-                          mApp.dialog.dismiss();
+
                         }
                       });
                     }
@@ -585,6 +627,7 @@ public class FinalEditProfileFragment extends Fragment {
               }
             });
           } else {
+            mApp.dialog.dismiss();
             mApp.showToast(context, "Error: File not found");
           }
           break;

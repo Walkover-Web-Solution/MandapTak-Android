@@ -276,8 +276,6 @@ public class QualificationEditProfileFragment extends Fragment {
         if (null != newEducationDetail3 && newDegreeName.equals(newEducationDetail3.getDegreeName())) {
           returnFlag = false;
         }
-//        eduChildDegree1.setText(degreeName);
-//        eduChildDegreeBranch1.setText(specializationName);
         break;
       case 2:
         if (null != newEducationDetail1 && newDegreeName.equals(newEducationDetail1.getDegreeName())) {
@@ -286,8 +284,6 @@ public class QualificationEditProfileFragment extends Fragment {
         if (null != newEducationDetail3 && newDegreeName.equals(newEducationDetail3.getDegreeName())) {
           returnFlag = false;
         }
-//        eduChildDegree2.setText(degreeName);
-//        eduChildDegreeBranch2.setText(specializationName);
         break;
       case 3:
         if (null != newEducationDetail1 && newDegreeName.equals(newEducationDetail1.getDegreeName())) {
@@ -296,8 +292,6 @@ public class QualificationEditProfileFragment extends Fragment {
         if (null != newEducationDetail2 && newDegreeName.equals(newEducationDetail2.getDegreeName())) {
           returnFlag = false;
         }
-//        eduChildDegree3.setText(degreeName);
-//        eduChildDegreeBranch3.setText(specializationName);
         break;
       default:
         break;

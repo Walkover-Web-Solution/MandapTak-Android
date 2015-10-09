@@ -214,7 +214,7 @@ public class Common extends Application implements LayerCallbacks {
     SuperToast superToast = new SuperToast(context);
     SuperToast.cancelAllSuperToasts();
     superToast.setAnimations(SuperToast.Animations.POPUP);
-    superToast.setDuration(SuperToast.Duration.MEDIUM);
+    superToast.setDuration(SuperToast.Duration.SHORT);
     superToast.setText(" " + message);
     superToast.setTextColor(context.getResources().getColor(R.color.primary));
     superToast.setBackground(R.drawable.border_toast);

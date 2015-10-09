@@ -20,6 +20,7 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.appyvet.rangebar.RangeBar;
 import com.mandaptak.android.Adapter.DegreeDataAdapter;
 import com.mandaptak.android.Adapter.LocationDataAdapter;
 import com.mandaptak.android.Main.MainActivity;
@@ -58,6 +59,7 @@ public class UserPreferences extends AppCompatActivity {
   private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
   private int minHeight = 0, maxHeight = 0;
   private Common mApp;
+  private RangeBar rangeAge;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +90,13 @@ public class UserPreferences extends AppCompatActivity {
       @Override
       public void onNothingSelected(AdapterView<?> adapterView) {
 
+      }
+    });
+    rangeAge.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+      @Override
+      public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+        minAge = Integer.parseInt(leftPinValue);
+        maxAge = Integer.parseInt(rightPinValue);
       }
     });
     manglikStatus.setAdapter(ArrayAdapter.createFromResource(context,
@@ -307,6 +316,7 @@ public class UserPreferences extends AppCompatActivity {
     etBudgetMax = (EditText) findViewById(R.id.budget_max);
     workingPartner = (Spinner) findViewById(R.id.work_after_marriage);
     manglikStatus = (Spinner) findViewById(R.id.manglik);
+    rangeAge = (RangeBar) findViewById(R.id.rangebar_age);
     btnSavePreferences = (Button) findViewById(R.id.store_preference);
     getParseData();
   }
@@ -350,14 +360,14 @@ public class UserPreferences extends AppCompatActivity {
         maxBudget = Integer.valueOf(etBudgetMax.getText().toString());
       else
         maxBudget = 0;
-      if (!etMinAge.getText().toString().equals(""))
-        minAge = Integer.valueOf(etMinAge.getText().toString());
-      else
-        minAge = 0;
-      if (!etMaxAge.getText().toString().equals(""))
-        maxAge = Integer.valueOf(etMaxAge.getText().toString());
-      else
-        maxAge = 0;
+//      if (!etMinAge.getText().toString().equals(""))
+//        minAge = Integer.valueOf(etMinAge.getText().toString());
+//      else
+//        minAge = 0;
+//      if (!etMaxAge.getText().toString().equals(""))
+//        maxAge = Integer.valueOf(etMaxAge.getText().toString());
+//      else
+//        maxAge = 0;
       if (!etIncome.getText().toString().equals(""))
         minIncome = Integer.valueOf(etIncome.getText().toString());
       else
@@ -745,6 +755,7 @@ public class UserPreferences extends AppCompatActivity {
                     etMinHeight.setText(values[index]);
                   }
                   if (minAge != 0 && maxAge != 0) {
+                    rangeAge.setRangePinsByValue(minAge, maxAge);
                     etMinAge.setText("" + minAge);
                     etMaxAge.setText("" + maxAge);
                   }

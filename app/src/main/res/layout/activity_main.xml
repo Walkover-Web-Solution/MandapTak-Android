@@ -195,8 +195,8 @@
 
                 <com.mandaptak.android.Views.CircleImageView
                     android:id="@+id/loading_profile"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
                     android:layout_centerInParent="true"
                     app:border_color="@color/red_500"
                     app:border_overlay="true"

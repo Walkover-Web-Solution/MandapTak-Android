@@ -9,7 +9,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/store_preference"
         android:fadeScrollbars="false">
 
@@ -50,17 +50,19 @@
                     android:id="@+id/rangebar_age"
                     android:layout_width="match_parent"
                     android:layout_height="72dp"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     custom:barColor="@color/red_300"
                     custom:connectingLineColor="@color/red_300"
                     custom:pinColor="@color/red_300"
                     custom:selectorColor="@color/red_300"
                     custom:textColor="@color/white"
-                    custom:tickColor="@color/grey_300"
+                    custom:tickColor="@color/red_300"
                     custom:tickEnd="45"
                     custom:tickInterval="1"
-                    custom:tickStart="18"/>
+                    custom:tickStart="18"
+                    custom:selectorSize="4dp"
+                    custom:barWeight="5dp"
+                    />
 
                 <EditText
                     android:id="@+id/min_age"

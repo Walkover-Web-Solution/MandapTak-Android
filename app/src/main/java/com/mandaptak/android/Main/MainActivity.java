@@ -41,6 +41,7 @@ import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -138,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  void likeProfile() {
+  public void likeProfile() {
     if (mApp.isNetworkAvailable(context))
       try {
         final ParseObject likeProfile = profileList.get(0);
@@ -747,7 +748,6 @@ public class MainActivity extends AppCompatActivity {
                 imageModel.setIsPrimary(false);
                 imageModel.setParseObject(model.getObjectId());
                 userProfileImages.add(imageModel);
-
               } catch (Exception e1) {
                 e1.printStackTrace();
               }
@@ -758,12 +758,12 @@ public class MainActivity extends AppCompatActivity {
           } else {
             //This has to be handled proper this happens when there is no entry in the photo
             //table for this profile.
-            Log.e("Error form Photo table list is null", parseProfileObject.getObjectId());
+            Log.e("mainActivity", parseProfileObject.getObjectId());
           }
         } else {
           //this also has to be handled as per condition till then wait...
           e.printStackTrace();
-          Log.e("Error form query mainclass", "handle the el prt for excp");
+          Log.e("mainActivity", "handle the el prt for excp");
 
         }
       }

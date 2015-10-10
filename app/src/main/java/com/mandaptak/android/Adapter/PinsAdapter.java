@@ -77,6 +77,7 @@ public class PinsAdapter extends BaseAdapter {
     viewholder.unpin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        toggleClick(view, false);
         mApp.show_PDialog(ctx, "Unpinning profile");
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
@@ -102,11 +103,13 @@ public class PinsAdapter extends BaseAdapter {
             }
           }
         });
+        toggleClick(view, true);
       }
     });
     viewholder.dislikeprofile.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        toggleClick(view, false);
         mApp.show_PDialog(ctx, "Please wait");
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
@@ -141,11 +144,17 @@ public class PinsAdapter extends BaseAdapter {
             }
           }
         });
+        toggleClick(view, true);
       }
 
 
     });
     return paramView;
+  }
+
+  private void toggleClick(View view, boolean enabled) {
+    view.setEnabled(enabled);
+    view.setClickable(enabled);
   }
 
   static class ViewHolder {

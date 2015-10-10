@@ -474,44 +474,46 @@ public class FinalEditProfileFragment extends Fragment {
       query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
         @Override
         public void done(ParseObject profileObject, ParseException e) {
-          isStarted = false;
-          if (e == null) {
-            if (profileObject.containsKey("bioData") && profileObject.getParseFile("bioData") != null)
-              newBiodataFileName = profileObject.getParseFile("bioData").getName();
-            if (profileObject.getBoolean("isBudgetVisible")) {
-              budgetMainLayout.setVisibility(View.VISIBLE);
-              newMinBudget = profileObject.getLong("minMarriageBudget");
-              newMaxBudget = profileObject.getLong("maxMarriageBudget");
-              if (newMinBudget != -1)
-                minBudget.setText("" + newMinBudget);
-              if (newMaxBudget != -1)
-                maxBudget.setText("" + newMaxBudget);
-            } else {
-              budgetMainLayout.setVisibility(View.GONE);
-            }
-
-            if (newBiodataFileName != null) {
-              uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
-              uploadBiodata.setText(newBiodataFileName);
-              deleteBioData.setVisibility(View.VISIBLE);
-            }
-            ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-            queryParseQuery.whereEqualTo("profileId", profileObject);
-            queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-              @Override
-              public void done(List<ParseObject> list, ParseException e) {
-                if (list != null) {
-                  parsePhotos.clear();
-                  for (ParseObject item : list) {
-                    parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
-                  }
-                  photoAdapter.notifyDataSetChanged();
-                }
+          if (isAdded()) {
+            isStarted = false;
+            if (e == null) {
+              if (profileObject.containsKey("bioData") && profileObject.getParseFile("bioData") != null)
+                newBiodataFileName = profileObject.getParseFile("bioData").getName();
+              if (profileObject.getBoolean("isBudgetVisible")) {
+                budgetMainLayout.setVisibility(View.VISIBLE);
+                newMinBudget = profileObject.getLong("minMarriageBudget");
+                newMaxBudget = profileObject.getLong("maxMarriageBudget");
+                if (newMinBudget != -1)
+                  minBudget.setText("" + newMinBudget);
+                if (newMaxBudget != -1)
+                  maxBudget.setText("" + newMaxBudget);
+              } else {
+                budgetMainLayout.setVisibility(View.GONE);
               }
-            });
-          } else {
-            mApp.showToast(context, e.getMessage());
-            e.printStackTrace();
+
+              if (newBiodataFileName != null) {
+                uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
+                uploadBiodata.setText(newBiodataFileName);
+                deleteBioData.setVisibility(View.VISIBLE);
+              }
+              ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+              queryParseQuery.whereEqualTo("profileId", profileObject);
+              queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                  if (list != null) {
+                    parsePhotos.clear();
+                    for (ParseObject item : list) {
+                      parsePhotos.add(new ImageModel(item.getParseFile("file").getUrl(), item.getBoolean("isPrimary"), item.getObjectId()));
+                    }
+                    photoAdapter.notifyDataSetChanged();
+                  }
+                }
+              });
+            } else {
+              mApp.showToast(context, e.getMessage());
+              e.printStackTrace();
+            }
           }
           mApp.dialog.dismiss();
         }

@@ -8,10 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -47,10 +47,11 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     } else {
       uri = Uri.fromFile(new File(path));
     }
-
-    Glide.with(mContext)
+    Picasso.with(mContext)
         .load(uri)
+        .tag(mContext)
         .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
+        .placeholder(R.drawable.com_facebook_profile_picture_blank_portrait)
         .into(holder.image);
 
     holder.image.setOnClickListener(new View.OnClickListener() {
@@ -62,7 +63,6 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
         mainActivity.previewPhoto(intent);
       }
     });
-
   }
 
   @Override

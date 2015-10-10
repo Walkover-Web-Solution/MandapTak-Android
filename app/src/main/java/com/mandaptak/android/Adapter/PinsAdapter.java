@@ -78,7 +78,7 @@ public class PinsAdapter extends BaseAdapter {
       @Override
       public void onClick(View view) {
         toggleClick(view, false);
-        mApp.show_PDialog(ctx, "Unpinning profile");
+        mApp.show_PDialog(ctx, "Unpinning profile",false);
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
         query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
@@ -110,7 +110,7 @@ public class PinsAdapter extends BaseAdapter {
       @Override
       public void onClick(View view) {
         toggleClick(view, false);
-        mApp.show_PDialog(ctx, "Please wait");
+        mApp.show_PDialog(ctx, "Please wait",false);
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
         query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));

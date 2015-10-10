@@ -41,7 +41,6 @@ import com.parse.LogOutCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseImageView;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -151,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
           labelLoading.setText("No matching results found.");
           rippleBackground.stopRippleAnimation();
           rippleBackground.setVisibility(View.VISIBLE);
+          slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
         }
         HashMap<String, Object> params = new HashMap<>();
         params.put("userProfileId", profileObject.getObjectId());
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             if (e == null) {
               if (o != null) {
                 try {
-                  slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+//                  slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
                   undoModel.setProfileParseObject(likeProfile);
                   undoModel.setActionPerformed(1);
                   if (o instanceof ParseObject) {
@@ -328,6 +328,7 @@ public class MainActivity extends AppCompatActivity {
               labelLoading.setText("No matching results found.");
               rippleBackground.stopRippleAnimation();
               rippleBackground.setVisibility(View.VISIBLE);
+              slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             }
           } catch (Exception e) {
             e.printStackTrace();
@@ -636,6 +637,7 @@ public class MainActivity extends AppCompatActivity {
           @Override
           public void onSuccess() {
             blurringView.invalidate();
+            rippleBackground.setVisibility(View.GONE);
           }
 
           @Override
@@ -649,7 +651,6 @@ public class MainActivity extends AppCompatActivity {
 //            setProfileDetails();
           }
         });
-        rippleBackground.setVisibility(View.GONE);
 
       } else {
         Picasso.with(context)
@@ -731,6 +732,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllPhotos(final ParseObject parseProfileObject) {
+    try {
+      userProfileImages.clear();
+      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+      profileImages.setAdapter(userImagesAdapter);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
     parseQuery.whereEqualTo("profileId", parseProfileObject);
     parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);

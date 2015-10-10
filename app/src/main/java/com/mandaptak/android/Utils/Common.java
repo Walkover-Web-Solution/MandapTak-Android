@@ -193,6 +193,19 @@ public class Common extends Application implements LayerCallbacks {
       e.printStackTrace();
     }
   }
+  public void show_PDialog(Context con, String message, Boolean cancelable) {
+    try {
+      if (dialog != null) {
+        dialog.dismiss();
+      }
+      dialog = new ProgressDialog(con, ProgressDialog.THEME_DEVICE_DEFAULT_LIGHT);
+      dialog.setMessage(message);
+      dialog.setCancelable(cancelable);
+      dialog.show();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   public String getNumber() {
     TelephonyManager telemamanger = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);

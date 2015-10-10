@@ -46,7 +46,7 @@ import me.iwf.photopicker.utils.Prefs;
 
 public class UserPreferences extends AppCompatActivity {
 
-  TextView etMinHeight, etMaxHeight, etDegree, etLocation;
+  TextView etMinHeight, etMaxHeight, etDegree, etLocation, tittle_age_limit;
   EditText etMinAge, etMaxAge, etIncome, etBudgetMin, etBudgetMax;
   Spinner workingPartner, manglikStatus;
   Button btnSavePreferences;
@@ -97,6 +97,7 @@ public class UserPreferences extends AppCompatActivity {
       public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
         minAge = Integer.parseInt(leftPinValue);
         maxAge = Integer.parseInt(rightPinValue);
+        tittle_age_limit.setText("Show Ages: " + String.valueOf(minAge) + " - " + String.valueOf(maxAge));
       }
     });
     manglikStatus.setAdapter(ArrayAdapter.createFromResource(context,
@@ -307,6 +308,7 @@ public class UserPreferences extends AppCompatActivity {
     mApp = (Common) context.getApplicationContext();
     etMinAge = (EditText) findViewById(R.id.min_age);
     etMaxAge = (EditText) findViewById(R.id.max_age);
+    tittle_age_limit = (TextView) findViewById(R.id.tittle_age_limit);
     etMinHeight = (TextView) findViewById(R.id.min_height);
     etMaxHeight = (TextView) findViewById(R.id.max_height);
     etDegree = (TextView) findViewById(R.id.degree);
@@ -756,8 +758,7 @@ public class UserPreferences extends AppCompatActivity {
                   }
                   if (minAge != 0 && maxAge != 0) {
                     rangeAge.setRangePinsByValue(minAge, maxAge);
-                    etMinAge.setText("" + minAge);
-                    etMaxAge.setText("" + maxAge);
+                    tittle_age_limit.setText("Show Ages: " + String.valueOf(minAge) + " - " + String.valueOf(maxAge));
                   }
                   if (maxBudget != 0 && minBudget != 0) {
                     etBudgetMin.setText("" + minBudget);

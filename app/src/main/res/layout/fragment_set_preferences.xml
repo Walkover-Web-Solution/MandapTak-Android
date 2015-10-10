@@ -33,7 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="16dp"
-                android:text="AGE LIMIT"
+                android:text="Show Ages 18 - 45"
                 android:textColor="@color/black_light"
                 android:textSize="@dimen/abc_text_size_small_material"/>
 
@@ -49,20 +49,16 @@
                 <com.appyvet.rangebar.RangeBar
                     android:id="@+id/rangebar_age"
                     android:layout_width="match_parent"
-                    android:layout_height="72dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_height="wrap_content"
                     custom:barColor="@color/red_300"
                     custom:connectingLineColor="@color/red_300"
                     custom:pinColor="@color/red_300"
                     custom:selectorColor="@color/red_300"
                     custom:textColor="@color/white"
-                    custom:tickColor="@color/red_300"
+                    custom:tickColor="@color/transparent"
                     custom:tickEnd="45"
                     custom:tickInterval="1"
-                    custom:tickStart="18"
-                    custom:selectorSize="4dp"
-                    custom:barWeight="5dp"
-                    />
+                    custom:tickStart="18"/>
 
                 <EditText
                     android:id="@+id/min_age"

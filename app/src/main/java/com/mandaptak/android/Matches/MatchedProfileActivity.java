@@ -12,20 +12,26 @@ import android.widget.TextView;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
+import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.CircleImageView;
 import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.Prefs;
 
 public class MatchedProfileActivity extends AppCompatActivity {
@@ -36,12 +42,14 @@ public class MatchedProfileActivity extends AppCompatActivity {
   CircleImageView image;
   ArrayList<String> mTargetParticipants = new ArrayList<>();
   String myName;
+  Common mApp;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_matched_profile);
     context = this;
+    mApp = (Common) context.getApplicationContext();
     if (getIntent() != null) {
       if (getIntent().hasExtra("profile")) {
         model = (MatchesModel) getIntent().getSerializableExtra("profile");
@@ -67,6 +75,14 @@ public class MatchedProfileActivity extends AppCompatActivity {
         }
         getChatMembers(parseObject);
 
+      }
+    });
+    image.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(context, FullProfileActivity.class);
+        intent.putExtra("parseObjectId", model.getProfileId());
+        startActivity(intent);
       }
     });
 //        Query query = Query.builder(Conversation.class)
@@ -110,6 +126,37 @@ public class MatchedProfileActivity extends AppCompatActivity {
     designation = (TextView) findViewById(R.id.designation);
     traits = (TextView) findViewById(R.id.matching_traits);
     chatButton = (Button) findViewById(R.id.chat_button);
+    setTraits();
+  }
+
+  void setTraits() {
+    try {
+      HashMap<String, Object> params = new HashMap<>();
+      if (ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)).fetchIfNeeded().getString("gender").equalsIgnoreCase("Male")) {
+        params.put("boyProfileId", Prefs.getProfileId(context));
+        params.put("girlProfileId", model.getProfileId());
+      } else {
+        params.put("boyProfileId", model.getProfileId());
+        params.put("girlProfileId", Prefs.getProfileId(context));
+      }
+
+      ParseCloud.callFunctionInBackground("matchKundli", params, new FunctionCallback<Object>() {
+        @Override
+        public void done(Object o, ParseException e) {
+          if (e == null) {
+            if (o != null) {
+              traits.setText(String.valueOf(o) + " Traits Matching");
+            }
+          } else {
+            e.printStackTrace();
+            RaygunClient.Send(new Throwable(e.getMessage() + " traits_function"));
+            mApp.showToast(context, e.getMessage());
+          }
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -151,36 +198,6 @@ public class MatchedProfileActivity extends AppCompatActivity {
       }
     });
   }
-//    private void getChatMembers(String profileId, final ParseObject myProfile) {
-//        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-//        q1.getInBackground(profileId, new GetCallback<ParseObject>() {
-//            @Override
-//            public void done(ParseObject object, ParseException e) {
-//                if (e == null) {
-//                    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-//                    query.whereEqualTo("profileId", object).whereEqualTo("profileId", myProfile);
-//                    query.findInBackground(new FindCallback<ParseObject>() {
-//                        @Override
-//                        public void done(List<ParseObject> list, ParseException e) {
-//                            if (e == null)
-//                                if (list.size() > 0) {
-//                                    mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
-//                                    for (ParseObject parseObject : list) {
-//                                        try {
-//                                            if (!parseObject.fetchIfNeeded().getString("relation").equalsIgnoreCase("Agent"))
-//                                                mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-//                                        } catch (ParseException e1) {
-//                                            e1.printStackTrace();
-//                                        }
-//                                    }
-//                                }
-//
-//                        }
-//                    });
-//                }
-//            }
-//        });
-//    }
 
 
 }

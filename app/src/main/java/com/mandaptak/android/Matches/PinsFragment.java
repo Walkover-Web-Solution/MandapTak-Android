@@ -60,13 +60,9 @@ public class PinsFragment extends Fragment {
     listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        listViewMatches.setEnabled(false);
-        listViewMatches.setClickable(false);
         Intent intent = new Intent(getActivity(), FullProfileActivity.class);
         intent.putExtra("parseObjectId", pinsList.get(i).getProfileId());
         startActivity(intent);
-        listViewMatches.setEnabled(true);
-        listViewMatches.setClickable(false);
       }
     });
   }

@@ -67,6 +67,7 @@ public class MessageScreen extends AppCompatActivity {
     atlasComposer.init(layerClient, conversation);
     atlasComposer.setListener(new AtlasMessageComposer.Listener() {
       public boolean beforeSend(Message message) {
+        message.getOptions().pushNotificationMessage(message.getConversation() + " Test notify");
         if (conversation == null) {
           //  String[] participants = (String[]) userIds.toArray();
           if (userIds.size() > 0) {
@@ -79,7 +80,7 @@ public class MessageScreen extends AppCompatActivity {
             return false;
           }
         }
-        message.getOptions().pushNotificationMessage("Test notify");
+
         return true;
       }
     });

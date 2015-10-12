@@ -252,7 +252,7 @@ public class FullProfileActivity extends AppCompatActivity {
     }
   }
 
-  void likeProfile() {
+  public void likeProfile() {
     if (mApp.isNetworkAvailable(context))
       if (!isLiked) {
         isLiked = true;
@@ -262,7 +262,7 @@ public class FullProfileActivity extends AppCompatActivity {
             HashMap<String, Object> params = new HashMap<>();
             params.put("userProfileId", userProfileObject.getObjectId());
             params.put("likeProfileId", parseObjectId);
-            params.put("userName", userProfileObject.fetchIfNeeded().getString("name"));
+            params.put("userName", userProfileObject.getString("name"));
 
             ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
               @Override

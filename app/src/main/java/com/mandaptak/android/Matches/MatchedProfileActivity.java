@@ -68,11 +68,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
     q1.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
       @Override
       public void done(ParseObject parseObject, ParseException e) {
-        try {
-          myName = parseObject.fetchIfNeeded().getString("name");
-        } catch (ParseException e1) {
-          e1.printStackTrace();
-        }
+        myName = parseObject.getString("name");
         getChatMembers(parseObject);
 
       }
@@ -175,6 +171,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
       public void done(ParseObject object, ParseException e) {
         if (e == null) {
           ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+          query.include("userId");
           query.whereEqualTo("profileId", myProfile);
           query.whereEqualTo("profileId", object);
           query.whereNotEqualTo("relation", "Agent");
@@ -185,11 +182,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
                 if (list.size() > 0) {
                   mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
                   for (ParseObject parseObject : list) {
-                    try {
-                      mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-                    } catch (ParseException e1) {
-                      e1.printStackTrace();
-                    }
+                    mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
                   }
                 }
             }

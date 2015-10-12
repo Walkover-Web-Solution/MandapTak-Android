@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
   private FabButton traitsProgress;
   private boolean isLoading = false;
 
-  void setTraits() {
+  public void setTraits() {
     try {
       HashMap<String, Object> params = new HashMap<>();
       if (profileObject.fetchIfNeeded().getString("gender").equalsIgnoreCase("Male")) {
@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
         params.put("boyProfileId", profileList.get(0).getObjectId());
         params.put("girlProfileId", profileObject.getObjectId());
       }
-
+      frontTraits.setText("...");
+      slideTraits.setText("...");
+      traitsProgress.showProgress(true);
       ParseCloud.callFunctionInBackground("matchKundli", params, new FunctionCallback<Object>() {
         @Override
         public void done(Object o, ParseException e) {
@@ -155,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         HashMap<String, Object> params = new HashMap<>();
         params.put("userProfileId", profileObject.getObjectId());
         params.put("likeProfileId", likeProfile.getObjectId());
-        params.put("userName", profileObject.fetchIfNeeded().getString("name"));
+        params.put("userName", profileObject.getString("name"));
 
         ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
           @Override
@@ -187,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
             String religion = parseObject.fetchIfNeeded().getParseObject("religionId").getString("name");
             String caste = parseObject.fetchIfNeeded().getParseObject("casteId").getString("name");
             MatchesModel model = new MatchesModel();
-            model.setName(parseObject.fetchIfNeeded().getString("name"));
+            model.setName(parseObject.getString("name"));
             model.setProfileId(parseObject.getObjectId());
             model.setReligion(religion + ", " + caste);
             model.setWork(parseObject.getString("designation"));
@@ -307,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
               break;
           }
         } else {
-          mApp.showToast(context, "undo not available");
+          mApp.showToast(context, "Undo not available.");
         }
       }
     });

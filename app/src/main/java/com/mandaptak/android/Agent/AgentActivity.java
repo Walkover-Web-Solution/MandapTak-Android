@@ -135,6 +135,7 @@ public class AgentActivity extends AppCompatActivity {
       }
     });
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+    query.include("profileId");
     query.whereEqualTo("userId", ParseUser.getCurrentUser());
     query.whereEqualTo("relation", "Agent");
     query.findInBackground(new FindCallback<ParseObject>() {
@@ -145,25 +146,25 @@ public class AgentActivity extends AppCompatActivity {
             profileModels.clear();
             for (ParseObject parseObject : list) {
               try {
-                final ParseObject profileObject = parseObject.fetchIfNeeded().getParseObject("profileId");
-                boolean isComplete = profileObject.fetchIfNeeded().getBoolean("isComplete");
+                final ParseObject profileObject = parseObject.getParseObject("profileId");
+                boolean isComplete = profileObject.getBoolean("isComplete");
                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
                 agentProfileModel.setProfileObject(profileObject);
                 if (isComplete) {
                   SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-                  String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
+                  String date = sdf.format(profileObject.getUpdatedAt());
                   agentProfileModel.setCreateDate(date);
-                  agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
-                  agentProfileModel.setImageUrl(profileObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                  agentProfileModel.setName(profileObject.fetchIfNeeded().getString("name"));
+                  agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
+                  agentProfileModel.setImageUrl(profileObject.getParseFile("profilePic").getUrl());
+                  agentProfileModel.setName(profileObject.getString("name"));
                   agentProfileModel.setIsComplete(true);
                 } else {
                   SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-                  String date = sdf.format(profileObject.fetchIfNeeded().getUpdatedAt());
+                  String date = sdf.format(profileObject.getUpdatedAt());
                   agentProfileModel.setCreateDate(date);
-                  agentProfileModel.setIsActive(profileObject.fetchIfNeeded().getBoolean("isActive"));
+                  agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
                   agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
-                  agentProfileModel.setName(profileObject.fetchIfNeeded().getParseUser("userId").fetchIfNeeded().getUsername());
+                  agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
                   agentProfileModel.setIsComplete(false);
                 }
                 profileModels.add(agentProfileModel);

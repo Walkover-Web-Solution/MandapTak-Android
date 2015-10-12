@@ -255,15 +255,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             ParseObject tmpEdu2 = parseObject.getParseObject("education2");
             ParseObject tmpEdu3 = parseObject.getParseObject("education3");
             if (tmpEdu1 != null) {
-              ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.getString("name"), "Specialization", tmpEdu1.getObjectId());
+              ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.getString("name"), "Specialization", tmpEdu1.getObjectId(),tmpEdu1.getParseObject("degreeId").getString("name"));
               profile.setEducation1(newEducationDetail1);
             }
             if (tmpEdu2 != null) {
-              ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.getString("name"), "Specialization", tmpEdu2.getObjectId());
+              ParseNameModel newEducationDetail2 = new ParseNameModel(tmpEdu2.getString("name"), "Specialization", tmpEdu2.getObjectId(),tmpEdu1.getParseObject("degreeId").getString("name"));
               profile.setEducation1(newEducationDetail2);
             }
             if (tmpEdu3 != null) {
-              ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.getString("name"), "Specialization", tmpEdu3.getObjectId());
+              ParseNameModel newEducationDetail3 = new ParseNameModel(tmpEdu3.getString("name"), "Specialization", tmpEdu3.getObjectId(),tmpEdu1.getParseObject("degreeId").getString("name"));
               profile.setEducation1(newEducationDetail3);
             }
             if (newIndustry != null) {

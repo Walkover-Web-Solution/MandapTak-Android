@@ -57,7 +57,7 @@
                 android:layout_width="?listPreferredItemHeightLarge"
                 android:layout_height="?listPreferredItemHeightLarge"
                 android:layout_gravity="center"
-                android:color="@color/transparent"
+                android:color="@color/transparent_black"
                 android:indeterminate="false"
                 android:max="36"
                 android:src="@color/transparent"
@@ -65,7 +65,10 @@
                 app:fbb_autoStart="false"
                 app:fbb_progressColor="@color/teal_600"
                 app:fbb_progressWidthRatio="0.1"
-                app:fbb_showEndBitmap="false"/>
+                app:fbb_showEndBitmap="false"
+                app:fbb_endBitmap="@drawable/ic_fab_complete"
+
+                />
 
             <TextView
                 android:id="@+id/front_traits"

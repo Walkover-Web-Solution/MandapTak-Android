@@ -96,6 +96,7 @@ public class MatchesAdapter extends BaseAdapter {
       public void done(ParseObject object, ParseException e) {
         if (e == null) {
           ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+          query.include("userId");
           query.whereEqualTo("profileId", myProfofile);
           query.whereEqualTo("profileId", object);
           query.whereNotEqualTo("relation", "Agent");
@@ -106,11 +107,7 @@ public class MatchesAdapter extends BaseAdapter {
                 if (list.size() > 0) {
                   mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
                   for (ParseObject parseObject : list) {
-                    try {
-                      mTargetParticipants.add(parseObject.fetchIfNeeded().getParseObject("userId").getObjectId());
-                    } catch (ParseException e1) {
-                      e1.printStackTrace();
-                    }
+                    mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
                   }
                   if (mTargetParticipants.size() > 0) {
                     Intent intent = new Intent(ctx, MessageScreen.class);
@@ -122,11 +119,7 @@ public class MatchesAdapter extends BaseAdapter {
                       intent.putExtra("conversation-id", results.get(0).getId());
                     } else {
                       intent.putExtra("participant-map", mTargetParticipants);
-                      try {
-                        intent.putExtra("title-conv", name + " " + myProfofile.fetchIfNeeded().getString("name"));
-                      } catch (ParseException e1) {
-                        e1.printStackTrace();
-                      }
+                      intent.putExtra("title-conv", name + " " + myProfofile.getString("name"));
                     }
                     ctx.startActivity(intent);
 

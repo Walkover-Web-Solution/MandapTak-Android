@@ -75,8 +75,8 @@ public class SplashScreen extends AppCompatActivity {
                   public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
                       try {
-                        if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
-                          if (parseObject.fetchIfNeeded().getBoolean("isComplete")) {
+                        if (parseObject.getBoolean("isActive")) {
+                          if (parseObject.getBoolean("isComplete")) {
                             startActivity(new Intent(SplashScreen.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
                             SplashScreen.this.finish();
                           } else {
@@ -118,19 +118,10 @@ public class SplashScreen extends AppCompatActivity {
                   @Override
                   public void done(ParseObject parseObject, ParseException e) {
                     if (e == null) {
-                      try {
-                        if (parseObject.fetchIfNeeded().getBoolean("isActive")) {
-                          startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                          SplashScreen.this.finish();
-                        } else {
-                          ParseUser.logOut();
-                          com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
-                          mApp.showToast(context, "Account Deactivated: Contact Administrator");
-                          startActivity(new Intent(SplashScreen.this, LoginActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
-                          SplashScreen.this.finish();
-                        }
-                      } catch (ParseException e1) {
-                        e1.printStackTrace();
+                      if (parseObject.getBoolean("isActive")) {
+                        startActivity(new Intent(SplashScreen.this, AgentActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_NEW_TASK & Intent.FLAG_ACTIVITY_NO_ANIMATION));
+                        SplashScreen.this.finish();
+                      } else {
                         ParseUser.logOut();
                         com.mandaptak.android.Utils.Prefs.getPrefs(context).edit().clear().commit();
                         mApp.showToast(context, "Account Deactivated: Contact Administrator");

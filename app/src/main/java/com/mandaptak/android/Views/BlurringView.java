@@ -12,6 +12,7 @@ import android.support.v8.renderscript.Element;
 import android.support.v8.renderscript.RenderScript;
 import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import com.mandaptak.android.R;
@@ -127,8 +128,8 @@ public class BlurringView extends View {
       int scaledHeight = height / mDownsampleFactor;
 
       // The following manipulation is to avoid some RenderScript artifacts at the edge.
-      scaledWidth = scaledWidth - scaledWidth % 4 + 4;
-      scaledHeight = scaledHeight - scaledHeight % 4 + 4;
+      scaledWidth = scaledWidth - (scaledWidth % 2) + 4;
+      scaledHeight = scaledHeight - (scaledHeight % 2) + 4;
 
       if (mBlurredBitmap == null
           || mBlurredBitmap.getWidth() != scaledWidth
@@ -141,6 +142,7 @@ public class BlurringView extends View {
         try {
           mBlurredBitmap = Bitmap.createBitmap(scaledWidth, scaledHeight,
               Bitmap.Config.ARGB_8888);
+
         } catch (OutOfMemoryError error) {
           error.printStackTrace();
         }
@@ -165,12 +167,19 @@ public class BlurringView extends View {
     mBlurOutput.copyTo(mBlurredBitmap);
   }
 
-//    @Override
-//    protected void onDetachedFromWindow() {
-//        super.onDetachedFromWindow();
-//        if (mRenderScript != null) {
-//            mRenderScript.destroy();
-//        }
-//    }
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+      Log.e("bluringview","on detacheck form window called");
+      if(null != mBitmapToBlur)
+        mBitmapToBlur.recycle();
+
+      if(null != mBlurredBitmap)
+        mBlurredBitmap.recycle();
+
+        if (mRenderScript != null) {
+            mRenderScript.destroy();
+        }
+    }
 
 }

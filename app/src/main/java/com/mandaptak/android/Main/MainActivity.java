@@ -50,6 +50,7 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import org.json.JSONObject;
 import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;

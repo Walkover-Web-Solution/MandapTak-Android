@@ -575,187 +575,189 @@ public class FinalEditProfileFragment extends Fragment {
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
-    callbackManager.onActivityResult(requestCode, resultCode, data);
-    if (resultCode == Activity.RESULT_OK) {
-      switch (requestCode) {
-        case FILE_SELECT_CODE:
-          mApp.show_PDialog(context, "Uploading..");
-          Uri uri = data.getData();
-          String path = mApp.getPath(context, uri);
-          if (path != null) {
-            final File file = new File(path);
-            ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-            parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-              @Override
-              public void done(final ParseObject parseObject, ParseException e) {
-                try {
-                  final ParseFile parseFile = new ParseFile(file.getName(), read(file));
-                  parseFile.saveInBackground(new SaveCallback() {
-                    public void done(ParseException e) {
-                      parseObject.put("bioData", parseFile);
-                      parseObject.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                          if (e == null) {
-                            uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
-                            uploadBiodata.setText(file.getName());
-                            mApp.dialog.dismiss();
-                            deleteBioData.setVisibility(View.VISIBLE);
-                            mApp.showToast(context, "Biodata Uploaded");
-                          } else {
-                            e.printStackTrace();
-                            mApp.showToast(context, e.getMessage());
-                            mApp.dialog.dismiss();
-                          }
+    if (isAdded()) {
+      callbackManager.onActivityResult(requestCode, resultCode, data);
+      if (resultCode == Activity.RESULT_OK) {
+        switch (requestCode) {
+          case FILE_SELECT_CODE:
+            mApp.show_PDialog(context, "Uploading..");
+            Uri uri = data.getData();
+            String path = mApp.getPath(context, uri);
+            if (path != null) {
+              final File file = new File(path);
+              ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+              parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                @Override
+                public void done(final ParseObject parseObject, ParseException e) {
+                  try {
+                    final ParseFile parseFile = new ParseFile(file.getName(), read(file));
+                    parseFile.saveInBackground(new SaveCallback() {
+                      public void done(ParseException e) {
+                        parseObject.put("bioData", parseFile);
+                        parseObject.saveInBackground(new SaveCallback() {
+                          @Override
+                          public void done(ParseException e) {
+                            if (e == null) {
+                              uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
+                              uploadBiodata.setText(file.getName());
+                              mApp.dialog.dismiss();
+                              deleteBioData.setVisibility(View.VISIBLE);
+                              mApp.showToast(context, "Biodata Uploaded");
+                            } else {
+                              e.printStackTrace();
+                              mApp.showToast(context, e.getMessage());
+                              mApp.dialog.dismiss();
+                            }
 
+                          }
+                        });
+                      }
+                    }, new ProgressCallback() {
+                      public void done(Integer percentDone) {
+                        // Update your progress spinner here. percentDone will be between 0 and 100.
+                        if (percentDone == 100) {
+                          mApp.updateDialogProgress(percentDone, "Finishing..");
+                        } else {
+                          mApp.updateDialogProgress(percentDone, "Uploading: " + percentDone + "%");
                         }
-                      });
-                    }
-                  }, new ProgressCallback() {
-                    public void done(Integer percentDone) {
-                      // Update your progress spinner here. percentDone will be between 0 and 100.
-                      if (percentDone == 100) {
-                        mApp.updateDialogProgress(percentDone, "Finishing..");
+                      }
+                    });
+                  } catch (IOException e1) {
+                    e1.printStackTrace();
+                    mApp.dialog.dismiss();
+                    mApp.showToast(context, "Error while uploading file");
+                  }
+                }
+              });
+            } else {
+              mApp.dialog.dismiss();
+              mApp.showToast(context, "Error: File not found");
+            }
+            break;
+
+          case REQUEST_CODE:
+            if (data != null) {
+              if (data.hasExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS)) {
+                if (data.getBooleanExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, false)) {
+
+                  ParseQuery<ParseObject> profileParseQuery = new ParseQuery<>("Profile");
+                  profileParseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(ParseObject object, ParseException e) {
+                      if (e == null) {
+                        ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                        queryParseQuery.whereEqualTo("profileId", object);
+                        queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                          @Override
+                          public void done(List<ParseObject> list, ParseException e) {
+                            if (e == null) {
+                              parsePhotos.clear();
+                              for (int i = 0; i < list.size(); i++) {
+                                try {
+                                  ImageModel imageModel = new ImageModel();
+                                  imageModel.setIsPrimary(list.get(i).getBoolean("isPrimary"));
+                                  imageModel.setLink(list.get(i).fetchIfNeeded().getParseFile("file").getUrl());
+                                  imageModel.setParseObject(list.get(i).getObjectId());
+                                  parsePhotos.add(imageModel);
+                                } catch (ParseException e1) {
+                                  e1.printStackTrace();
+                                }
+                              }
+                              photoAdapter.notifyDataSetChanged();
+                            } else {
+                              mApp.showToast(context, e.getMessage());
+                            }
+                          }
+                        });
                       } else {
-                        mApp.updateDialogProgress(percentDone, "Uploading: " + percentDone + "%");
+                        mApp.showToast(context, e.getMessage());
                       }
                     }
                   });
-                } catch (IOException e1) {
-                  e1.printStackTrace();
-                  mApp.dialog.dismiss();
-                  mApp.showToast(context, "Error while uploading file");
                 }
               }
-            });
-          } else {
-            mApp.dialog.dismiss();
-            mApp.showToast(context, "Error: File not found");
-          }
-          break;
-
-        case REQUEST_CODE:
-          if (data != null) {
-            if (data.hasExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS)) {
-              if (data.getBooleanExtra(PhotoPickerActivity.KEY_SELECTED_PHOTOS, false)) {
-
-                ParseQuery<ParseObject> profileParseQuery = new ParseQuery<>("Profile");
-                profileParseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                  @Override
-                  public void done(ParseObject object, ParseException e) {
-                    if (e == null) {
-                      ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                      queryParseQuery.whereEqualTo("profileId", object);
-                      queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                        @Override
-                        public void done(List<ParseObject> list, ParseException e) {
-                          if (e == null) {
-                            parsePhotos.clear();
-                            for (int i = 0; i < list.size(); i++) {
-                              try {
-                                ImageModel imageModel = new ImageModel();
-                                imageModel.setIsPrimary(list.get(i).getBoolean("isPrimary"));
-                                imageModel.setLink(list.get(i).fetchIfNeeded().getParseFile("file").getUrl());
-                                imageModel.setParseObject(list.get(i).getObjectId());
-                                parsePhotos.add(imageModel);
-                              } catch (ParseException e1) {
-                                e1.printStackTrace();
-                              }
-                            }
-                            photoAdapter.notifyDataSetChanged();
-                          } else {
-                            mApp.showToast(context, e.getMessage());
-                          }
-                        }
-                      });
-                    } else {
-                      mApp.showToast(context, e.getMessage());
-                    }
-                  }
-                });
-              }
             }
-          }
-          break;
-        case Crop.REQUEST_CROP:
-          if (data != null) {
-            if (data.hasExtra(MediaStore.EXTRA_OUTPUT)) {
-              uri = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
-              final File file = new File(uri.getPath());
-              if (file.exists()) {
-                mApp.show_PDialog(context, "Uploading Profile Photo");
-                ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-                parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-                  @Override
-                  public void done(final ParseObject profileObject, ParseException e) {
-                    try {
-                      final ParseFile parseFile = new ParseFile(file.getName(), PhotoPickerActivity.read(file));
-                      parseFile.saveInBackground(new SaveCallback() {
-                        public void done(ParseException e) {
-                          if (e == null) {
-                            profileObject.put("profilePic", parseFile);
-                            profileObject.saveInBackground(new SaveCallback() {
-                              @Override
-                              public void done(ParseException e) {
-                                if (e == null) {
-                                  ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
-                                  queryParseQuery.whereEqualTo("profileId", profileObject);
-                                  queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    @Override
-                                    public void done(List<ParseObject> list, ParseException e) {
-                                      if (e == null) {
-                                        parsePhotos.clear();
-                                        for (int i = 0; i < list.size(); i++) {
-                                          try {
-                                            ImageModel model = new ImageModel();
-                                            model.setParseObject(list.get(i).getObjectId());
-                                            model.setLink(list.get(i).getParseFile("file").getUrl());
-                                            ParseObject parseObject = list.get(i);
-                                            if (i == primaryIndex) {
-                                              model.setIsPrimary(true);
-                                              parseObject.put("isPrimary", true);
-                                              parseObject.saveInBackground();
-                                            } else {
-                                              model.setIsPrimary(false);
-                                              parseObject.put("isPrimary", false);
-                                              parseObject.saveInBackground();
+            break;
+          case Crop.REQUEST_CROP:
+            if (data != null) {
+              if (data.hasExtra(MediaStore.EXTRA_OUTPUT)) {
+                uri = data.getParcelableExtra(MediaStore.EXTRA_OUTPUT);
+                final File file = new File(uri.getPath());
+                if (file.exists()) {
+                  mApp.show_PDialog(context, "Uploading Profile Photo");
+                  ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+                  parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+                    @Override
+                    public void done(final ParseObject profileObject, ParseException e) {
+                      try {
+                        final ParseFile parseFile = new ParseFile(file.getName(), PhotoPickerActivity.read(file));
+                        parseFile.saveInBackground(new SaveCallback() {
+                          public void done(ParseException e) {
+                            if (e == null) {
+                              profileObject.put("profilePic", parseFile);
+                              profileObject.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                  if (e == null) {
+                                    ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
+                                    queryParseQuery.whereEqualTo("profileId", profileObject);
+                                    queryParseQuery.findInBackground(new FindCallback<ParseObject>() {
+                                      @Override
+                                      public void done(List<ParseObject> list, ParseException e) {
+                                        if (e == null) {
+                                          parsePhotos.clear();
+                                          for (int i = 0; i < list.size(); i++) {
+                                            try {
+                                              ImageModel model = new ImageModel();
+                                              model.setParseObject(list.get(i).getObjectId());
+                                              model.setLink(list.get(i).getParseFile("file").getUrl());
+                                              ParseObject parseObject = list.get(i);
+                                              if (i == primaryIndex) {
+                                                model.setIsPrimary(true);
+                                                parseObject.put("isPrimary", true);
+                                                parseObject.saveInBackground();
+                                              } else {
+                                                model.setIsPrimary(false);
+                                                parseObject.put("isPrimary", false);
+                                                parseObject.saveInBackground();
+                                              }
+                                              parsePhotos.add(model);
+                                            } catch (Exception e1) {
+                                              e1.printStackTrace();
                                             }
-                                            parsePhotos.add(model);
-                                          } catch (Exception e1) {
-                                            e1.printStackTrace();
                                           }
+                                          photoAdapter.notifyDataSetChanged();
+                                        } else {
+                                          mApp.showToast(context, e.getMessage());
                                         }
-                                        photoAdapter.notifyDataSetChanged();
-                                      } else {
-                                        mApp.showToast(context, e.getMessage());
+                                        mApp.dialog.dismiss();
                                       }
-                                      mApp.dialog.dismiss();
-                                    }
-                                  });
-                                  mApp.showToast(context, "Profile photo saved");
+                                    });
+                                    mApp.showToast(context, "Profile photo saved");
 
-                                } else {
-                                  mApp.showToast(context, e.getMessage());
-                                  e.printStackTrace();
+                                  } else {
+                                    mApp.showToast(context, e.getMessage());
+                                    e.printStackTrace();
+                                  }
                                 }
-                              }
-                            });
-                          } else {
-                            mApp.showToast(context, e.getMessage());
+                              });
+                            } else {
+                              mApp.showToast(context, e.getMessage());
+                            }
+                            mApp.dialog.dismiss();
                           }
-                          mApp.dialog.dismiss();
-                        }
-                      });
-                    } catch (Exception e1) {
-                      mApp.dialog.dismiss();
-                      e1.printStackTrace();
+                        });
+                      } catch (Exception e1) {
+                        mApp.dialog.dismiss();
+                        e1.printStackTrace();
+                      }
                     }
-                  }
-                });
+                  });
+                }
               }
             }
-          }
-          break;
+            break;
+        }
       }
     }
   }

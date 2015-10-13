@@ -246,10 +246,10 @@ public class Common extends Application implements LayerCallbacks {
   @Override
   public void onCreate() {
     super.onCreate();
-
-   // Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
+    // testing
+    Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
     //production
-    Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");
+//    Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");
     FacebookSdk.sdkInitialize(getApplicationContext());
     ParseACL defaultACL = new ParseACL();
     defaultACL.setPublicReadAccess(true);

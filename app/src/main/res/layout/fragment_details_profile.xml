@@ -89,6 +89,7 @@
         android:background="@color/white"
         android:hint="Gotra"
         android:imeOptions="actionNext"
+        android:visibility="gone"
         android:padding="16dp"
         android:textColor="@color/black_dark"
         android:textColorHint="@color/black_light"

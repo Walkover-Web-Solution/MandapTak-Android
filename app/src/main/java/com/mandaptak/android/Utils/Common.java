@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -36,7 +35,6 @@ import com.parse.ParseUser;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
 
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
@@ -202,6 +200,7 @@ public class Common extends Application implements LayerCallbacks {
       e.printStackTrace();
     }
   }
+
   public void show_PDialog(Context con, String message, Boolean cancelable) {
     try {
       if (dialog != null) {
@@ -246,29 +245,29 @@ public class Common extends Application implements LayerCallbacks {
   @Override
   public void onCreate() {
     super.onCreate();
-    // testing
+
     Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
     //production
-//    Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");
+    // Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");
     FacebookSdk.sdkInitialize(getApplicationContext());
     ParseACL defaultACL = new ParseACL();
     defaultACL.setPublicReadAccess(true);
     defaultACL.setPublicWriteAccess(false);
     ParseACL.setDefaultACL(defaultACL, true);
-    try {
-      PackageInfo info = getPackageManager().getPackageInfo(
-          "com.mandaptak.android",
-          PackageManager.GET_SIGNATURES);
-      for (Signature signature : info.signatures) {
-        MessageDigest md = MessageDigest.getInstance("SHA");
-        md.update(signature.toByteArray());
-        Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-      }
-    } catch (PackageManager.NameNotFoundException e) {
-
-    } catch (NoSuchAlgorithmException e) {
-
-    }
+//    try {
+//      PackageInfo info = getPackageManager().getPackageInfo(
+//          "com.mandaptak.android",
+//          PackageManager.GET_SIGNATURES);
+//      for (Signature signature : info.signatures) {
+//        MessageDigest md = MessageDigest.getInstance("SHA");
+//        md.update(signature.toByteArray());
+//        Log.e("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+//      }
+//    } catch (PackageManager.NameNotFoundException e) {
+//
+//    } catch (NoSuchAlgorithmException e) {
+//
+//    }
     //Initializes and connects the LayerClient if it hasn't been created already
     LayerImpl.initialize(getApplicationContext());
     //Registers the activity so callbacks are executed on the correct class

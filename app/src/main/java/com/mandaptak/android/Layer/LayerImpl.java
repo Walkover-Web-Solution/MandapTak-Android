@@ -69,7 +69,6 @@ public class LayerImpl {
         mLayerClient.connect();
     }
 
-
   }
 
   //Connects to the Layer service
@@ -81,8 +80,16 @@ public class LayerImpl {
   //Starts the Authentication process. The actual User registration happens in the
   // MyAuthenticationListener callbacks
   public static void authenticateUser() {
-    if (mLayerClient != null)
-      mLayerClient.authenticate();
+    if (mLayerClient != null) {
+      try {
+        mLayerClient.deauthenticate();
+        mLayerClient.authenticate();
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+    }
   }
 
   //Returns true if the LayerClient exists and is connected to the web service

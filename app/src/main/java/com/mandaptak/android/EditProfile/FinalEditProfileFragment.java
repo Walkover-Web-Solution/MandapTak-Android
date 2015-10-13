@@ -77,7 +77,7 @@ public class FinalEditProfileFragment extends Fragment {
   View rootView;
   String newBiodataFileName;
   TwoWayView imageList;
-  TextView importPhotosButton, uploadBiodata;
+  TextView importPhotosButton, uploadBioData;
   Context context;
   LayoutAdapter photoAdapter;
   Common mApp;
@@ -95,12 +95,14 @@ public class FinalEditProfileFragment extends Fragment {
   private Boolean isVisible = false;
   private Boolean isFirstStart = false;
   private ImageView deleteBioData;
+  private Boolean updatedBudget = false;
 
   public FinalEditProfileFragment() {
     // Required empty public constructor
   }
 
   public void previewPhoto(Intent intent) {
+    saveBudget();
     startActivityForResult(intent, REQUEST_CODE);
   }
 
@@ -110,7 +112,7 @@ public class FinalEditProfileFragment extends Fragment {
     budgetMainLayout = (LinearLayout) rootView.findViewById(R.id.budget_layout);
     imageList = (TwoWayView) rootView.findViewById(R.id.list);
     importPhotosButton = (TextView) rootView.findViewById(R.id.import_photos);
-    uploadBiodata = (TextView) rootView.findViewById(R.id.upload_biodata);
+    uploadBioData = (TextView) rootView.findViewById(R.id.upload_biodata);
     minBudget = (EditText) rootView.findViewById(R.id.budget_from);
     maxBudget = (EditText) rootView.findViewById(R.id.budget_to);
     deleteBioData = (ImageView) rootView.findViewById(R.id.delete_biodata);
@@ -123,6 +125,7 @@ public class FinalEditProfileFragment extends Fragment {
     imageList.setAdapter(photoAdapter);
     FacebookSdk.sdkInitialize(context.getApplicationContext());
     callbackManager = CallbackManager.Factory.create();
+
     // If the access token is available already assign it.
     LoginManager.getInstance().registerCallback(callbackManager,
         new FacebookCallback<LoginResult>() {
@@ -190,6 +193,7 @@ public class FinalEditProfileFragment extends Fragment {
             PhotoPickerIntent intent = new PhotoPickerIntent(context);
             intent.setPhotoCount(8 - parsePhotos.size());
             intent.setShowCamera(true);
+            saveBudget();
             startActivityForResult(intent, REQUEST_CODE);
           }
         });
@@ -200,6 +204,7 @@ public class FinalEditProfileFragment extends Fragment {
             PhotoPickerIntent intent = new PhotoPickerIntent(context);
             intent.setPhotoCount(8 - parsePhotos.size());
             intent.setShowCamera(false);
+            saveBudget();
             startActivityForResult(intent, REQUEST_CODE);
           }
         });
@@ -216,7 +221,7 @@ public class FinalEditProfileFragment extends Fragment {
       }
     });
 
-    uploadBiodata.setOnClickListener(new View.OnClickListener() {
+    uploadBioData.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         showFileChooser();
@@ -253,6 +258,16 @@ public class FinalEditProfileFragment extends Fragment {
     return rootView;
   }
 
+  private void saveBudget() {
+    try {
+      if (!minBudget.getText().toString().equals(""))
+        newMinBudget = Long.valueOf(minBudget.getText().toString());
+      if (!maxBudget.getText().toString().equals(""))
+        newMaxBudget = Long.valueOf(maxBudget.getText().toString());
+    } catch (Exception e) {
+    }
+  }
+
   private void getFacebookLogin() {
     LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email", "user_photos"));
   }
@@ -269,8 +284,8 @@ public class FinalEditProfileFragment extends Fragment {
             @Override
             public void done(ParseException e) {
               if (e == null) {
-                uploadBiodata.setTextColor(getResources().getColor(R.color.red_500));
-                uploadBiodata.setText("+ UPLOAD BIODATA");
+                uploadBioData.setTextColor(getResources().getColor(R.color.red_500));
+                uploadBioData.setText("+ UPLOAD BIODATA");
                 mApp.dialog.dismiss();
                 mApp.showToast(context, "Biodata Removed");
                 deleteBioData.setVisibility(View.GONE);
@@ -457,6 +472,7 @@ public class FinalEditProfileFragment extends Fragment {
     intent.setType("*/*");
     intent.addCategory(Intent.CATEGORY_OPENABLE);
     try {
+      saveBudget();
       startActivityForResult(
           Intent.createChooser(intent, "Select a File to Upload"),
           FILE_SELECT_CODE);
@@ -479,21 +495,22 @@ public class FinalEditProfileFragment extends Fragment {
             if (e == null) {
               if (profileObject.containsKey("bioData") && profileObject.getParseFile("bioData") != null)
                 newBiodataFileName = profileObject.getParseFile("bioData").getName();
-              if (profileObject.getBoolean("isBudgetVisible")) {
-                budgetMainLayout.setVisibility(View.VISIBLE);
-                newMinBudget = profileObject.getLong("minMarriageBudget");
-                newMaxBudget = profileObject.getLong("maxMarriageBudget");
-                if (newMinBudget != -1)
-                  minBudget.setText("" + newMinBudget);
-                if (newMaxBudget != -1)
-                  maxBudget.setText("" + newMaxBudget);
-              } else {
-                budgetMainLayout.setVisibility(View.GONE);
-              }
+              if (!updatedBudget)
+                if (profileObject.getBoolean("isBudgetVisible")) {
+                  budgetMainLayout.setVisibility(View.VISIBLE);
+                  newMinBudget = profileObject.getLong("minMarriageBudget");
+                  newMaxBudget = profileObject.getLong("maxMarriageBudget");
+                  if (newMinBudget != -1)
+                    minBudget.setText("" + newMinBudget);
+                  if (newMaxBudget != -1)
+                    maxBudget.setText("" + newMaxBudget);
+                } else {
+                  budgetMainLayout.setVisibility(View.GONE);
+                }
 
               if (newBiodataFileName != null) {
-                uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
-                uploadBiodata.setText(newBiodataFileName);
+                uploadBioData.setTextColor(getResources().getColor(R.color.black_light));
+                uploadBioData.setText(newBiodataFileName);
                 deleteBioData.setVisibility(View.VISIBLE);
               }
               ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
@@ -542,6 +559,7 @@ public class FinalEditProfileFragment extends Fragment {
     }
   }
 
+
   public void saveInfo() {
     try {
       if (!minBudget.getText().toString().equals("")) {
@@ -576,6 +594,17 @@ public class FinalEditProfileFragment extends Fragment {
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     if (isAdded()) {
+      try {
+        if (newMaxBudget != -1) {
+          updatedBudget = true;
+          maxBudget.setText(String.valueOf(newMaxBudget));
+        }
+        if (newMinBudget != -1) {
+          minBudget.setText(String.valueOf(newMinBudget));
+          updatedBudget = true;
+        }
+      } catch (Exception e) {
+      }
       callbackManager.onActivityResult(requestCode, resultCode, data);
       if (resultCode == Activity.RESULT_OK) {
         switch (requestCode) {
@@ -598,8 +627,8 @@ public class FinalEditProfileFragment extends Fragment {
                           @Override
                           public void done(ParseException e) {
                             if (e == null) {
-                              uploadBiodata.setTextColor(getResources().getColor(R.color.black_light));
-                              uploadBiodata.setText(file.getName());
+                              uploadBioData.setTextColor(getResources().getColor(R.color.black_light));
+                              uploadBioData.setText(file.getName());
                               mApp.dialog.dismiss();
                               deleteBioData.setVisibility(View.VISIBLE);
                               mApp.showToast(context, "Biodata Uploaded");
@@ -759,6 +788,7 @@ public class FinalEditProfileFragment extends Fragment {
             break;
         }
       }
+
     }
   }
 
@@ -864,6 +894,7 @@ public class FinalEditProfileFragment extends Fragment {
                   mApp.dialog.dismiss();
                   Intent intent = new Intent(context, FacebookPhotos.class);
                   intent.putStringArrayListExtra("pics-fb", fbPhotos);
+                  saveBudget();
                   startActivityForResult(intent, REQUEST_CODE);
                 }
               }

@@ -57,6 +57,16 @@ public class MatchesFragment extends Fragment {
     return rootView;
   }
 
+  @Override
+  public void onActivityCreated(Bundle savedInstanceState) {
+    super.onActivityCreated(savedInstanceState);
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
+
   private void init(LayoutInflater inflater, ViewGroup container) {
     context = getActivity();
     mApp = (Common) context.getApplicationContext();

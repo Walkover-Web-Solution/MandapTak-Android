@@ -3,6 +3,7 @@ package com.mandaptak.android.Agent;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
@@ -41,6 +42,7 @@ public class AgentActivity extends AppCompatActivity {
   TextView addProfile, availableCredits;
   int creditBalance = 0;
   ProgressBar progressBar;
+  private HashMap<String, Object> params = new HashMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,7 @@ public class AgentActivity extends AppCompatActivity {
     context = this;
     mApp = (Common) getApplicationContext();
     try {
-      getSupportActionBar().setTitle("Agent Home");
+      getSupportActionBar().setTitle("Representative Home");
     } catch (Exception ignored) {
     }
     progressBar = (ProgressBar) findViewById(R.id.progress);
@@ -73,6 +75,7 @@ public class AgentActivity extends AppCompatActivity {
             giveButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
+
                 String mobileNumber = etNumber.getText().toString();
                 if (!mobileNumber.equals("")) {
                   if (mobileNumber.length() == 10) {

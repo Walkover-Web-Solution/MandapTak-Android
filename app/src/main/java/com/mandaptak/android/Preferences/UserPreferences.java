@@ -80,7 +80,7 @@ public class UserPreferences extends AppCompatActivity {
       }
     });
     workingPartner.setAdapter(ArrayAdapter.createFromResource(context,
-        R.array.wam_array, R.layout.location_list_item));
+        R.array.wam_array_for_prefrences, R.layout.location_list_item));
     workingPartner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -101,7 +101,7 @@ public class UserPreferences extends AppCompatActivity {
       }
     });
     manglikStatus.setAdapter(ArrayAdapter.createFromResource(context,
-        R.array.manglik_status_array, R.layout.location_list_item));
+        R.array.manglik_status_array_for_prefrences, R.layout.location_list_item));
     manglikStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
       @Override
       public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

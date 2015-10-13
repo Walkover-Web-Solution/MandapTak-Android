@@ -52,10 +52,12 @@ import com.squareup.picasso.RequestCreator;
 
 import org.lucasr.twowayview.widget.TwoWayView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
@@ -727,7 +729,8 @@ public class MainActivity extends AppCompatActivity {
         weight.setText(parseProfileObject.getInt("weight") + " KG");
       }
       if (parseProfileObject.containsKey("package") && parseProfileObject.getLong("package") != 0) {
-        salary.setText("Rs. " + mApp.numberToWords(parseProfileObject.getLong("package")));
+//        salary.setText("Rs. " + mApp.numberToWords(parseProfileObject.getLong("package")));
+        salary.setText("Rs. " + NumberFormat.getNumberInstance(new Locale("en","in")).format(parseProfileObject.getLong("package")));
       }
 
       if (parseProfileObject.containsKey("education1") && parseProfileObject.getParseObject("education1") != null) {

@@ -22,6 +22,8 @@ import com.parse.ParseQuery;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class FinalProfileInfo extends Fragment {
   View rootView;
@@ -119,9 +121,9 @@ public class FinalProfileInfo extends Fragment {
             newMinBudget = parseObject.getLong("minMarriageBudget");
             newMaxBudget = parseObject.getLong("maxMarriageBudget");
             if (newMinBudget != 0)
-              minBudget.setText("\u20B9" + newMinBudget);
+              minBudget.setText("\u20B9" + NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMinBudget));
             if (newMaxBudget != 0)
-              maxBudget.setText("\u20B9" + newMaxBudget);
+              maxBudget.setText("\u20B9" + NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMaxBudget));
           }
 
           if (newBiodataFileName != null) {

@@ -42,8 +42,18 @@
         <item>Yes</item>
         <item>No</item>
     </string-array>
+    <string-array name="wam_array_for_prefrences">
+        <item>Any</item>
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
     <string-array name="manglik_status_array">
         <item>Both</item>
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
+    <string-array name="manglik_status_array_for_prefrences">
+        <item>Any</item>
         <item>Yes</item>
         <item>No</item>
     </string-array>

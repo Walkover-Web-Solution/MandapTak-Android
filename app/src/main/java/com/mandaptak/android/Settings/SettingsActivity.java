@@ -191,6 +191,7 @@ public class SettingsActivity extends AppCompatActivity {
                   permissionModel.setRelation("Bachelor");
                 else
                   permissionModel.setRelation(relation);
+
                 permissionModel.setDate("Permission given on: " + date);
                 permissionModel.setNumber(user.getUsername());
                 if (user.getUsername().equalsIgnoreCase(ParseUser.getCurrentUser().getUsername())) {
@@ -199,6 +200,7 @@ public class SettingsActivity extends AppCompatActivity {
                   }
                   permissionModel.setIsCurrentUser(true);
                 } else if (relation.equals("Agent")) {
+                  permissionModel.setRelation("Representative");
                   permissionModel.setIsCurrentUser(true);
                 } else {
                   permissionModel.setIsCurrentUser(false);

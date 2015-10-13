@@ -30,9 +30,11 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import me.iwf.photopicker.entity.ParseNameModel;
 import me.iwf.photopicker.entity.Profile;
@@ -402,9 +404,10 @@ public class QualificationEditProfileFragment extends Fragment {
         } else {
           educationMoreButton.setVisibility(View.VISIBLE);
         }
+//          currentIncome.setText(NumberFormat.getNumberInstance(Locale.US).format(newCurrentIncome));
 
         if (newCurrentIncome != -1)
-          currentIncome.setText(String.valueOf(newCurrentIncome));
+          currentIncome.setText(NumberFormat.getNumberInstance(new Locale("en", "in")).format(newCurrentIncome));
         if (newIndustry != null)
           industry.setText(newIndustry.getName());
         if (newCompany != null)

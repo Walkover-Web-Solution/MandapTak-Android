@@ -15,6 +15,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 import me.iwf.photopicker.entity.ParseNameModel;
 
 public class QualificationInfo extends android.support.v4.app.Fragment {
@@ -96,7 +99,7 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
               }
               degreeView.setText(stringBuilder.toString());
               if (newCurrentIncome != 0)
-                currentIncome.setText(String.valueOf(newCurrentIncome));
+                currentIncome.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newCurrentIncome));
               if (newIndustry != null)
                 industry.setText(newIndustry.getString("name"));
               if (newCompany != null)

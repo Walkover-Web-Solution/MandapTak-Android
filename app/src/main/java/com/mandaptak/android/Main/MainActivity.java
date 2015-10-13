@@ -50,7 +50,6 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
-import org.json.JSONObject;
 import org.lucasr.twowayview.widget.TwoWayView;
 
 import java.util.ArrayList;
@@ -445,7 +444,12 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }
     init();
-    blurringView.setBlurredView(backgroundPhoto);
+    try {
+      blurringView.setBlurredView(backgroundPhoto);
+
+    } catch (Exception e) {
+      RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
+    }
     rippleBackground.startRippleAnimation();
     slidingPanel.setEnabled(false);
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -639,7 +643,11 @@ public class MainActivity extends AppCompatActivity {
 
           @Override
           public void onSuccess() {
-            blurringView.invalidate();
+            try {
+              blurringView.invalidate();
+            } catch (Exception e) {
+              RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
+            }
             rippleBackground.setVisibility(View.GONE);
           }
 
@@ -650,7 +658,12 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {
               e.printStackTrace();
             }
-            blurringView.invalidate();
+            try {
+              blurringView.invalidate();
+
+            } catch (Exception e) {
+              RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
+            }
 //            setProfileDetails();
           }
         });

@@ -91,42 +91,7 @@ public class BasicProfileInfo extends Fragment {
         @Override
         public void done(ParseObject parseObject, ParseException e) {
           if (e == null) {
-            try {
-              newName = parseObject.getString("name");
-              newGender = parseObject.getString("gender");
-              newDOB.setTime(parseObject.getDate("dob"));
-              newTOB.setTime(parseObject.getDate("tob"));
-              newCurrentLocation = parseObject.getParseObject("currentLocation");
-              newPOB = parseObject.getParseObject("placeOfBirth");
-              if (newName != null) {
-                displayName.setText(newName);
-              }
-              if (newGender != null) {
-                gender.setText(newGender);
-              }
-              if (newDOB != null) {
-                DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String subdateStr = df.format(newDOB.getTime());
-                datePicker.setText(subdateStr);
-              }
-              if (newTOB != null) {
-                DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-                df.setTimeZone(TimeZone.getTimeZone("UTC"));
-                String subdateStr = df.format(newTOB.getTime());
-                timepicker.setText(subdateStr);
-              }
-              if (newPOB != null) {
-                placeOfBirth.setText(newPOB.getString("name")
-                    + ", " + newPOB.getParseObject("Parent").getString("name") + ", " + newPOB.getParseObject("Parent").getParseObject("Parent").getString("name"));
-              }
-              if (newCurrentLocation != null) {
-                currentLocation.setText(newCurrentLocation.getString("name")
-                    + ", " + newCurrentLocation.getParseObject("Parent").getString("name") + ", " + newCurrentLocation.getParseObject("Parent").getParseObject("Parent").getString("name"));
-              }
-            } catch (Exception e1) {
-              e1.printStackTrace();
-            }
+            populateUserInfo(parseObject);
           } else {
             e.printStackTrace();
           }
@@ -136,5 +101,44 @@ public class BasicProfileInfo extends Fragment {
     } else {
       getActivity().finish();
     }
+  }
+
+  protected void populateUserInfo(ParseObject parseObject) {
+    try {
+			newName = parseObject.getString("name");
+			newGender = parseObject.getString("gender");
+			newDOB.setTime(parseObject.getDate("dob"));
+			newTOB.setTime(parseObject.getDate("tob"));
+			newCurrentLocation = parseObject.getParseObject("currentLocation");
+			newPOB = parseObject.getParseObject("placeOfBirth");
+			if (newName != null) {
+				displayName.setText(newName);
+			}
+			if (newGender != null) {
+				gender.setText(newGender);
+			}
+			if (newDOB != null) {
+				DateFormat df = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+				df.setTimeZone(TimeZone.getTimeZone("UTC"));
+				String subdateStr = df.format(newDOB.getTime());
+				datePicker.setText(subdateStr);
+			}
+			if (newTOB != null) {
+				DateFormat df = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+				df.setTimeZone(TimeZone.getTimeZone("UTC"));
+				String subdateStr = df.format(newTOB.getTime());
+				timepicker.setText(subdateStr);
+			}
+			if (newPOB != null) {
+				placeOfBirth.setText(newPOB.getString("name")
+						+ ", " + newPOB.getParseObject("Parent").getString("name") + ", " + newPOB.getParseObject("Parent").getParseObject("Parent").getString("name"));
+			}
+			if (newCurrentLocation != null) {
+				currentLocation.setText(newCurrentLocation.getString("name")
+						+ ", " + newCurrentLocation.getParseObject("Parent").getString("name") + ", " + newCurrentLocation.getParseObject("Parent").getParseObject("Parent").getString("name"));
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
   }
 }

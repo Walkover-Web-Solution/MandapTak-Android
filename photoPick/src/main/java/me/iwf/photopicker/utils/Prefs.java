@@ -2,13 +2,11 @@ package me.iwf.photopicker.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import me.iwf.photopicker.entity.Profile;
 
 import java.lang.reflect.Type;
-
-import me.iwf.photopicker.entity.Profile;
 
 public class Prefs {
 
@@ -23,8 +21,7 @@ public class Prefs {
 
     public static Profile getProfile(Context context) {
         String json = getPrefs(context).getString(PROFILE, null);
-        Type type = new TypeToken<Profile>() {
-        }.getType();
+        Type type = new TypeToken<Profile>() {}.getType();
         return new Gson().fromJson(json, type);
     }
 

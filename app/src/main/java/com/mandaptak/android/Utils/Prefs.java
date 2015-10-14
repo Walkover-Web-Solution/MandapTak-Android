@@ -15,11 +15,12 @@ import java.util.Map;
 
 public class Prefs {
 
+  public static final String MANDAPTAK_SHARED_PREFERENCES_FILE = "mandapTak";
   public static String CHAT_USERS = "chat_users";
   public static String MATCHES = "matches";
 
   public static SharedPreferences getPrefs(Context context) {
-    return context.getSharedPreferences("mandapTak", Context.MODE_MULTI_PROCESS);
+    return context.getSharedPreferences(MANDAPTAK_SHARED_PREFERENCES_FILE, Context.MODE_MULTI_PROCESS);
   }
 
   public static HashMap<String, Participant> getChatUsers(Context context) {

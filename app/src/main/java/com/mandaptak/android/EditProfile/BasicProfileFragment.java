@@ -15,14 +15,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.TimePicker;
-
+import android.widget.*;
 import com.mandaptak.android.Models.Location;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -30,7 +23,9 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-
+import me.iwf.photopicker.entity.ParseNameModel;
+import me.iwf.photopicker.entity.Profile;
+import me.iwf.photopicker.utils.Prefs;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -40,10 +35,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
-import me.iwf.photopicker.entity.ParseNameModel;
-import me.iwf.photopicker.entity.Profile;
-import me.iwf.photopicker.utils.Prefs;
 
 public class BasicProfileFragment extends Fragment implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
   Common mApp;
@@ -382,7 +373,7 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
       if (newGender != null)
         profile.setGender(newGender);
       if (newName != null)
-        if (newName.trim() != null && !newName.trim().equals(""))
+        if (!newName.trim().equals(""))
           profile.setName(newName.trim());
       if (newPOB != null)
         profile.setPlaceOfBirth(newPOB);

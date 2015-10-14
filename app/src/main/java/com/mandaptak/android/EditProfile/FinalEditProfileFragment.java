@@ -58,10 +58,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import me.iwf.photopicker.PhotoPickerActivity;
@@ -313,7 +315,7 @@ public class FinalEditProfileFragment extends Fragment {
               mApp.showToast(context, "Please select a primary profile photo");
             } else if (newMinBudget > newMaxBudget) {
               mApp.dialog.dismiss();
-              mApp.showToast(context, "Please select proper budget for marriage");
+              mApp.showToast(context, "Minimum budget should be less then maximum budget");
             } else {
               ParseQuery<ParseObject> queryParseQuery = new ParseQuery<>("Photo");
               queryParseQuery.whereEqualTo("profileId", parseObject);
@@ -501,9 +503,9 @@ public class FinalEditProfileFragment extends Fragment {
                   newMinBudget = profileObject.getLong("minMarriageBudget");
                   newMaxBudget = profileObject.getLong("maxMarriageBudget");
                   if (newMinBudget != -1)
-                    minBudget.setText("" + newMinBudget);
+                    minBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMinBudget));
                   if (newMaxBudget != -1)
-                    maxBudget.setText("" + newMaxBudget);
+                    maxBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMaxBudget));
                 } else {
                   budgetMainLayout.setVisibility(View.GONE);
                 }
@@ -561,30 +563,30 @@ public class FinalEditProfileFragment extends Fragment {
 
 
   public void saveInfo() {
+
     try {
-      if (!minBudget.getText().toString().equals("")) {
+      String minimumBudget = minBudget.getText().toString();
+      String maximumBudget = maxBudget.getText().toString();
+      if (!minimumBudget.equals("") && !maximumBudget.equals("")) {
         try {
-          newMinBudget = Long.parseLong(minBudget.getText().toString().replaceAll("[^0-9]+", ""));
+          newMinBudget = Long.parseLong(minimumBudget.replaceAll("[^0-9]+", ""));
+          newMaxBudget = Long.parseLong(maximumBudget.replaceAll("[^0-9]+", ""));
+          if(newMinBudget > newMaxBudget)
+            return;
+          ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+          parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+              if (newMinBudget != -1)
+                parseObject.put("minMarriageBudget", newMinBudget);
+              if (newMaxBudget != -1)
+                parseObject.put("maxMarriageBudget", newMaxBudget);
+              parseObject.saveInBackground();
+            }
+          });
         } catch (Exception ignored) {
         }
       }
-      if (!maxBudget.getText().toString().equals("")) {
-        try {
-          newMaxBudget = Long.parseLong(maxBudget.getText().toString().replaceAll("[^0-9]+", ""));
-        } catch (Exception ignored) {
-        }
-      }
-      ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-      parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-        @Override
-        public void done(ParseObject parseObject, ParseException e) {
-          if (newMinBudget != -1)
-            parseObject.put("minMarriageBudget", newMinBudget);
-          if (newMaxBudget != -1)
-            parseObject.put("maxMarriageBudget", newMaxBudget);
-          parseObject.saveInBackground();
-        }
-      });
       Log.e("Save Screen", "4");
     } catch (Exception ignored) {
     }

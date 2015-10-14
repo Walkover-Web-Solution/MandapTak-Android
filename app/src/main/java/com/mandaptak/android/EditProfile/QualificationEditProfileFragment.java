@@ -428,6 +428,8 @@ public class QualificationEditProfileFragment extends Fragment {
   private void getIndustries() {
     if (mApp.isNetworkAvailable(context)) {
       ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Industries");
+      parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+      parseQuery.orderByAscending("name");
       parseQuery.findInBackground(new FindCallback<ParseObject>() {
         @Override
         public void done(List<ParseObject> list, ParseException e) {

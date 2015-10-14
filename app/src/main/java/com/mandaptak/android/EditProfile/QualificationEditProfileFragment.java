@@ -227,7 +227,8 @@ public class QualificationEditProfileFragment extends Fragment {
 
       @Override
       public void afterTextChanged(final Editable editable) {
-        getDegreeList(editable, listView, alertDialog);
+        if (editable.toString().length() > 2)
+          getDegreeList(editable, listView, alertDialog);
       }
     });
     alertDialog.show();
@@ -261,7 +262,8 @@ public class QualificationEditProfileFragment extends Fragment {
             }
           });
         } else {
-          e.printStackTrace();
+          mApp.showToast(context,"No degree found with this search");
+//          e.printStackTrace();
         }
       }
 

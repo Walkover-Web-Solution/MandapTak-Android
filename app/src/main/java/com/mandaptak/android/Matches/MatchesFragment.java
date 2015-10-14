@@ -129,6 +129,10 @@ public class MatchesFragment extends Fragment {
                 empty.setVisibility(View.VISIBLE);
               }
             }
+            else {
+              progressBar.setVisibility(View.GONE);
+              empty.setVisibility(View.VISIBLE);
+            }
 
           } else {
             progressBar.setVisibility(View.GONE);

@@ -3,7 +3,6 @@ package com.mandaptak.android.Agent;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
@@ -75,7 +74,7 @@ public class AgentActivity extends AppCompatActivity {
             giveButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View view) {
-
+//                importUser();
                 String mobileNumber = etNumber.getText().toString();
                 if (!mobileNumber.equals("")) {
                   if (mobileNumber.length() == 10) {

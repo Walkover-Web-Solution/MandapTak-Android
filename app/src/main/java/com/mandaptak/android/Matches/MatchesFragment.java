@@ -48,7 +48,7 @@ public class MatchesFragment extends Fragment {
       listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-          Intent intent = new Intent(getActivity(), MatchedProfileActivity.class);
+          Intent intent = new Intent(getActivity(), ViewProfilePage.class);
           intent.putExtra("profile", matchList.get(i));
           startActivity(intent);
         }

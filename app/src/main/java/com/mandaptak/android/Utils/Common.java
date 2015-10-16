@@ -6,9 +6,6 @@ import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -18,7 +15,6 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
-import android.util.Base64;
 import android.util.Log;
 
 import com.facebook.FacebookSdk;
@@ -32,9 +28,6 @@ import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseUser;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
@@ -246,8 +239,8 @@ public class Common extends Application implements LayerCallbacks {
   public void onCreate() {
     super.onCreate();
 
-//   Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
-     Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");//production
+    Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
+    //   Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");//production
     FacebookSdk.sdkInitialize(getApplicationContext());
     ParseACL defaultACL = new ParseACL();
     defaultACL.setPublicReadAccess(true);

@@ -115,6 +115,9 @@
             android:label="@string/title_activity_agent"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".Matches.ViewProfilePage"
+            android:screenOrientation="portrait"/>d
+        <activity
             android:name=".Splash.SplashScreen"
             android:label="@string/title_activity_splash_screen"
             android:screenOrientation="portrait">
@@ -162,6 +165,14 @@
         <meta-data
             android:name="com.mindscapehq.android.raygun4android.apikey"
             android:value="FmwFxRVKP/T932mxk9zzEA=="/>
+
+        <receiver android:name="com.layer.sdk.services.LayerReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+                <action android:name="android.intent.action.ANY_DATA_STATE"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
 
         <receiver android:name=".Layer.LayerPushReceiver">

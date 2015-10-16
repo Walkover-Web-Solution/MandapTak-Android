@@ -216,7 +216,6 @@ public class MainActivity extends AppCompatActivity {
     pinButton = (ImageView) findViewById(R.id.pin_button);
     profileImages = (TwoWayView) findViewById(R.id.list);
     backgroundPhoto = (ImageView) findViewById(R.id.background_photo);
-    profileImages = (TwoWayView) findViewById(R.id.list);
     blurringView = (BlurringView) findViewById(R.id.blurring_view);
     frontProfileName = (TextView) findViewById(R.id.front_name);
     frontPhoto = (CircleImageView) findViewById(R.id.front_photo);
@@ -730,7 +729,7 @@ public class MainActivity extends AppCompatActivity {
       }
       if (parseProfileObject.containsKey("package") && parseProfileObject.getLong("package") != 0) {
 //        salary.setText("Rs. " + mApp.numberToWords(parseProfileObject.getLong("package")));
-        salary.setText("Rs. " + NumberFormat.getNumberInstance(new Locale("en","in")).format(parseProfileObject.getLong("package")));
+        salary.setText("Rs. " + NumberFormat.getNumberInstance(new Locale("en", "in")).format(parseProfileObject.getLong("package")));
       }
 
       if (parseProfileObject.containsKey("education1") && parseProfileObject.getParseObject("education1") != null) {
@@ -751,13 +750,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllPhotos(final ParseObject parseProfileObject) {
-    try {
-      userProfileImages.clear();
-      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
-      profileImages.setAdapter(userImagesAdapter);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+//    try {
+//      userProfileImages.clear();
+//      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+//      profileImages.setAdapter(userImagesAdapter);
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//    }
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
     parseQuery.whereEqualTo("profileId", parseProfileObject);
     parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);

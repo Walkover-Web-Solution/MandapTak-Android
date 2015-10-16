@@ -81,6 +81,7 @@ public class BasicProfileInfo extends Fragment {
 
   private void getParseData() {
     Log.e("basic profile", parseObjectId);
+    if (mApp.isNetworkAvailable())
     if (parseObjectId != null) {
       mApp.show_PDialog("Loading..");
       ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");

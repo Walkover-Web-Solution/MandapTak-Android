@@ -503,9 +503,9 @@ public class FinalEditProfileFragment extends Fragment {
                   newMinBudget = profileObject.getLong("minMarriageBudget");
                   newMaxBudget = profileObject.getLong("maxMarriageBudget");
                   if (newMinBudget != -1)
-                    minBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMinBudget));
+                    minBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en", "in")).format(newMinBudget));
                   if (newMaxBudget != -1)
-                    maxBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newMaxBudget));
+                    maxBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en", "in")).format(newMaxBudget));
                 } else {
                   budgetMainLayout.setVisibility(View.GONE);
                 }
@@ -571,7 +571,7 @@ public class FinalEditProfileFragment extends Fragment {
         try {
           newMinBudget = Long.parseLong(minimumBudget.replaceAll("[^0-9]+", ""));
           newMaxBudget = Long.parseLong(maximumBudget.replaceAll("[^0-9]+", ""));
-          if(newMinBudget > newMaxBudget)
+          if (newMinBudget > newMaxBudget)
             return;
           ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
           parseQuery.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {

@@ -37,7 +37,6 @@ public class ViewProfilePage extends AppCompatActivity {
   private TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
   private TextView salary, industry, education, weight, currentLocation, viewFullProfile;
   private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
-  UserImagesAdapter userImagesAdapter;
   private ImageButton slideLike;
   private TwoWayView profileImages;
   private RelativeLayout slidingLayout;

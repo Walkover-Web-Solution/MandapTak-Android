@@ -523,6 +523,7 @@ public class UserPreferences extends AppCompatActivity {
 
   private void saveLocationData(final ParseObject object) {
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LocationPreferences");
+    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
     parseQuery.whereEqualTo("preferenceId", object);
     parseQuery.findInBackground(new FindCallback<ParseObject>() {
       @Override
@@ -794,13 +795,14 @@ public class UserPreferences extends AppCompatActivity {
   }
 
   private void getLocationData(ParseObject object) {
-    ParseQuery<ParseObject> query2 = new ParseQuery<>("LocationPreferences");
-    query2.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
-    query2.whereEqualTo("preferenceId", object);
-    query2.include("cityId");
-    query2.include("cityId.Parent.Parent");
-    query2.include("stateId.Parent");
-    query2.findInBackground(new FindCallback<ParseObject>() {
+
+    ParseQuery<ParseObject> locationPreferences = new ParseQuery<>("LocationPreferences");
+//    locationPreferences.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+    locationPreferences.whereEqualTo("preferenceId", object);
+    locationPreferences.include("cityId");
+    locationPreferences.include("cityId.Parent.Parent");
+    locationPreferences.include("stateId.Parent");
+    locationPreferences.findInBackground(new FindCallback<ParseObject>() {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {
@@ -843,11 +845,12 @@ public class UserPreferences extends AppCompatActivity {
   }
 
   private void getDegreeData(ParseObject object) {
-    ParseQuery<ParseObject> query2 = new ParseQuery<>("DegreePreferences");
-    query2.whereEqualTo("preferenceId", object);
-    query2.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
-    query2.include("degreeId");
-    query2.findInBackground(new FindCallback<ParseObject>() {
+
+    ParseQuery<ParseObject> degreePreferences = new ParseQuery<>("DegreePreferences");
+    degreePreferences.whereEqualTo("preferenceId", object);
+//    degreePreferences.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+    degreePreferences.include("degreeId");
+    degreePreferences.findInBackground(new FindCallback<ParseObject>() {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {

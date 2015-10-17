@@ -33,7 +33,6 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     this.mItems = list;
     this.mainActivity = fragment;
   }
-
   public UserImagesAdapter(Context context, ViewProfilePage fragment, ArrayList<ImageModel> list) {
     mContext = context;
     this.mItems = list;
@@ -79,6 +78,7 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
 
   @Override
   public int getItemCount() {
+
     return mItems.size();
   }
 

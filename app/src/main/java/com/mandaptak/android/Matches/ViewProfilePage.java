@@ -188,7 +188,7 @@ public class ViewProfilePage extends AppCompatActivity {
                 e1.printStackTrace();
               }
             }
-            profileImages.setAdapter(new UserImagesAdapter(context, ViewProfilePage.this, userProfileImages));
+//            profileImages.setAdapter(new UserImagesAdapter(context, ViewProfilePage.this, userProfileImages));
 
           } else {
             //This has to be handled proper this happens when there is no entry in the photo

@@ -750,13 +750,13 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllPhotos(final ParseObject parseProfileObject) {
-//    try {
-//      userProfileImages.clear();
-//      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
-//      profileImages.setAdapter(userImagesAdapter);
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//    }
+    try {
+      userProfileImages.clear();
+      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+      profileImages.setAdapter(userImagesAdapter);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
     parseQuery.whereEqualTo("profileId", parseProfileObject);
     parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);

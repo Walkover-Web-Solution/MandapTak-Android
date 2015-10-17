@@ -8,11 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Matches.ViewProfilePage;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Views.CircleImageView;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,11 +33,13 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     this.mItems = list;
     this.mainActivity = fragment;
   }
+
   public UserImagesAdapter(Context context, ViewProfilePage fragment, ArrayList<ImageModel> list) {
     mContext = context;
     this.mItems = list;
     this.viewProfilePage = fragment;
   }
+
   @Override
   public SimpleViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
     final View view = LayoutInflater.from(mContext).inflate(R.layout.user_images, parent, false);
@@ -54,9 +56,11 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
       uri = Uri.fromFile(new File(path));
     }
 
-    Glide.with(mContext)
+    Picasso.with(mContext)
         .load(uri)
+        .tag(mContext)
         .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
+        .placeholder(R.drawable.com_facebook_profile_picture_blank_portrait)
         .into(holder.image);
 
     holder.image.setOnClickListener(new View.OnClickListener() {
@@ -87,3 +91,4 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     }
   }
 }
+

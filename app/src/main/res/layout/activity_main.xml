@@ -63,10 +63,10 @@
                 android:src="@color/transparent"
                 android:visibility="visible"
                 app:fbb_autoStart="false"
+                app:fbb_endBitmap="@drawable/ic_fab_complete"
                 app:fbb_progressColor="@color/teal_600"
                 app:fbb_progressWidthRatio="0.1"
                 app:fbb_showEndBitmap="false"
-                app:fbb_endBitmap="@drawable/ic_fab_complete"
 
                 />
 
@@ -333,7 +333,8 @@
                     android:id="@+id/list"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:orientation="horizontal"/>
+                    android:orientation="horizontal"
+                    app:twowayview_layoutManager="ListLayoutManager"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"

@@ -130,6 +130,26 @@
         <item>210</item>
         <item>213</item>
     </integer-array>
+
+
+    <integer-array name="height_range">
+        <item>121</item>
+        <item>137</item>
+        <item>152</item>
+        <item>167</item>
+        <item>182</item>
+        <item>198</item>
+        <item>213</item>
+    </integer-array>
+    <string-array name="height_values">
+        <item>4</item>
+        <item>4.5</item>
+        <item>5</item>
+        <item>5.5</item>
+        <item>6</item>
+        <item>6.5</item>
+        <item>7</item>
+    </string-array>
     <string name="title_activity_settings">Settings</string>
 
     <string name="hello_world">Hello world!</string>

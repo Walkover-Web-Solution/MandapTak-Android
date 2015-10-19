@@ -26,7 +26,7 @@
 /twoWayViewCore/build
 /.idea
 **/.DS_Store
-
+.okbuck/keystore
 /photoPick/build/tmp
 /photoPick/build/intermediates
 /photoPick/build/outputs

@@ -46,7 +46,7 @@ import me.iwf.photopicker.utils.Prefs;
 
 public class UserPreferences extends AppCompatActivity {
 
-  TextView etMinHeight, etMaxHeight, etDegree, etLocation, tittle_age_limit;
+  TextView etMinHeight, etMaxHeight, etDegree, etLocation, tittle_age_limit, tittle_height;
   EditText etMinAge, etMaxAge, etIncome, etBudgetMin, etBudgetMax;
   Spinner workingPartner, manglikStatus;
   Button btnSavePreferences;
@@ -59,7 +59,7 @@ public class UserPreferences extends AppCompatActivity {
   private int minAge = 0, maxAge = 0, minBudget = 0, maxBudget = 0, manglik = 0, minIncome = 0;
   private int minHeight = 0, maxHeight = 0;
   private Common mApp;
-  private RangeBar rangeAge;
+  private RangeBar rangeAge, rangeHeight;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +95,13 @@ public class UserPreferences extends AppCompatActivity {
     rangeAge.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
       @Override
       public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
-        minAge = Integer.parseInt(leftPinValue);
-        maxAge = Integer.parseInt(rightPinValue);
         tittle_age_limit.setText("Show Ages: " + String.valueOf(minAge) + " - " + String.valueOf(maxAge));
+      }
+    });
+    rangeHeight.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+      @Override
+      public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+        tittle_height.setText("Show Height: " + String.valueOf(leftPinValue) + " - " + String.valueOf(rightPinValue));
       }
     });
     manglikStatus.setAdapter(ArrayAdapter.createFromResource(context,
@@ -320,6 +324,8 @@ public class UserPreferences extends AppCompatActivity {
     manglikStatus = (Spinner) findViewById(R.id.manglik);
     rangeAge = (RangeBar) findViewById(R.id.rangebar_age);
     btnSavePreferences = (Button) findViewById(R.id.store_preference);
+    tittle_height = (TextView) findViewById(R.id.tittle_height);
+    rangeHeight = (RangeBar) findViewById(R.id.height_range);
     getParseData();
   }
 
@@ -378,6 +384,14 @@ public class UserPreferences extends AppCompatActivity {
       e.printStackTrace();
     }
     Boolean mValidField = true;
+
+    int[] bases = getResources().getIntArray(R.array.height_range);
+    Arrays.sort(bases);
+//    int resId2 = getResources().getIdentifier(
+//        "height_range", "array",
+//        getPackageName());
+    minHeight = bases[rangeHeight.getLeftIndex()];
+    maxHeight = bases[rangeHeight.getRightIndex()];
     if (minHeight > maxHeight) {
       mValidField = false;
       mApp.showToast(context, "Minimum height should be less than maximum");
@@ -386,6 +400,8 @@ public class UserPreferences extends AppCompatActivity {
       mValidField = false;
       mApp.showToast(context, "Minimum budget should be less than maximum");
     }
+    minAge = rangeAge.getLeftIndex() + 18;
+    maxAge = rangeAge.getRightIndex() + 18;
     if (minAge > maxAge) {
       mValidField = false;
       mApp.showToast(context, "Minimum Age should be less than maximum");
@@ -740,21 +756,13 @@ public class UserPreferences extends AppCompatActivity {
                   }
                   if (minIncome != 0)
                     etIncome.setText("" + minIncome);
-                  if (maxHeight != 0) {
-                    int[] bases = getResources().getIntArray(R.array.heightCM);
-                    String[] values = getResources().getStringArray(R.array.height);
+                  if (minHeight != 0 && maxHeight != 0) {
+                    int[] bases = getResources().getIntArray(R.array.height_range);
                     Arrays.sort(bases);
-                    int index = Arrays.binarySearch(bases, maxHeight);
-                    etMaxHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                    etMaxHeight.setText(values[index]);
-                  }
-                  if (minHeight != 0) {
-                    int[] bases = getResources().getIntArray(R.array.heightCM);
-                    String[] values = getResources().getStringArray(R.array.height);
-                    Arrays.sort(bases);
-                    int index = Arrays.binarySearch(bases, minHeight);
-                    etMinHeight.setTextColor(context.getResources().getColor(R.color.black_dark));
-                    etMinHeight.setText(values[index]);
+                    String[] values = getResources().getStringArray(R.array.height_values);
+                    int indexmax = Arrays.binarySearch(bases, maxHeight);
+                    int indexmin = Arrays.binarySearch(bases, minHeight);
+                    rangeHeight.setRangePinsByValue(Float.valueOf(values[indexmin]), Float.valueOf(values[indexmax]));
                   }
                   if (minAge != 0 && maxAge != 0) {
                     rangeAge.setRangePinsByValue(minAge, maxAge);

@@ -171,7 +171,7 @@
                 android:layout_marginRight="16dp"
                 android:digits="0123456789"
                 android:gravity="center|start"
-                android:hint="Income (More than)"
+                android:hint="Annual Income (More than)"
                 android:inputType="number"
                 android:padding="16dp"
                 android:textColor="@color/black_dark"
@@ -190,6 +190,7 @@
                 android:padding="16dp"
                 android:textColor="@color/black_dark"
                 android:textSize="@dimen/abc_text_size_small_material"/>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

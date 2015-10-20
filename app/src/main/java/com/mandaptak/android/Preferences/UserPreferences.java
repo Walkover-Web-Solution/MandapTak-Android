@@ -795,7 +795,7 @@ public class UserPreferences extends AppCompatActivity {
 
   private void getLocationData(ParseObject object) {
     ParseQuery<ParseObject> query2 = new ParseQuery<>("LocationPreferences");
-    query2.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+    query2.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
     query2.whereEqualTo("preferenceId", object);
     query2.include("cityId");
     query2.include("cityId.Parent.Parent");
@@ -845,7 +845,7 @@ public class UserPreferences extends AppCompatActivity {
   private void getDegreeData(ParseObject object) {
     ParseQuery<ParseObject> query2 = new ParseQuery<>("DegreePreferences");
     query2.whereEqualTo("preferenceId", object);
-    query2.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+    query2.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ONLY);
     query2.include("degreeId");
     query2.findInBackground(new FindCallback<ParseObject>() {
       @Override

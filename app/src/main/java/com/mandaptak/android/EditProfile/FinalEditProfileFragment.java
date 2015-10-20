@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import me.iwf.photopicker.PhotoPagerActivity;
 import me.iwf.photopicker.PhotoPickerActivity;
 import me.iwf.photopicker.entity.Profile;
 import me.iwf.photopicker.utils.ImageModel;
@@ -79,7 +80,7 @@ public class FinalEditProfileFragment extends Fragment {
   View rootView;
   String newBiodataFileName;
   TwoWayView imageList;
-  TextView importPhotosButton, uploadBioData;
+  TextView importPhotosButton, uploadBioData, selectPrimary;
   Context context;
   LayoutAdapter photoAdapter;
   Common mApp;
@@ -115,6 +116,7 @@ public class FinalEditProfileFragment extends Fragment {
     imageList = (TwoWayView) rootView.findViewById(R.id.list);
     importPhotosButton = (TextView) rootView.findViewById(R.id.import_photos);
     uploadBioData = (TextView) rootView.findViewById(R.id.upload_biodata);
+    selectPrimary = (TextView) rootView.findViewById(R.id.select_primary);
     minBudget = (EditText) rootView.findViewById(R.id.budget_from);
     maxBudget = (EditText) rootView.findViewById(R.id.budget_to);
     deleteBioData = (ImageView) rootView.findViewById(R.id.delete_biodata);
@@ -179,6 +181,15 @@ public class FinalEditProfileFragment extends Fragment {
         isFirstStart = getActivity().getIntent().getBooleanExtra("firstStart", false);
       }
     }
+    selectPrimary.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+//        Intent intent = new Intent(context, PhotoPagerActivity.class);
+//        intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, position);
+//        intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, mItems);
+//        previewPhoto(intent);
+      }
+    });
     importPhotosButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {

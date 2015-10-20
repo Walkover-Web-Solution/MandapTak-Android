@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import jp.wasabeef.picasso.transformations.BlurTransformation;
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
@@ -445,12 +446,12 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }
     init();
-    try {
-      blurringView.setBlurredView(backgroundPhoto);
-
-    } catch (Exception e) {
-      RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
-    }
+//    try {
+//      blurringView.setBlurredView(backgroundPhoto);
+//
+//    } catch (Exception e) {
+//      RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
+//    }
     rippleBackground.startRippleAnimation();
     slidingPanel.setEnabled(false);
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -640,16 +641,16 @@ public class MainActivity extends AppCompatActivity {
             .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
             .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait));
         profilePic.into(frontPhoto);
-        profilePic.transform(new BitmapTransform(512, 334)).into(backgroundPhoto, new Callback() {
+        profilePic.transform(new BlurTransformation(context)).transform(new BitmapTransform(512, 334)).into(backgroundPhoto, new Callback() {
 
           @Override
           public void onSuccess() {
             try {
-              blurringView.invalidate();
+              //  blurringView.invalidate();
+              rippleBackground.setVisibility(View.GONE);
             } catch (Exception e) {
               RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
             }
-            rippleBackground.setVisibility(View.GONE);
           }
 
           @Override
@@ -660,7 +661,7 @@ public class MainActivity extends AppCompatActivity {
               e.printStackTrace();
             }
             try {
-              blurringView.invalidate();
+              //   blurringView.invalidate();
 
             } catch (Exception e) {
               RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));

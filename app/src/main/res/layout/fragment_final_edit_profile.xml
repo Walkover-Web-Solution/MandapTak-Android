@@ -133,7 +133,20 @@
                 android:scrollbarThumbHorizontal="@color/blue_400"
                 android:scrollbars="horizontal"
                 app:twowayview_layoutManager="ListLayoutManager"/>
+
+            <TextView
+                android:id="@+id/select_primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:gravity="center|start"
+                android:padding="16dp"
+                android:text="SELECT PRIMARY PHOTO"
+                android:textColor="@color/red_400"
+                android:textSize="@dimen/abc_text_size_button_material"
+                android:textStyle="bold"/>
         </LinearLayout>
+
     </ScrollView>
 
     <LinearLayout

@@ -57,7 +57,7 @@ public class LayoutAdapter extends RecyclerView.Adapter<LayoutAdapter.SimpleView
     uri = Uri.parse(path);
 
     if (mItems.get(position).isPrimary()) {
-      holder.indicator.setImageResource(R.drawable.ic_star_yellow);
+      holder.indicator.setImageResource(R.drawable.ic_check_fill);
       holder.indicator.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -65,7 +65,7 @@ public class LayoutAdapter extends RecyclerView.Adapter<LayoutAdapter.SimpleView
         }
       });
     } else {
-      holder.indicator.setImageResource(R.drawable.ic_star_outline_yellow);
+      holder.indicator.setImageResource(R.drawable.ic_check_blank);
       holder.indicator.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {

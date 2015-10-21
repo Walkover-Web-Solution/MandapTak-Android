@@ -115,36 +115,55 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:gravity="center|start"
-                android:padding="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="16dp"
                 android:text="+ IMPORT PHOTOS"
                 android:textColor="@color/red_400"
                 android:textSize="@dimen/abc_text_size_button_material"
                 android:textStyle="bold"/>
 
-            <org.lucasr.twowayview.widget.TwoWayView
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/select_primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:clickable="true"
+                    android:gravity="center|start"
+                    android:paddingLeft="16dp"
+                    android:text="To make photo as primary pic click on tick "
+                    android:textColor="@color/grey_400"
+                    android:textSize="@dimen/abc_text_size_caption_material">
+
+                </TextView>
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_toRightOf="@+id/select_primary"
+                    android:src="@drawable/ic_check_blank"/>
+
+            </RelativeLayout>
+
+            9<org.lucasr.twowayview.widget.TwoWayView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
+                android:layout_height="196dp"
                 android:layout_marginBottom="20dp"
                 android:focusableInTouchMode="true"
                 android:paddingBottom="24dp"
+                android:paddingTop="16dp"
                 android:scrollbarAlwaysDrawHorizontalTrack="true"
                 android:scrollbarSize="2dp"
                 android:scrollbarThumbHorizontal="@color/blue_400"
                 android:scrollbars="horizontal"
                 app:twowayview_layoutManager="ListLayoutManager"/>
 
-            <TextView
-                android:id="@+id/select_primary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:gravity="center|start"
-                android:padding="16dp"
-                android:text="SELECT PRIMARY PHOTO"
-                android:textColor="@color/red_400"
-                android:textSize="@dimen/abc_text_size_button_material"
-                android:textStyle="bold"/>
+
         </LinearLayout>
 
     </ScrollView>

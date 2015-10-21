@@ -20,6 +20,6 @@
         android:layout_gravity="top|end"
         android:clickable="true"
         android:padding="12dp"
-        android:src="@drawable/ic_star_outline_yellow"
+        android:src="@drawable/ic_check_blank"
         android:visibility="visible"/>
 </FrameLayout>

@@ -184,10 +184,11 @@ public class FinalEditProfileFragment extends Fragment {
     selectPrimary.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-//        Intent intent = new Intent(context, PhotoPagerActivity.class);
-//        intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, position);
-//        intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, mItems);
-//        previewPhoto(intent);
+        if (parsePhotos != null && parsePhotos.size() > 0) {
+          Intent intent = new Intent(context, PhotoPagerActivity.class);
+          intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, parsePhotos);
+          previewPhoto(intent);
+        }
       }
     });
     importPhotosButton.setOnClickListener(new View.OnClickListener() {

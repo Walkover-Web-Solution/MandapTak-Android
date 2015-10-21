@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Matches.ViewProfilePage;
 import com.mandaptak.android.R;
@@ -55,12 +56,13 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
       uri = Uri.fromFile(new File(path));
     }
 
-    Picasso.with(mContext)
-        .load(uri)
-        .tag(mContext)
-        .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
-        .placeholder(R.drawable.com_facebook_profile_picture_blank_portrait)
-        .into(holder.image);
+//    Picasso.with(mContext)
+//        .load(uri)
+//        .tag(mContext)
+//        .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
+//        .placeholder(R.drawable.com_facebook_profile_picture_blank_portrait)
+//        .into(holder.image);
+    holder.image.setImageURI(uri);
 
     holder.image.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -83,11 +85,11 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
   }
 
   public static class SimpleViewHolder extends RecyclerView.ViewHolder {
-    public final CircleImageView image;
+    public final SimpleDraweeView image;
 
     public SimpleViewHolder(View view) {
       super(view);
-      image = (CircleImageView) view.findViewById(R.id.profile_image);
+      image = (SimpleDraweeView) view.findViewById(R.id.profile_image);
     }
   }
 }

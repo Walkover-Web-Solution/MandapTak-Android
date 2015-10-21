@@ -2,6 +2,10 @@ package com.mandaptak.android.Main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
+import android.graphics.PointF;
+import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +21,21 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.cache.common.CacheKey;
+import com.facebook.cache.common.SimpleCacheKey;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.controller.ControllerListener;
+import com.facebook.drawee.drawable.ScalingUtils;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imagepipeline.request.Postprocessor;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
@@ -30,7 +49,6 @@ import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Settings.SettingsActivity;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.BitmapTransform;
 import com.mandaptak.android.Views.BlurringView;
 import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;
@@ -46,7 +64,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
@@ -58,12 +75,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
-import jp.wasabeef.picasso.transformations.BlurTransformation;
+import jp.wasabeef.fresco.processors.BlurPostprocessor;
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
+
+
 
 public class MainActivity extends AppCompatActivity {
   public final static int REQUEST_CODE = 11;
@@ -73,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
   private LinearLayout bottomLayout;
   private SlidingUpPanelLayout slidingPanel;
   private ImageView pinButton;
-  private ImageView backgroundPhoto;
+  private SimpleDraweeView backgroundPhoto;
   public Context context;
   private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
   private TwoWayView profileImages;
@@ -216,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
     slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
     pinButton = (ImageView) findViewById(R.id.pin_button);
     profileImages = (TwoWayView) findViewById(R.id.list);
-    backgroundPhoto = (ImageView) findViewById(R.id.background_photo);
+    backgroundPhoto = (SimpleDraweeView) findViewById(R.id.background_photo);
     blurringView = (BlurringView) findViewById(R.id.blurring_view);
     frontProfileName = (TextView) findViewById(R.id.front_name);
     frontPhoto = (CircleImageView) findViewById(R.id.front_photo);
@@ -641,35 +659,38 @@ public class MainActivity extends AppCompatActivity {
             .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
             .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait));
         profilePic.into(frontPhoto);
-        profilePic.transform(new BlurTransformation(context)).transform(new BitmapTransform(512, 334)).into(backgroundPhoto, new Callback() {
 
+        ControllerListener listener = new BaseControllerListener<ImageInfo>(){
           @Override
-          public void onSuccess() {
-            try {
-              //  blurringView.invalidate();
-              rippleBackground.setVisibility(View.GONE);
-            } catch (Exception e) {
-              RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
-            }
+          public void onFinalImageSet(    String id,    ImageInfo imageInfo,    Animatable animatable){
           }
-
           @Override
-          public void onError() {
-            try {
-              Log.e("error in loading image", parseProfileObject.getString("name"));
-            } catch (Exception e) {
-              e.printStackTrace();
-            }
-            try {
-              //   blurringView.invalidate();
+          public void onRelease(String id) {
+            super.onRelease(id);
 
-            } catch (Exception e) {
-              RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
-            }
-//            setProfileDetails();
           }
-        });
+        };
 
+
+        GenericDraweeHierarchy hierarchy = backgroundPhoto.getHierarchy();
+        hierarchy.setFadeDuration(1);
+        hierarchy.setPlaceholderImage(R.drawable.com_facebook_profile_picture_blank_portrait);
+
+        String photoUrl = parseProfileObject.getParseFile("profilePic").getUrl();
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(photoUrl))
+            .setResizeOptions(new ResizeOptions(512, 334))
+            .setPostprocessor(new BlurPostprocessor(context, 15))
+            .build();
+
+        PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
+            .setControllerListener(listener)
+            .setOldController(backgroundPhoto.getController())
+            .setImageRequest(request)
+            .build();
+
+
+        backgroundPhoto.setController(controller);
+        rippleBackground.setVisibility(View.GONE);
       } else {
         Picasso.with(context)
             .load(Uri.EMPTY)
@@ -748,6 +769,214 @@ public class MainActivity extends AppCompatActivity {
     }
     setTraits();
     getAllPhotos(parseProfileObject);
+  }
+
+  public Bitmap fastblur(Bitmap sentBitmap, float scale, int radius) {
+
+    int width = Math.round(sentBitmap.getWidth() * scale);
+    int height = Math.round(sentBitmap.getHeight() * scale);
+    sentBitmap = Bitmap.createScaledBitmap(sentBitmap, width, height, false);
+
+    Bitmap bitmap = sentBitmap.copy(sentBitmap.getConfig(), true);
+
+    if (radius < 1) {
+      return (null);
+    }
+
+    int w = bitmap.getWidth();
+    int h = bitmap.getHeight();
+
+    int[] pix = new int[w * h];
+    Log.e("pix", w + " " + h + " " + pix.length);
+    bitmap.getPixels(pix, 0, w, 0, 0, w, h);
+
+    int wm = w - 1;
+    int hm = h - 1;
+    int wh = w * h;
+    int div = radius + radius + 1;
+
+    int r[] = new int[wh];
+    int g[] = new int[wh];
+    int b[] = new int[wh];
+    int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
+    int vmin[] = new int[Math.max(w, h)];
+
+    int divsum = (div + 1) >> 1;
+    divsum *= divsum;
+    int dv[] = new int[256 * divsum];
+    for (i = 0; i < 256 * divsum; i++) {
+      dv[i] = (i / divsum);
+    }
+
+    yw = yi = 0;
+
+    int[][] stack = new int[div][3];
+    int stackpointer;
+    int stackstart;
+    int[] sir;
+    int rbs;
+    int r1 = radius + 1;
+    int routsum, goutsum, boutsum;
+    int rinsum, ginsum, binsum;
+
+    for (y = 0; y < h; y++) {
+      rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+      for (i = -radius; i <= radius; i++) {
+        p = pix[yi + Math.min(wm, Math.max(i, 0))];
+        sir = stack[i + radius];
+        sir[0] = (p & 0xff0000) >> 16;
+        sir[1] = (p & 0x00ff00) >> 8;
+        sir[2] = (p & 0x0000ff);
+        rbs = r1 - Math.abs(i);
+        rsum += sir[0] * rbs;
+        gsum += sir[1] * rbs;
+        bsum += sir[2] * rbs;
+        if (i > 0) {
+          rinsum += sir[0];
+          ginsum += sir[1];
+          binsum += sir[2];
+        } else {
+          routsum += sir[0];
+          goutsum += sir[1];
+          boutsum += sir[2];
+        }
+      }
+      stackpointer = radius;
+
+      for (x = 0; x < w; x++) {
+
+        r[yi] = dv[rsum];
+        g[yi] = dv[gsum];
+        b[yi] = dv[bsum];
+
+        rsum -= routsum;
+        gsum -= goutsum;
+        bsum -= boutsum;
+
+        stackstart = stackpointer - radius + div;
+        sir = stack[stackstart % div];
+
+        routsum -= sir[0];
+        goutsum -= sir[1];
+        boutsum -= sir[2];
+
+        if (y == 0) {
+          vmin[x] = Math.min(x + radius + 1, wm);
+        }
+        p = pix[yw + vmin[x]];
+
+        sir[0] = (p & 0xff0000) >> 16;
+        sir[1] = (p & 0x00ff00) >> 8;
+        sir[2] = (p & 0x0000ff);
+
+        rinsum += sir[0];
+        ginsum += sir[1];
+        binsum += sir[2];
+
+        rsum += rinsum;
+        gsum += ginsum;
+        bsum += binsum;
+
+        stackpointer = (stackpointer + 1) % div;
+        sir = stack[(stackpointer) % div];
+
+        routsum += sir[0];
+        goutsum += sir[1];
+        boutsum += sir[2];
+
+        rinsum -= sir[0];
+        ginsum -= sir[1];
+        binsum -= sir[2];
+
+        yi++;
+      }
+      yw += w;
+    }
+    for (x = 0; x < w; x++) {
+      rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
+      yp = -radius * w;
+      for (i = -radius; i <= radius; i++) {
+        yi = Math.max(0, yp) + x;
+
+        sir = stack[i + radius];
+
+        sir[0] = r[yi];
+        sir[1] = g[yi];
+        sir[2] = b[yi];
+
+        rbs = r1 - Math.abs(i);
+
+        rsum += r[yi] * rbs;
+        gsum += g[yi] * rbs;
+        bsum += b[yi] * rbs;
+
+        if (i > 0) {
+          rinsum += sir[0];
+          ginsum += sir[1];
+          binsum += sir[2];
+        } else {
+          routsum += sir[0];
+          goutsum += sir[1];
+          boutsum += sir[2];
+        }
+
+        if (i < hm) {
+          yp += w;
+        }
+      }
+      yi = x;
+      stackpointer = radius;
+      for (y = 0; y < h; y++) {
+        // Preserve alpha channel: ( 0xff000000 & pix[yi] )
+        pix[yi] = ( 0xff000000 & pix[yi] ) | ( dv[rsum] << 16 ) | ( dv[gsum] << 8 ) | dv[bsum];
+
+        rsum -= routsum;
+        gsum -= goutsum;
+        bsum -= boutsum;
+
+        stackstart = stackpointer - radius + div;
+        sir = stack[stackstart % div];
+
+        routsum -= sir[0];
+        goutsum -= sir[1];
+        boutsum -= sir[2];
+
+        if (x == 0) {
+          vmin[y] = Math.min(y + r1, hm) * w;
+        }
+        p = x + vmin[y];
+
+        sir[0] = r[p];
+        sir[1] = g[p];
+        sir[2] = b[p];
+
+        rinsum += sir[0];
+        ginsum += sir[1];
+        binsum += sir[2];
+
+        rsum += rinsum;
+        gsum += ginsum;
+        bsum += binsum;
+
+        stackpointer = (stackpointer + 1) % div;
+        sir = stack[stackpointer];
+
+        routsum += sir[0];
+        goutsum += sir[1];
+        boutsum += sir[2];
+
+        rinsum -= sir[0];
+        ginsum -= sir[1];
+        binsum -= sir[2];
+
+        yi += w;
+      }
+    }
+
+    Log.e("pix", w + " " + h + " " + pix.length);
+    bitmap.setPixels(pix, 0, w, 0, 0, w, h);
+
+    return (bitmap);
   }
 
   private void getAllPhotos(final ParseObject parseProfileObject) {

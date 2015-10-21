@@ -2,16 +2,32 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="wrap_content"
              android:layout_height="wrap_content"
+             xmlns:fresco="http://schemas.android.com/apk/res-auto"
              android:orientation="vertical">
 
-    <com.mandaptak.android.Views.CircleImageView
-        android:id="@+id/profile_image"
-        android:layout_width="78dp"
-        android:layout_height="78dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>
+    <!--<com.mandaptak.android.Views.CircleImageView-->
+        <!--android:id="@+id/profile_image"-->
+        <!--android:layout_width="78dp"-->
+        <!--android:layout_height="78dp"-->
+        <!--android:layout_marginLeft="16dp"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:clickable="true"-->
+        <!--android:focusable="false"-->
+        <!--android:focusableInTouchMode="false"-->
+        <!--android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>-->
+<com.facebook.drawee.view.SimpleDraweeView
+    android:id="@+id/profile_image"
+    android:layout_width="78dp"
+    android:layout_height="78dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginTop="16dp"
+    android:clickable="true"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    fresco:roundedCornerRadius="5dp"
+    fresco:roundBottomLeft="false"
+    fresco:roundBottomRight="false"
+    fresco:roundingBorderWidth="1dp"
+    fresco:roundAsCircle="true"
+    />
 </FrameLayout>

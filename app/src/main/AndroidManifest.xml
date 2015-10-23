@@ -116,7 +116,14 @@
             android:screenOrientation="portrait"/>
         <activity
             android:name=".Matches.ViewProfilePage"
-            android:screenOrientation="portrait"/>d
+            android:screenOrientation="portrait"/>
+
+
+        <activity
+            android:name=".Login.IntroVideoActivity"
+            android:label="Presenting MSG91"
+            android:screenOrientation="landscape"
+            android:theme="@style/FullscreenTheme"/>
         <activity
             android:name=".Splash.SplashScreen"
             android:label="@string/title_activity_splash_screen"

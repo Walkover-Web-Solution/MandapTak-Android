@@ -2,8 +2,11 @@ package com.mandaptak.android.Matches;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,16 +21,26 @@ import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
+import com.parse.DeleteCallback;
+import com.parse.FunctionCallback;
+import com.parse.GetCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
+import com.wdullaer.swipeactionadapter.SwipeActionAdapter;
+import com.wdullaer.swipeactionadapter.SwipeDirections;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.Prefs;
 
-public class PinsFragment extends Fragment {
+public class PinsFragment extends Fragment implements
+    SwipeActionAdapter.SwipeActionListener {
   Common mApp;
   ListView listViewMatches;
   ArrayList<MatchesModel> pinsList = new ArrayList<>();
@@ -35,6 +48,11 @@ public class PinsFragment extends Fragment {
   ProgressBar progressBar;
   private View rootView;
   private Context context;
+  private PinsAdapter pinsAdapter;
+  protected SwipeActionAdapter mAdapter;
+  private MatchesModel undoMatch;
+  ParseObject userProfileObject;
+  private CoordinatorLayout coordinatorLayout;
 
   public PinsFragment() {
     // Required empty public constructor
@@ -56,13 +74,21 @@ public class PinsFragment extends Fragment {
     empty = (TextView) rootView.findViewById(R.id.empty);
     progressBar = (ProgressBar) rootView.findViewById(R.id.progress);
     empty.setText("No Pins");
-
+    coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.snackbarPosition);
     listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent = new Intent(getActivity(), FullProfileActivity.class);
         intent.putExtra("parseObjectId", pinsList.get(i).getProfileId());
         startActivity(intent);
+      }
+    });
+    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+    parseQuery.getInBackground(me.iwf.photopicker.utils.Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+      @Override
+      public void done(ParseObject parseObject, ParseException e) {
+        userProfileObject = parseObject;
       }
     });
   }
@@ -125,9 +151,7 @@ public class PinsFragment extends Fragment {
           super.onPostExecute(aVoid);
           if (list != null) {
             if (list.size() > 0) {
-              listViewMatches.setAdapter(new PinsAdapter(PinsFragment.this, pinsList, context));
-              progressBar.setVisibility(View.GONE);
-              listViewMatches.setVisibility(View.VISIBLE);
+              setPinsAdapter();
             } else {
               progressBar.setVisibility(View.GONE);
               empty.setVisibility(View.VISIBLE);
@@ -141,4 +165,167 @@ public class PinsFragment extends Fragment {
       }.execute();
     }
   }
+
+  private void setPinsAdapter() {
+    pinsAdapter = new PinsAdapter(PinsFragment.this, pinsList, context);
+    mAdapter = new SwipeActionAdapter(pinsAdapter);
+    mAdapter.setSwipeActionListener(this)
+        .setDimBackgrounds(true)
+        .setListView(listViewMatches);
+    listViewMatches.setAdapter(mAdapter);
+    progressBar.setVisibility(View.GONE);
+    listViewMatches.setVisibility(View.VISIBLE);
+    mAdapter.addBackground(SwipeDirections.DIRECTION_FAR_LEFT, R.layout.row_bg_left_far)
+        .addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT, R.layout.row_bg_left_far)
+        .addBackground(SwipeDirections.DIRECTION_FAR_RIGHT, R.layout.row_bg_right_far)
+        .addBackground(SwipeDirections.DIRECTION_NORMAL_RIGHT, R.layout.row_bg_right_far);
+  }
+
+  @Override
+  public boolean hasActions(int position) {
+    return true;
+  }
+
+  @Override
+  public boolean shouldDismiss(int position, int direction) {
+    return direction == SwipeDirections.DIRECTION_NORMAL_LEFT;
+  }
+
+  @Override
+  public void onSwipe(int[] positionList, int[] directionList) {
+    for (int i = 0; i < positionList.length; i++) {
+      int direction = directionList[i];
+      int position = positionList[i];
+      undoMatch = (MatchesModel) mAdapter.getItem(position);
+      switch (direction) {
+        case SwipeDirections.DIRECTION_FAR_LEFT:
+          pinsList.remove(undoMatch);
+          likeProfile(undoMatch);
+          mAdapter.notifyDataSetChanged();
+          break;
+        case SwipeDirections.DIRECTION_NORMAL_LEFT:
+          pinsList.remove(undoMatch);
+          likeProfile(undoMatch);
+          mAdapter.notifyDataSetChanged();
+          break;
+        case SwipeDirections.DIRECTION_FAR_RIGHT:
+          pinsList.remove(undoMatch);
+          disLikeProfile(undoMatch);
+          mAdapter.notifyDataSetChanged();
+          break;
+        case SwipeDirections.DIRECTION_NORMAL_RIGHT:
+          pinsList.remove(undoMatch);
+          disLikeProfile(undoMatch);
+          mAdapter.notifyDataSetChanged();
+          break;
+      }
+
+    }
+  }
+
+  private void disLikeProfile(final MatchesModel matchesModel) {
+    mApp.show_PDialog(context, "Please wait", false);
+    ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
+    query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
+    query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
+    query.getFirstInBackground(new GetCallback<ParseObject>() {
+      @Override
+      public void done(ParseObject parseObject, ParseException e) {
+        if (e == null) {
+          parseObject.deleteInBackground(new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+              if (e == null) {
+                ParseObject dislikeParseObject = new ParseObject("DislikeProfile");
+                dislikeParseObject.put("dislikeProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
+                dislikeParseObject.put("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
+                dislikeParseObject.saveInBackground(new SaveCallback() {
+                  @Override
+                  public void done(ParseException e) {
+                    showSnakeBar("profile disliked");
+                  }
+                });
+
+              } else {
+                mApp.showToast(context, e.getMessage());
+              }
+              mApp.dialog.dismiss();
+            }
+          });
+        } else {
+          mApp.dialog.dismiss();
+          mApp.showToast(context, e.getMessage());
+        }
+      }
+    });
+  }
+
+  public void likeProfile(final MatchesModel matchesModel) {
+    if (mApp.isNetworkAvailable(context))
+
+      if (mApp.isNetworkAvailable(context))
+        try {
+          HashMap<String, Object> params = new HashMap<>();
+          params.put("userProfileId", userProfileObject.getObjectId());
+          params.put("likeProfileId", matchesModel.getProfileId());
+          params.put("userName", userProfileObject.getString("name"));
+
+          ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object o, ParseException e) {
+              if (e == null) {
+                if (o != null) {
+                  try {
+                    if (o instanceof ParseObject) {
+                      ParseObject parseObject = ParseObject.createWithoutData("Profile", matchesModel.getProfileId());
+                      String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                      String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                      MatchesModel model = new MatchesModel();
+                      model.setName(parseObject.fetchIfNeeded().getString("name"));
+                      model.setProfileId(parseObject.getObjectId());
+                      model.setReligion(religion + ", " + caste);
+                      model.setWork(parseObject.getString("designation"));
+                      model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
+                      Intent intent = new Intent(context, MatchedProfileActivity.class);
+                      intent.putExtra("profile", model);
+                      startActivity(intent);
+                    } else {
+                      //  mApp.showToast(context, "profile liked");
+                      showSnakeBar("profile liked");
+                    }
+                  } catch (Exception e1) {
+                    e1.printStackTrace();
+                  }
+                }
+              } else {
+                e.printStackTrace();
+                mApp.showToast(context, e.getMessage());
+              }
+            }
+          });
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
+          mApp.showToast(context, "Error while liking profile");
+        }
+  }
+
+  private void showSnakeBar(String msg) {
+    Snackbar snackbar = Snackbar
+        .make(rootView, msg, Snackbar.LENGTH_LONG)
+        .setAction("Undo", new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+
+          }
+        });
+    snackbar.setActionTextColor(context.getResources().getColor(R.color.dark_purple_800));
+    View snackbarView = snackbar.getView();
+    snackbarView.setBackgroundColor(context.getResources().getColor(R.color.red_400));//change Snackbar's background color;
+    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+    textView.setTextColor(Color.WHITE);
+    snackbar.show();
+  }
+
 }

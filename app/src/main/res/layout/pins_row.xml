@@ -65,7 +65,8 @@
         android:layout_toLeftOf="@+id/unpin"
         android:clickable="true"
         android:padding="8dp"
-        android:src="@drawable/ic_dislike_pin"/>
+        android:src="@drawable/ic_dislike_pin"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/unpin"
@@ -75,5 +76,6 @@
         android:layout_centerVertical="true"
         android:clickable="true"
         android:padding="8dp"
-        android:src="@drawable/ic_unpin"/>
+        android:src="@drawable/ic_unpin"
+        android:visibility="gone"/>
 </RelativeLayout>

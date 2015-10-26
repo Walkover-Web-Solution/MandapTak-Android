@@ -121,7 +121,7 @@
 
         <activity
             android:name=".Login.IntroVideoActivity"
-            android:label="Presenting MSG91"
+            android:label="Presenting Mandaptak"
             android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme"/>
         <activity

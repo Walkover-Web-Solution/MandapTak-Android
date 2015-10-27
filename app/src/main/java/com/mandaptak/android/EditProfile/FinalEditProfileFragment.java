@@ -4,13 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -431,17 +432,23 @@ public class FinalEditProfileFragment extends Fragment {
   }
 
   private boolean checkFieldsTab1(Profile profile) {
-    if (profile.getName() == null) {
+    if (profile.getName() == null || profile.getName().equals("")) {
+      showSnakeBar("Please enter Name");
       return false;
     } else if (profile.getGender() == null) {
+      showSnakeBar("Please Select Gender");
       return false;
     } else if (profile.getDateOfBirth() == null) {
+      showSnakeBar("Please Select DateOfBirth");
       return false;
     } else if (profile.getTimeOfBirth() == null) {
+      showSnakeBar("Please Select TimeOfBirth");
       return false;
     } else if (profile.getCurrentLocation() == null) {
+      showSnakeBar("Please Select Current Location");
       return false;
     } else if (profile.getPlaceOfBirth() == null) {
+      showSnakeBar("Please Select Place Of Birth");
       return false;
     } else {
       return true;
@@ -450,14 +457,19 @@ public class FinalEditProfileFragment extends Fragment {
 
   private boolean checkFieldsTab2(Profile profile) {
     if (profile.getHeight() == 0) {
+      showSnakeBar("Please Select Height");
       return false;
     } else if (profile.getWeight() == 0) {
+      showSnakeBar("Please Select Weight");
       return false;
     } else if (profile.getReligion() == null) {
+      showSnakeBar("Please Select Religion");
       return false;
     } else if (profile.getCaste() == null) {
+      showSnakeBar("Please Select Caste");
       return false;
     } else if (profile.getManglik() == -1) {
+      showSnakeBar("Please Select Manglik");
       return false;
     } else {
       return true;
@@ -466,16 +478,22 @@ public class FinalEditProfileFragment extends Fragment {
 
   private boolean checkFieldsTab3(Profile profile) {
     if (profile.getWorkAfterMarriage() == -1) {
+      showSnakeBar("Please Select Work After Marriage");
       return false;
     } else if (profile.getIncome() == -1) {
+      showSnakeBar("Please Select Income");
       return false;
     } else if (profile.getDesignation() == null) {
+      showSnakeBar("Please Select Designation");
       return false;
-    } else if (profile.getPlaceOfBirth() == null) {
+    } else if (profile.getCompany() == null) {
+      showSnakeBar("Please Select Company");
       return false;
     } else if (profile.getIndustry() == null) {
+      showSnakeBar("Please Select Industry");
       return false;
     } else if (profile.getEducation1() == null) {
+      showSnakeBar("Please Select Education");
       return false;
     } else {
       return true;
@@ -920,5 +938,22 @@ public class FinalEditProfileFragment extends Fragment {
           }
         }
     ).executeAsync();
+  }
+
+  private void showSnakeBar(String msg) {
+    Snackbar snackbar = Snackbar
+        .make(rootView, msg, Snackbar.LENGTH_LONG)
+        .setAction("OK", new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+
+          }
+        });
+    snackbar.setActionTextColor(context.getResources().getColor(R.color.white));
+    View snackbarView = snackbar.getView();
+    snackbarView.setBackgroundColor(context.getResources().getColor(R.color.red_400));//change Snackbar's background color;
+    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+    textView.setTextColor(Color.WHITE);
+    snackbar.show();
   }
 }

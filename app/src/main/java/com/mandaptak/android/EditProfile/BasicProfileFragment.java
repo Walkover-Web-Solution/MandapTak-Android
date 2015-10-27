@@ -372,8 +372,8 @@ public class BasicProfileFragment extends Fragment implements DatePickerDialog.O
       newName = displayName.getText().toString();
       if (newGender != null)
         profile.setGender(newGender);
-      if (newName != null)
-        if (!newName.trim().equals(""))
+//      if (newName != null)
+//        if (!newName.trim().equals(""))
           profile.setName(newName.trim());
       if (newPOB != null)
         profile.setPlaceOfBirth(newPOB);

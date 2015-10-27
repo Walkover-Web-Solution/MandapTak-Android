@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -52,7 +51,6 @@ public class PinsFragment extends Fragment implements
   protected SwipeActionAdapter mAdapter;
   private MatchesModel undoMatch;
   ParseObject userProfileObject;
-  private CoordinatorLayout coordinatorLayout;
 
   public PinsFragment() {
     // Required empty public constructor
@@ -74,7 +72,6 @@ public class PinsFragment extends Fragment implements
     empty = (TextView) rootView.findViewById(R.id.empty);
     progressBar = (ProgressBar) rootView.findViewById(R.id.progress);
     empty.setText("No Pins");
-    coordinatorLayout = (CoordinatorLayout) rootView.findViewById(R.id.snackbarPosition);
     listViewMatches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
       public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -83,14 +80,16 @@ public class PinsFragment extends Fragment implements
         startActivity(intent);
       }
     });
-    ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
-    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
-    parseQuery.getInBackground(me.iwf.photopicker.utils.Prefs.getProfileId(context), new GetCallback<ParseObject>() {
-      @Override
-      public void done(ParseObject parseObject, ParseException e) {
-        userProfileObject = parseObject;
-      }
-    });
+    if (mApp.isNetworkAvailable(context)) {
+      ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Profile");
+      parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
+      parseQuery.getInBackground(me.iwf.photopicker.utils.Prefs.getProfileId(context), new GetCallback<ParseObject>() {
+        @Override
+        public void done(ParseObject parseObject, ParseException e) {
+          userProfileObject = parseObject;
+        }
+      });
+    }
   }
 
   public void getParseData() {
@@ -242,7 +241,7 @@ public class PinsFragment extends Fragment implements
                 dislikeParseObject.saveInBackground(new SaveCallback() {
                   @Override
                   public void done(ParseException e) {
-                    showSnakeBar("profile disliked");
+                    showSnakeBar("PROFILE DISLIKED", false);
                   }
                 });
 
@@ -262,70 +261,150 @@ public class PinsFragment extends Fragment implements
 
   public void likeProfile(final MatchesModel matchesModel) {
     if (mApp.isNetworkAvailable(context))
+      try {
+        mApp.show_PDialog(context, "Please wait", false);
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("userProfileId", userProfileObject.getObjectId());
+        params.put("likeProfileId", matchesModel.getProfileId());
+        params.put("userName", userProfileObject.getString("name"));
 
-      if (mApp.isNetworkAvailable(context))
-        try {
-          HashMap<String, Object> params = new HashMap<>();
-          params.put("userProfileId", userProfileObject.getObjectId());
-          params.put("likeProfileId", matchesModel.getProfileId());
-          params.put("userName", userProfileObject.getString("name"));
-
-          ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
-            @Override
-            public void done(Object o, ParseException e) {
-              if (e == null) {
-                if (o != null) {
-                  try {
-                    if (o instanceof ParseObject) {
-                      ParseObject parseObject = ParseObject.createWithoutData("Profile", matchesModel.getProfileId());
-                      String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
-                      String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
-                      MatchesModel model = new MatchesModel();
-                      model.setName(parseObject.fetchIfNeeded().getString("name"));
-                      model.setProfileId(parseObject.getObjectId());
-                      model.setReligion(religion + ", " + caste);
-                      model.setWork(parseObject.getString("designation"));
-                      model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
-                      Intent intent = new Intent(context, MatchedProfileActivity.class);
-                      intent.putExtra("profile", model);
-                      startActivity(intent);
-                    } else {
-                      //  mApp.showToast(context, "profile liked");
-                      showSnakeBar("profile liked");
-                    }
-                  } catch (Exception e1) {
-                    e1.printStackTrace();
+        ParseCloud.callFunctionInBackground("likeAndFind", params, new FunctionCallback<Object>() {
+          @Override
+          public void done(Object o, ParseException e) {
+            if (e == null) {
+              mApp.dialog.dismiss();
+              if (o != null) {
+                try {
+                  if (o instanceof ParseObject) {
+                    ParseObject parseObject = ParseObject.createWithoutData("Profile", matchesModel.getProfileId());
+                    String religion = parseObject.fetchIfNeeded().getParseObject("religionId").fetchIfNeeded().getString("name");
+                    String caste = parseObject.fetchIfNeeded().getParseObject("casteId").fetchIfNeeded().getString("name");
+                    MatchesModel model = new MatchesModel();
+                    model.setName(parseObject.fetchIfNeeded().getString("name"));
+                    model.setProfileId(parseObject.getObjectId());
+                    model.setReligion(religion + ", " + caste);
+                    model.setWork(parseObject.getString("designation"));
+                    model.setUrl(parseObject.fetchIfNeeded().getParseFile("profilePic").getUrl());
+                    Intent intent = new Intent(context, MatchedProfileActivity.class);
+                    intent.putExtra("profile", model);
+                    startActivity(intent);
+                  } else {
+                    showSnakeBar("PROFILE LIKED", true);
                   }
+                } catch (Exception e1) {
+                  e1.printStackTrace();
                 }
-              } else {
-                e.printStackTrace();
-                mApp.showToast(context, e.getMessage());
               }
+            } else {
+              mApp.dialog.dismiss();
+              e.printStackTrace();
+              mApp.showToast(context, e.getMessage());
             }
-          });
+          }
+        });
 
-        } catch (Exception e) {
-          e.printStackTrace();
-          RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
-          mApp.showToast(context, "Error while liking profile");
-        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
+        mApp.showToast(context, "Error while liking profile");
+      }
   }
 
-  private void showSnakeBar(String msg) {
+  private void showSnakeBar(String msg, final Boolean isLiked) {
     Snackbar snackbar = Snackbar
         .make(rootView, msg, Snackbar.LENGTH_LONG)
         .setAction("Undo", new View.OnClickListener() {
           @Override
           public void onClick(View v) {
-
+            undoAction(isLiked);
           }
         });
-    snackbar.setActionTextColor(context.getResources().getColor(R.color.dark_purple_800));
+    snackbar.setActionTextColor(context.getResources().getColor(R.color.indigo_900));
     View snackbarView = snackbar.getView();
     snackbarView.setBackgroundColor(context.getResources().getColor(R.color.red_400));//change Snackbar's background color;
     TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
     textView.setTextColor(Color.WHITE);
     snackbar.show();
+  }
+
+  private void undoAction(Boolean isLiked) {
+    mApp.show_PDialog(context, "Please wait..");
+    pinsList.add(undoMatch);
+    mAdapter.notifyDataSetChanged();
+    if (isLiked) {
+      undoLike();
+    } else undoDislike();
+  }
+
+  private void undoLike() {
+    ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
+    dislikeParseObject.put("pinnedProfileId", ParseObject.createWithoutData("Profile", undoMatch.getProfileId()));
+    dislikeParseObject.put("profileId", userProfileObject);
+    dislikeParseObject.saveInBackground(new SaveCallback() {
+      @Override
+      public void done(ParseException e) {
+        if (e == null) {
+          ParseQuery<ParseObject> parseQuery = new ParseQuery<>("LikedProfile");
+          parseQuery.whereEqualTo("likeProfileId", ParseObject.createWithoutData("Profile", undoMatch.getProfileId()));
+          parseQuery.whereEqualTo("profileId", userProfileObject);
+          parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+              if (e == null) {
+                parseObject.deleteInBackground(new DeleteCallback() {
+                  @Override
+                  public void done(ParseException e) {
+                    mApp.dialog.dismiss();
+                  }
+                });
+              } else {
+                mApp.showToast(context, e.getMessage());
+                mApp.dialog.dismiss();
+              }
+            }
+          });
+        } else {
+          mApp.dialog.dismiss();
+          mApp.showToast(context, e.getMessage());
+        }
+      }
+    });
+  }
+
+  private void undoDislike() {
+    ParseObject dislikeParseObject = new ParseObject("PinnedProfile");
+    dislikeParseObject.put("pinnedProfileId", ParseObject.createWithoutData("Profile", undoMatch.getProfileId()));
+    dislikeParseObject.put("profileId", userProfileObject);
+    dislikeParseObject.saveInBackground(new SaveCallback() {
+      @Override
+      public void done(ParseException e) {
+        if (e == null) {
+          ParseQuery<ParseObject> parseQuery = new ParseQuery<>("DislikeProfile");
+          parseQuery.whereEqualTo("dislikeProfileId", ParseObject.createWithoutData("Profile", undoMatch.getProfileId()));
+          parseQuery.whereEqualTo("profileId", userProfileObject);
+          parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+              if (e == null) {
+                parseObject.deleteInBackground(new DeleteCallback() {
+                  @Override
+                  public void done(ParseException e) {
+                    mApp.dialog.dismiss();
+                  }
+                });
+              } else {
+                mApp.dialog.dismiss();
+                mApp.showToast(context, e.getMessage());
+              }
+            }
+          });
+        } else {
+          mApp.dialog.dismiss();
+          mApp.showToast(context, e.getMessage());
+        }
+      }
+    });
+
   }
 
 }

@@ -2,8 +2,10 @@ package com.mandaptak.android.EditProfile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -15,6 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.Main.MainActivity;
@@ -51,6 +55,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
   QualificationEditProfileFragment qualificationEditProfileFragment;
   FinalEditProfileFragment finalEditProfileFragment;
   boolean isFirstStart;
+  FrameLayout rootLayout;
   Common mApp;
   Context context;
   Profile profile = new Profile();
@@ -105,7 +110,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       actionBar.setTitle("    Edit Profile");
     }
     mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+    rootLayout = (FrameLayout) findViewById(R.id.parent_activity);
     // Set up the ViewPager with the sections adapter.
     mViewPager = (MyViewPager) findViewById(R.id.pager);
     skipButton = (FloatingActionButton) findViewById(R.id.skip_next);
@@ -344,17 +349,23 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
   }
 
   private boolean checkFieldsTab1(Profile profile) {
-    if (profile.getName() == null) {
+    if (profile.getName() == null || profile.getName().equals("")) {
+      showSnakeBar("Please enter Name");
       return false;
     } else if (profile.getGender() == null) {
+      showSnakeBar("Please Select Gender");
       return false;
     } else if (profile.getDateOfBirth() == null) {
+      showSnakeBar("Please Select DateOfBirth");
       return false;
     } else if (profile.getTimeOfBirth() == null) {
+      showSnakeBar("Please Select TimeOfBirth");
       return false;
     } else if (profile.getCurrentLocation() == null) {
+      showSnakeBar("Please Select Current Location");
       return false;
     } else if (profile.getPlaceOfBirth() == null) {
+      showSnakeBar("Please Select Place Of Birth");
       return false;
     } else {
       return true;
@@ -363,14 +374,19 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
   private boolean checkFieldsTab2(Profile profile) {
     if (profile.getHeight() == 0) {
+      showSnakeBar("Please Select Height");
       return false;
     } else if (profile.getWeight() == 0) {
+      showSnakeBar("Please Select Weight");
       return false;
     } else if (profile.getReligion() == null) {
+      showSnakeBar("Please Select Religion");
       return false;
     } else if (profile.getCaste() == null) {
+      showSnakeBar("Please Select Caste");
       return false;
     } else if (profile.getManglik() == -1) {
+      showSnakeBar("Please Select Manglik");
       return false;
     } else {
       return true;
@@ -379,16 +395,22 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
   private boolean checkFieldsTab3(Profile profile) {
     if (profile.getWorkAfterMarriage() == -1) {
+      showSnakeBar("Please Select Work After Marriage");
       return false;
     } else if (profile.getIncome() == -1) {
+      showSnakeBar("Please Select Income");
       return false;
     } else if (profile.getDesignation() == null) {
+      showSnakeBar("Please Select Designation");
       return false;
-    } else if (profile.getPlaceOfBirth() == null) {
+    } else if (profile.getCompany() == null) {
+      showSnakeBar("Please Select Company");
       return false;
     } else if (profile.getIndustry() == null) {
+      showSnakeBar("Please Select Industry");
       return false;
     } else if (profile.getEducation1() == null) {
+      showSnakeBar("Please Select Education");
       return false;
     } else {
       return true;
@@ -397,6 +419,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
 
   private boolean checkFieldsTab4(ParseObject parseObject) {
     if (!parseObject.containsKey("profilePic") || parseObject.get("profilePic").equals(JSONObject.NULL)) {
+      showSnakeBar("Please Select ProfilePic");
       return false;
     } else {
       return true;
@@ -549,5 +572,22 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       }
       return null;
     }
+  }
+
+  private void showSnakeBar(String msg) {
+    Snackbar snackbar = Snackbar
+        .make(rootLayout, msg, Snackbar.LENGTH_LONG)
+        .setAction("OK", new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+
+          }
+        });
+    snackbar.setActionTextColor(context.getResources().getColor(R.color.white));
+    View snackbarView = snackbar.getView();
+    snackbarView.setBackgroundColor(context.getResources().getColor(R.color.red_400));//change Snackbar's background color;
+    TextView textView = (TextView) snackbarView.findViewById(android.support.design.R.id.snackbar_text);
+    textView.setTextColor(Color.WHITE);
+    snackbar.show();
   }
 }

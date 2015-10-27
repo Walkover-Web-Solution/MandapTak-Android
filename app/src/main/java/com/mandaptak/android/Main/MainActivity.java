@@ -2,9 +2,6 @@ package com.mandaptak.android.Main;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BlurMaskFilter;
-import android.graphics.PointF;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,21 +18,16 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facebook.cache.common.CacheKey;
-import com.facebook.cache.common.SimpleCacheKey;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
 import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.imagepipeline.request.Postprocessor;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
@@ -75,12 +67,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+
 import jp.wasabeef.fresco.processors.BlurPostprocessor;
 import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -660,18 +652,17 @@ public class MainActivity extends AppCompatActivity {
             .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait));
         profilePic.into(frontPhoto);
 
-        ControllerListener listener = new BaseControllerListener<ImageInfo>(){
+        ControllerListener listener = new BaseControllerListener<ImageInfo>() {
           @Override
-          public void onFinalImageSet(    String id,    ImageInfo imageInfo,    Animatable animatable){
+          public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
           }
+
           @Override
           public void onRelease(String id) {
             super.onRelease(id);
 
           }
         };
-
-
         GenericDraweeHierarchy hierarchy = backgroundPhoto.getHierarchy();
         hierarchy.setFadeDuration(1);
         hierarchy.setPlaceholderImage(R.drawable.com_facebook_profile_picture_blank_portrait);

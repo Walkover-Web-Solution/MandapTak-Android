@@ -5,7 +5,17 @@ import com.parse.ParseObject;
 public class AgentProfileModel {
   private String name;
   private String imageUrl;
+  private String number;
   private boolean isActive;
+
+  public String getNumber() {
+    return number;
+  }
+
+  public void setNumber(String number) {
+    this.number = number;
+  }
+
   private boolean isComplete;
   private String createDate;
   private ParseObject profileObject;

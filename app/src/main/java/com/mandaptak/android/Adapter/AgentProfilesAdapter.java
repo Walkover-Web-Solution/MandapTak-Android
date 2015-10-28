@@ -67,6 +67,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
       viewholder.status = (TextView) paramView.findViewById(R.id.status);
       viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
       viewholder.more = (ImageView) paramView.findViewById(R.id.more);
+      viewholder.number = (TextView) paramView.findViewById(R.id.number);
       paramView.setTag(viewholder);
     } else {
       viewholder = (ViewHolder) paramView.getTag();
@@ -84,6 +85,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
         viewholder.status.setTextColor(activity.getResources().getColor(R.color.green_500));
         viewholder.status.setText("Active");
       }
+      viewholder.number.setText(agentProfileModel.getNumber());
       if (agentProfileModel.isComplete()) {
         viewholder.name.setText(agentProfileModel.getName());
         Picasso.with(activity)
@@ -92,7 +94,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
             .error(R.drawable.com_facebook_profile_picture_blank_square)
             .into(viewholder.image);
       } else {
-        viewholder.name.setText("+91" + agentProfileModel.getName());
+        viewholder.name.setText("No Name");
         Picasso.with(activity)
             .load(Uri.parse(agentProfileModel.getImageUrl()))
             .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
@@ -230,5 +232,6 @@ public class AgentProfilesAdapter extends BaseAdapter {
     private TextView status;
     private ImageView image;
     private ImageView more;
+    private TextView number;
   }
 }

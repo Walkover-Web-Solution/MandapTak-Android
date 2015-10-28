@@ -1,0 +1,30 @@
+<RelativeLayout
+    android:id="@+id/load_more_footer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/load_more_lab_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:padding="3dp"
+        android:text="Load more Clients"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:textColor="@color/black_dark"/>
+
+    <ProgressBar
+        android:id="@+id/load_more_progressBar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerInParent="true"
+        android:layout_toLeftOf="@+id/load_more_lab_view"
+        android:layout_toStartOf="@+id/load_more_lab_view"
+        android:indeterminate="true"
+        android:padding="3dp"
+        android:visibility="gone"/>
+</RelativeLayout>

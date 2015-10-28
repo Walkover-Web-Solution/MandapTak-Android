@@ -34,10 +34,13 @@
         android:layout_above="@+id/add_button"
         android:layout_below="@+id/divider1">
 
+
         <ListView
             android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:scrollbars="none"/>
 
         <ProgressBar
             android:id="@+id/progress"

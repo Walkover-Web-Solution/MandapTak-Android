@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -41,7 +42,9 @@ public class AgentActivity extends AppCompatActivity {
   TextView addProfile, availableCredits;
   int creditBalance = 0;
   ProgressBar progressBar;
-  private HashMap<String, Object> params = new HashMap<>();
+  int limit = 15;
+  int skip = 0;
+  Boolean loadMore = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +122,26 @@ public class AgentActivity extends AppCompatActivity {
     if (mApp.isNetworkAvailable(context)) {
       getProfiles();
     }
+
+    profileList.setOnScrollListener(new AbsListView.OnScrollListener() {
+      @Override
+      public void onScrollStateChanged(AbsListView view, int scrollState) {
+        int threshold = 1;
+        int count = profileList.getCount();
+
+        if (scrollState == SCROLL_STATE_IDLE) {
+          if (profileList.getLastVisiblePosition() >= count
+              - threshold) {
+            getProfiles();
+          }
+        }
+      }
+
+      @Override
+      public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+      }
+    });
   }
 
   public void getProfiles() {
@@ -136,21 +159,30 @@ public class AgentActivity extends AppCompatActivity {
       }
     });
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-    query.include("profileId");
+    query.include("profileId.userId");
+    //  query.include("userId");
     query.whereEqualTo("userId", ParseUser.getCurrentUser());
     query.whereEqualTo("relation", "Agent");
+    if (loadMore) {
+      limit = limit + 15;
+      query.setLimit(15);
+    } else
+      query.setLimit(limit);
+    query.setSkip(skip);
     query.findInBackground(new FindCallback<ParseObject>() {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {
           if (list.size() > 0) {
-            profileModels.clear();
+            //profileModels.clear();
             for (ParseObject parseObject : list) {
               try {
                 final ParseObject profileObject = parseObject.getParseObject("profileId");
                 boolean isComplete = profileObject.getBoolean("isComplete");
                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
                 agentProfileModel.setProfileObject(profileObject);
+                agentProfileModel.setNumber(profileObject.getParseUser("userId").getUsername());
+                // agentProfileModel.setNumber("77");
                 if (isComplete) {
                   SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
                   String date = sdf.format(profileObject.getUpdatedAt());
@@ -165,7 +197,7 @@ public class AgentActivity extends AppCompatActivity {
                   agentProfileModel.setCreateDate(date);
                   agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
                   agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
-                  agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
+                  //     agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
                   agentProfileModel.setIsComplete(false);
                 }
                 profileModels.add(agentProfileModel);
@@ -174,6 +206,12 @@ public class AgentActivity extends AppCompatActivity {
               }
             }
             adapter.notifyDataSetChanged();
+            if (loadMore) {
+              int position = profileList.getLastVisiblePosition();
+              profileList.setSelectionFromTop(position, 0);
+            }
+            skip = skip + limit;
+            loadMore = true;
           } else {
             profileList.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);
@@ -186,7 +224,12 @@ public class AgentActivity extends AppCompatActivity {
         }
         profileList.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
+
       }
     });
   }
+
+
 }
+
+

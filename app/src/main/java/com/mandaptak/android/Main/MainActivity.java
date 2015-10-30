@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,8 +40,6 @@ import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Settings.SettingsActivity;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.BlurringView;
-import com.mandaptak.android.Views.CircleImageView;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -56,11 +53,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.skyfishjy.library.RippleBackground;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 import org.lucasr.twowayview.widget.TwoWayView;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,6 +69,9 @@ import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
+import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
+import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -83,15 +82,14 @@ public class MainActivity extends AppCompatActivity {
   private LinearLayout bottomLayout;
   private SlidingUpPanelLayout slidingPanel;
   private ImageView pinButton;
-  private SimpleDraweeView backgroundPhoto;
+  private SimpleDraweeView backgroundPhoto, frontProfile, loadingProfile;
   public Context context;
   private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
   private TwoWayView profileImages;
   private UserImagesAdapter userImagesAdapter;
   private ArrayList<ParseObject> profileList = new ArrayList<>();
   private TextView frontProfileName, frontHeight, frontDesignation, frontReligion, frontTraits;
-  private CircleImageView frontPhoto, loadingProfile;
-  private BlurringView blurringView;
+
   private TextView salary, industry, designation, education, weight, currentLocation, viewFullProfile;
   private TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
   private RippleBackground rippleBackground;
@@ -102,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
   private ParseObject profileObject;
   private FabButton traitsProgress;
   private boolean isLoading = false;
+  private static final String SHOWCASE_ID = "sequence showcase";
 
   public void setTraits() {
     try {
@@ -227,10 +226,9 @@ public class MainActivity extends AppCompatActivity {
     pinButton = (ImageView) findViewById(R.id.pin_button);
     profileImages = (TwoWayView) findViewById(R.id.list);
     backgroundPhoto = (SimpleDraweeView) findViewById(R.id.background_photo);
-    blurringView = (BlurringView) findViewById(R.id.blurring_view);
     frontProfileName = (TextView) findViewById(R.id.front_name);
-    frontPhoto = (CircleImageView) findViewById(R.id.front_photo);
-    loadingProfile = (CircleImageView) findViewById(R.id.loading_profile);
+    loadingProfile = (SimpleDraweeView) findViewById(R.id.loading_profile);
+    frontProfile = (SimpleDraweeView) findViewById(R.id.front_pic);
     frontDesignation = (TextView) findViewById(R.id.front_designation);
     frontHeight = (TextView) findViewById(R.id.front_height);
     frontReligion = (TextView) findViewById(R.id.front_religion);
@@ -442,7 +440,6 @@ public class MainActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
-
     context = this;
     mApp = (Common) context.getApplicationContext();
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -456,12 +453,6 @@ public class MainActivity extends AppCompatActivity {
       e.printStackTrace();
     }
     init();
-//    try {
-//      blurringView.setBlurredView(backgroundPhoto);
-//
-//    } catch (Exception e) {
-//      RaygunClient.Send(new Throwable(e.getMessage() + " blur_imageview_exception"));
-//    }
     rippleBackground.startRippleAnimation();
     slidingPanel.setEnabled(false);
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
@@ -484,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
     final TypefaceTextView profileButton = (TypefaceTextView) navigationMenu.findViewById(R.id.profile_button);
     final TypefaceTextView settingsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.settings_button);
     final TypefaceTextView prefsButton = (TypefaceTextView) navigationMenu.findViewById(R.id.pref_button);
-    final CircleImageView profilePicture = (CircleImageView) navigationMenu.findViewById(R.id.profile_image);
+    final SimpleDraweeView profilePicture = (SimpleDraweeView) navigationMenu.findViewById(R.id.profile_image);
 
     profileButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -508,7 +499,6 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.this.finish();
       }
     });
-
     getUserProfile(profileName, profilePicture);
     setSlidingMenu(navigationMenu);
   }
@@ -555,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  private void getUserProfile(final TypefaceTextView profileName, final CircleImageView profilePicture) {
+  private void getUserProfile(final TypefaceTextView profileName, final SimpleDraweeView profilePicture) {
     ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
     query.getInBackground(Prefs.getProfileId(context), new GetCallback<ParseObject>() {
       @Override
@@ -584,13 +574,15 @@ public class MainActivity extends AppCompatActivity {
       }
 
       private void setProfilePictures(ParseFile file) {
-        RequestCreator placeholder = Picasso.with(context)
-            .load(file.getUrl())
-            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square));
-
-        placeholder.into(profilePicture);
-        placeholder.into(loadingProfile);
+        String photoUrl = file.getUrl();
+        final Uri uri;
+        if (photoUrl.startsWith("http")) {
+          uri = Uri.parse(photoUrl);
+        } else {
+          uri = Uri.fromFile(new File(photoUrl));
+        }
+        profilePicture.setImageURI(uri);
+        loadingProfile.setImageURI(uri);
       }
     });
   }
@@ -644,51 +636,54 @@ public class MainActivity extends AppCompatActivity {
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
     final ParseObject parseProfileObject = profileList.get(0);
     try {
-      if (parseProfileObject.containsKey("profilePic") && parseProfileObject.getParseFile("profilePic") != null) {
-        Picasso mPicasso = Picasso.with(context);
+      try {
+        if (parseProfileObject.containsKey("profilePic") && parseProfileObject.getParseFile("profilePic") != null) {
+          ControllerListener listener = new BaseControllerListener<ImageInfo>() {
+            @Override
+            public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+              //MaterialShowcaseView.resetSingleUse(context, SHOWCASE_ID);
+              presentShowcaseSequence(); // one second delay
+            }
 
-        RequestCreator profilePic = mPicasso.load(parseProfileObject.getParseFile("profilePic").getUrl()).noFade()
-            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait))
-            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_portrait));
-        profilePic.into(frontPhoto);
-
-        ControllerListener listener = new BaseControllerListener<ImageInfo>() {
-          @Override
-          public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
+            @Override
+            public void onRelease(String id) {
+              super.onRelease(id);
+            }
+          };
+          GenericDraweeHierarchy hierarchy = backgroundPhoto.getHierarchy();
+          hierarchy.setFadeDuration(1);
+          hierarchy.setPlaceholderImage(R.drawable.com_facebook_profile_picture_blank_portrait);
+          String photoUrl = parseProfileObject.getParseFile("profilePic").getUrl();
+          final Uri uri;
+          if (photoUrl.startsWith("http")) {
+            uri = Uri.parse(photoUrl);
+          } else {
+            uri = Uri.fromFile(new File(photoUrl));
           }
-
-          @Override
-          public void onRelease(String id) {
-            super.onRelease(id);
-
-          }
-        };
-        GenericDraweeHierarchy hierarchy = backgroundPhoto.getHierarchy();
-        hierarchy.setFadeDuration(1);
-        hierarchy.setPlaceholderImage(R.drawable.com_facebook_profile_picture_blank_portrait);
-
-        String photoUrl = parseProfileObject.getParseFile("profilePic").getUrl();
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(photoUrl))
-            .setResizeOptions(new ResizeOptions(512, 334))
-            .setPostprocessor(new BlurPostprocessor(context, 15))
-            .build();
-
-        PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-            .setControllerListener(listener)
-            .setOldController(backgroundPhoto.getController())
-            .setImageRequest(request)
-            .build();
-
-
-        backgroundPhoto.setController(controller);
-        rippleBackground.setVisibility(View.GONE);
-      } else {
-        Picasso.with(context)
-            .load(Uri.EMPTY)
-            .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-            .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-            .into(frontPhoto);
+          frontProfile.setImageURI(uri);
+          ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(photoUrl))
+              .setResizeOptions(new ResizeOptions(512, 334))
+              .setPostprocessor(new BlurPostprocessor(context, 15))
+              .build();
+          PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
+              .setControllerListener(listener)
+              .setOldController(backgroundPhoto.getController())
+              .setImageRequest(request)
+              .build();
+          backgroundPhoto.setController(controller);
+          rippleBackground.setVisibility(View.GONE);
+        } else {
+          frontProfile.setImageURI(Uri.EMPTY);
+//          Picasso.with(context)
+//              .load(Uri.EMPTY)
+//              .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//              .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
+//              .into(frontPhoto);
+        }
+      } catch (OutOfMemoryError error) {
+        error.printStackTrace();
       }
+
 
       if (parseProfileObject.containsKey("name") && parseProfileObject.getString("name") != null) {
         String name = parseProfileObject.getString("name");
@@ -833,5 +828,36 @@ public class MainActivity extends AppCompatActivity {
 
   public void previewPhoto(Intent intent) {
     startActivityForResult(intent, REQUEST_CODE);
+  }
+
+  private void presentShowcaseSequence() {
+    ShowcaseConfig config = new ShowcaseConfig();
+    config.setDelay(500); // half second between each showcase view
+    MaterialShowcaseSequence sequence = new MaterialShowcaseSequence(this, SHOWCASE_ID);
+    sequence.setConfig(config);
+    sequence.addSequenceItem(pinButton, "Click to Pin Profile", "GOT IT");
+
+    sequence.addSequenceItem(
+        new MaterialShowcaseView.Builder(this)
+            .setTarget(mainUndoButton)
+            .setDismissText("GOT IT")
+            .setContentText("Click to Undo Profile")
+            .build()
+    );
+    sequence.addSequenceItem(
+        new MaterialShowcaseView.Builder(this)
+            .setTarget(mainLikeButton)
+            .setDismissText("GOT IT")
+            .setContentText("Click to Like Profile")
+            .build()
+    );
+    sequence.addSequenceItem(
+        new MaterialShowcaseView.Builder(this)
+            .setTarget(mainSkipButton)
+            .setDismissText("GOT IT")
+            .setContentText("Click to Dislike Profile")
+            .build()
+    );
+    sequence.start();
   }
 }

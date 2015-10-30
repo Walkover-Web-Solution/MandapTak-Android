@@ -92,6 +92,9 @@ public class AgentActivity extends AppCompatActivity {
                         public void done(Object o, ParseException e) {
                           mApp.dialog.dismiss();
                           if (e == null) {
+                            skip = 0;
+                            limit = 15;
+                            loadMore = false;
                             getProfiles();
                           } else {
                             mApp.showToast(context, e.getMessage());

@@ -642,7 +642,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
               //MaterialShowcaseView.resetSingleUse(context, SHOWCASE_ID);
-              presentShowcaseSequence(); // one second delay
+              presentShowcaseSequence();
             }
 
             @Override

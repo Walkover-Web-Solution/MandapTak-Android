@@ -169,7 +169,7 @@ public class PinsFragment extends Fragment implements
     pinsAdapter = new PinsAdapter(PinsFragment.this, pinsList, context);
     mAdapter = new SwipeActionAdapter(pinsAdapter);
     mAdapter.setSwipeActionListener(this)
-        .setDimBackgrounds(true)
+        .setDimBackgrounds(false).setFixedBackgrounds(true)
         .setListView(listViewMatches);
     listViewMatches.setAdapter(mAdapter);
     progressBar.setVisibility(View.GONE);

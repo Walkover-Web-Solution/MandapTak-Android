@@ -16,9 +16,9 @@ import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Matches.MessageScreen;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
+import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.CircleImageView;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -33,10 +33,12 @@ public class MatchesAdapter extends BaseAdapter {
   Context ctx;
   ArrayList<MatchesModel> list;
   ArrayList<String> mTargetParticipants = new ArrayList<>();
+  Common mApp;
 
   public MatchesAdapter(ArrayList<MatchesModel> paramArrayList, Context paramContext) {
     this.list = paramArrayList;
     this.ctx = paramContext;
+    mApp = (Common) ctx.getApplicationContext();
   }
 
   public int getCount() {
@@ -72,14 +74,7 @@ public class MatchesAdapter extends BaseAdapter {
     viewholder.chatButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-        q1.getInBackground(Prefs.getProfileId(ctx), new GetCallback<ParseObject>() {
-          @Override
-          public void done(ParseObject parseObject, ParseException e) {
-            getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName(), parseObject);
-
-          }
-        });
+        getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName());
       }
     });
     Picasso.with(ctx)
@@ -89,49 +84,45 @@ public class MatchesAdapter extends BaseAdapter {
     return paramView;
   }
 
-  private void getChatMembers(String profileId, final String name, final ParseObject myProfofile) {
-    ParseQuery<ParseObject> q1 = new ParseQuery<>("Profile");
-    q1.getInBackground(profileId, new GetCallback<ParseObject>() {
+  private void getChatMembers(String profileId, final String name) {
+    mApp.show_PDialog(ctx, "Please wait", false);
+    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+    query.include("userId");
+    query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
+    query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileId));
+    query.whereNotEqualTo("relation", "Agent");
+    query.findInBackground(new FindCallback<ParseObject>() {
       @Override
-      public void done(ParseObject object, ParseException e) {
+      public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {
-          ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-          query.include("userId");
-          query.whereEqualTo("profileId", myProfofile);
-          query.whereEqualTo("profileId", object);
-          query.whereNotEqualTo("relation", "Agent");
-          query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-              if (e == null)
-                if (list.size() > 0) {
-                  mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
-                  for (ParseObject parseObject : list) {
-                    mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
-                  }
-                  if (mTargetParticipants.size() > 0) {
-                    Intent intent = new Intent(ctx, MessageScreen.class);
-                    Query query = Query.builder(Conversation.class)
-                        .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
-                        .build();
-                    List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
-                    if (results.size() > 0) {
-                      intent.putExtra("conversation-id", results.get(0).getId());
-                    } else {
-                      intent.putExtra("participant-map", mTargetParticipants);
-                      intent.putExtra("title-conv", name + " " + myProfofile.getString("name"));
-                    }
-                    ctx.startActivity(intent);
-
-                  }
-
-                }
-
+          mApp.dialog.dismiss();
+          if (list.size() > 0) {
+            mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+            for (ParseObject parseObject : list) {
+              mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
             }
-          });
+            if (mTargetParticipants.size() > 0) {
+              Intent intent = new Intent(ctx, MessageScreen.class);
+              Query query = Query.builder(Conversation.class)
+                  .predicate(new Predicate(Conversation.Property.PARTICIPANTS, Predicate.Operator.EQUAL_TO, mTargetParticipants))
+                  .build();
+              List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
+              if (results.size() > 0) {
+                intent.putExtra("conversation-id", results.get(0).getId());
+              } else {
+                intent.putExtra("participant-map", mTargetParticipants);
+                intent.putExtra("title-conv", name + " " + ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)).getString("name"));
+              }
+              ctx.startActivity(intent);
+            }
+          }
+        } else {
+          mApp.showToast(ctx, e.getMessage());
+          mApp.dialog.dismiss();
         }
       }
     });
+
   }
 
   static class ViewHolder {

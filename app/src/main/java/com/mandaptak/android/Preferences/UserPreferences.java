@@ -66,9 +66,11 @@ public class UserPreferences extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.fragment_set_preferences);
     try {
-      getSupportActionBar().setHomeButtonEnabled(true);
-      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setTitle("Preferences");
+      if (getSupportActionBar() != null) {
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Preferences");
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }

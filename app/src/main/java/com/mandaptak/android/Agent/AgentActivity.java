@@ -1,10 +1,14 @@
 package com.mandaptak.android.Agent;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
@@ -95,6 +99,7 @@ public class AgentActivity extends AppCompatActivity {
                             skip = 0;
                             limit = 15;
                             loadMore = false;
+                            profileModels.clear();
                             getProfiles();
                           } else {
                             mApp.showToast(context, e.getMessage());
@@ -232,7 +237,115 @@ public class AgentActivity extends AppCompatActivity {
     });
   }
 
+  public void getSearchResults(String searchText) {
+    profileList.setVisibility(View.GONE);
+    progressBar.setVisibility(View.VISIBLE);
+    ParseQuery innerQuery = new ParseQuery("Profile");
+    if (Character.isDigit(searchText.charAt(0))) {
+      ParseQuery<ParseUser> queryUser = ParseUser.getQuery();
+      queryUser.whereMatches("username", "(" + searchText + ")", "i");
+      innerQuery.whereMatchesQuery("userId", queryUser);
+    } else {
+      innerQuery.whereMatches("name", "(" + searchText + ")", "i");
+    }
+    ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
+    query.include("profileId.userId");
+    query.whereEqualTo("userId", ParseUser.getCurrentUser());
+    query.whereEqualTo("relation", "Agent");
+    query.whereMatchesQuery("profileId", innerQuery);
+    if (loadMore) {
+      limit = limit + 15;
+      query.setLimit(15);
+    } else
+      query.setLimit(limit);
+    query.setSkip(skip);
+    query.findInBackground(new FindCallback<ParseObject>() {
+      @Override
+      public void done(List<ParseObject> list, ParseException e) {
+        if (e == null) {
+          if (list.size() > 0) {
+            //profileModels.clear();
+            for (ParseObject parseObject : list) {
+              try {
+                final ParseObject profileObject = parseObject.getParseObject("profileId");
+                boolean isComplete = profileObject.getBoolean("isComplete");
+                final AgentProfileModel agentProfileModel = new AgentProfileModel();
+                agentProfileModel.setProfileObject(profileObject);
+                agentProfileModel.setNumber(profileObject.getParseUser("userId").getUsername());
+                if (isComplete) {
+                  SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+                  String date = sdf.format(profileObject.getUpdatedAt());
+                  agentProfileModel.setCreateDate(date);
+                  agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
+                  agentProfileModel.setImageUrl(profileObject.getParseFile("profilePic").getUrl());
+                  agentProfileModel.setName(profileObject.getString("name"));
+                  agentProfileModel.setIsComplete(true);
+                } else {
+                  SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+                  String date = sdf.format(profileObject.getUpdatedAt());
+                  agentProfileModel.setCreateDate(date);
+                  agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
+                  agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
+                  agentProfileModel.setIsComplete(false);
+                }
+                profileModels.add(agentProfileModel);
+              } catch (Exception e1) {
+                e1.printStackTrace();
+              }
+            }
+            adapter.notifyDataSetChanged();
+            if (loadMore) {
+              int position = profileList.getLastVisiblePosition();
+              profileList.setSelectionFromTop(position, 0);
+            }
+            skip = skip + limit;
+            loadMore = true;
+          } else {
+            profileList.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+          }
+        } else {
+          profileList.setVisibility(View.GONE);
+          progressBar.setVisibility(View.GONE);
+          mApp.showToast(context, e.getMessage());
+          e.printStackTrace();
+        }
+        profileList.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
 
+      }
+    });
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    MenuInflater inflater = getMenuInflater();
+    inflater.inflate(R.menu.agent_search_actionbar, menu);
+    SearchManager searchManager =
+        (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+    SearchView searchView =
+        (SearchView) menu.findItem(R.id.menu_search).getActionView();
+    searchView.setSearchableInfo(
+        searchManager.getSearchableInfo(getComponentName()));
+    searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+      @Override
+      public boolean onQueryTextSubmit(String query) {
+        skip = 0;
+        limit = 15;
+        loadMore = false;
+        profileModels.clear();
+        getSearchResults(query);
+        return false;
+      }
+
+      @Override
+      public boolean onQueryTextChange(String newText) {
+        return false;
+      }
+    });
+
+    return true;
+  }
 }
 
 

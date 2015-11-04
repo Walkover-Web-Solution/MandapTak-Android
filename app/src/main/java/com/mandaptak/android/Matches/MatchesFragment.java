@@ -232,7 +232,9 @@ public class MatchesFragment extends Fragment {
                   .build();
               List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
               if (results.size() > 0) {
-                results.get(0).removeParticipants(mTargetParticipants);
+                for (String user : mTargetParticipants) {
+                  results.get(0).removeParticipants(user);
+                }
                 mApp.dialog.dismiss();
               } else {
                 mApp.dialog.dismiss();

@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AgentActivity extends AppCompatActivity {
   Common mApp;
@@ -49,6 +51,10 @@ public class AgentActivity extends AppCompatActivity {
   int limit = 15;
   int skip = 0;
   Boolean loadMore = false;
+  Boolean isSearching = false;
+  SearchView searchView;
+  int lastResultSize = 0;
+  Timer mTimer;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +102,7 @@ public class AgentActivity extends AppCompatActivity {
                         public void done(Object o, ParseException e) {
                           mApp.dialog.dismiss();
                           if (e == null) {
-                            skip = 0;
-                            limit = 15;
-                            loadMore = false;
-                            profileModels.clear();
+                            resetProfileData();
                             getProfiles();
                           } else {
                             mApp.showToast(context, e.getMessage());
@@ -128,6 +131,7 @@ public class AgentActivity extends AppCompatActivity {
     adapter = new AgentProfilesAdapter(AgentActivity.this, profileModels);
     profileList.setAdapter(adapter);
     if (mApp.isNetworkAvailable(context)) {
+      isSearching = false;
       getProfiles();
     }
 
@@ -140,7 +144,13 @@ public class AgentActivity extends AppCompatActivity {
         if (scrollState == SCROLL_STATE_IDLE) {
           if (profileList.getLastVisiblePosition() >= count
               - threshold) {
-            getProfiles();
+            if (lastResultSize < 15) {
+              if (!isSearching)
+                getProfiles();
+              else if (!searchView.getQuery().toString().equals("")) {
+                getSearchResults(searchView.getQuery().toString());
+              }
+            }
           }
         }
       }
@@ -150,6 +160,14 @@ public class AgentActivity extends AppCompatActivity {
 
       }
     });
+  }
+
+  public void resetProfileData() {
+    skip = 0;
+    limit = 15;
+    loadMore = false;
+    isSearching = false;
+    profileModels.clear();
   }
 
   public void getProfiles() {
@@ -181,7 +199,8 @@ public class AgentActivity extends AppCompatActivity {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {
-          if (list.size() > 0) {
+          lastResultSize = list.size();
+          if (lastResultSize > 0) {
             //profileModels.clear();
             for (ParseObject parseObject : list) {
               try {
@@ -263,8 +282,8 @@ public class AgentActivity extends AppCompatActivity {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
         if (e == null) {
-          if (list.size() > 0) {
-            //profileModels.clear();
+          lastResultSize = list.size();
+          if (lastResultSize > 0) {
             for (ParseObject parseObject : list) {
               try {
                 final ParseObject profileObject = parseObject.getParseObject("profileId");
@@ -323,24 +342,51 @@ public class AgentActivity extends AppCompatActivity {
     inflater.inflate(R.menu.agent_search_actionbar, menu);
     SearchManager searchManager =
         (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-    SearchView searchView =
+    searchView =
         (SearchView) menu.findItem(R.id.menu_search).getActionView();
     searchView.setSearchableInfo(
         searchManager.getSearchableInfo(getComponentName()));
+    searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+      @Override
+      public boolean onClose() {
+        resetProfileData();
+        getProfiles();
+        return false;
+      }
+    });
     searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {
-        skip = 0;
-        limit = 15;
-        loadMore = false;
-        profileModels.clear();
-        getSearchResults(query);
         return false;
       }
 
       @Override
-      public boolean onQueryTextChange(String newText) {
-        return false;
+      public boolean onQueryTextChange(final String newText) {
+        if (mTimer != null) {
+          mTimer.cancel();
+        }
+        mTimer = new Timer();
+        mTimer.schedule(new TimerTask() {
+          @Override
+          public void run() {
+            runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                if (newText != null && !newText.equals("")) {
+                  skip = 0;
+                  limit = 15;
+                  loadMore = false;
+                  isSearching = true;
+                  profileModels.clear();
+                  getSearchResults(newText);
+                }
+              }
+            });
+
+          }
+        }, 2500);
+
+        return true;
       }
     });
 

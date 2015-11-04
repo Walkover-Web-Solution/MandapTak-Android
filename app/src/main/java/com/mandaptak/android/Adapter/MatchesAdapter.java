@@ -111,7 +111,11 @@ public class MatchesAdapter extends BaseAdapter {
                 intent.putExtra("conversation-id", results.get(0).getId());
               } else {
                 intent.putExtra("participant-map", mTargetParticipants);
-                intent.putExtra("title-conv", name + " " + ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)).getString("name"));
+                try {
+                  intent.putExtra("title-conv", name + " " + ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)).fetchIfNeeded().getString("name"));
+                } catch (ParseException e1) {
+                  e1.printStackTrace();
+                }
               }
               ctx.startActivity(intent);
             }

@@ -18,7 +18,6 @@ import com.mandaptak.android.Agent.AgentActivity;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Utils.CommonUtils;
 import com.mandaptak.android.Views.ExtendedEditText;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -33,14 +32,12 @@ import java.util.HashMap;
 public class AgentProfilesAdapter extends BaseAdapter {
   AgentActivity activity;
   ArrayList<AgentProfileModel> list;
-  CommonUtils commonUtils;
   Common mApp;
 
   public AgentProfilesAdapter(AgentActivity activity, ArrayList<AgentProfileModel> paramArrayList) {
     this.list = paramArrayList;
     this.activity = activity;
     mApp = (Common) activity.getApplicationContext();
-    commonUtils = new CommonUtils(activity.getApplicationContext());
   }
 
   public int getCount() {
@@ -110,7 +107,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
               public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.status) {
-                  commonUtils.show_PDialog("Deactivating Profile..");
+                  mApp.show_PDialog(activity, "Deactivating Profile..");
                   ParseObject parseObject = agentProfileModel.getProfileObject();
                   parseObject.put("isActive", false);
                   parseObject.saveInBackground(new SaveCallback() {
@@ -119,6 +116,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
                       mApp.dialog.dismiss();
                       if (e == null) {
                         mApp.showToast(activity, "Profile Deactivated");
+                        activity.resetProfileData();
                         activity.getProfiles();
                       } else {
                         mApp.showToast(activity, e.getMessage());
@@ -143,7 +141,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
               public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.status) {
-                  commonUtils.show_PDialog("Activating Profile..");
+                  mApp.show_PDialog(activity, "Activating Profile..");
                   ParseObject parseObject = agentProfileModel.getProfileObject();
                   parseObject.put("isActive", true);
                   parseObject.saveInBackground(new SaveCallback() {
@@ -152,6 +150,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
                       mApp.dialog.dismiss();
                       if (e == null) {
                         mApp.showToast(activity, "Profile Activated");
+                        activity.resetProfileData();
                         activity.getProfiles();
                       } else {
                         mApp.showToast(activity, e.getMessage());
@@ -175,7 +174,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
   }
 
   void givePermission(final String profileId) {
-    if (commonUtils.isNetworkAvailable()) {
+    if (mApp.isNetworkAvailable(activity)) {
       final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
       final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
       alertDialog.setView(permissionDialog);
@@ -192,8 +191,8 @@ public class AgentProfilesAdapter extends BaseAdapter {
           if (!mobileNumber.equals("")) {
             if (mobileNumber.length() == 10) {
               alertDialog.dismiss();
-              if (commonUtils.isNetworkAvailable()) {
-                commonUtils.show_PDialog("Giving Permission..");
+              if (mApp.isNetworkAvailable(activity)) {
+                mApp.show_PDialog(activity, "Giving Permission..");
                 HashMap<String, Object> params = new HashMap<>();
                 params.put("mobile", mobileNumber);
                 params.put("profileId", profileId);

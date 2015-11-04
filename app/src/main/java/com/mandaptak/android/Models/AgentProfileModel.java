@@ -2,11 +2,19 @@ package com.mandaptak.android.Models;
 
 import com.parse.ParseObject;
 
-public class AgentProfileModel {
+import java.io.Serializable;
+
+public class AgentProfileModel implements Serializable {
   private String name;
   private String imageUrl;
   private String number;
   private boolean isActive;
+  private boolean isComplete;
+  private String createDate;
+  private ParseObject profileObject;
+
+  public AgentProfileModel() {
+  }
 
   public String getNumber() {
     return number;
@@ -14,13 +22,6 @@ public class AgentProfileModel {
 
   public void setNumber(String number) {
     this.number = number;
-  }
-
-  private boolean isComplete;
-  private String createDate;
-  private ParseObject profileObject;
-
-  public AgentProfileModel() {
   }
 
   public ParseObject getProfileObject() {

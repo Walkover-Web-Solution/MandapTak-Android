@@ -6,15 +6,25 @@ public class PermissionModel {
   private String date;
   private String profileId;
   private boolean isCurrentUser;
+  private int balance;
 
   public PermissionModel() {
   }
+
 
   public PermissionModel(String number, String relation, String date) {
     this.number = number;
     this.relation = relation;
     this.date = date;
 
+  }
+
+  public int getBalance() {
+    return balance;
+  }
+
+  public void setBalance(int balance) {
+    this.balance = balance;
   }
 
   public String getProfileId() {

@@ -99,6 +99,9 @@
             android:label="@string/title_activity_settings"
             android:screenOrientation="portrait"/>
         <activity
+            android:name=".Agent.ClientDetailActivity"
+            android:screenOrientation="portrait"/>
+        <activity
             android:name=".Matches.MatchedProfileActivity"
             android:label="@string/title_activity_matched_profile"
             android:screenOrientation="portrait"/>

@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.layer.sdk.messaging.Conversation;
+import com.layer.sdk.policy.Policy;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
 import com.mandaptak.android.Adapter.MatchesAdapter;
@@ -192,7 +193,6 @@ public class MatchesFragment extends Fragment {
                   matchList.remove(matchesModel);
                   matchesAdapter.notifyDataSetChanged();
                   getChatMembers(matchesModel.getProfileId());
-                  mApp.showToast(context, "Match removed");
                 } else {
                   mApp.dialog.dismiss();
                   mApp.showToast(context, e.getMessage());
@@ -212,7 +212,7 @@ public class MatchesFragment extends Fragment {
   private void getChatMembers(String profileId) {
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
     query.include("userId");
-    query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
+    // query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
     query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileId));
     query.whereNotEqualTo("relation", "Agent");
     query.findInBackground(new FindCallback<ParseObject>() {
@@ -222,7 +222,7 @@ public class MatchesFragment extends Fragment {
           mApp.dialog.dismiss();
           if (list.size() > 0) {
             ArrayList<String> mTargetParticipants = new ArrayList<>();
-            mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+            //  mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
             for (ParseObject parseObject : list) {
               mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
             }
@@ -233,8 +233,9 @@ public class MatchesFragment extends Fragment {
               List<Conversation> results = LayerImpl.getLayerClient().executeQuery(query, Query.ResultType.OBJECTS);
               if (results.size() > 0) {
                 for (String user : mTargetParticipants) {
-                  results.get(0).removeParticipants(user);
+                  LayerImpl.getLayerClient().addPolicy(Policy.builder(Policy.PolicyType.BLOCK).sentByUserId(user).build());
                 }
+                mApp.showToast(context, "Match removed");
                 mApp.dialog.dismiss();
               } else {
                 mApp.dialog.dismiss();
@@ -247,6 +248,5 @@ public class MatchesFragment extends Fragment {
         }
       }
     });
-
   }
 }

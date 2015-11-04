@@ -3,6 +3,7 @@ package com.mandaptak.android.Agent;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
@@ -11,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -79,6 +81,7 @@ public class AgentActivity extends AppCompatActivity {
             final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setView(permissionDialog);
             final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
+            final ExtendedEditText credits = (ExtendedEditText) permissionDialog.findViewById(R.id.credits);
             AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
             final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
             relations.setAdapter(ArrayAdapter.createFromResource(context,
@@ -91,26 +94,16 @@ public class AgentActivity extends AppCompatActivity {
                 if (!mobileNumber.equals("")) {
                   if (mobileNumber.length() == 10) {
                     alertDialog.dismiss();
-                    if (mApp.isNetworkAvailable(context)) {
-                      mApp.show_PDialog(context, "Creating User...");
-                      HashMap<String, Object> params = new HashMap<>();
-                      params.put("mobile", mobileNumber);
-                      params.put("relation", relations.getSelectedItem());
-                      params.put("agentId", ParseUser.getCurrentUser().getObjectId());
-                      ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
-                        @Override
-                        public void done(Object o, ParseException e) {
-                          mApp.dialog.dismiss();
-                          if (e == null) {
-                            resetProfileData();
-                            getProfiles();
-                          } else {
-                            mApp.showToast(context, e.getMessage());
-                            e.printStackTrace();
-                          }
-                        }
-                      });
-                    }
+                    if (!credits.getText().toString().equals("")) {
+                      if (creditBalance >= Integer.valueOf(credits.getText().toString() + 10)) {
+                        createUser(mobileNumber, relations.getSelectedItem().toString(), credits.getText().toString());
+                      } else {
+                        mApp.showToast(context, "Insufficient Balance");
+                      }
+                    } else
+                      createUser(mobileNumber, relations.getSelectedItem().toString(), "10");
+
+
                   } else {
                     mApp.showToast(context, "Invalid Mobile Number");
                   }
@@ -134,7 +127,18 @@ public class AgentActivity extends AppCompatActivity {
       isSearching = false;
       getProfiles();
     }
-
+    profileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        AgentProfileModel agentProfileModel = (AgentProfileModel) parent.getItemAtPosition(position);
+        String name;
+        if (agentProfileModel.getName() != null && !agentProfileModel.getName().equalsIgnoreCase(""))
+          name = agentProfileModel.getName();
+        else
+          name = agentProfileModel.getNumber();
+        startActivity(new Intent(context, ClientDetailActivity.class).putExtra("data", agentProfileModel.getProfileObject().getObjectId()).putExtra("name", name));
+      }
+    });
     profileList.setOnScrollListener(new AbsListView.OnScrollListener() {
       @Override
       public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -144,7 +148,7 @@ public class AgentActivity extends AppCompatActivity {
         if (scrollState == SCROLL_STATE_IDLE) {
           if (profileList.getLastVisiblePosition() >= count
               - threshold) {
-            if (lastResultSize < 15) {
+            if (lastResultSize > 0) {
               if (!isSearching)
                 getProfiles();
               else if (!searchView.getQuery().toString().equals("")) {
@@ -160,6 +164,31 @@ public class AgentActivity extends AppCompatActivity {
 
       }
     });
+  }
+
+  private void createUser(String mobileNumber, String relation, String credit) {
+    if (mApp.isNetworkAvailable(context)) {
+
+      mApp.show_PDialog(context, "Creating User...");
+      HashMap<String, Object> params = new HashMap<>();
+      params.put("mobile", mobileNumber);
+      params.put("relation", relation);
+      params.put("credit", credit);
+      params.put("agentId", ParseUser.getCurrentUser().getObjectId());
+      ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
+        @Override
+        public void done(Object o, ParseException e) {
+          mApp.dialog.dismiss();
+          if (e == null) {
+            resetProfileData();
+            getProfiles();
+          } else {
+            mApp.showToast(context, e.getMessage());
+            e.printStackTrace();
+          }
+        }
+      });
+    }
   }
 
   public void resetProfileData() {
@@ -224,7 +253,7 @@ public class AgentActivity extends AppCompatActivity {
                   agentProfileModel.setCreateDate(date);
                   agentProfileModel.setIsActive(profileObject.getBoolean("isActive"));
                   agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
-                  //     agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
+                  //agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
                   agentProfileModel.setIsComplete(false);
                 }
                 profileModels.add(agentProfileModel);

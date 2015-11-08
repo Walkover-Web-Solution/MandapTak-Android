@@ -170,7 +170,7 @@ public class AgentActivity extends AppCompatActivity {
     });
   }
 
-  private void createUser(final String mobileNumber, String relation, final String credit) {
+  protected void createUser(final String mobileNumber, String relation, final String credit) {
     if (mApp.isNetworkAvailable(context)) {
       mApp.show_PDialog(context, "Creating User...");
       final HashMap<String, Object> params = new HashMap<>();

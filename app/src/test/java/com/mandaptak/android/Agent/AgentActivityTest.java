@@ -31,23 +31,22 @@ public class AgentActivityTest {
     agentActivity.context = context;
   }
 
-//  @Test
-//  public void shouldShowToasMessageToSaveProfileToGoBack() throws Exception {
-//    String message = "Save profile to go back.";
-//    Common mockMApp = mock(Common.class);
-//    agentActivity.mApp = mockMApp;
-//    agentActivity.onBackPressed();
-//    verify(mockMApp).showToast(context, message);
-//  }
-//
-//  @Test
-//  public void shouldSetCurrentItemOnTabSelection() throws Exception {
-//    Integer currentPosition = 1;
-//    ActionBar.Tab tab = mock(ActionBar.Tab.class);
-//    when(tab.getPosition()).thenReturn(currentPosition);
-//    MyViewPager mockViewPager = mock(MyViewPager.class);
-//    editProfileActivity.mViewPager = mockViewPager;
-//    editProfileActivity.onTabSelected(tab, null);
-//    verify(mockViewPager).setCurrentItem(currentPosition, false);
-//  }
+  @Test
+  public void shouldShowToasMessageToSaveProfileToGoBack() throws Exception {
+    String message = "Save profile to go back.";
+    Common mockMApp = mock(Common.class);
+    agentActivity.mApp = mockMApp;
+    agentActivity.onBackPressed();
+    verify(mockMApp).showToast(context, message);
+  }
+
+  @Test
+  public void shouldCreateUser() throws Exception {
+    agentActivity.createUser("some-mobile-number","some-relation", "some-credit");
+    Integer currentPosition = 1;
+    ActionBar.Tab tab = mock(ActionBar.Tab.class);
+    when(tab.getPosition()).thenReturn(currentPosition);
+    MyViewPager mockViewPager = mock(MyViewPager.class);
+    verify(mockViewPager).setCurrentItem(currentPosition, false);
+  }
 }

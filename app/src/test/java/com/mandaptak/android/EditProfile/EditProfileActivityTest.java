@@ -32,7 +32,7 @@ public class EditProfileActivityTest {
   }
 
   @Test
-  public void shouldShowToasMessageToSaveProfileToGoBack() throws Exception {
+  public void shouldShowToastMessageToSaveProfileToGoBack() throws Exception {
     String message = "Save profile to go back.";
     Common mockMApp = mock(Common.class);
     editProfileActivity.mApp = mockMApp;

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Models.ProfileParseObject;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -76,7 +77,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       Log.e("", "Profile Found in Shared Prefs");
     } else {
       try {
-        getParseData();
+        getUserProfile();
       } catch (Exception ignored) {
       }
     }
@@ -165,9 +166,9 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
     finalEditProfileFragment = new FinalEditProfileFragment();
   }
 
-  void getParseData() {
+  void getUserProfile() {
     new AsyncTask<Void, Void, Void>() {
-      ParseObject parseObject = null;
+      ProfileParseObject profileParseObject = null;
 
       @Override
       protected void onPreExecute() {
@@ -178,7 +179,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       @Override
       protected Void doInBackground(Void... params) {
         try {
-          ParseQuery<ParseObject> query = new ParseQuery<>("Profile");
+          ParseQuery<ProfileParseObject> query = ParseQuery.getQuery(ProfileParseObject.class);
           query.include("currentLocation.Parent.Parent");
           query.include("placeOfBirth.Parent.Parent");
           query.include("casteId");
@@ -188,12 +189,13 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
           query.include("education2.degreeId");
           query.include("education3.degreeId");
           query.include("industryId");
-          parseObject = query.get(Prefs.getProfileId(context));
-          if (parseObject != null) {
-            String newName = parseObject.getString("name");
-            String newGender = parseObject.getString("gender");
-            Date tmpDOB = parseObject.getDate("dob");
-            Date tmpTOB = parseObject.getDate("tob");
+          query.whereEqualTo("objectId", Prefs.getProfileId(context));
+          profileParseObject = query.getFirst();
+          if (profileParseObject != null) {
+            String newName = profileParseObject.getName();
+            String newGender = profileParseObject.getGender();
+            Date tmpDOB = profileParseObject.getDateOfBirth();
+            Date tmpTOB = profileParseObject.getTimeOfBirth();
             if (tmpDOB != null) {
               Calendar newDOB = Calendar.getInstance();
               newDOB.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -206,8 +208,8 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
               newTOB.setTime(tmpTOB);
               profile.setTimeOfBirth(newTOB);
             }
-            ParseObject newCurrentLocation = parseObject.getParseObject("currentLocation");
-            ParseObject newPOB = parseObject.getParseObject("placeOfBirth");
+            ParseObject newCurrentLocation = profileParseObject.getCurrentLocation();
+            ParseObject placeOfBirth = profileParseObject.getPlaceOfBirth();
 
             if (newName != null) {
               profile.setName(newName);
@@ -215,11 +217,11 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             if (newGender != null) {
               profile.setGender(newGender);
             }
-            if (newPOB != null) {
+            if (placeOfBirth != null) {
               ParseNameModel pob = new ParseNameModel();
-              pob.setName(newPOB.getString("name")
-                  + ", " + newPOB.getParseObject("Parent").getString("name") + ", " + newPOB.getParseObject("Parent").getParseObject("Parent").getString("name"));
-              pob.setParseObjectId(newPOB.getObjectId());
+              pob.setName(placeOfBirth.getString("name")
+                  + ", " + placeOfBirth.getParseObject("Parent").getString("name") + ", " + placeOfBirth.getParseObject("Parent").getParseObject("Parent").getString("name"));
+              pob.setParseObjectId(placeOfBirth.getObjectId());
               pob.setClassName("City");
               profile.setPlaceOfBirth(pob);
             }
@@ -233,12 +235,12 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             }
 
             ParseObject tmpCaste, tmpReligion, tmpGotra;
-            tmpReligion = parseObject.getParseObject("religionId");
-            tmpCaste = parseObject.getParseObject("casteId");
-            tmpGotra = parseObject.getParseObject("gotraId");
-            profile.setManglik(parseObject.getInt("manglik"));
-            profile.setHeight(parseObject.getInt("height"));
-            profile.setWeight(parseObject.getInt("weight"));
+            tmpReligion = profileParseObject.getReligion();
+            tmpCaste = profileParseObject.getCaste();
+            tmpGotra = profileParseObject.getGotra();
+            profile.setManglik(profileParseObject.getManglik());
+            profile.setHeight(profileParseObject.getHeight());
+            profile.setWeight(profileParseObject.getWeight());
             if (tmpReligion != null) {
               ParseNameModel newReligion = new ParseNameModel(tmpReligion.getString("name"), "Religion", tmpReligion.getObjectId());
               profile.setReligion(newReligion);
@@ -251,14 +253,14 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
               ParseNameModel newGotra = new ParseNameModel(tmpGotra.getString("name"), "Gotra", tmpGotra.getObjectId());
               profile.setGotra(newGotra);
             }
-            profile.setWorkAfterMarriage(parseObject.getInt("workAfterMarriage"));
-            profile.setIncome(parseObject.getLong("package"));
-            String newDesignation = parseObject.getString("designation");
-            String newCompany = parseObject.getString("placeOfWork");
-            ParseObject newIndustry = parseObject.getParseObject("industryId");
-            ParseObject tmpEdu1 = parseObject.getParseObject("education1");
-            ParseObject tmpEdu2 = parseObject.getParseObject("education2");
-            ParseObject tmpEdu3 = parseObject.getParseObject("education3");
+            profile.setWorkAfterMarriage(profileParseObject.getWorkAfterMarriage());
+            profile.setIncome(profileParseObject.getPackage());
+            String newDesignation = profileParseObject.getDesignation();
+            String newCompany = profileParseObject.getPlaceOfWork();
+            ParseObject newIndustry = profileParseObject.getIndustry();
+            ParseObject tmpEdu1 = profileParseObject.getEducation1();
+            ParseObject tmpEdu2 = profileParseObject.getEducation2();
+            ParseObject tmpEdu3 = profileParseObject.getEducation3();
             if (tmpEdu1 != null) {
               ParseNameModel newEducationDetail1 = new ParseNameModel(tmpEdu1.getString("name"), "Specialization", tmpEdu1.getObjectId(), tmpEdu1.getParseObject("degreeId").getString("name"));
               profile.setEducation1(newEducationDetail1);
@@ -284,6 +286,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             Prefs.setProfile(context, profile);
           }
         } catch (Exception ignored) {
+          ignored.printStackTrace();
         }
         return null;
       }
@@ -292,7 +295,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         mApp.dialog.dismiss();
-        if (parseObject != null)
+        if (profileParseObject != null)
           basicProfileFragment.setUserVisibleHint(true);
       }
     }.execute();

@@ -88,7 +88,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
         Picasso.with(activity)
             .load(agentProfileModel.getImageUrl())
             .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-            .error(R.drawable.com_facebook_profile_picture_blank_square)git
+            .error(R.drawable.com_facebook_profile_picture_blank_square)
             .into(viewholder.image);
       } else {
         viewholder.name.setText("No Name");

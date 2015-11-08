@@ -44,8 +44,8 @@ public class ProfileParseObject extends ParseObject {
     put("tob", value);
   }
 
-  public ParseObject getPlaceOfBirth() {
-    return getParseObject("placeOfBirth");
+  public City getPlaceOfBirth() {
+    return (City) getParseObject("placeOfBirth");
   }
 
   public void setPlaceOfBirth(ParseObject value) {

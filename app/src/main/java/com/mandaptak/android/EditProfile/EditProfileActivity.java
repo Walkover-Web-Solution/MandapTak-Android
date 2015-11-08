@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.Main.MainActivity;
+import com.mandaptak.android.Models.City;
 import com.mandaptak.android.Models.ProfileParseObject;
 import com.mandaptak.android.Models.Religion;
 import com.mandaptak.android.Preferences.UserPreferences;
@@ -210,7 +211,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
               profile.setTimeOfBirth(newTOB);
             }
             ParseObject newCurrentLocation = profileParseObject.getCurrentLocation();
-            ParseObject placeOfBirth = profileParseObject.getPlaceOfBirth();
+            City placeOfBirth = profileParseObject.getPlaceOfBirth();
 
             if (newName != null) {
               profile.setName(newName);
@@ -220,7 +221,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             }
             if (placeOfBirth != null) {
               ParseNameModel pob = new ParseNameModel();
-              pob.setName(placeOfBirth.getString("name")
+              pob.setName(placeOfBirth.getName()
                   + ", " + placeOfBirth.getParseObject("Parent").getString("name") + ", " + placeOfBirth.getParseObject("Parent").getParseObject("Parent").getString("name"));
               pob.setParseObjectId(placeOfBirth.getObjectId());
               pob.setClassName("City");

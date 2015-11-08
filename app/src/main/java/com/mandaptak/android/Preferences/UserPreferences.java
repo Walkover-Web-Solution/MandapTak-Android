@@ -586,7 +586,7 @@ public class UserPreferences extends AppCompatActivity {
         public void done(List<ParseObject> list, ParseException e) {
           if (list != null && list.size() > 0) {
             for (ParseObject model : list) {
-              Degree item = new Degree(model.getString("name"), model, false);
+              Degree item = new Degree(model.getString("name"), false, model);
               if (parseSavedDegreeList.size() > 0) {
                 boolean isPresent = false;
                 for (int i = 0; i < parseSavedDegreeList.size(); i++) {
@@ -653,7 +653,7 @@ public class UserPreferences extends AppCompatActivity {
                   }
                 }
                 if (isPresent)
-                  locationPreference.setIsSelected(true);
+                  locationPreference.setSelected(true);
               }
               models.add(locationPreference);
             }
@@ -690,7 +690,7 @@ public class UserPreferences extends AppCompatActivity {
                       }
                     }
                     if (isPresent)
-                      locationPreference.setIsSelected(true);
+                      locationPreference.setSelected(true);
                   }
                   models.add(locationPreference);
                 }
@@ -810,14 +810,14 @@ public class UserPreferences extends AppCompatActivity {
                 LocationPreference locationPreference = new LocationPreference();
                 if (city != null) {
                   locationPreference.setParseObject(city);
-                  locationPreference.setIsSelected(true);
+                  locationPreference.setSelected(true);
                   locationPreference.setLocationName(city.getString("name") + ", "
                       + city.getParseObject("Parent").getString("name") + ", " + city.getParseObject("Parent").getParseObject("Parent").getString("name"));
                   locationPreference.setLocationType(0);
                   responseText.append(locationPreference.getLocationName());
                 } else {
                   locationPreference.setParseObject(state);
-                  locationPreference.setIsSelected(true);
+                  locationPreference.setSelected(true);
                   locationPreference.setLocationName(state.getString("name") + ", " + state.getParseObject("Parent").getString("name"));
                   locationPreference.setLocationType(1);
                   responseText.append(locationPreference.getLocationName()).append(" ");
@@ -851,7 +851,7 @@ public class UserPreferences extends AppCompatActivity {
             parseSavedDegreeList.clear();
             for (ParseObject parseObject : list) {
               try {
-                Degree degree = new Degree(parseObject.getParseObject("degreeId").getString("name"), parseObject, true);
+                Degree degree = new Degree(parseObject.getParseObject("degreeId").getString("name"), true, parseObject);
                 parseSavedDegreeList.add(degree);
                 responseText.append(degree.getDegreeName() + " ");
               } catch (Exception e1) {

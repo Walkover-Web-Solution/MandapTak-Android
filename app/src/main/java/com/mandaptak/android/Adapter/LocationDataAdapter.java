@@ -39,12 +39,12 @@ public class LocationDataAdapter extends ArrayAdapter<LocationPreference> {
       viewHolder = (ViewHolder) convertView.getTag();
     }
     viewHolder.text.setText(list.get(position).getLocationName());
-    viewHolder.checkbox.setChecked(list.get(position).isSelected());
+    viewHolder.checkbox.setChecked(list.get(position).getSelected());
     viewHolder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if (list.size() != 0) {
-          list.get(position).setIsSelected(isChecked);
+          list.get(position).setSelected(isChecked);
           if (isChecked)
             userPreferences.addLocation(list.get(position));
           else

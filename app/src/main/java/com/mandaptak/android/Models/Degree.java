@@ -2,38 +2,17 @@ package com.mandaptak.android.Models;
 
 import com.parse.ParseObject;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor(suppressConstructorProperties = true)
 public class Degree {
   String degreeName;
   Boolean selected;
   ParseObject degreeObj;
-
-  public Degree(String name, ParseObject parseObject, Boolean selected) {
-    this.degreeName = name;
-    this.degreeObj = parseObject;
-    this.selected = selected;
-  }
-
-  public ParseObject getDegreeObj() {
-    return degreeObj;
-  }
-
-  public void setDegreeObj(ParseObject degreeObj) {
-    this.degreeObj = degreeObj;
-  }
-
-  public String getDegreeName() {
-    return degreeName;
-  }
-
-  public void setDegreeName(String degreeName) {
-    this.degreeName = degreeName;
-  }
-
-  public Boolean getSelected() {
-    return selected;
-  }
-
-  public void setSelected(Boolean selected) {
-    this.selected = selected;
-  }
 }

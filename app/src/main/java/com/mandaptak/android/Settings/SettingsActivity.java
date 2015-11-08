@@ -198,12 +198,12 @@ public class SettingsActivity extends AppCompatActivity {
                   if (item.getBoolean("isPrimary")) {
                     isPrimaryUser = true;
                   }
-                  permissionModel.setIsCurrentUser(true);
+                  permissionModel.setCurrentUser(true);
                 } else if (relation.equals("Agent")) {
                   permissionModel.setRelation("Representative");
-                  permissionModel.setIsCurrentUser(true);
+                  permissionModel.setCurrentUser(true);
                 } else {
-                  permissionModel.setIsCurrentUser(false);
+                  permissionModel.setCurrentUser(false);
                 }
 //                                    permissionModel.setProfileId(profileObject.getObjectId());
                 permissionModels.add(permissionModel);

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Models.ProfileParseObject;
+import com.mandaptak.android.Models.Religion;
 import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -234,7 +235,8 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
               profile.setCurrentLocation(currentLocation);
             }
 
-            ParseObject tmpCaste, tmpReligion, tmpGotra;
+            ParseObject tmpCaste, tmpGotra;
+            Religion tmpReligion;
             tmpReligion = profileParseObject.getReligion();
             tmpCaste = profileParseObject.getCaste();
             tmpGotra = profileParseObject.getGotra();
@@ -242,7 +244,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             profile.setHeight(profileParseObject.getHeight());
             profile.setWeight(profileParseObject.getWeight());
             if (tmpReligion != null) {
-              ParseNameModel newReligion = new ParseNameModel(tmpReligion.getString("name"), "Religion", tmpReligion.getObjectId());
+              ParseNameModel newReligion = new ParseNameModel(tmpReligion.getName(), "Religion", tmpReligion.getObjectId());
               profile.setReligion(newReligion);
             }
             if (tmpCaste != null) {

@@ -76,8 +76,8 @@ public class ProfileParseObject extends ParseObject {
     put("height", value);
   }
 
-  public ParseObject getReligion() {
-    return getParseObject("religionId");
+  public Religion getReligion() {
+    return (Religion) getParseObject("religionId");
   }
 
   public void setReligion(ParseObject value) {

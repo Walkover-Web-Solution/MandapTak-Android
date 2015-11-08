@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.appyvet.rangebar.RangeBar;
 import com.mandaptak.android.Adapter.AgentProfilesAdapter;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
@@ -57,6 +58,7 @@ public class AgentActivity extends AppCompatActivity {
   SearchView searchView;
   int lastResultSize = 0;
   Timer mTimer;
+  String deductCredit = "10";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +78,19 @@ public class AgentActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         if (creditBalance >= 20) {
+
           if (mApp.isNetworkAvailable(context)) {
             final View permissionDialog = View.inflate(context, R.layout.add_user_dialog, null);
             final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
             alertDialog.setView(permissionDialog);
             final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
-            final ExtendedEditText credits = (ExtendedEditText) permissionDialog.findViewById(R.id.credits);
+            final RangeBar userCreditsBar = (RangeBar) permissionDialog.findViewById(R.id.user_credits_seek);
+            userCreditsBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
+              @Override
+              public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
+                deductCredit = rightPinValue;
+              }
+            });
             AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
             final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
             relations.setAdapter(ArrayAdapter.createFromResource(context,
@@ -94,16 +103,11 @@ public class AgentActivity extends AppCompatActivity {
                 if (!mobileNumber.equals("")) {
                   if (mobileNumber.length() == 10) {
                     alertDialog.dismiss();
-                    if (!credits.getText().toString().equals("")) {
-                      if (creditBalance >= Integer.valueOf(credits.getText().toString() + 10)) {
-                        createUser(mobileNumber, relations.getSelectedItem().toString(), credits.getText().toString());
-                      } else {
-                        mApp.showToast(context, "Insufficient Balance");
-                      }
-                    } else
-                      createUser(mobileNumber, relations.getSelectedItem().toString(), "10");
-
-
+                    if (creditBalance >= Integer.valueOf(deductCredit) + 10) {
+                      createUser(mobileNumber, relations.getSelectedItem().toString(), deductCredit);
+                    } else {
+                      mApp.showToast(context, "Insufficient Balance");
+                    }
                   } else {
                     mApp.showToast(context, "Invalid Mobile Number");
                   }
@@ -166,22 +170,44 @@ public class AgentActivity extends AppCompatActivity {
     });
   }
 
-  private void createUser(String mobileNumber, String relation, String credit) {
+  private void createUser(final String mobileNumber, String relation, final String credit) {
     if (mApp.isNetworkAvailable(context)) {
-
       mApp.show_PDialog(context, "Creating User...");
-      HashMap<String, Object> params = new HashMap<>();
+      final HashMap<String, Object> params = new HashMap<>();
       params.put("mobile", mobileNumber);
       params.put("relation", relation);
-      params.put("credit", credit);
       params.put("agentId", ParseUser.getCurrentUser().getObjectId());
       ParseCloud.callFunctionInBackground("addNewUserForAgent", params, new FunctionCallback<Object>() {
         @Override
         public void done(Object o, ParseException e) {
           mApp.dialog.dismiss();
           if (e == null) {
-            resetProfileData();
-            getProfiles();
+            if (!credit.equalsIgnoreCase("10")) {
+              ParseQuery<ParseUser> query = ParseUser.getQuery();
+              query.whereEqualTo("username", mobileNumber);
+              query.getFirstInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser parseUser, ParseException e) {
+                  if (e == null) {
+                    final HashMap<String, Object> balParam = new HashMap<>();
+                    balParam.put("amount", credit);
+                    balParam.put("userId", parseUser.getObjectId());
+                    balParam.put("agentId", ParseUser.getCurrentUser().getObjectId());
+                    ParseCloud.callFunctionInBackground("addCreditToUserAccount", balParam, new FunctionCallback<Object>() {
+                      @Override
+                      public void done(Object o, ParseException e) {
+                        if (e == null) {
+                          resetProfileData();
+                          getProfiles();
+                          mApp.showToast(context, "Profile Created");
+                        }
+                      }
+                    });
+                  }
+
+                }
+              });
+            }
           } else {
             mApp.showToast(context, e.getMessage());
             e.printStackTrace();
@@ -230,7 +256,6 @@ public class AgentActivity extends AppCompatActivity {
         if (e == null) {
           lastResultSize = list.size();
           if (lastResultSize > 0) {
-            //profileModels.clear();
             for (ParseObject parseObject : list) {
               try {
                 final ParseObject profileObject = parseObject.getParseObject("profileId");

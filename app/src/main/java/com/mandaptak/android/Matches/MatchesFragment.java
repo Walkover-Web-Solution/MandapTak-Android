@@ -222,7 +222,7 @@ public class MatchesFragment extends Fragment {
           mApp.dialog.dismiss();
           if (list.size() > 0) {
             ArrayList<String> mTargetParticipants = new ArrayList<>();
-            //  mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
+            mTargetParticipants.add(LayerImpl.getLayerClient().getAuthenticatedUserId());
             for (ParseObject parseObject : list) {
               mTargetParticipants.add(parseObject.getParseObject("userId").getObjectId());
             }

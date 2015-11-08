@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
   private FabButton traitsProgress;
   private boolean isLoading = false;
   private static final String SHOWCASE_ID = "sequence showcase";
+  private ArrayList<UndoModel> undoModelArrayList = new ArrayList<>();
 
   public void setTraits() {
     try {
@@ -180,6 +181,9 @@ public class MainActivity extends AppCompatActivity {
 //                  slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
                   undoModel.setProfileParseObject(likeProfile);
                   undoModel.setActionPerformed(1);
+                  if (undoModelArrayList.size() == 4)
+                    undoModelArrayList.remove(0);
+                  undoModelArrayList.add(undoModel);
                   if (o instanceof ParseObject) {
                     MatchesModel model = prepareDataIfMatchFoundOnLikeAndFind();
                     Intent intent = new Intent(context, MatchedProfileActivity.class);
@@ -262,6 +266,9 @@ public class MainActivity extends AppCompatActivity {
             savePinnedProfileParse();
             undoModel.setProfileParseObject(profileList.get(0));
             undoModel.setActionPerformed(2);
+            if (undoModelArrayList.size() == 4)
+              undoModelArrayList.remove(0);
+            undoModelArrayList.add(undoModel);
             profileList.remove(0);
             if (profileList.size() > 0) {
               setProfileDetails();
@@ -282,6 +289,12 @@ public class MainActivity extends AppCompatActivity {
     mainUndoButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        int index = undoModelArrayList.size();
+        if (index > 0) {
+          undoModel = undoModelArrayList.get(index - 1);
+        } else {
+          undoModel.setActionPerformed(-1);
+        }
         if (undoModel.getActionPerformed() != -1) {
           switch (undoModel.getActionPerformed()) {
             case 0:
@@ -290,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
                   deleteDislikeProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
                   undoModel = new UndoModel();
+                  undoModelArrayList.remove(undoModel);
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -301,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
                   deleteLikedProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
                   undoModel = new UndoModel();
+                  undoModelArrayList.remove(undoModel);
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -312,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
                   deletePinnedProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
                   undoModel = new UndoModel();
+                  undoModelArrayList.remove(undoModel);
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -332,6 +348,9 @@ public class MainActivity extends AppCompatActivity {
 
             undoModel.setProfileParseObject(profileList.get(0));
             undoModel.setActionPerformed(0);
+            if (undoModelArrayList.size() == 4)
+              undoModelArrayList.remove(0);
+            undoModelArrayList.add(undoModel);
             profileList.remove(0);
             if (profileList.size() > 0) {
               setProfileDetails();

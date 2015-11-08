@@ -97,7 +97,7 @@ public class UserPreferences extends AppCompatActivity {
     rangeAge.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
       @Override
       public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
-        tittle_age_limit.setText("Show Ages: " + String.valueOf(minAge) + " - " + String.valueOf(maxAge));
+        tittle_age_limit.setText("Show Ages: " + String.valueOf(leftPinValue) + " - " + String.valueOf(rightPinValue));
       }
     });
     rangeHeight.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
@@ -370,14 +370,7 @@ public class UserPreferences extends AppCompatActivity {
         maxBudget = Integer.valueOf(etBudgetMax.getText().toString());
       else
         maxBudget = 0;
-//      if (!etMinAge.getText().toString().equals(""))
-//        minAge = Integer.valueOf(etMinAge.getText().toString());
-//      else
-//        minAge = 0;
-//      if (!etMaxAge.getText().toString().equals(""))
-//        maxAge = Integer.valueOf(etMaxAge.getText().toString());
-//      else
-//        maxAge = 0;
+
       if (!etIncome.getText().toString().equals(""))
         minIncome = Integer.valueOf(etIncome.getText().toString());
       else
@@ -389,9 +382,6 @@ public class UserPreferences extends AppCompatActivity {
 
     int[] bases = getResources().getIntArray(R.array.height_range);
     Arrays.sort(bases);
-//    int resId2 = getResources().getIdentifier(
-//        "height_range", "array",
-//        getPackageName());
     minHeight = bases[rangeHeight.getLeftIndex()];
     maxHeight = bases[rangeHeight.getRightIndex()];
     if (minHeight > maxHeight) {

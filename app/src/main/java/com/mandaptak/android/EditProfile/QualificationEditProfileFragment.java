@@ -262,7 +262,7 @@ public class QualificationEditProfileFragment extends Fragment {
             }
           });
         } else {
-          mApp.showToast(context,"No degree found with this search");
+          mApp.showToast(context, "No degree found with this search");
 //          e.printStackTrace();
         }
       }

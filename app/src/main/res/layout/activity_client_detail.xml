@@ -24,9 +24,41 @@
         android:textColor="@color/black_light"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 
-    <ListView
-        android:id="@+id/permissions_list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <ListView
+            android:id="@+id/permissions_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/black_light"
+            android:dividerHeight="0.1dp"/>
+
+        <TextView
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="No Permissions given"
+            android:textColor="@color/red_300"
+            android:textSize="@dimen/abc_text_size_large_material"
+            android:visibility="gone"/>
+
+        <ProgressBar
+            android:id="@+id/progress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateOnly="true"
+            android:visibility="gone"/>
+
+    </FrameLayout>
+
 
 </LinearLayout>

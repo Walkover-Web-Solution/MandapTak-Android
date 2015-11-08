@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mandaptak.android.Adapter.ClientDetailsAdapter;
@@ -20,6 +22,7 @@ import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,9 +33,10 @@ public class ClientDetailActivity extends AppCompatActivity {
   Context context;
   String profileObject;
   int creditBalance = 0;
-  TextView availableCredits;
+  TextView availableCredits, empty_view;
   ArrayList<PermissionModel> permissionModels;
   ClientDetailsAdapter clientDetailsAdapter;
+  ProgressBar progressBar;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +46,8 @@ public class ClientDetailActivity extends AppCompatActivity {
     mApp = (Common) getApplicationContext();
     permissionList = (ListView) findViewById(R.id.permissions_list);
     availableCredits = (TextView) findViewById(R.id.available_credits);
+    progressBar = (ProgressBar) findViewById(R.id.progress);
+    empty_view = (TextView) findViewById(R.id.empty);
     permissionModels = new ArrayList<>();
     if (getIntent().getExtras() != null) {
       profileObject = (String) getIntent().getExtras().getSerializable("data");
@@ -59,17 +65,23 @@ public class ClientDetailActivity extends AppCompatActivity {
   }
 
   public void getExistingPermissions() {
-    mApp.show_PDialog(context, "Loading...");
+    permissionList.setVisibility(View.GONE);
+    progressBar.setVisibility(View.VISIBLE);
     try {
       ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
       query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileObject));
+      String[] relaion = {"Bachelor", "Agent"};
+      query.whereNotContainedIn("relation", Arrays.asList(relaion));
       query.include("userId");
       query.findInBackground(new FindCallback<ParseObject>() {
         @Override
         public void done(List<ParseObject> list, ParseException e) {
           if (e == null) {
+            progressBar.setVisibility(View.GONE);
             if (list.size() > 0) {
               permissionModels.clear();
+              permissionList.setVisibility(View.VISIBLE);
+              empty_view.setVisibility(View.GONE);
               for (final ParseObject item : list) {
                 final ParseUser user = item.getParseUser("userId");
                 ParseQuery<ParseObject> balanceQuery = new ParseQuery<>("UserCredits");
@@ -84,33 +96,25 @@ public class ClientDetailActivity extends AppCompatActivity {
                       PermissionModel permissionModel = new PermissionModel();
                       permissionModel.setBalance(creditBalance);
                       String relation = item.getString("relation");
-                      if (relation.equals(""))
-                        permissionModel.setRelation("Bachelor");
-                      else
-                        permissionModel.setRelation(relation);
-
+                      permissionModel.setRelation(relation);
                       permissionModel.setDate("Permission given on: " + date);
                       permissionModel.setNumber(user.getUsername());
-                      if (user.getUsername().equalsIgnoreCase(ParseUser.getCurrentUser().getUsername())) {
-                        if (item.getBoolean("isPrimary")) {
-                          availableCredits.setText("Balance: " + creditBalance + " Credits");
-                        }
-                      } else if (relation.equals("Agent")) {
-                        permissionModel.setRelation("Representative");
-                      }
                       permissionModels.add(permissionModel);
                       clientDetailsAdapter.notifyDataSetChanged();
                     }
                   }
                 });
-
-
               }
+            } else {
+              permissionList.setVisibility(View.GONE);
+              empty_view.setVisibility(View.VISIBLE);
             }
           } else {
+            permissionList.setVisibility(View.GONE);
+            empty_view.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
             e.printStackTrace();
           }
-          mApp.dialog.dismiss();
         }
       });
     } catch (Exception e) {

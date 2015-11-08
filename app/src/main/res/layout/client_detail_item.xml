@@ -63,8 +63,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:background="@color/red_200"
         android:clickable="true"
         android:paddingBottom="8dp"
         android:paddingTop="16dp"
-        android:src="@drawable/ic_more_red"/>
+        android:src="@drawable/ic_mode_edit_white"/>
 </RelativeLayout>

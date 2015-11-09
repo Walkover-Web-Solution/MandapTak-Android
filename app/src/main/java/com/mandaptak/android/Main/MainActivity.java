@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
               if (o != null) {
                 try {
 //                  slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+                  undoModel = new UndoModel();
                   undoModel.setProfileParseObject(likeProfile);
                   undoModel.setActionPerformed(1);
                   if (undoModelArrayList.size() == 4)
@@ -264,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
         if (mApp.isNetworkAvailable(context))
           try {
             savePinnedProfileParse();
+            undoModel = new UndoModel();
             undoModel.setProfileParseObject(profileList.get(0));
             undoModel.setActionPerformed(2);
             if (undoModelArrayList.size() == 4)
@@ -289,9 +291,9 @@ public class MainActivity extends AppCompatActivity {
     mainUndoButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        int index = undoModelArrayList.size();
-        if (index > 0) {
-          undoModel = undoModelArrayList.get(index - 1);
+        int size = undoModelArrayList.size();
+        if (size > 0) {
+          undoModel = undoModelArrayList.get(size - 1);
         } else {
           undoModel.setActionPerformed(-1);
         }
@@ -302,8 +304,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                   deleteDislikeProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
-                  undoModel = new UndoModel();
                   undoModelArrayList.remove(undoModel);
+                  undoModel = new UndoModel();
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -314,8 +316,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                   deleteLikedProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
-                  undoModel = new UndoModel();
                   undoModelArrayList.remove(undoModel);
+                  undoModel = new UndoModel();
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -326,8 +328,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                   deletePinnedProfileRowFromParse();
                   profileList.add(0, undoModel.getProfileParseObject());
-                  undoModel = new UndoModel();
                   undoModelArrayList.remove(undoModel);
+                  undoModel = new UndoModel();
                   setProfileDetails();
                 } catch (Exception e) {
                   e.printStackTrace();
@@ -345,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         if (mApp.isNetworkAvailable(context))
           try {
             saveDataInDislikeProfileParse();
-
+            undoModel = new UndoModel();
             undoModel.setProfileParseObject(profileList.get(0));
             undoModel.setActionPerformed(0);
             if (undoModelArrayList.size() == 4)
@@ -693,11 +695,6 @@ public class MainActivity extends AppCompatActivity {
           rippleBackground.setVisibility(View.GONE);
         } else {
           frontProfile.setImageURI(Uri.EMPTY);
-//          Picasso.with(context)
-//              .load(Uri.EMPTY)
-//              .placeholder(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//              .error(ContextCompat.getDrawable(context, R.drawable.com_facebook_profile_picture_blank_square))
-//              .into(frontPhoto);
         }
       } catch (OutOfMemoryError error) {
         error.printStackTrace();

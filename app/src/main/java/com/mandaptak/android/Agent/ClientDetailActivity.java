@@ -14,7 +14,6 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -32,7 +31,6 @@ public class ClientDetailActivity extends AppCompatActivity {
   Common mApp;
   Context context;
   String profileObject;
-  int creditBalance = 0;
   TextView availableCredits, empty_view;
   ArrayList<PermissionModel> permissionModels;
   ClientDetailsAdapter clientDetailsAdapter;
@@ -84,26 +82,17 @@ public class ClientDetailActivity extends AppCompatActivity {
               empty_view.setVisibility(View.GONE);
               for (final ParseObject item : list) {
                 final ParseUser user = item.getParseUser("userId");
-                ParseQuery<ParseObject> balanceQuery = new ParseQuery<>("UserCredits");
-                balanceQuery.whereEqualTo("userId", user);
-                balanceQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                  @Override
-                  public void done(ParseObject parseObject, ParseException e) {
-                    if (e == null) {
-                      creditBalance = parseObject.getInt("credits");
-                      SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
-                      String date = sdf.format(item.getCreatedAt());
-                      PermissionModel permissionModel = new PermissionModel();
-                      permissionModel.setBalance(creditBalance);
-                      String relation = item.getString("relation");
-                      permissionModel.setRelation(relation);
-                      permissionModel.setDate("Permission given on: " + date);
-                      permissionModel.setNumber(user.getUsername());
-                      permissionModels.add(permissionModel);
-                      clientDetailsAdapter.notifyDataSetChanged();
-                    }
-                  }
-                });
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.US);
+                String date = sdf.format(item.getCreatedAt());
+                PermissionModel permissionModel = new PermissionModel();
+                permissionModel.setBalance(0);
+                String relation = item.getString("relation");
+                permissionModel.setRelation(relation);
+                permissionModel.setDate("Permission given on: " + date);
+                permissionModel.setNumber(user.getUsername());
+                permissionModel.setProfileId(profileObject);
+                permissionModels.add(permissionModel);
+                clientDetailsAdapter.notifyDataSetChanged();
               }
             } else {
               permissionList.setVisibility(View.GONE);

@@ -205,7 +205,7 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                   permissionModel.setCurrentUser(false);
                 }
-//                                    permissionModel.setProfileId(profileObject.getObjectId());
+                permissionModel.setProfileId(Prefs.getProfileId(context));
                 permissionModels.add(permissionModel);
               }
               if (isPrimaryUser) {

@@ -54,18 +54,18 @@
             android:gravity="bottom|start"
             android:singleLine="true"
             android:textColor="@color/red_500"
-            android:textSize="@dimen/abc_text_size_small_material"/>
+            android:textSize="@dimen/abc_text_size_small_material"
+            android:visibility="gone"/>
     </LinearLayout>
 
     <ImageView
         android:id="@+id/more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:background="@color/red_200"
         android:clickable="true"
-        android:paddingBottom="8dp"
-        android:paddingTop="16dp"
-        android:src="@drawable/ic_mode_edit_white"/>
+        android:padding="16dp"
+        android:src="@android:drawable/ic_menu_edit"/>
 </RelativeLayout>

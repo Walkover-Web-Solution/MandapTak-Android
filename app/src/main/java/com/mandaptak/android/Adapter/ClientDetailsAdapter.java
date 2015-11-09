@@ -66,11 +66,11 @@ public class ClientDetailsAdapter extends BaseAdapter {
     viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
     viewholder.tvRelation.setText(permissionModel.getRelation());
     viewholder.tvDate.setText(permissionModel.getDate());
-    viewholder.tvCredits.setText("Balance: " + permissionModel.getBalance() + " Credits");
+    //  viewholder.tvCredits.setText("Balance: " + permissionModel.getBalance() + " Credits");
     viewholder.btnMore.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-
+        editPermission(permissionModel.getProfileId());
       }
     });
     return paramView;
@@ -83,6 +83,7 @@ public class ClientDetailsAdapter extends BaseAdapter {
     private ImageView btnMore;
     private TextView tvCredits;
   }
+
   void editPermission(final String profileId) {
     if (mApp.isNetworkAvailable(activity)) {
       final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
@@ -108,18 +109,18 @@ public class ClientDetailsAdapter extends BaseAdapter {
                 params.put("profileId", profileId);
                 params.put("relation", relations.getSelectedItem());
 
-                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
-                  @Override
-                  public void done(Object o, ParseException e) {
-                    mApp.dialog.dismiss();
-                    if (e == null) {
-                      mApp.showToast(activity, "Permission Given");
-                    } else {
-                      e.printStackTrace();
-                      mApp.showToast(activity, e.getMessage());
-                    }
-                  }
-                });
+//                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
+//                  @Override
+//                  public void done(Object o, ParseException e) {
+//                    mApp.dialog.dismiss();
+//                    if (e == null) {
+//                      mApp.showToast(activity, "Permission Given");
+//                    } else {
+//                      e.printStackTrace();
+//                      mApp.showToast(activity, e.getMessage());
+//                    }
+//                  }
+//                });
               }
             } else {
               mApp.showToast(activity, "Invalid Mobile Number");

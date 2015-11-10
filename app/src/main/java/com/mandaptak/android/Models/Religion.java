@@ -6,8 +6,8 @@ import com.parse.ParseObject;
 @ParseClassName("Religion")
 public class Religion extends ParseObject {
 
-  public String getObjectId() {
-    return getString("objectId");
+  public String getId() {
+    return this.getObjectId();
   }
 
   public void setObjectId(String value) {

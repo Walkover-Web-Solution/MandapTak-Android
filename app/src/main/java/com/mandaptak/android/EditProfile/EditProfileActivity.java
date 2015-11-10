@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -75,14 +74,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       }
     }
     init();
-    if (Prefs.getProfile(context) != null) {
-      Log.e("", "Profile Found in Shared Prefs");
-    } else {
-      try {
-        getUserProfile();
-      } catch (Exception ignored) {
-      }
-    }
+    getUserProfile();
+//    if (Prefs.getProfile(context) != null) {
+//      Log.e("", "Profile Found in Shared Prefs");
+//    } else {
+//      try {
+//        getUserProfile();
+//      } catch (Exception ignored) {
+//      }
+//    }
   }
 
   @Override
@@ -245,7 +245,7 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
             profile.setHeight(profileParseObject.getHeight());
             profile.setWeight(profileParseObject.getWeight());
             if (tmpReligion != null) {
-              ParseNameModel newReligion = new ParseNameModel(tmpReligion.getName(), "Religion", tmpReligion.getObjectId());
+              ParseNameModel newReligion = new ParseNameModel(tmpReligion.getName(), "Religion", tmpReligion.getId());
               profile.setReligion(newReligion);
             }
             if (tmpCaste != null) {

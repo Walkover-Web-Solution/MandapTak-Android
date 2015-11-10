@@ -26,6 +26,7 @@ import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Matches.AtlasIdentityProvider;
 import com.mandaptak.android.Models.City;
 import com.mandaptak.android.Models.ProfileParseObject;
+import com.mandaptak.android.Models.Religion;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.Parse;
@@ -213,6 +214,7 @@ public class Common extends Application implements LayerCallbacks {
     super.onCreate();
     ParseObject.registerSubclass(ProfileParseObject.class);
     ParseObject.registerSubclass(City.class);
+    ParseObject.registerSubclass(Religion.class);
     Parse.initialize(this, "Uj7WryNjRHDQ0O3j8HiyoFfriHV8blt2iUrJkCN0", "F8ySjsm3T6Ur4xOnIkgkS2I7aSFyfBsa2e4pBedN");//test
     //  Parse.initialize(this, "XQA3RRfnMim2IyheuTBRkKZNRurkTNhxEiqa8Bs8", "fsdwA6pXp3SYXVk27uf3loRUziyrb7Oh0sMluSlo");//production
     FacebookSdk.sdkInitialize(getApplicationContext());

@@ -1,6 +1,7 @@
 package com.mandaptak.android.Adapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,18 +9,17 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mandaptak.android.Matches.PinsFragment;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.CircleImageView;
 import com.parse.DeleteCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -60,7 +60,7 @@ public class PinsAdapter extends BaseAdapter {
       viewholder.dislikeprofile = (ImageView) paramView.findViewById(R.id.dislike);
       viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
       viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
-      viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
+      viewholder.profilePic = (SimpleDraweeView) paramView.findViewById(R.id.thumbnail);
       paramView.setTag(viewholder);
     } else {
       viewholder = (ViewHolder) paramView.getTag();
@@ -69,16 +69,14 @@ public class PinsAdapter extends BaseAdapter {
     viewholder.tvName.setText(matchesModel.getName());
     viewholder.tvReligion.setText(matchesModel.getReligion());
     viewholder.tvWork.setText(matchesModel.getWork());
-    Picasso.with(ctx)
-        .load(matchesModel.getUrl())
-        .error(R.drawable.com_facebook_profile_picture_blank_square)
-        .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-        .into(viewholder.profilePic);
+    viewholder.profilePic.setImageURI(Uri.parse(matchesModel.getUrl()));
+
+
     viewholder.unpin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         toggleClick(view, false);
-        mApp.show_PDialog(ctx, "Unpinning profile",false);
+        mApp.show_PDialog(ctx, "Unpinning profile", false);
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
         query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
@@ -110,7 +108,7 @@ public class PinsAdapter extends BaseAdapter {
       @Override
       public void onClick(View view) {
         toggleClick(view, false);
-        mApp.show_PDialog(ctx, "Please wait",false);
+        mApp.show_PDialog(ctx, "Please wait", false);
         ParseQuery<ParseObject> query = new ParseQuery<>("PinnedProfile");
         query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(ctx)));
         query.whereEqualTo("pinnedProfileId", ParseObject.createWithoutData("Profile", matchesModel.getProfileId()));
@@ -161,7 +159,7 @@ public class PinsAdapter extends BaseAdapter {
     public TextView tvName;
     public TextView tvReligion;
     public TextView tvWork;
-    public CircleImageView profilePic;
+    public SimpleDraweeView profilePic;
     public ImageView unpin;
     public ImageView dislikeprofile;
   }

@@ -5,16 +5,6 @@
              xmlns:fresco="http://schemas.android.com/apk/res-auto"
              android:orientation="vertical">
 
-    <!--<com.mandaptak.android.Views.CircleImageView-->
-        <!--android:id="@+id/profile_image"-->
-        <!--android:layout_width="78dp"-->
-        <!--android:layout_height="78dp"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:clickable="true"-->
-        <!--android:focusable="false"-->
-        <!--android:focusableInTouchMode="false"-->
-        <!--android:src="@drawable/com_facebook_profile_picture_blank_portrait"/>-->
 <com.facebook.drawee.view.SimpleDraweeView
     android:id="@+id/profile_image"
     android:layout_width="78dp"

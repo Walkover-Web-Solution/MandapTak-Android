@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.mandaptak.android.Agent.AgentActivity;
 import com.mandaptak.android.Models.AgentProfileModel;
 import com.mandaptak.android.R;
@@ -24,7 +25,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
       viewholder.name = (TextView) paramView.findViewById(R.id.name);
       viewholder.date = ((TextView) paramView.findViewById(R.id.create_date));
       viewholder.status = (TextView) paramView.findViewById(R.id.status);
-      viewholder.image = (ImageView) paramView.findViewById(R.id.thumbnail);
+      viewholder.image = (SimpleDraweeView) paramView.findViewById(R.id.thumbnail);
       viewholder.more = (ImageView) paramView.findViewById(R.id.more);
       viewholder.number = (TextView) paramView.findViewById(R.id.number);
       paramView.setTag(viewholder);
@@ -83,20 +83,11 @@ public class AgentProfilesAdapter extends BaseAdapter {
         viewholder.status.setText("Active");
       }
       viewholder.number.setText(agentProfileModel.getNumber());
+      viewholder.image.setImageURI(Uri.parse(agentProfileModel.getImageUrl()));
       if (agentProfileModel.isComplete()) {
         viewholder.name.setText(agentProfileModel.getName());
-        Picasso.with(activity)
-            .load(agentProfileModel.getImageUrl())
-            .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-            .error(R.drawable.com_facebook_profile_picture_blank_square)
-            .into(viewholder.image);
       } else {
         viewholder.name.setText("No Name");
-        Picasso.with(activity)
-            .load(Uri.parse(agentProfileModel.getImageUrl()))
-            .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
-            .error(R.drawable.com_facebook_profile_picture_blank_square)
-            .into(viewholder.image);
       }
       if (agentProfileModel.isActive()) {
         viewholder.more.setOnClickListener(new View.OnClickListener() {
@@ -229,7 +220,7 @@ public class AgentProfilesAdapter extends BaseAdapter {
     private TextView name;
     private TextView date;
     private TextView status;
-    private ImageView image;
+    private SimpleDraweeView image;
     private ImageView more;
     private TextView number;
   }

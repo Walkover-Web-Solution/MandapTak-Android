@@ -2,6 +2,7 @@ package com.mandaptak.android.Matches;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
@@ -17,7 +19,6 @@ import com.mandaptak.android.Layer.LayerImpl;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.CircleImageView;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -25,7 +26,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
   MatchesModel model = new MatchesModel();
   TextView name, age, religion, designation, traits;
   Button chatButton;
-  CircleImageView image;
+  SimpleDraweeView image;
   ArrayList<String> mTargetParticipants = new ArrayList<>();
   String myName;
   Common mApp;
@@ -57,9 +57,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
     }
     init();
     if (model.getName() != null) {
-      Picasso.with(context)
-          .load(model.getUrl())
-          .into(image);
+      image.setImageURI(Uri.parse(model.getUrl()));
       name.setText(model.getName());
       religion.setText(model.getReligion());
       designation.setText(model.getWork());
@@ -115,7 +113,7 @@ public class MatchedProfileActivity extends AppCompatActivity {
   }
 
   void init() {
-    image = (CircleImageView) findViewById(R.id.image);
+    image = (SimpleDraweeView) findViewById(R.id.image);
     name = (TextView) findViewById(R.id.display_name);
     age = (TextView) findViewById(R.id.age);
     religion = (TextView) findViewById(R.id.religion);

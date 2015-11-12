@@ -12,8 +12,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.mandaptak.android.Main.MainActivity;
 import com.mandaptak.android.Matches.ViewProfilePage;
 import com.mandaptak.android.R;
-import com.mandaptak.android.Views.CircleImageView;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +32,7 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     this.mItems = list;
     this.mainActivity = fragment;
   }
+
   public UserImagesAdapter(Context context, ViewProfilePage fragment, ArrayList<ImageModel> list) {
     mContext = context;
     this.mItems = list;
@@ -55,15 +54,7 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     } else {
       uri = Uri.fromFile(new File(path));
     }
-
-//    Picasso.with(mContext)
-//        .load(uri)
-//        .tag(mContext)
-//        .error(me.iwf.photopicker.R.drawable.ic_broken_image_black_48dp)
-//        .placeholder(R.drawable.com_facebook_profile_picture_blank_portrait)
-//        .into(holder.image);
     holder.image.setImageURI(uri);
-
     holder.image.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {

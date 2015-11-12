@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingBottom="@dimen/activity_vertical_margin"
@@ -23,15 +24,20 @@
             android:textColor="@color/black_light"
             android:textSize="@dimen/abc_text_size_medium_material"/>
 
-        <com.mandaptak.android.Views.CircleImageView
+
+
+        <com.facebook.drawee.view.SimpleDraweeView
             android:id="@+id/image"
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center"
             android:layout_marginTop="16dp"
-            app:border_color="@color/red_500"
-            app:border_overlay="true"
-            app:border_width="2dp"/>
+            fresco:placeholderImage="@drawable/com_facebook_profile_picture_blank_square"
+            fresco:roundAsCircle="true"
+            fresco:roundingBorderColor="@color/red_500"
+            fresco:roundingBorderWidth="2dp"
+            fresco:roundedCornerRadius="5dp"
+            />
 
         <TextView
             android:id="@+id/display_name"

@@ -2,6 +2,7 @@ package com.mandaptak.android.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.layer.sdk.messaging.Conversation;
 import com.layer.sdk.query.Predicate;
 import com.layer.sdk.query.Query;
@@ -17,12 +19,10 @@ import com.mandaptak.android.Matches.MessageScreen;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
-import com.mandaptak.android.Views.CircleImageView;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class MatchesAdapter extends BaseAdapter {
       viewholder.tvReligion = ((TextView) paramView.findViewById(R.id.religion));
       viewholder.tvWork = (TextView) paramView.findViewById(R.id.work);
       viewholder.chatButton = (ImageView) paramView.findViewById(R.id.chat_button);
-      viewholder.profilePic = (CircleImageView) paramView.findViewById(R.id.thumbnail);
+      viewholder.profilePic = (SimpleDraweeView) paramView.findViewById(R.id.thumbnail);
       paramView.setTag(viewholder);
     } else {
       viewholder = (ViewHolder) paramView.getTag();
@@ -77,10 +77,7 @@ public class MatchesAdapter extends BaseAdapter {
         getChatMembers(list.get(paramInt).getProfileId(), list.get(paramInt).getName());
       }
     });
-    Picasso.with(ctx)
-        .load(matchesModel.getUrl())
-        .into(viewholder.profilePic);
-
+    viewholder.profilePic.setImageURI(Uri.parse(matchesModel.getUrl()));
     return paramView;
   }
 
@@ -134,6 +131,6 @@ public class MatchesAdapter extends BaseAdapter {
     public TextView tvReligion;
     public TextView tvWork;
     public ImageView chatButton;
-    public CircleImageView profilePic;
+    private SimpleDraweeView profilePic;
   }
 }

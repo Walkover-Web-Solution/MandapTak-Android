@@ -16,9 +16,6 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.HashMap;

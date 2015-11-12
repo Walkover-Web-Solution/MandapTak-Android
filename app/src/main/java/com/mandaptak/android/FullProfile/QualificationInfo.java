@@ -99,7 +99,7 @@ public class QualificationInfo extends android.support.v4.app.Fragment {
               }
               degreeView.setText(stringBuilder.toString());
               if (newCurrentIncome != 0)
-                currentIncome.setText(NumberFormat.getCurrencyInstance(new Locale("en","in")).format(newCurrentIncome));
+                currentIncome.setText(NumberFormat.getCurrencyInstance(new Locale("en", "in")).format(newCurrentIncome));
               if (newIndustry != null)
                 industry.setText(newIndustry.getString("name"));
               if (newCompany != null)

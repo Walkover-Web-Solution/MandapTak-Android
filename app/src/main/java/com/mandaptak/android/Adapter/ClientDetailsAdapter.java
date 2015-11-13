@@ -16,6 +16,12 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,17 +101,58 @@ public class ClientDetailsAdapter extends BaseAdapter {
       giveButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-          String mobileNumber = etNumber.getText().toString();
+          final String mobileNumber = etNumber.getText().toString();
           if (!mobileNumber.equals("")) {
             if (mobileNumber.length() == 10) {
               alertDialog.dismiss();
               if (mApp.isNetworkAvailable(activity)) {
-                mApp.show_PDialog(activity, "Giving Permission..");
+                mApp.show_PDialog(activity, "Modifying Permission..");
                 HashMap<String, Object> params = new HashMap<>();
                 params.put("mobile", mobileNumber);
                 params.put("profileId", profileId);
                 params.put("relation", relations.getSelectedItem());
-
+                ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
+                userParseQuery.whereEqualTo("username", mobileNumber);
+                userParseQuery.getFirstInBackground(new GetCallback<ParseUser>() {
+                  @Override
+                  public void done(final ParseUser parseUser, ParseException e) {
+                    if (e == null) {
+                      parseUser.setUsername(mobileNumber);
+                      parseUser.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                          if (e == null) {
+                            if (!relations.getSelectedItem().toString().equals("")) {
+                              ParseQuery<ParseObject> relationQuery = ParseQuery.getQuery("UserProfile");
+                              relationQuery.whereEqualTo("userId", parseUser);
+                              relationQuery.whereEqualTo("profileId", profileId);
+                              relationQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                @Override
+                                public void done(ParseObject object, ParseException e) {
+                                  if (e == null) {
+                                    object.put("relation", relations.getSelectedItem());
+                                    object.saveInBackground(new SaveCallback() {
+                                      @Override
+                                      public void done(ParseException e) {
+                                        mApp.dialog.dismiss();
+                                      }
+                                    });
+                                  }
+                                }
+                              });
+                            }
+                          } else {
+                            mApp.dialog.dismiss();
+                            mApp.showToast(activity, e.getMessage());
+                          }
+                        }
+                      });
+                    } else {
+                      mApp.dialog.dismiss();
+                      mApp.showToast(activity, e.getMessage());
+                    }
+                  }
+                });
 //                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
 //                  @Override
 //                  public void done(Object o, ParseException e) {

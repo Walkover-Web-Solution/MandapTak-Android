@@ -241,7 +241,6 @@ public class AgentActivity extends AppCompatActivity {
     });
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
     query.include("profileId.userId");
-    //  query.include("userId");
     query.whereEqualTo("userId", ParseUser.getCurrentUser());
     query.whereEqualTo("relation", "Agent");
     if (loadMore) {

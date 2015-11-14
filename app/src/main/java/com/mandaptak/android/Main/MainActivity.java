@@ -1,10 +1,13 @@
 package com.mandaptak.android.Main;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,7 +35,6 @@ import com.mandaptak.android.Adapter.UserImagesAdapter;
 import com.mandaptak.android.EditProfile.EditProfileActivity;
 import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Login.LoginActivity;
-import com.mandaptak.android.Matches.MatchedProfileActivity;
 import com.mandaptak.android.Matches.MatchesActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.Models.UndoModel;
@@ -69,6 +71,7 @@ import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
   private boolean isLoading = false;
   private static final String SHOWCASE_ID = "sequence showcase";
   private ArrayList<UndoModel> undoModelArrayList = new ArrayList<>();
+  int notificationCount = 0;
 
   public void setTraits() {
     try {
@@ -186,10 +190,32 @@ public class MainActivity extends AppCompatActivity {
                     undoModelArrayList.remove(0);
                   undoModelArrayList.add(undoModel);
                   if (o instanceof ParseObject) {
+//                    MatchesModel model = prepareDataIfMatchFoundOnLikeAndFind();
+//                    Intent intent = new Intent(context, MatchedProfileActivity.class);
+//                    intent.putExtra("profile", model);
+//                    startActivity(intent);
                     MatchesModel model = prepareDataIfMatchFoundOnLikeAndFind();
-                    Intent intent = new Intent(context, MatchedProfileActivity.class);
-                    intent.putExtra("profile", model);
-                    startActivity(intent);
+
+                    NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle(context.getResources().getString(R.string.app_name))
+                        .setContentText("You just Got Match With " + model.getName())
+                        .setAutoCancel(true)
+                        .setLights(context.getResources().getColor(R.color.red_200), 100, 1900)
+                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                        .setDefaults(NotificationCompat.DEFAULT_SOUND | NotificationCompat.DEFAULT_VIBRATE).setNumber(notificationCount++);
+                    // Set the action to take when a user taps the notification
+                    Intent resultIntent = new Intent(context, MatchesActivity.class);
+                    resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    resultIntent.putExtra("profile", model);
+                    PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    mBuilder.setContentIntent(resultPendingIntent);
+
+                    // Show the notification
+                    NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotifyMgr.notify(1, mBuilder.build());
+                    ShortcutBadger.with(getApplicationContext()).count(5);
+                    ShortcutBadger.setBadge(getApplicationContext(), 5);
                   }
                 } catch (Exception e1) {
                   e1.printStackTrace();

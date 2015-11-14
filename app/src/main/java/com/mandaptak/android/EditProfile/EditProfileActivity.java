@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,15 +75,15 @@ public class EditProfileActivity extends AppCompatActivity implements ActionBar.
       }
     }
     init();
-    getUserProfile();
-//    if (Prefs.getProfile(context) != null) {
-//      Log.e("", "Profile Found in Shared Prefs");
-//    } else {
-//      try {
-//        getUserProfile();
-//      } catch (Exception ignored) {
-//      }
-//    }
+
+    if (Prefs.getProfile(context) != null) {
+      Log.e("", "Profile Found in Shared Prefs");
+    } else {
+      try {
+        getUserProfile();
+      } catch (Exception ignored) {
+      }
+    }
   }
 
   @Override

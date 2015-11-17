@@ -18,6 +18,7 @@ public class AgentProfileModel implements Serializable {
   private String name;
   private String imageUrl;
   private String number;
+  private String userId;
   private boolean isActive;
   private boolean isComplete;
   private String createDate;

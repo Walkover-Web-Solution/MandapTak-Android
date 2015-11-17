@@ -16,12 +16,9 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.mandaptak.android.Views.ExtendedEditText;
-import com.parse.GetCallback;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +55,6 @@ public class ClientDetailsAdapter extends BaseAdapter {
       paramView = LayoutInflater.from(activity).inflate(R.layout.client_detail_item, null);
       viewholder.tvNumber = (TextView) paramView.findViewById(R.id.number);
       viewholder.tvRelation = ((TextView) paramView.findViewById(R.id.relation));
-      viewholder.tvCredits = ((TextView) paramView.findViewById(R.id.credits));
       viewholder.tvDate = (TextView) paramView.findViewById(R.id.date);
       viewholder.btnMore = (ImageView) paramView.findViewById(R.id.more);
       paramView.setTag(viewholder);
@@ -69,11 +65,10 @@ public class ClientDetailsAdapter extends BaseAdapter {
     viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
     viewholder.tvRelation.setText(permissionModel.getRelation());
     viewholder.tvDate.setText(permissionModel.getDate());
-    //  viewholder.tvCredits.setText("Balance: " + permissionModel.getBalance() + " Credits");
     viewholder.btnMore.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        editPermission(permissionModel.getProfileId());
+        editPermission(permissionModel.getProfileId(), permissionModel.getUserId(), permissionModel.getNumber());
       }
     });
     return paramView;
@@ -84,18 +79,19 @@ public class ClientDetailsAdapter extends BaseAdapter {
     private TextView tvRelation;
     private TextView tvDate;
     private ImageView btnMore;
-    private TextView tvCredits;
   }
 
-  void editPermission(final String profileId) {
+  void editPermission(final String profileId, final String userId, String number) {
     if (mApp.isNetworkAvailable(activity)) {
       final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
       final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
       alertDialog.setView(permissionDialog);
       final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
       AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+      giveButton.setText("Update Edit Permission");
       final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
       etNumber.setPrefix("+91");
+      etNumber.setText(number);
       relations.setAdapter(ArrayAdapter.createFromResource(activity,
           R.array.relation_array, R.layout.location_list_item));
       giveButton.setOnClickListener(new View.OnClickListener() {
@@ -108,63 +104,24 @@ public class ClientDetailsAdapter extends BaseAdapter {
               if (mApp.isNetworkAvailable(activity)) {
                 mApp.show_PDialog(activity, "Modifying Permission..");
                 HashMap<String, Object> params = new HashMap<>();
-                params.put("mobile", mobileNumber);
+                params.put("userId", userId);
                 params.put("profileId", profileId);
                 params.put("relation", relations.getSelectedItem());
-                ParseQuery<ParseUser> userParseQuery = ParseUser.getQuery();
-                userParseQuery.whereEqualTo("username", mobileNumber);
-                userParseQuery.getFirstInBackground(new GetCallback<ParseUser>() {
+                params.put("username", mobileNumber);
+                ParseCloud.callFunctionInBackground("changeUserNameAndUserRelation", params, new FunctionCallback<Object>() {
                   @Override
-                  public void done(final ParseUser parseUser, ParseException e) {
+                  public void done(Object o, ParseException e) {
+                    mApp.dialog.dismiss();
                     if (e == null) {
-                      parseUser.setUsername(mobileNumber);
-                      parseUser.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                          if (e == null) {
-                            if (!relations.getSelectedItem().toString().equals("")) {
-                              ParseQuery<ParseObject> relationQuery = ParseQuery.getQuery("UserProfile");
-                              relationQuery.whereEqualTo("userId", parseUser);
-                              relationQuery.whereEqualTo("profileId", profileId);
-                              relationQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                                @Override
-                                public void done(ParseObject object, ParseException e) {
-                                  if (e == null) {
-                                    object.put("relation", relations.getSelectedItem());
-                                    object.saveInBackground(new SaveCallback() {
-                                      @Override
-                                      public void done(ParseException e) {
-                                        mApp.dialog.dismiss();
-                                      }
-                                    });
-                                  }
-                                }
-                              });
-                            }
-                          } else {
-                            mApp.dialog.dismiss();
-                            mApp.showToast(activity, e.getMessage());
-                          }
-                        }
-                      });
+                      mApp.showToast(activity, "Permission Modified");
+                      activity.getExistingPermissions();
                     } else {
-                      mApp.dialog.dismiss();
+                      e.printStackTrace();
                       mApp.showToast(activity, e.getMessage());
                     }
                   }
                 });
-//                ParseCloud.callFunctionInBackground("givePermissiontoNewUser", params, new FunctionCallback<Object>() {
-//                  @Override
-//                  public void done(Object o, ParseException e) {
-//                    mApp.dialog.dismiss();
-//                    if (e == null) {
-//                      mApp.showToast(activity, "Permission Given");
-//                    } else {
-//                      e.printStackTrace();
-//                      mApp.showToast(activity, e.getMessage());
-//                    }
-//                  }
-//                });
+
               }
             } else {
               mApp.showToast(activity, "Invalid Mobile Number");

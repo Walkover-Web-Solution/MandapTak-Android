@@ -14,6 +14,7 @@ import com.mandaptak.android.Models.PermissionModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -56,6 +57,19 @@ public class ClientDetailActivity extends AppCompatActivity {
       } catch (Exception ignored) {
         ignored.printStackTrace();
       }
+      String userId = (String) getIntent().getExtras().getSerializable("userId");
+      ParseQuery<ParseObject> balanceQuery = new ParseQuery<>("UserCredits");
+      balanceQuery.whereEqualTo("userId", ParseUser.createWithoutData(ParseUser.class, userId));
+      balanceQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        @Override
+        public void done(ParseObject parseObject, ParseException e) {
+          if (e == null) {
+            availableCredits.setText(" Balance: " + parseObject.getInt("credits") + " Credits");
+          }
+        }
+      });
+    } else {
+      this.finish();
     }
     clientDetailsAdapter = new ClientDetailsAdapter(ClientDetailActivity.this, permissionModels);
     permissionList.setAdapter(clientDetailsAdapter);
@@ -90,6 +104,7 @@ public class ClientDetailActivity extends AppCompatActivity {
                 permissionModel.setRelation(relation);
                 permissionModel.setDate("Permission given on: " + date);
                 permissionModel.setNumber(user.getUsername());
+                permissionModel.setUserId(user.getObjectId());
                 permissionModel.setProfileId(profileObject);
                 permissionModels.add(permissionModel);
                 clientDetailsAdapter.notifyDataSetChanged();

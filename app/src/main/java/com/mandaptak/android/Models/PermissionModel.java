@@ -15,6 +15,7 @@ public class PermissionModel {
   private String relation;
   private String date;
   private String profileId;
+  private String userId;
   private boolean isCurrentUser;
   private int balance;
 }

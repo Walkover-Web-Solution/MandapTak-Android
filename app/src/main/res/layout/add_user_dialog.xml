@@ -67,7 +67,8 @@
         custom:tickColor="@color/transparent"
         custom:tickEnd="500"
         custom:tickInterval="20"
-        custom:tickStart="10"/>
+        custom:tickStart="10"
+        />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/give_button"

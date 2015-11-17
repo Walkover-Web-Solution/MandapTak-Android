@@ -42,6 +42,8 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import me.iwf.photopicker.utils.Prefs;
+
 public class AgentActivity extends AppCompatActivity {
   Common mApp;
   Context context;
@@ -85,10 +87,13 @@ public class AgentActivity extends AppCompatActivity {
             alertDialog.setView(permissionDialog);
             final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.number);
             final RangeBar userCreditsBar = (RangeBar) permissionDialog.findViewById(R.id.user_credits_seek);
+            userCreditsBar.setSeekPinByIndex(0);
+            final TextView credit_text = (TextView) permissionDialog.findViewById(R.id.credit_text);
             userCreditsBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
               @Override
               public void onRangeChangeListener(RangeBar rangeBar, int leftPinIndex, int rightPinIndex, String leftPinValue, String rightPinValue) {
                 deductCredit = rightPinValue;
+                credit_text.setText(rightPinValue + " Credits");
               }
             });
             AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
@@ -140,7 +145,9 @@ public class AgentActivity extends AppCompatActivity {
           name = agentProfileModel.getName();
         else
           name = agentProfileModel.getNumber();
-        startActivity(new Intent(context, ClientDetailActivity.class).putExtra("data", agentProfileModel.getProfileObject().getObjectId()).putExtra("name", name));
+        Intent detailIntent = new Intent(context, ClientDetailActivity.class);
+        detailIntent.putExtra("data", agentProfileModel.getProfileObject().getObjectId()).putExtra("name", name).putExtra("userId", agentProfileModel.getUserId());
+        startActivity(detailIntent);
       }
     });
     profileList.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -190,21 +197,24 @@ public class AgentActivity extends AppCompatActivity {
                 public void done(ParseUser parseUser, ParseException e) {
                   if (e == null) {
                     final HashMap<String, Object> balParam = new HashMap<>();
-                    balParam.put("amount", credit);
-                    balParam.put("userId", parseUser.getObjectId());
-                    balParam.put("agentId", ParseUser.getCurrentUser().getObjectId());
-                    ParseCloud.callFunctionInBackground("addCreditToUserAccount", balParam, new FunctionCallback<Object>() {
+                    String deductValue = String.valueOf(Integer.valueOf(credit) - 10);
+                    balParam.put("amount", deductValue);
+                    balParam.put("userid", parseUser.getObjectId());
+                    balParam.put("agentid", ParseUser.getCurrentUser().getObjectId());
+                    ParseCloud.callFunctionInBackground("fundTransfer", balParam, new FunctionCallback<Object>() {
                       @Override
                       public void done(Object o, ParseException e) {
                         if (e == null) {
                           resetProfileData();
                           getProfiles();
                           mApp.showToast(context, "Profile Created");
+                        } else {
+                          mApp.showToast(context, e.getMessage());
+                          e.printStackTrace();
                         }
                       }
                     });
                   }
-
                 }
               });
             }
@@ -241,7 +251,9 @@ public class AgentActivity extends AppCompatActivity {
     });
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
     query.include("profileId.userId");
+    query.orderByDescending("createdAt");
     query.whereEqualTo("userId", ParseUser.getCurrentUser());
+    query.whereNotEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
     query.whereEqualTo("relation", "Agent");
     if (loadMore) {
       limit = limit + 15;
@@ -262,7 +274,7 @@ public class AgentActivity extends AppCompatActivity {
                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
                 agentProfileModel.setProfileObject(profileObject);
                 agentProfileModel.setNumber(profileObject.getParseUser("userId").getUsername());
-                // agentProfileModel.setNumber("77");
+                agentProfileModel.setUserId(profileObject.getParseUser("userId").getObjectId());
                 if (isComplete) {
                   SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
                   String date = sdf.format(profileObject.getUpdatedAt());
@@ -277,7 +289,6 @@ public class AgentActivity extends AppCompatActivity {
                   agentProfileModel.setCreateDate(date);
                   agentProfileModel.setActive(profileObject.getBoolean("isActive"));
                   agentProfileModel.setImageUrl("android.resource://com.mandaptak.android/drawable/com_facebook_profile_picture_blank_square");
-                  //agentProfileModel.setName(profileObject.getParseUser("userId").fetchIfNeeded().getUsername());
                   agentProfileModel.setComplete(false);
                 }
                 profileModels.add(agentProfileModel);
@@ -290,7 +301,7 @@ public class AgentActivity extends AppCompatActivity {
               int position = profileList.getLastVisiblePosition();
               profileList.setSelectionFromTop(position, 0);
             }
-            skip = skip + limit;
+            skip = limit;
             loadMore = true;
           } else {
             profileList.setVisibility(View.GONE);
@@ -322,7 +333,9 @@ public class AgentActivity extends AppCompatActivity {
     }
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
     query.include("profileId.userId");
+    query.orderByDescending("createdAt");
     query.whereEqualTo("userId", ParseUser.getCurrentUser());
+    query.whereNotEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
     query.whereEqualTo("relation", "Agent");
     query.whereMatchesQuery("profileId", innerQuery);
     if (loadMore) {
@@ -344,6 +357,7 @@ public class AgentActivity extends AppCompatActivity {
                 final AgentProfileModel agentProfileModel = new AgentProfileModel();
                 agentProfileModel.setProfileObject(profileObject);
                 agentProfileModel.setNumber(profileObject.getParseUser("userId").getUsername());
+                agentProfileModel.setUserId(profileObject.getParseUser("userId").getObjectId());
                 if (isComplete) {
                   SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
                   String date = sdf.format(profileObject.getUpdatedAt());
@@ -370,7 +384,7 @@ public class AgentActivity extends AppCompatActivity {
               int position = profileList.getLastVisiblePosition();
               profileList.setSelectionFromTop(position, 0);
             }
-            skip = skip + limit;
+            skip = limit;
             loadMore = true;
           } else {
             profileList.setVisibility(View.GONE);

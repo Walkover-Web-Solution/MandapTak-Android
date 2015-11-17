@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:padding="16dp"
-        android:text="Balance: 0 Credits"
+
         android:textColor="@color/red_400"
         android:textSize="@dimen/abc_text_size_medium_material"/>
 

@@ -80,7 +80,6 @@ public class AgentActivity extends AppCompatActivity {
       @Override
       public void onClick(View view) {
         if (creditBalance >= 20) {
-
           if (mApp.isNetworkAvailable(context)) {
             final View permissionDialog = View.inflate(context, R.layout.add_user_dialog, null);
             final AlertDialog alertDialog = new AlertDialog.Builder(context).create();

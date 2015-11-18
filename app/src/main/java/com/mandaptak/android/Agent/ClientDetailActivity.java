@@ -36,6 +36,7 @@ public class ClientDetailActivity extends AppCompatActivity {
   ArrayList<PermissionModel> permissionModels;
   ClientDetailsAdapter clientDetailsAdapter;
   ProgressBar progressBar;
+  String relationMainUser;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class ClientDetailActivity extends AppCompatActivity {
     permissionModels = new ArrayList<>();
     if (getIntent().getExtras() != null) {
       profileObject = (String) getIntent().getExtras().getSerializable("data");
+      relationMainUser = (String) getIntent().getExtras().getSerializable("data");
       try {
         getSupportActionBar().setTitle((String) getIntent().getExtras().getSerializable("name"));
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -82,7 +84,7 @@ public class ClientDetailActivity extends AppCompatActivity {
     try {
       ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
       query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileObject));
-      String[] relaion = {"Bachelor", "Agent"};
+      String[] relaion = {relationMainUser, "Agent"};
       query.whereNotContainedIn("relation", Arrays.asList(relaion));
       query.include("userId");
       query.findInBackground(new FindCallback<ParseObject>() {

@@ -1,5 +1,6 @@
 package com.mandaptak.android.Main;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,6 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -42,6 +45,7 @@ import com.mandaptak.android.Preferences.UserPreferences;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Settings.SettingsActivity;
 import com.mandaptak.android.Utils.Common;
+import com.mandaptak.android.Views.ExtendedEditText;
 import com.mandaptak.android.Views.TypefaceTextView;
 import com.parse.FindCallback;
 import com.parse.FunctionCallback;
@@ -414,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
     slideLike.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        likeProfile();
+        showPopUp(view);
       }
     });
     rippleBackground.setOnClickListener(new View.OnClickListener() {
@@ -425,6 +429,53 @@ public class MainActivity extends AppCompatActivity {
         }
       }
     });
+  }
+
+  private void showPopUp(View view) {
+    final PopupMenu popup = new PopupMenu(context, view);
+    popup.getMenuInflater().inflate(R.menu.profile_pop_item_report_user, popup.getMenu());
+    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        showReasonDialog();
+        return true;
+      }
+    });
+    popup.show();
+  }
+
+  private void showReasonDialog() {
+    if (mApp.isNetworkAvailable(context)) {
+      final View permissionDialog = View.inflate(context, R.layout.report_user_reason_dialog, null);
+      final AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+      alertDialog.setView(permissionDialog);
+      final ExtendedEditText etNumber = (ExtendedEditText) permissionDialog.findViewById(R.id.reason);
+      AppCompatButton giveButton = (AppCompatButton) permissionDialog.findViewById(R.id.give_button);
+      giveButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          String reasonText = etNumber.getText().toString();
+          if (!reasonText.equals("")) {
+            reportUser(profileList.get(0).getObjectId(), reasonText);
+            profileList.remove(0);
+            if (profileList.size() > 0) {
+              setProfileDetails();
+            } else {
+              isLoading = false;
+              labelLoading.setText("No matching results found.");
+              rippleBackground.stopRippleAnimation();
+              rippleBackground.setVisibility(View.VISIBLE);
+              slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+            }
+            alertDialog.dismiss();
+          } else {
+            mApp.showToast(context, "Enter Reason First");
+          }
+        }
+      });
+      alertDialog.show();
+    } else {
+      mApp.showToast(context, "Internet connection required");
+    }
   }
 
   private void savePinnedProfileParse() {
@@ -901,5 +952,23 @@ public class MainActivity extends AppCompatActivity {
             .build()
     );
     sequence.start();
+  }
+
+  private void reportUser(String reportedProfile, String reasonText) {
+    HashMap<String, Object> params = new HashMap<>();
+    params.put("reportedProfile", reportedProfile);
+    params.put("profileId", Prefs.getProfileId(context));
+    params.put("reason", reasonText);
+    ParseCloud.callFunctionInBackground("reportUser", params, new FunctionCallback<Object>() {
+      @Override
+      public void done(Object o, ParseException e) {
+        if (e == null) {
+          mApp.showToast(context, "User Rported");
+        } else {
+          e.printStackTrace();
+          mApp.showToast(context, e.getMessage());
+        }
+      }
+    });
   }
 }

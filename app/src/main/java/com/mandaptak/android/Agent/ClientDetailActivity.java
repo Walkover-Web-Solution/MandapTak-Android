@@ -36,7 +36,7 @@ public class ClientDetailActivity extends AppCompatActivity {
   ArrayList<PermissionModel> permissionModels;
   ClientDetailsAdapter clientDetailsAdapter;
   ProgressBar progressBar;
-  String relationMainUser;
+  String userId = "";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +51,7 @@ public class ClientDetailActivity extends AppCompatActivity {
     permissionModels = new ArrayList<>();
     if (getIntent().getExtras() != null) {
       profileObject = (String) getIntent().getExtras().getSerializable("data");
-      relationMainUser = (String) getIntent().getExtras().getSerializable("data");
+      userId = (String) getIntent().getExtras().getSerializable("userId");
       try {
         getSupportActionBar().setTitle((String) getIntent().getExtras().getSerializable("name"));
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -84,9 +84,10 @@ public class ClientDetailActivity extends AppCompatActivity {
     try {
       ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
       query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileObject));
-      String[] relaion = {relationMainUser, "Agent"};
+      String[] relaion = {"Agent"};
       query.whereNotContainedIn("relation", Arrays.asList(relaion));
       query.include("userId");
+      query.orderByAscending("createdAt");
       query.findInBackground(new FindCallback<ParseObject>() {
         @Override
         public void done(List<ParseObject> list, ParseException e) {
@@ -108,6 +109,11 @@ public class ClientDetailActivity extends AppCompatActivity {
                 permissionModel.setNumber(user.getUsername());
                 permissionModel.setUserId(user.getObjectId());
                 permissionModel.setProfileId(profileObject);
+                if (userId.equals(user.getObjectId())) {
+                  permissionModel.setCurrentUser(true);
+                } else {
+                  permissionModel.setCurrentUser(false);
+                }
                 permissionModels.add(permissionModel);
                 clientDetailsAdapter.notifyDataSetChanged();
               }

@@ -21,7 +21,10 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ClientDetailsAdapter extends BaseAdapter {
   ClientDetailActivity activity;
@@ -65,10 +68,13 @@ public class ClientDetailsAdapter extends BaseAdapter {
     viewholder.tvNumber.setText("+91" + permissionModel.getNumber());
     viewholder.tvRelation.setText(permissionModel.getRelation());
     viewholder.tvDate.setText(permissionModel.getDate());
+    if (permissionModel.isCurrentUser()) {
+      viewholder.tvRelation.setTextColor(activity.getResources().getColor(R.color.red_500));
+    }
     viewholder.btnMore.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        editPermission(permissionModel.getProfileId(), permissionModel.getUserId(), permissionModel.getNumber());
+        editPermission(permissionModel);
       }
     });
     return paramView;
@@ -81,7 +87,7 @@ public class ClientDetailsAdapter extends BaseAdapter {
     private ImageView btnMore;
   }
 
-  void editPermission(final String profileId, final String userId, String number) {
+  void editPermission(final PermissionModel permissionModel) {
     if (mApp.isNetworkAvailable(activity)) {
       final View permissionDialog = View.inflate(activity, R.layout.add_permission_dialog, null);
       final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
@@ -91,21 +97,32 @@ public class ClientDetailsAdapter extends BaseAdapter {
       giveButton.setText("Update Edit Permission");
       final Spinner relations = (Spinner) permissionDialog.findViewById(R.id.relations);
       etNumber.setPrefix("+91");
-      etNumber.setText(number);
-      relations.setAdapter(ArrayAdapter.createFromResource(activity,
-          R.array.relation_array, R.layout.location_list_item));
+      etNumber.setText(permissionModel.getNumber());
+      List<String> relationList = new LinkedList<>(Arrays.asList(activity.getResources().getStringArray(R.array.relation_array)));
+      if (!permissionModel.isCurrentUser()) {
+        relationList.remove(permissionModel.getRelation());
+      }
+      relations.setAdapter(new ArrayAdapter<>(activity, R.layout.location_list_item, relationList));
       giveButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
           final String mobileNumber = etNumber.getText().toString();
+          Boolean duplicateNumber = false;
+          for (PermissionModel model : list
+              ) {
+
+            if (!permissionModel.equals(model) && model.getNumber().equals(mobileNumber)) {
+              duplicateNumber = true;
+            }
+          }
           if (!mobileNumber.equals("")) {
-            if (mobileNumber.length() == 10) {
+            if (mobileNumber.length() == 10 && !duplicateNumber) {
               alertDialog.dismiss();
               if (mApp.isNetworkAvailable(activity)) {
                 mApp.show_PDialog(activity, "Modifying Permission..");
                 HashMap<String, Object> params = new HashMap<>();
-                params.put("userId", userId);
-                params.put("profileId", profileId);
+                params.put("userId", permissionModel.getUserId());
+                params.put("profileId", permissionModel.getProfileId());
                 params.put("relation", relations.getSelectedItem());
                 params.put("username", mobileNumber);
                 ParseCloud.callFunctionInBackground("changeUserNameAndUserRelation", params, new FunctionCallback<Object>() {
@@ -121,7 +138,6 @@ public class ClientDetailsAdapter extends BaseAdapter {
                     }
                   }
                 });
-
               }
             } else {
               mApp.showToast(activity, "Invalid Mobile Number");

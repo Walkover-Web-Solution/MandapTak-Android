@@ -60,8 +60,6 @@ public class FullProfileActivity extends AppCompatActivity {
 
   @Override
   public void onBackPressed() {
-//    startActivity(new Intent(FullProfileActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK & Intent.FLAG_ACTIVITY_CLEAR_TOP));
-//    FullProfileActivity.this.finish();
     super.onBackPressed();
   }
 

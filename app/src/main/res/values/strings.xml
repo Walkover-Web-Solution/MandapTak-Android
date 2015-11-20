@@ -10,6 +10,8 @@
     <string name="title_section4">Section 4</string>
     <string name="facebook_app_id">1593137610947357</string>
     <string name="divider">divider</string>
+    <string name="report_text">Report</string>
+    <string name="abusive_text">Please specify the abusive material that you found in this profile.</string>
     <string name="user_preferences">Your Preferences</string>
     <string-array name="relation_array">
         <item>Bachelor</item>

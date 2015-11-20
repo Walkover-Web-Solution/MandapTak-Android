@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
   private ImageButton slideLike;
   private ImageView mainLikeButton, mainSkipButton, mainUndoButton;
   private UndoModel undoModel;
-  private TextView labelLoading;
+  private TextView labelLoading, tvReportProfile;
   private ParseObject profileObject;
   private FabButton traitsProgress;
   private boolean isLoading = false;
@@ -194,16 +195,10 @@ public class MainActivity extends AppCompatActivity {
                     undoModelArrayList.remove(0);
                   undoModelArrayList.add(undoModel);
                   if (o instanceof ParseObject) {
-//                    MatchesModel model = prepareDataIfMatchFoundOnLikeAndFind();
-//                    Intent intent = new Intent(context, MatchedProfileActivity.class);
-//                    intent.putExtra("profile", model);
-//                    startActivity(intent);
-                    MatchesModel model = prepareDataIfMatchFoundOnLikeAndFind();
-
                     NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(context.getResources().getString(R.string.app_name))
-                        .setContentText("You just Got Match With " + model.getName())
+                        .setContentText("You just Got Match With " + likeProfile.getString("name"))
                         .setAutoCancel(true)
                         .setLights(context.getResources().getColor(R.color.red_200), 100, 1900)
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -211,7 +206,6 @@ public class MainActivity extends AppCompatActivity {
                     // Set the action to take when a user taps the notification
                     Intent resultIntent = new Intent(context, MatchesActivity.class);
                     resultIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    resultIntent.putExtra("profile", model);
                     PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                     mBuilder.setContentIntent(resultPendingIntent);
 
@@ -258,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
     slidingLayout = (RelativeLayout) findViewById(R.id.sliding_layout);
     bottomLayout = (LinearLayout) findViewById(R.id.bottom_panel);
     slidingPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_panel);
+    tvReportProfile = (TextView) findViewById(R.id.report);
+    tvReportProfile.setPaintFlags(tvReportProfile.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
     pinButton = (ImageView) findViewById(R.id.pin_button);
     profileImages = (TwoWayView) findViewById(R.id.list);
     backgroundPhoto = (SimpleDraweeView) findViewById(R.id.background_photo);
@@ -289,6 +285,12 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void setupClickListeners() {
+    tvReportProfile.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        showReasonDialog();
+      }
+    });
     pinButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
@@ -557,6 +559,8 @@ public class MainActivity extends AppCompatActivity {
     setupClickListeners();
     if (mApp.isNetworkAvailable(context))
       getParseData();
+    userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
+    profileImages.setAdapter(userImagesAdapter);
   }
 
   public void getParseData() {
@@ -732,6 +736,12 @@ public class MainActivity extends AppCompatActivity {
     labelLoading.setText("Loading Profile...");
     slidingPanel.setEnabled(false);
     slidingPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+    try {
+      userProfileImages.clear();
+      userImagesAdapter.notifyDataSetChanged();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
     final ParseObject parseProfileObject = profileList.get(0);
     try {
       try {
@@ -851,16 +861,9 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void getAllPhotos(final ParseObject parseProfileObject) {
-    try {
-      userProfileImages.clear();
-      userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
-      profileImages.setAdapter(userImagesAdapter);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
     parseQuery.whereEqualTo("profileId", parseProfileObject);
-    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_THEN_NETWORK);
+    parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ELSE_NETWORK);
     parseQuery.findInBackground(new FindCallback<ParseObject>() {
       @Override
       public void done(List<ParseObject> list, ParseException e) {
@@ -879,9 +882,7 @@ public class MainActivity extends AppCompatActivity {
                 e1.printStackTrace();
               }
             }
-            userImagesAdapter = new UserImagesAdapter(context, MainActivity.this, userProfileImages);
-            profileImages.setAdapter(userImagesAdapter);
-
+            userImagesAdapter.notifyDataSetChanged();
           } else {
             //This has to be handled proper this happens when there is no entry in the photo
             //table for this profile.

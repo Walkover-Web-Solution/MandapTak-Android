@@ -69,7 +69,6 @@ public class MessageScreen extends AppCompatActivity {
       public boolean beforeSend(Message message) {
         message.getOptions().pushNotificationMessage(message.getConversation() + " Test notify");
         if (conversation == null) {
-          //  String[] participants = (String[]) userIds.toArray();
           if (userIds.size() > 0) {
             participantPicker.setVisibility(View.GONE);
             conversation = layerClient.newConversation(userIds);
@@ -80,7 +79,6 @@ public class MessageScreen extends AppCompatActivity {
             return false;
           }
         }
-
         return true;
       }
     });

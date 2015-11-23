@@ -7,7 +7,6 @@ import com.layer.sdk.messaging.Message;
 import com.layer.sdk.messaging.MessagePart;
 
 import java.io.UnsupportedEncodingException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 /*
@@ -51,7 +50,7 @@ public class LayerImpl {
     if (mLayerClient == null) {
       LayerClient.enableLogging(context);
       LayerClient.Options options = new LayerClient.Options();
-      options.googleCloudMessagingSenderId("92092914081");
+      options.googleCloudMessagingSenderId("238940149064");
       mLayerClient = LayerClient.newInstance(context.getApplicationContext(), LayerAppID, options);
     }
 
@@ -156,16 +155,5 @@ public class LayerImpl {
     }
 
     return msgContent;
-  }
-
-  //A helper function that takes a Message object and returns a String representation of the
-  // ReceivedAt time (the local time the message was downloaded to the device)
-  public static String getReceivedAtTime(Message msg) {
-    String dateString = "";
-    if (msg != null && msg.getReceivedAt() != null) {
-      SimpleDateFormat format = new SimpleDateFormat("M/dd hh:mm:ss");
-      dateString = format.format(msg.getReceivedAt());
-    }
-    return dateString;
   }
 }

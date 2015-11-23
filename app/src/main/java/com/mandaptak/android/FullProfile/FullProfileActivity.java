@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.ImageModel;
 
 public class FullProfileActivity extends AppCompatActivity {
@@ -299,7 +298,6 @@ public class FullProfileActivity extends AppCompatActivity {
 
           } catch (Exception e) {
             e.printStackTrace();
-            RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
             mApp.showToast(context, "Error while liking profile");
           }
 

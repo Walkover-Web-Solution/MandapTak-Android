@@ -72,7 +72,6 @@ import java.util.List;
 import java.util.Locale;
 
 import jp.wasabeef.fresco.processors.BlurPostprocessor;
-import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import mbanje.kurt.fabbutton.FabButton;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
@@ -152,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
             }
           } else {
             e.printStackTrace();
-            RaygunClient.Send(new Throwable(e.getMessage() + " traits_function"));
             mApp.showToast(context, e.getMessage());
           }
         }
@@ -241,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
 
       } catch (Exception e) {
         e.printStackTrace();
-        RaygunClient.Send(new Throwable(e.getMessage() + " like function"));
         mApp.showToast(context, "Error while liking profile");
       }
   }
@@ -839,7 +836,6 @@ public class MainActivity extends AppCompatActivity {
         weight.setText(parseProfileObject.getInt("weight") + " KG");
       }
       if (parseProfileObject.containsKey("package") && parseProfileObject.getLong("package") != 0) {
-//        salary.setText("Rs. " + mApp.numberToWords(parseProfileObject.getLong("package")));
         salary.setText("Rs. " + NumberFormat.getNumberInstance(new Locale("en", "in")).format(parseProfileObject.getLong("package")));
       }
 

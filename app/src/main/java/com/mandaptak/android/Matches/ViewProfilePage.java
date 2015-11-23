@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
 
@@ -156,7 +155,6 @@ public class ViewProfilePage extends AppCompatActivity {
             }
           } else {
             e.printStackTrace();
-            RaygunClient.Send(new Throwable(e.getMessage() + " traits_function"));
           }
         }
       });

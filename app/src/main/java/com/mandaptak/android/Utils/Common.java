@@ -32,10 +32,6 @@ import com.mandaptak.android.Splash.SplashScreen;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseObject;
-import com.parse.ParseUser;
-
-import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
-import main.java.com.mindscapehq.android.raygun4android.messages.RaygunUserInfo;
 
 public class Common extends Application implements LayerCallbacks {
   public static AtlasIdentityProvider identityProvider;
@@ -240,13 +236,6 @@ public class Common extends Application implements LayerCallbacks {
     LayerImpl.initialize(getApplicationContext());
     //Registers the activity so callbacks are executed on the correct class
     LayerImpl.setContext(this);
-    RaygunUserInfo user = new RaygunUserInfo();
-    ParseUser parseUser = ParseUser.getCurrentUser();
-    if (parseUser != null) {
-      user.FirstName = parseUser.getUsername();
-      user.Uuid = parseUser.getObjectId();
-      RaygunClient.SetUser(user);
-    }
     identityProvider = new AtlasIdentityProvider(this);
     // Setup handler for uncaught exceptions.
     Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {

@@ -17,19 +17,18 @@
     <uses-permission android:name="android.permission.READ_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="com.mandaptak.android.permission.C2D_MESSAGE"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="com.mandaptak.android.permission.LAYER_PUSH"/>
 
 
     <permission
         android:name="com.mandaptak.android.permission.LAYER_PUSH"
         android:protectionLevel="signature"/>
-    <uses-permission android:name="com.mandaptak.android.permission.LAYER_PUSH"/>
     <permission
         android:name="com.mandaptak.android.permission.C2D_MESSAGE"
         android:protectionLevel="signature"/>
 
-    <uses-permission android:name="com.mandaptak.android.permission.C2D_MESSAGE"/>
-
-    <uses-permission android:name="android.permission.READ_LOGS"/>
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -138,43 +137,32 @@
             </intent-filter>
         </activity>
 
+        <service android:name="com.parse.PushService"/>
 
-        <!--<service android:name="com.parse.PushService"/>-->
+        <receiver
+            android:name="com.parse.ParsePushBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.parse.push.intent.RECEIVE"/>
+                <action android:name="com.parse.push.intent.DELETE"/>
+                <action android:name="com.parse.push.intent.OPEN"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter android:priority="1">
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTER"/>
 
-        <!--<receiver android:name="com.parse.ParseBroadcastReceiver">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="android.intent.action.BOOT_COMPLETED"/>-->
-        <!--<action android:name="android.intent.action.USER_PRESENT"/>-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-        <!--<receiver-->
-        <!--android:name="com.parse.ParsePushBroadcastReceiver"-->
-        <!--android:exported="false">-->
-        <!--<intent-filter>-->
-        <!--<action android:name="com.parse.push.intent.RECEIVE"/>-->
-        <!--<action android:name="com.parse.push.intent.DELETE"/>-->
-        <!--<action android:name="com.parse.push.intent.OPEN"/>-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-        <!--<receiver-->
-        <!--android:name="com.parse.GcmBroadcastReceiver"-->
-        <!--android:permission="com.google.android.c2dm.permission.SEND">-->
-        <!--<intent-filter android:priority="950">-->
-        <!--<action android:name="com.google.android.c2dm.intent.RECEIVE"/>-->
-        <!--<action android:name="com.google.android.c2dm.intent.REGISTRATION"/>-->
+                <category android:name="com.mandaptak.android"/>
+            </intent-filter>
+        </receiver>
 
-        <!--<category android:name="com.mandaptak.android"/>-->
-        <!--</intent-filter>-->
-        <!--</receiver>-->
-
-
-        <service
-            android:name="main.java.com.mindscapehq.android.raygun4android.RaygunPostService"
-            android:exported="false"
-            android:process=":raygunpostservice"/>
         <meta-data
-            android:name="com.mindscapehq.android.raygun4android.apikey"
-            android:value="FmwFxRVKP/T932mxk9zzEA=="/>
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:238940149064"/>
 
         <receiver android:name="com.layer.sdk.services.LayerReceiver">
             <intent-filter>
@@ -183,7 +171,6 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
-
 
         <receiver android:name=".Layer.LayerPushReceiver">
             <intent-filter>
@@ -196,9 +183,10 @@
         <receiver
             android:name="com.layer.sdk.services.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter android:priority="950">
+            <intent-filter android:priority="470">
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.android.c2dm.intent.REGISTER"/>
 
                 <category android:name="com.mandaptak.android"/>
             </intent-filter>

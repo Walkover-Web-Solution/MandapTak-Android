@@ -211,10 +211,10 @@ public class MatchesFragment extends Fragment {
 
   private void getChatMembers(String profileId) {
     ParseQuery<ParseObject> query = new ParseQuery<>("UserProfile");
-    query.include("userId");
     // query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", Prefs.getProfileId(context)));
     query.whereEqualTo("profileId", ParseObject.createWithoutData("Profile", profileId));
     query.whereNotEqualTo("relation", "Agent");
+    query.include("userId");
     query.findInBackground(new FindCallback<ParseObject>() {
       @Override
       public void done(List<ParseObject> list, ParseException e) {

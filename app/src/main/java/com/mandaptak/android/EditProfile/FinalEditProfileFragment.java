@@ -60,12 +60,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import me.iwf.photopicker.PhotoPagerActivity;
@@ -281,6 +279,7 @@ public class FinalEditProfileFragment extends Fragment {
       if (!maxBudget.getText().toString().equals(""))
         newMaxBudget = Long.valueOf(maxBudget.getText().toString());
     } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
@@ -534,9 +533,9 @@ public class FinalEditProfileFragment extends Fragment {
                   newMinBudget = profileObject.getLong("minMarriageBudget");
                   newMaxBudget = profileObject.getLong("maxMarriageBudget");
                   if (newMinBudget != -1)
-                    minBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en", "in")).format(newMinBudget));
+                    minBudget.setText("" + newMinBudget);
                   if (newMaxBudget != -1)
-                    maxBudget.setText(NumberFormat.getCurrencyInstance(new Locale("en", "in")).format(newMaxBudget));
+                    maxBudget.setText("" + newMaxBudget);
                 } else {
                   budgetMainLayout.setVisibility(View.GONE);
                 }

@@ -19,7 +19,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import main.java.com.mindscapehq.android.raygun4android.RaygunClient;
 import me.iwf.photopicker.utils.Prefs;
 
 public class SplashScreen extends AppCompatActivity {
@@ -31,9 +30,6 @@ public class SplashScreen extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash_screen);
-    RaygunClient.Init(getApplicationContext());
-    RaygunClient.AttachExceptionHandler();
-
     NewRelic.withApplicationToken(
         "AA6833492f59e6f89eb326bf32f91ae9dc50062702"
     ).start(this.getApplication());

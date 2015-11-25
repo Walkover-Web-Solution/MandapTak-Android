@@ -2,6 +2,7 @@ package com.mandaptak.android.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -68,6 +69,7 @@ public class UserImagesAdapter extends RecyclerView.Adapter<UserImagesAdapter.Si
     });
 
   }
+
 
   @Override
   public int getItemCount() {

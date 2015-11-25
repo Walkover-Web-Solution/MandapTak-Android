@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.mandaptak.android.Adapter.UserImagesAdapter;
+import com.mandaptak.android.FullProfile.FullProfileActivity;
 import com.mandaptak.android.Models.MatchesModel;
 import com.mandaptak.android.R;
 import com.mandaptak.android.Utils.Common;
@@ -35,9 +35,9 @@ public class ViewProfilePage extends AppCompatActivity {
   private TextView slideName, slideHeight, slideReligion, slideDesignation, slideTraits;
   private TextView salary, industry, education, weight, currentLocation, viewFullProfile;
   private ArrayList<ImageModel> userProfileImages = new ArrayList<>();
-  private ImageButton slideLike;
   private TwoWayView profileImages;
-  private RelativeLayout slidingLayout;
+  private UserImagesAdapter userImagesAdapter;
+  //private LinearLayout image_header;
   String parseObjectId;
   Common mApp;
   Context context;
@@ -66,28 +66,30 @@ public class ViewProfilePage extends AppCompatActivity {
     viewFullProfile.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-
+        Intent intent = new Intent(context, FullProfileActivity.class);
+        intent.putExtra("parseObjectId", parseObjectId);
+        startActivity(intent);
       }
     });
   }
 
   private void init() {
-    slidingLayout = (RelativeLayout) findViewById(R.id.sliding_layout);
+    profileImages = (TwoWayView) findViewById(R.id.list);
     slideDesignation = (TextView) findViewById(R.id.slide_designation);
     slideHeight = (TextView) findViewById(R.id.slide_height);
     slideName = (TextView) findViewById(R.id.slide_name);
     slideReligion = (TextView) findViewById(R.id.slide_religion);
     slideTraits = (TextView) findViewById(R.id.slide_traits_match);
-    slideLike = (ImageButton) findViewById(R.id.slide_like);
     profileImages = (TwoWayView) findViewById(R.id.list);
     currentLocation = (TextView) findViewById(R.id.current_location);
     weight = (TextView) findViewById(R.id.weight);
     industry = (TextView) findViewById(R.id.industry);
     slideDesignation = (TextView) findViewById(R.id.slide_designation);
     salary = (TextView) findViewById(R.id.salary);
-    slideLike = (ImageButton) findViewById(R.id.slide_like);
     education = (TextView) findViewById(R.id.education);
     viewFullProfile = (TextView) findViewById(R.id.view_full_profile);
+    userImagesAdapter = new UserImagesAdapter(context, ViewProfilePage.this, userProfileImages);
+    profileImages.setAdapter(userImagesAdapter);
   }
 
   private void getParseData() {
@@ -163,6 +165,11 @@ public class ViewProfilePage extends AppCompatActivity {
     }
   }
 
+
+  public void previewPhoto(Intent intent) {
+    startActivityForResult(intent, REQUEST_CODE);
+  }
+
   private void getAllPhotos(final ParseObject parseProfileObject) {
     ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Photo");
     parseQuery.whereEqualTo("profileId", parseProfileObject);
@@ -185,24 +192,15 @@ public class ViewProfilePage extends AppCompatActivity {
                 e1.printStackTrace();
               }
             }
-//            profileImages.setAdapter(new UserImagesAdapter(context, ViewProfilePage.this, userProfileImages));
-
-          } else {
-            //This has to be handled proper this happens when there is no entry in the photo
-            //table for this profile.
-            Log.e("viewProfile", parseProfileObject.getObjectId());
+            userImagesAdapter.notifyDataSetChanged();
           }
         } else {
           //this also has to be handled as per condition till then wait...
           e.printStackTrace();
-          Log.e("viewProfile", "handle the el prt for excp");
+          Log.e("mainActivity", "handle the el prt for excp");
 
         }
       }
     });
-  }
-
-  public void previewPhoto(Intent intent) {
-    startActivityForResult(intent, REQUEST_CODE);
   }
 }

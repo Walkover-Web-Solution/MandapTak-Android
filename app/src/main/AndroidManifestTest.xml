@@ -150,17 +150,6 @@
         <!--<category android:name="com.mandaptak.android"/>-->
         <!--</intent-filter>-->
         <!--</receiver>-->
-
-
-        <service
-            android:name="main.java.com.mindscapehq.android.raygun4android.RaygunPostService"
-            android:exported="false"
-            android:process=":raygunpostservice"/>
-        <meta-data
-            android:name="com.mindscapehq.android.raygun4android.apikey"
-            android:value="FmwFxRVKP/T932mxk9zzEA=="/>
-
-
         <receiver android:name="com.layer.sdk.services.LayerReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>

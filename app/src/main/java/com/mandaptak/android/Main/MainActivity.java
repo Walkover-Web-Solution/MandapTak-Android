@@ -73,6 +73,8 @@ import java.util.Locale;
 
 import jp.wasabeef.fresco.processors.BlurPostprocessor;
 import mbanje.kurt.fabbutton.FabButton;
+import me.iwf.photopicker.PhotoPagerActivity;
+import me.iwf.photopicker.PhotoViewerActivity;
 import me.iwf.photopicker.utils.ImageModel;
 import me.iwf.photopicker.utils.Prefs;
 import me.leolin.shortcutbadger.ShortcutBadger;
@@ -151,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
             }
           } else {
             e.printStackTrace();
-            mApp.showToast(context, e.getMessage());
+            // mApp.showToast(context, e.getMessage());
           }
         }
       });
@@ -426,6 +428,19 @@ public class MainActivity extends AppCompatActivity {
         if (!isLoading) {
           getMatchesFromFunction();
         }
+      }
+    });
+    frontProfile.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(context, PhotoViewerActivity.class);
+        intent.putExtra(PhotoPagerActivity.EXTRA_CURRENT_ITEM, 0);
+        ImageModel im = new ImageModel();
+        im.setLink(profileList.get(0).getParseFile("profilePic").getUrl());
+        ArrayList<ImageModel> list = new ArrayList<>();
+        list.add(im);
+        intent.putExtra(PhotoPagerActivity.EXTRA_PHOTOS, list);
+        previewPhoto(intent);
       }
     });
   }
@@ -746,7 +761,6 @@ public class MainActivity extends AppCompatActivity {
           ControllerListener listener = new BaseControllerListener<ImageInfo>() {
             @Override
             public void onFinalImageSet(String id, ImageInfo imageInfo, Animatable animatable) {
-              //MaterialShowcaseView.resetSingleUse(context, SHOWCASE_ID);
               presentShowcaseSequence();
             }
 

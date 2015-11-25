@@ -186,7 +186,7 @@ public class PinsFragment extends Fragment implements
 
   @Override
   public boolean shouldDismiss(int position, int direction) {
-    return direction == SwipeDirections.DIRECTION_NORMAL_LEFT;
+    return true;
   }
 
   @Override
